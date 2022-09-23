@@ -127,6 +127,30 @@ const PermissionService = {
         const permissionList = await PermissionService.getAllForUsernameAndSiteName(username, siteName, ru.merge(options, {attributes: ['name'], skipThroughAssociationAttributes: true}));
         return Promise.all(permissionList.map(permission => permission.name));
     },
+
+    /**
+     * Gets a permission list for a given site name.
+     * @param {string} siteName - siteName for the permission to get.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {Promise{Permission}}
+     */
+     async getAllForSiteName(siteName, options) {
+        options = ru.complete(options, {include: []});
+        options.include.push(sqlUtil.completeAssociationOptions({model: conf.global.models.Role}, options));
+
+        return PermissionService.getList(options);
+    },
+
+    /**
+     * Gets a permission name list for a given site name.
+     * @param {string} siteName - siteName for the permission to get.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {Promise{[]string}}
+     */
+    async getAllNameForSiteName(siteName, options) {
+        const permissionList = await PermissionService.getAllForSiteName(siteName, ru.merge(options, {attributes: ['name'], skipThroughAssociationAttributes: true}));
+        return Promise.all(permissionList.map(permission => permission.name));
+    },
 };
 
 module.exports = PermissionService;

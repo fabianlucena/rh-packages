@@ -2,36 +2,6 @@ const conf = require('../index');
 const sqlUtil = require('sql-util');
 const ru = require('rofa-util');
 
-ru.complete(
-    conf,
-    {
-        siteCache: {},
-        siteCacheValidityTime: 60000,
-        siteCacheMaxLength: 10000,
-        siteCacheMaintenanceInterval: 10000,
-        siteCacheMaintenanceMethod: () => {
-            const expiration = new Date(Date.now() - conf.siteCacheValidityTime);
-            const list = [];
-            for (const authToken in conf.siteCache) {
-                const item = conf.siteCache[authToken];
-                if (item.lastUse < expiration) {
-                    delete conf.siteCache[authToken];
-                } else {
-                    list.push({
-                        authToken: authToken,
-                        lastUse: conf.siteCache[authToken].lastUse,
-                    });
-                }
-            }
-
-            list.sort((a, b) => a.lastUse - b.lastUse)
-            list.slice(conf.siteCacheMaxLength).forEach(item => delete conf.siteCache[item.authToken]);
-        },
-    }
-);
-
-conf.init.push(() => conf.siteCacheMaintenance = setInterval(conf.siteCacheMaintenanceMethod, conf.siteCacheMaintenanceInterval));
-
 const SiteService = {
     /**
      * Gets a list of sites. If not isEnabled filter provided returns only the enabled sites.
@@ -82,30 +52,6 @@ const SiteService = {
 
         const rowList = await SiteService.getList(options);
         return sqlUtil.getSingle(rowList, ru.deepComplete(options, {params: ['site', ['session id = %s', sessionId], 'Site']}));
-    },
-   
-    /**
-     * Get a site for a given session ID value from the cache or from the DB. @see getForSessionId method.
-     * @param {integer} sessionId - value for the ID to get the site.
-     * @returns {Promise{site}}
-     */
-    async getForSessionIdCached(sessionId) {
-        if (conf.siteCache && conf.siteCache[sessionId]) {
-            const siteData = conf.siteCache[sessionId];
-            siteData.lastUse = Date.now();
-            return siteData.site;
-        }
-
-        const site = await SiteService.getForSessionId(sessionId, {skipThroughAssociationAttributes: true, skipNoRowsError: true});
-        if (!site)
-            return;
-
-        conf.siteCache[sessionId] = {
-            site: site,
-            lastUse: Date.now(),
-        };
-
-        return site;
     },
 
     /**

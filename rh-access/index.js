@@ -28,42 +28,22 @@ const conf = {
     },
 };
 
-async function checkPermissionForUsernameAndSiteName(username, siteName, ...requiredPermissions) {
+async function checkPermissionForUsernameAndSiteName(privileges, ...requiredPermissions) {
     const RoleService = require('./services/role');
     const PermissionService = require('./services/permission');
 
     if (requiredPermissions.includes('login') || requiredPermissions.includes('logout'))
         return true;
 
-    let hasPermission;
-    if (siteName != 'system') {
-        try {
-            const roles = await RoleService.getNameForUsernameAndSiteName(username, 'system');
-            hasPermission = roles.includes('admin');
-            if (hasPermission)
-                return true;
-        } catch(error) {
-            ru.errorHandler(error);
-        }
-    }
+    if (privileges?.roles.includes('admin'))
+        return true;
 
-    if (siteName) {
-        try {
-            const roles = await RoleService.getNameForUsernameAndSiteName(username, siteName);
-            hasPermission = roles.includes('admin');
-            if (hasPermission)
-                return true;
-        } catch(error) {
-            await ru.errorHandler(error);
-        }
-
-        try {
-            const permissions = await PermissionService.getNameForUsernameAndSiteName(username, siteName)
+    if (privileges) {
+        const permissions = privileges?.permissions;
+        if (permissions) {
             for (let i = 0, e = requiredPermissions.length; i < e; i++)
-                if (permissions.includes(requiredPermissions[i]))
-                    return true;
-        } catch(error) {
-            ru.errorHandler(error);
+            if (permissions.includes(requiredPermissions[i]))
+                return true;
         }
     }
 
@@ -72,7 +52,7 @@ async function checkPermissionForUsernameAndSiteName(username, siteName, ...requ
 
 function getCheckPermissionHandler(chain) {
     return async (req, ...requiredPermissions) => {
-        if (await checkPermissionForUsernameAndSiteName(req?.user?.username, req?.site?.name, ...requiredPermissions))
+        if (await checkPermissionForUsernameAndSiteName(req, ...requiredPermissions))
             return;
 
         if (chain && await chain(req, ...requiredPermissions))
@@ -119,8 +99,8 @@ function configure(global) {
     require('./services/site');
 
     if (global.router) {
-        const SiteController = require('./controllers/site');
-        global.router.use(SiteController.middleware());
+        const PrivilegesController = require('./controllers/privileges');
+        global.router.use(PrivilegesController.middleware());
     }
 
     global.checkPermissionHandler = getCheckPermissionHandler(global.checkPermissionHandler);

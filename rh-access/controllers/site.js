@@ -3,22 +3,6 @@ const SessionSiteService = require('../services/session_site');
 const httpUtil = require('http-util');
 const ru = require('rofa-util');
 
-function middleware() {
-    return (req, res, next) => {
-        SiteService.getForSessionIdCached(req?.session?.id)
-            .then(site => {
-                if (site)
-                    req.site = site.toJSON();
-                    
-                next();
-            })
-            .catch(err => {
-                ru.errorHandler(err);
-                next();
-            });
-    }
-}
-
 /**
  * @swagger
  * definitions:
@@ -132,7 +116,6 @@ function siteGet(req, res) {
 }
 
 module.exports = {
-    middleware: middleware,
     currentSiteGet: currentSiteGet,
     switchSitePost: switchSitePost,
     siteGet: siteGet,

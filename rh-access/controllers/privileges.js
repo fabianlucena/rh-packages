@@ -1,5 +1,27 @@
-const PrivilegeService = require('../services/privileges');
+const PrivilegesService = require('../services/privileges');
+const SiteService = require('../services/site');
 const httpUtil = require('http-util');
+const ru = require('rofa-util');
+
+function middleware() {
+    return (req, res, next) => {
+        PrivilegesService.getJSONForUsernameAndSessionIdCached(req?.user.username, req?.session?.id)
+            .then(privileges => {
+                if (privileges) {
+                    req.sites = privileges.sites;
+                    req.site = privileges.site;
+                    req.roles = privileges.roles;
+                    req.permissions = privileges.permissions;
+                }
+                    
+                next();
+            })
+            .catch(err => {
+                ru.errorHandler(err);
+                next();
+            });
+    }
+}
 
 /**
  * @swagger
@@ -44,9 +66,17 @@ async function privilegesGet(req, res) {
     let options = {view: true, limit: 10, offset: 0};
 
     try {
-        options = await httpUtil.getOptionsFromParamsAndOData(req?.query, definitions, options);
-        options.locale = req.locale;
-        const result = await PrivilegeService.getForUsernameAndSiteName(req?.user?.username, req?.site?.name, options);
+        const result = {
+            sites: req?.sites,
+        };
+
+        if (req?.site?.name) {
+            result.site = req?.site?.name;
+            result.roles = req?.roles;
+            result.permissions = req?.permissions;
+        } else
+            result.warning = await req.locale._('No current site selected');
+
         res.status(200).send(result);
     } catch(error) {
         httpUtil.errorHandler(req, res)(error);
@@ -54,5 +84,6 @@ async function privilegesGet(req, res) {
 }
 
 module.exports = {
+    middleware: middleware,
     privilegesGet: privilegesGet,
 };
