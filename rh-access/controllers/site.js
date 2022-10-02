@@ -51,8 +51,7 @@ function currentSiteGet(req, res) {
 
     httpUtil.getOptionsFromParamsAndOData(req?.query, definitions, options)
         .then(options => SiteService.getForId(siteId, options))
-        .then(element => res.status(200).send(element))
-        .catch(httpUtil.errorHandler(req, res));
+        .then(element => res.status(200).send(element));
 }
 
 /** 
@@ -81,8 +80,7 @@ function switchSitePost(req, res) {
             sessionId: req?.session?.id,
             site: siteName,
         }))
-        .then(() => res.status(204).send())
-        .catch(httpUtil.errorHandler(req, res));
+        .then(() => res.status(204).send());
 }
 
 /** 
@@ -105,14 +103,12 @@ function switchSitePost(req, res) {
  *              schema:
  *                  $ref: '#/definitions/Error'
  */
-function siteGet(req, res) {
+async function siteGet(req, res) {
     const definitions = {uuid: 'uuid', name: 'string'},
-        options = {view: true, limit: 10, offset: 0};
+    options = await httpUtil.getOptionsFromParamsAndOData(req?.query, definitions, {view: true, limit: 10, offset: 0});
 
-    httpUtil.getOptionsFromParamsAndOData(req?.query, definitions, options)
-        .then(options => SiteService.getForUserId(req?.user?.id, options))
-        .then(rows => res.status(200).send(rows))
-        .catch(httpUtil.errorHandler(req, res));
+    const rows = await SiteService.getForUsername(req?.user?.username, options);
+    res.status(200).send(rows);
 }
 
 module.exports = {

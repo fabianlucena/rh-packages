@@ -5,8 +5,8 @@ module.exports = (app, checkPermission) => {
 
    app.use('/user', router)
 
-   router.post('', checkPermission('user.create'), userController.userPost);
-   router.get('', checkPermission('user.get'), userController.userGet);
-   router.delete('', checkPermission('user.delete'), userController.userDelete);
+   router.post('', checkPermission('user.create'), httpUtil.asyncHandler(userController.userPost));
+   router.get('', checkPermission('user.get'), httpUtil.asyncHandler(userController.userGet));
+   router.delete('', checkPermission('user.delete'), httpUtil.asyncHandler(userController.userDelete));
    router.all('', httpUtil.methodNotAllowed);
 };

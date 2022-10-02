@@ -62,8 +62,7 @@ module.exports = {
 userPost(req, res) {
     return UserService
         .create (req.body)
-        .then(userList => res.status(204).send())
-        .catch(httpUtil.errorHandler(req, res))
+        .then(userList => res.status(204).send());
 },
 
 /**
@@ -124,8 +123,7 @@ userGet(req, res) {
 
     httpUtil.getOptionsFromParamsAndOData(req?.query, definitions, options)
         .then(options => UserService.getList(options))
-        .then(rows => res.status(200).send(rows))
-        .catch(httpUtil.errorHandler(req, res));
+        .then(rows => res.status(200).send(rows));
 },
 
 /**
@@ -170,7 +168,6 @@ userGet(req, res) {
 userDelete(req, res) {
     ru.checkParameterUUID(req?.query, 'uuid')
         .then(uuid => UserService.delete(uuid))
-        .then(() => res.sendStatus(204))
-        .catch(httpUtil.errorHandler(req, res));
+        .then(() => res.sendStatus(204));
 },
 };

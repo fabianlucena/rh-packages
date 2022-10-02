@@ -4,6 +4,36 @@ const ru = require('rofa-util');
 
 const SiteService = {
     /**
+     * Creates a new Site row into DB.
+     * @param {{
+     *  isEnabled: boolean,
+     *  name: string,
+     *  title: string,
+     * }} data - data for the new Site.
+     *  - name must be unique.
+     * @returns {Promise{Site}}
+     */
+    async create(data) {
+        await sqlUtil.checkDataForMissingProperties(data, 'Site', 'name', 'title')
+        return conf.global.models.Site.create(data);
+    },
+
+    /**
+     * Creates a new Site row into DB if not exists.
+     * @param {data} data - data for the new Site @see SiteService.create.
+     * @returns {Promise{Site}}
+     */
+    createIfNotExists(data, options) {
+        return SiteService.getForName(data.name, ru.merge({attributes: ['id'], skipNoRowsError: true}, options))
+            .then(element => {
+                if (element)
+                    return element;
+
+                return SiteService.create(data);
+            });
+    },
+
+    /**
      * Gets a list of sites. If not isEnabled filter provided returns only the enabled sites.
      * @param {Opions} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{SiteList}}
@@ -14,6 +44,13 @@ const SiteService = {
         if (options.view) {
             if (!options.attributes)
                 options.attributes = ['uuid', 'name', 'title'];
+
+            const includedUserOptions = sqlUtil.getIncludedModelOptions(options, conf.global.models.User);
+            if (includedUserOptions) {
+                if (!includedUserOptions.attributes) {
+                    includedUserOptions.attributes = [];
+                }
+            }
         }
 
         return conf.global.models.Site.findAll(options);
@@ -42,16 +79,37 @@ const SiteService = {
 
     /**
      * Gets the site for a given session ID.
-     * @param {itneger} sessionId - session ID to retrieve the site.
+     * @param {integer} sessionId - session ID to retrieve the site.
      * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Site]}}
+     * @returns {Promise{Site}}
      */
-     async getForSessionId(sessionId, options) {
+    async getForSessionId(sessionId, options) {
         options = ru.complete(options, {include: [], limit: 2});
         options.include.push(sqlUtil.completeAssociationOptions({model: conf.global.models.Session, where: {id: sessionId}}, options));
 
         const rowList = await SiteService.getList(options);
         return sqlUtil.getSingle(rowList, ru.deepComplete(options, {params: ['site', ['session id = %s', sessionId], 'Site']}));
+    },
+
+    /**
+     * Gets the site for a given session ID or default site if it is configured. This method uses the @ref SiteService.getForSessionId
+     * @param {integer} sessionId - session ID to retrieve the site.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {Promise{Site}}
+     */
+    async getForSessionIdOrDefault(sessionId, options) {
+        let site = await SiteService.getForSessionId(sessionId, ru.merge(options, {skipThroughAssociationAttributes: true, skipNoRowsError: true}));
+        if (site)
+            return site;
+            
+        if (!conf.global.data.defaultSite)
+            return;
+
+        const SessionSiteService = require('./session_site');
+        return SessionSiteService.createOrUpdate({
+            sessionId: sessionId,
+            site: conf.global.data.defaultSite,
+        });
     },
 
     /**

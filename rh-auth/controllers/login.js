@@ -1,5 +1,5 @@
 const LoginService = require('../services/login');
-const httpUtil = require('http-util');
+const ru = require('rofa-util');
 
 /**
  * @swagger
@@ -44,22 +44,19 @@ const httpUtil = require('http-util');
  *              type: string
  *              example: Example error
  */
+async function loginGetForm(req, res) {
+    ru.checkParameter(req.query, '$form');
 
-function loginGetForm(req, res) {
-    if (req.query.$form !== undefined) {
-        res.status(200).send({
-            username: {
-                type: 'text',
-                label: _('Username')
-            },
-            password: {
-                type: 'password',
-                label: _('Password')
-            }
-        });
-    } else {
-        res.status(400).send({error: '400 Bad Request'});
-    }
+    res.status(200).send({
+        username: {
+            type: 'text',
+            label: await req.locale._('Username')
+        },
+        password: {
+            type: 'password',
+            label: await req.locale._('Password')
+        }
+    });
 }
 
 /** 
@@ -94,25 +91,15 @@ function loginGetForm(req, res) {
  *                  $ref: '#/definitions/Error'
  */
 async function loginPost(req, res) {
-    if (!req.body || typeof req.body != 'object')
-        return res.status(400).send({error: await req.locale._('No login data')});
-        
-    if (!req.body.username)
-        return res.status(400).send({error: await req.locale._('No username')});
-        
-    if (!req.body.password)
-        return res.status(400).send({error: await req.locale._('No password')});
+    ru.checkParameter(req?.body, 'username', 'password');
     
-    LoginService.loginForUsernamePasswordAndDeviceId(req?.body?.username, req?.body?.password, req?.device?.id, req?.sessionIndex, req.locale)
-        .then(session => {
-            req.session = session;
-            res.header('Authorization', 'Bearer ' + session.authToken);
-            res.status(201).send({
-                index: session.index,
-                authToken: session.authToken,
-            });
-        })
-        .catch(httpUtil.errorHandler(req, res, 403));
+    const session = await LoginService.loginForUsernamePasswordAndDeviceId(req?.body?.username, req?.body?.password, req?.device?.id, req?.sessionIndex, req.locale);
+    req.session = session;
+    res.header('Authorization', 'Bearer ' + session.authToken);
+    res.status(201).send({
+        index: session.index,
+        authToken: session.authToken,
+    });
 }
 
 module.exports = {

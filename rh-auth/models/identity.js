@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
               userId:    userId,
               typeId:    identityTypeId,
               isEnabled: 1,
-              data:      '{"password":"da842b69d8f584f01700f64af185fd59:cd3569832703bf38d0ad86ed9f2ae95e1f385ba998e630a5032523d19405901886aad13b5f9edd6b6acfae7861109baab9c52020338c753d24e8f0a11fea4c45"}' // passord: 1234
+              data:      '{"password":"da842b69d8f584f01700f64af185fd59:cd3569832703bf38d0ad86ed9f2ae95e1f385ba998e630a5032523d19405901886aad13b5f9edd6b6acfae7861109baab9c52020338c753d24e8f0a11fea4c45"}' // password: 1234
             });
           }
         );

@@ -58,10 +58,37 @@ class NoPermissionError extends Error {
     }
 }
 
+class MethodNotAllowedError extends Error {
+    static NoObjectValues = ['methods'];
+    static VisibleProperties = ['message', 'methods'];
+    static _zeroMessage = l._f('Method not allowed.');
+    static _message = l._nf(0, 'Method "%s" not allowed.', 'Methods "%s" not allowed.');
+    static param = ['<unknown>'];
+
+    statusCode = 405;
+    methods = [];
+
+    constructor(...methods) {
+        super();
+        ru.setUpError(
+            this,
+            {
+                methods: methods
+            }
+        );
+    }
+
+    _n() {return this.methods.length;}
+
+    async getMessageParams(locale) {
+        return [await locale._or(...this.methods)];
+    }
+}
+
 class NoUUIDError extends Error {
     static NoObjectValues = ['paramName'];
     static VisibleProperties = ['message', 'paramName'];
-    static _message = l._f(0, 'The "%s" parameter is not a valid UUID.');
+    static _message = l._f('The "%s" parameter is not a valid UUID.');
     static param = ['<unknown>'];
 
     statusCode = 403;
@@ -84,6 +111,7 @@ const httpUtil = {
     HttpError: HttpError,
     _HttpError: _HttpError,
     NoPermissionError: NoPermissionError,
+    MethodNotAllowedError: MethodNotAllowedError,
     NoUUIDError: NoUUIDError,
 
     defaultGlobal: {
@@ -125,8 +153,8 @@ const httpUtil = {
         await httpUtil.configureSwagger(global);
     },
 
-    methodNotAllowed(req, res) {
-        res.status(405).send({error: 'Method not allowed'})
+    methodNotAllowed(req) {
+        throw new httpUtil.MethodNotAllowedError(req.method);
     },
 
     configureRouter(routesPath, router, checkPermission, options) {
@@ -158,10 +186,23 @@ const httpUtil = {
             .forEach(file => services[ru.camelize(file.substring(0, file.length - 3))] = require(path.join(servicesPath, file)));
     },
 
-    errorHandler(req, res, defaultStatusCode) {
-        return async (error, statusCode) => {
-            const data = await ru.errorHandler(error, req.locale);
-            res.status(statusCode ?? data.statusCode ?? defaultStatusCode ?? 500).send(data);
+    async sendError(req, res, error) {
+        const data = await ru.errorHandler(error, req.locale);
+        res.status(data.statusCode ?? 500).send(data);
+    },
+
+    errorHandler(req, res) {
+        return async error => httpUtil.sendError(req, res, error);
+    },
+
+    asyncHandler(method) {
+        return async (req, res, next) => {
+            try {
+                await method(req, res, next);
+            }
+            catch(err) {
+                next(err);
+            }
         }
     },
 

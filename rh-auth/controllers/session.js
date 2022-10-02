@@ -123,8 +123,7 @@ sessionGet(req, res) {
             .catch(() => resolve(ru.deepMerge(options, {where: {id: req.session.id}}))))
         )
         .then(options => SessionService.getList(ru.replace(options, {view: true})))
-        .then(rows => res.status(200).send(rows))
-        .catch(httpUtil.errorHandler(req, res));
+        .then(rows => res.status(200).send(rows));
 },
 
 /**
@@ -169,8 +168,7 @@ sessionGet(req, res) {
 sessionDelete(req, res) {
     ru.checkParameterUUID(req?.query, 'uuid')
         .then(uuid => SessionService.deleteForUuid(uuid))
-        .then(httpUtil.deleteHandler(req, res))
-        .catch(httpUtil.errorHandler(req, res));
+        .then(httpUtil.deleteHandler(req, res));
 },
 
 };

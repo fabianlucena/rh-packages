@@ -48,21 +48,22 @@ const PrivilegesService = {
 
         if (siteName) {
             result.site = siteName;
-
-            const roles = await RoleService.getAllNameForUsernameAndSiteName(username, siteName);
-            if (!roles.includes('admin') && siteName != 'system') {
-                const systemRoles = await RoleService.getNameForUsernameAndSiteName(username, 'system');
-                if (systemRoles.includes('admin'))
-                    roles.push('admin');
-            }
-
-            result.roles = roles;
-
-            if (roles.includes('admin'))
-                result.permissions = await PermissionService.getAllNameForSiteName(siteName);
-            else
-                result.permissions = await PermissionService.getAllNameForUsernameAndSiteName(username, siteName);
+            result.roles = await RoleService.getAllNameForUsernameAndSiteName(username, siteName);
         }
+
+        if (!result.roles)
+            result.roles = [];
+
+        if (!result.roles.includes('admin') && siteName != 'system') {
+            const systemRoles = await RoleService.getNameForUsernameAndSiteName(username, 'system');
+            if (systemRoles.includes('admin'))
+                result.roles.push('admin');
+        }
+
+        if (result.roles.includes('admin'))
+            result.permissions = await PermissionService.getAllNameForSiteName(siteName);
+        else
+            result.permissions = await PermissionService.getAllNameForUsernameAndSiteName(username, siteName);
 
         return result;
     },
@@ -80,12 +81,10 @@ const PrivilegesService = {
             return provilegeData.privileges;
         }
 
-        const site = await SiteService.getForSessionId(sessionId, {skipThroughAssociationAttributes: true, skipNoRowsError: true});
-        if (!site)
-            return;
+        let site = await SiteService.getForSessionIdOrDefault(sessionId);
 
-        const privileges = await PrivilegesService.getForUsernameAndSiteName(username, site.name);
-        privileges.site = site.toJSON();
+        const privileges = await PrivilegesService.getForUsernameAndSiteName(username, site?.name);
+        privileges.site = site?.toJSON();
 
         conf.privilegesCache[sessionId] = {
             privileges: privileges,

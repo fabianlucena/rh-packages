@@ -43,7 +43,7 @@ function setUpError(error, options) {
     for (const name in options) {
         const value = options[name];
         if (name == 'message' || name == 'statusCode' || error.constructor?.NoObjectValues?.includes(name)) {
-            if (typeof value === 'object') {
+            if (typeof value === 'object' && !(value instanceof Array)) {
                 ru.replace(arranged, value);
                 continue;
             }
@@ -87,25 +87,28 @@ class CheckError extends Error {
 }
 
 class MissingParameterError extends Error {
-    static NoObjectValues = ['parameterName'];
-    static VisibleProperties = ['parameterName'];
-    static _message = l._f('Mising parameter "%s".');
-    
+    static NoObjectValues = ['missingParameters'];
+    static VisibleProperties = ['message', 'missingParameters'];
+    static _zeroMessage = l._f('Mising parameters.');
+    static _message = l._nf(0, 'Mising parameter: "%s".', 'Mising parameters: "%s".');
+
     statusCode = 400;
-    parameterName = '<<unknown>>';
+    missingParameters = [];
     
-    constructor(parameterName) {
+    constructor(...missingParameters) {
         super();
         ru.setUpError(
             this,
             {
-                parameterName: parameterName
+                missingParameters: missingParameters
             }
         );
     }
 
+    _n() {return this.missingParameters.length;}
+
     async getMessageParams(locale) {
-        return [this.parameterName];
+        return [await locale._and(...this.missingParameters)];
     }
 }
 
@@ -500,11 +503,19 @@ const ru = {
         return ru.check(value, options);
     },
 
-    async checkParameter(value, paramName) {
-        if (value && value[paramName] !== undefined)
-            return value[paramName];
-            
-        throw new MissingParameterError(paramName);
+    checkParameter(value, ...paramName) {
+        if (!value)
+            throw new MissingParameterError(...paramName);
+
+        const missing = [];
+        for (let i = 0, e = paramName.length; i < e; i++)
+            if (value[paramName[i]] === undefined)
+                missing.push(paramName[i]);
+
+        if (missing.length)
+            throw new MissingParameterError(...missing);
+
+        return value[paramName];
     },
 
     async checkParameterUUID(value, paramName) {
@@ -513,16 +524,16 @@ const ru = {
     },
 
     async getErrorData(error, locale) {
-        const data = {};
+        let data = {};
         if (error instanceof Error) {
             data.name = error.constructor.name;
             if (data.name[0] == '_')
                 data.name = data.name.substring(1);
 
             if (error.constructor?.VisibleProperties)
-                ru.merge(data, error, error.constructor?.VisibleProperties);
+                data = ru.merge(data, error, error.constructor.VisibleProperties);
             else
-                ru.merge(data, error, ['message', 'length', 'fileName', 'lineNumber', 'columnNumber', 'stack']);
+                data = ru.merge(data, error, ['message', 'length', 'fileName', 'lineNumber', 'columnNumber', 'stack']);
 
             if (error.statusCode)
                 data.statusCode = error.statusCode;

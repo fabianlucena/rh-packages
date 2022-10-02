@@ -1,4 +1,4 @@
-const PrivilegesService = require('../services/privileges');
+const PrivilegesService = require('../services/privileges.js');
 const SiteService = require('../services/site');
 const httpUtil = require('http-util');
 const ru = require('rofa-util');
@@ -62,25 +62,18 @@ function middleware() {
  *                  $ref: '#/definitions/Error'
  */
 async function privilegesGet(req, res) {
-    const definitions = {};
-    let options = {view: true, limit: 10, offset: 0};
+    const result = {
+        sites: req?.sites,
+    };
 
-    try {
-        const result = {
-            sites: req?.sites,
-        };
+    if (req?.site?.name) {
+        result.site = req?.site?.name;
+        result.roles = req?.roles;
+        result.permissions = req?.permissions;
+    } else
+        result.warning = await req.locale._('No current site selected');
 
-        if (req?.site?.name) {
-            result.site = req?.site?.name;
-            result.roles = req?.roles;
-            result.permissions = req?.permissions;
-        } else
-            result.warning = await req.locale._('No current site selected');
-
-        res.status(200).send(result);
-    } catch(error) {
-        httpUtil.errorHandler(req, res)(error);
-    }
+    res.status(200).send(result);
 }
 
 module.exports = {

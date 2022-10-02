@@ -22,24 +22,24 @@ const conf = {
             'site.get':            {title: l._f('Get site(s)'),      type: 'private', roles: 'user', module: name, menuItem: {service: 'site',  action: 'form'}},
         },
 
-        userRoleSite: {
+        userRoleSites: {
             'user:admin,role:admin,site:system': {username: 'admin', role: 'admin', site: 'system'},
         },
     },
 };
 
-async function checkPermissionForUsernameAndSiteName(privileges, ...requiredPermissions) {
+async function checkPermission(req, ...requiredPermissions) {
     const RoleService = require('./services/role');
     const PermissionService = require('./services/permission');
 
     if (requiredPermissions.includes('login') || requiredPermissions.includes('logout'))
         return true;
 
-    if (privileges?.roles.includes('admin'))
-        return true;
+    if (req) {
+        if (req.roles?.includes('admin'))
+            return true;
 
-    if (privileges) {
-        const permissions = privileges?.permissions;
+        const permissions = req.permissions;
         if (permissions) {
             for (let i = 0, e = requiredPermissions.length; i < e; i++)
             if (permissions.includes(requiredPermissions[i]))
@@ -52,7 +52,7 @@ async function checkPermissionForUsernameAndSiteName(privileges, ...requiredPerm
 
 function getCheckPermissionHandler(chain) {
     return async (req, ...requiredPermissions) => {
-        if (await checkPermissionForUsernameAndSiteName(req, ...requiredPermissions))
+        if (await checkPermission(req, ...requiredPermissions))
             return;
 
         if (chain && await chain(req, ...requiredPermissions))
@@ -64,15 +64,21 @@ function getCheckPermissionHandler(chain) {
 }
 
 async function afterConfig(_, global) {
-    const RoleService = require('./services/role');
-    const PermissionService = require('./services/permission');
+    const SiteService = require('./services/site');
+    for (const siteName in global?.data?.sites) {
+        const data = global.data.sites[siteName];
+        data.name = siteName;
+        await SiteService.createIfNotExists(data);
+    }
 
+    const RoleService = require('./services/role');
     for (const roleName in global?.data?.roles) {
         const data = global.data.roles[roleName];
         data.name = roleName;
         await RoleService.createIfNotExists(data);
     }
 
+    const PermissionService = require('./services/permission');
     for (const permissionName in global?.data?.permissions) {
         const data = global.data.permissions[permissionName];
 
@@ -89,8 +95,8 @@ async function afterConfig(_, global) {
     };
 
     const UserRoleSiteService = require('./services/user_role_site');
-    for (const userRoleSiteName in global?.data?.userRoleSite) {
-        const userRoleSite = global.data.userRoleSite[userRoleSiteName];
+    for (const userRoleSiteName in global?.data?.userRoleSites) {
+        const userRoleSite = global.data.userRoleSites[userRoleSiteName];
         await UserRoleSiteService.createIfNotExists(userRoleSite);
     };
 }
