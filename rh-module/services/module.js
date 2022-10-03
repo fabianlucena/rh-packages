@@ -13,7 +13,7 @@ const ModuleService = {
      * @returns {Promise{Module}}
      */
     async create(data) {
-        await sqlUtil.checkDataForMissingProperties(data, 'Module', 'name', 'title')
+        await sqlUtil.checkDataForMissingProperties(data, 'Module', 'name', 'title');
         return conf.global.models.Module.create(data);
     },
 
@@ -22,7 +22,7 @@ const ModuleService = {
      * @param {data} data - data for the new Module @see ModuleService.create.
      * @returns {Promise{Module}}
      */
-     async createIfNotExists(data, options) {
+    async createIfNotExists(data, options) {
         const element = await ModuleService.getForName(data.name, ru.merge({attributes: ['id'], skipNoRowsError: true}, options));
         if (element)
             return element;

@@ -128,7 +128,7 @@ class MergeTypeError extends Error {
         );
     }
 
-    async getMessageParams(locale) {
+    async getMessageParams(locale) {  // eslint-disable-line no-unused-vars
         return [this.dstType, this.srcType];
     }
 }
@@ -213,7 +213,7 @@ const ru = {
                     deepOptions.deep--;
                     
                 for (let i = 0, e = src.length; i < e; i++) {
-                    v = src[i];
+                    let v = src[i];
                     if (v && typeof v === 'object')
                         if (v instanceof Array)
                             v = ru.merge([], v, deepOptions);
@@ -262,6 +262,7 @@ const ru = {
             for(let i = 0, e = properties.length; i < e; i++) {
                 const p = properties[i];
                 let isSrcObject = typeof src[p] === 'object';
+                let v;
 
                 if (dst[p] === undefined) {
                     if (isSrcObject)
@@ -270,7 +271,7 @@ const ru = {
                         else
                             v = ru.merge({}, src[p], deepOptions);
                     else
-                        v = src[p]
+                        v = src[p];
                 } else {
                     let isDstObject = typeof dst[p] === 'object';
 
@@ -280,7 +281,7 @@ const ru = {
                         else if (options?.skipExistent)
                             v = dst[p];
                         else
-                            v = src[p]
+                            v = src[p];
                     else if (options?.skipExistent)
                         v = dst[p] || src[p];
                     else
@@ -297,7 +298,7 @@ const ru = {
         } else {
             for(let i = 0, e = properties.length; i < e; i++) {
                 const p = properties[i];
-                result[p] = src[p] ?? dst[p]
+                result[p] = src[p] ?? dst[p];
             }
         }
         
@@ -561,9 +562,8 @@ const ru = {
     },
 
     camelize(string) {
-        const tokens = ru.tokens(string)
-
-        return tokens[0] + tokens.slice(1).map((token, index) => token.substring(0, 1).toUpperCase() + token.substring(1)).join('');
+        const tokens = ru.tokens(string);
+        return tokens[0] + tokens.slice(1).map(token => token.substring(0, 1).toUpperCase() + token.substring(1)).join('');
     },
 };
 

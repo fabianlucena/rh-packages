@@ -11,7 +11,7 @@ const UserService = {
      * @returns {Promise{data}}
      */
     completeTypeId(data) {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             if (data.typeId)
                 return resolve(data);
 

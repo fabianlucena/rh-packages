@@ -46,7 +46,7 @@ const PermissionService = {
      * @returns {Promise{Permission}}
      */
     async create(data) {
-        await sqlUtil.checkDataForMissingProperties(data, 'Permission', 'name', 'title')
+        await sqlUtil.checkDataForMissingProperties(data, 'Permission', 'name', 'title');
         
         await PermissionService.completeModuleId(data);
         await PermissionService.completePermissionTypeId(data);
@@ -134,7 +134,7 @@ const PermissionService = {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Permission}}
      */
-     async getAllForSiteName(siteName, options) {
+    async getAllForSiteName(siteName, options) {
         options = ru.complete(options, {include: []});
         options.include.push(sqlUtil.completeAssociationOptions({model: conf.global.models.Role}, options));
 

@@ -20,7 +20,7 @@ const RoleParentSiteService = {
      */
     getForRoleIdAndSiteId(roleId, siteId, options) {
         return RoleParentSiteService.getList(ru.complete(options, {where:{roleId: roleId, siteId: siteId}}));
-    }
+    },
 };
 
 module.exports = RoleParentSiteService;

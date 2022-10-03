@@ -12,14 +12,14 @@ const IdentityService = {
      */
     hashPassword(password) {
         return new Promise((resolve, reject) => {
-            const salt = crypto.randomBytes(8).toString("hex");
+            const salt = crypto.randomBytes(8).toString('hex');
             crypto.scrypt(password, salt, 64, (err, derivedKey) => {
                 if (err)
                     return reject(err);
 
                 resolve(salt + ':' + derivedKey.toString('hex'));
             });
-        })
+        });
     },
 
     /**
@@ -145,16 +145,16 @@ const IdentityService = {
                     if (!data || !data.password)
                         return reject(locale._('User "%s" does not have local password', username));
 
-                    const [salt, key] = data.password.split(":");
+                    const [salt, key] = data.password.split(':');
                     crypto.scrypt(password, salt, 64, (err, derivedKey) => {
                         if (err)
                             reject(err);
                         
-                        resolve(key == derivedKey.toString('hex'))
+                        resolve(key == derivedKey.toString('hex'));
                     });
                 })
                 .catch(err => 
-                    reject(locale._("Can't get the identity for: \"%s\", %s", username, err))
+                    reject(locale._('Can\'t get the identity for: "%s", %s', username, err))
                 );
         });
     },           

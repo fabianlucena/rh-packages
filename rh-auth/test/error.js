@@ -15,21 +15,21 @@ describe('Error 404', () => {
     });*/
     
     describe('/GET', () => {
-      it('should return an error', (done) => {
-        let credentials = {};
-        chai.request(app)
-          .get('')
-          .send(credentials)
-          .end((err, res) => {
-            expect(res).to.have.status(403);
-            expect(res).to.be.json;
-            expect(res.body).to.have.property('error');
-            done();
-          });
-      });
+        it('should return an error', (done) => {
+            let credentials = {};
+            chai.request(app)
+                .get('')
+                .send(credentials)
+                .end((err, res) => {
+                    expect(res).to.have.status(403);
+                    expect(res).to.be.json;
+                    expect(res.body).to.have.property('error');
+                    done();
+                });
+        });
     });
 });
 
 after(async () => {
-  app.stop();
+    app.stop();
 });

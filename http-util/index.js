@@ -131,7 +131,7 @@ const httpUtil = {
                 global.checkPermissionHandler(req, ...permission)
                     .then(() => next())
                     .catch(httpUtil.errorHandler(req, res));
-            }
+            };
         }
 
         if (!global.sequelize.Sequelize && global.Sequelize)
@@ -203,7 +203,7 @@ const httpUtil = {
             catch(err) {
                 next(err);
             }
-        }
+        };
     },
 
     getOptionsFromOData(params, options) {
@@ -260,7 +260,7 @@ const httpUtil = {
     },
 
     getWhereOptionsFromParams(params, definitions, options) {
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             if (!options)
                 options = {};
 
@@ -270,9 +270,9 @@ const httpUtil = {
                     if (value !== undefined) {
                         const def = definitions[name];
                         switch (def) {
-                            case 'uuid':
-                                if (!uuid.validate(params.uuid))
-                                    return reject(new NoUUIDError(name));
+                        case 'uuid':
+                            if (!uuid.validate(params.uuid))
+                                return reject(new NoUUIDError(name));
                         }
                     
                         if (!options.where)
@@ -300,7 +300,7 @@ const httpUtil = {
                 res.status(200).send({msg: await req.locale._('%s rows deleted.', rowCount)});
             else
                 res.sendStatus(204);
-        }
+        };
     },
 
     async execAsyncMethodList(asyncMethodList, singleItemName, ...params) {
@@ -431,14 +431,14 @@ const httpUtil = {
 
     async beforeSync(global) {
         if (global.sequelize) {
-            const list = await httpUtil.getPropertyFromItems('beforeSync', global.modules)
+            const list = await httpUtil.getPropertyFromItems('beforeSync', global.modules);
             await httpUtil.execAsyncMethodList(list);
         }
     },
 
     async afterSync(global) {
         if (global.sequelize) {
-            const list = await httpUtil.getPropertyFromItems('afterSync', global.modules)
+            const list = await httpUtil.getPropertyFromItems('afterSync', global.modules);
             await httpUtil.execAsyncMethodList(list);
         }
     },
@@ -448,7 +448,7 @@ const httpUtil = {
             return;
 
         await global.sequelize.sync();
-        asyncMethodList = await httpUtil.getPropertyFromItems('check', global.sequelize.models);
+        const asyncMethodList = await httpUtil.getPropertyFromItems('check', global.sequelize.models);
         await httpUtil.execAsyncMethodList(asyncMethodList);
     },
 

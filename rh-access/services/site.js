@@ -14,7 +14,7 @@ const SiteService = {
      * @returns {Promise{Site}}
      */
     async create(data) {
-        await sqlUtil.checkDataForMissingProperties(data, 'Site', 'name', 'title')
+        await sqlUtil.checkDataForMissingProperties(data, 'Site', 'name', 'title');
         return conf.global.models.Site.create(data);
     },
 

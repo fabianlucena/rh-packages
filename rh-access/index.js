@@ -29,9 +29,6 @@ const conf = {
 };
 
 async function checkPermission(req, ...requiredPermissions) {
-    const RoleService = require('./services/role');
-    const PermissionService = require('./services/permission');
-
     if (requiredPermissions.includes('login') || requiredPermissions.includes('logout'))
         return true;
 
@@ -42,8 +39,8 @@ async function checkPermission(req, ...requiredPermissions) {
         const permissions = req.permissions;
         if (permissions) {
             for (let i = 0, e = requiredPermissions.length; i < e; i++)
-            if (permissions.includes(requiredPermissions[i]))
-                return true;
+                if (permissions.includes(requiredPermissions[i]))
+                    return true;
         }
     }
 
@@ -60,7 +57,7 @@ function getCheckPermissionHandler(chain) {
 
         const httpUtil = require('http-util');
         throw new httpUtil.NoPermissionError({permissions: requiredPermissions});
-    }
+    };
 }
 
 async function afterConfig(_, global) {
@@ -92,13 +89,13 @@ async function afterConfig(_, global) {
             const RolePermissionService = require('./services/role_permission');
             await Promise.all(roles.map(async roleName => await RolePermissionService.createIfNotExists({role: roleName, permission: permissionName})));
         }
-    };
+    }
 
     const UserRoleSiteService = require('./services/user_role_site');
     for (const userRoleSiteName in global?.data?.userRoleSites) {
         const userRoleSite = global.data.userRoleSites[userRoleSiteName];
         await UserRoleSiteService.createIfNotExists(userRoleSite);
-    };
+    }
 }
 
 function configure(global) {

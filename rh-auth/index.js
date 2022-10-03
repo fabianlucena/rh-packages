@@ -42,7 +42,7 @@ function configure(global) {
     if (global.router) {
         const device = require('./controllers/device');
 
-        global.router.use(device.middleware({cookieName: "device"}));
+        global.router.use(device.middleware({cookieName: 'device'}));
         
         require('./routes/login.js')(global.router, global.checkRoutePermission);
 
@@ -51,7 +51,7 @@ function configure(global) {
         const router = express.Router();
         router.use(session.middleware());
 
-        global.router.use('/', router)
+        global.router.use('/', router);
         global.router = router;
     }
 }

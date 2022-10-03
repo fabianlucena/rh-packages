@@ -1,6 +1,4 @@
 const PrivilegesService = require('../services/privileges.js');
-const SiteService = require('../services/site');
-const httpUtil = require('http-util');
 const ru = require('rofa-util');
 
 function middleware() {
@@ -20,7 +18,7 @@ function middleware() {
                 ru.errorHandler(err);
                 next();
             });
-    }
+    };
 }
 
 /**

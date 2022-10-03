@@ -28,7 +28,7 @@ ru.complete(
                 }
             }
 
-            list.sort((a, b) => a.lastUse - b.lastUse)
+            list.sort((a, b) => a.lastUse - b.lastUse);
             list.slice(conf.sessionCacheMaxLength).forEach(item => delete conf.sessionCache[item.authToken]);
         },
     }
@@ -52,9 +52,9 @@ const SessionService = {
      * }} data - data of the new session. Close property could be null.
      * @returns {Promise{Device}}
      */
-     create(data) {
+    create(data) {
         if (!data.authToken)
-            data.authToken = crypto.randomBytes(64).toString("hex");
+            data.authToken = crypto.randomBytes(64).toString('hex');
         
         return conf.global.models.Session.create(data);
     },
@@ -144,7 +144,7 @@ const SessionService = {
                 conf.sessionCache[authToken] = {
                     session: session,
                     lastUse: Date.now(),
-                }
+                };
 
                 resolve(session);
             }));
@@ -155,7 +155,7 @@ const SessionService = {
      * @param {number} id - ID for the session o close.
      * @returns {Promise{Session}}
      */
-     closeForId(id) {
+    closeForId(id) {
         return ru.check(id, {_message: l._f('There is no id for session')})
             .then(() => SessionService.getForId(id))
             .then(session => {
@@ -169,7 +169,7 @@ const SessionService = {
                     where: {
                         id: id,
                     }
-                })
+                });
             });
     },
 
@@ -179,7 +179,7 @@ const SessionService = {
      * @returns {Promise{Result}}
      */
     async deleteForUuid(uuid) {
-        const session = await SessionService.getForUUID(uuid, {_noRowsError: l._f('Row for UUID %s does not exist', uuid)})
+        const session = await SessionService.getForUUID(uuid, {_noRowsError: l._f('Row for UUID %s does not exist', uuid)});
         if (session) {
             if (conf.sessionCache[session.authToken])
                 delete conf.sessionCache[session.authToken];

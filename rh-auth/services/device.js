@@ -25,7 +25,7 @@ ru.complete(
                 }
             }
 
-            list.sort((a, b) => a.lastUse - b.lastUse)
+            list.sort((a, b) => a.lastUse - b.lastUse);
             list.slice(conf.deviceCacheMaxLength).forEach(item => delete conf.deviceCache[item.authToken]);
         },
     }
@@ -41,7 +41,7 @@ const DeviceService = {
      */
     create(data) {
         if (!data.cookie)
-            data.cookie = crypto.randomBytes(64).toString("hex");
+            data.cookie = crypto.randomBytes(64).toString('hex');
 
         return conf.global.models.Device.create(data);
     },
@@ -79,11 +79,11 @@ const DeviceService = {
         }
 
         return this.getForCookie(cookie)
-            .then(device => new Promise((resolve, reject) => {
+            .then(device => new Promise(resolve => {
                 conf.deviceCache[cookie] = {
                     device: device,
                     lastUse: Date.now(),
-                }
+                };
 
                 resolve(device);
             }));

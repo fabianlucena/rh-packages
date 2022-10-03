@@ -26,9 +26,9 @@ function middleware(options) {
                     res.status(500).send({error: err});
                 }
             });
-    }
+    };
 }
 
 module.exports = {
     middleware: middleware,
-}
+};

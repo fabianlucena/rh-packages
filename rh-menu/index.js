@@ -31,7 +31,7 @@ async function afterConfig(_, options) {
             menuData.permission = permissionName;
 
         await MenuItemService.createIfNotExists(menuData);
-    };
+    }
 }
 
 module.exports = conf;

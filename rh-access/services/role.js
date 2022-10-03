@@ -30,7 +30,7 @@ const RoleService = {
      * @returns {Promise{Role}}
      */
     async create(data) {
-        await sqlUtil.checkDataForMissingProperties(data, 'Role', 'name', 'title')
+        await sqlUtil.checkDataForMissingProperties(data, 'Role', 'name', 'title');
         await RoleService.completeModuleId(data);
         return conf.global.models.Role.create(data);
     },
@@ -126,50 +126,52 @@ const RoleService = {
             return;
 
         const Op = conf.global.Sequelize.Op;
-        const parentOptions = {
-            attributes: ['parentId'],
-            include: [
-                {
-                    model: conf.global.models.Role,
-                    as: 'Role',
-                    attributes: [],
-                    include: [
-                        {
-                            model: conf.global.models.Module,
-                            attributes: [],
-                            where: {
-                                isEnabled: true,
+        const parentOptions = ru.merge(
+            options,
+            {
+                attributes: ['parentId'],
+                include: [
+                    {
+                        model: conf.global.models.Role,
+                        as: 'Role',
+                        attributes: [],
+                        include: [
+                            {
+                                model: conf.global.models.Module,
+                                attributes: [],
+                                where: {
+                                    isEnabled: true,
+                                }
                             }
-                        }
-                    ],
-                    where: {},
-                },
-                {
-                    model: conf.global.models.Role,
-                    as: 'Parent',
-                    attributes: [],
-                    include: [
-                        {
-                            model: conf.global.models.Module,
-                            attributes: [],
-                            where: {
-                                isEnabled: true,
+                        ],
+                        where: {},
+                    },
+                    {
+                        model: conf.global.models.Role,
+                        as: 'Parent',
+                        attributes: [],
+                        include: [
+                            {
+                                model: conf.global.models.Module,
+                                attributes: [],
+                                where: {
+                                    isEnabled: true,
+                                }
                             }
-                        }
-                    ],
-                    where: {},
+                        ],
+                        where: {},
+                    },
+                ],
+                where: {
+                    siteId: site.id,
                 },
-            ],
-            where: {
-                siteId: site.id,
-            },
-        };
+            });
         
         let newRoleList = await RoleService.getForUsernameAndSiteName(username, siteName, {attributes: ['id'], skipThroughAssociationAttributes: true});
         let allRoleIdList = await newRoleList.map(role => role.id);
         let newRoleIdList = allRoleIdList;
             
-        while(true)
+        while(newRoleList.length)
         {
             parentOptions.where.roleId = {[Op.in]: newRoleIdList};
             parentOptions.where.parentId = {[Op.notIn]: allRoleIdList};

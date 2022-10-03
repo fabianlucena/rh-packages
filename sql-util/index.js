@@ -189,7 +189,7 @@ const sqlUtil = {
             return sqlUtil.addIfNotExistsSingle(model, data.shift(), propertyName)
                 .then(() => sqlUtil.addIfNotExists(model, propertyName, ...data));
         else
-            return new Promise((resolve, reject) => resolve());
+            return new Promise(resolve => resolve());
     },
 
     addIfNotExistsByName(model, ...data) {

@@ -1,5 +1,6 @@
 const conf = require('../index');
 const sqlUtil = require('sql-util');
+const ru = require('rofa-util');
 
 const UserTypeService = {
     /**
@@ -27,7 +28,7 @@ const UserTypeService = {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{UserType}}
      */
-    getForName(cookie, options) {
+    getForName(name, options) {
         return this.getList(ru.deepComplete(options, {where:{name: name}, limit: 2}))
             .then(rowList => sqlUtil.getSingle(rowList, ru.deepComplete(options, {params: ['user type', 'name', name, 'UserType']})));
     },

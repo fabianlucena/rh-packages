@@ -26,7 +26,7 @@ ru.complete(
                 }
             }
 
-            list.sort((a, b) => a.lastUse - b.lastUse)
+            list.sort((a, b) => a.lastUse - b.lastUse);
             list.slice(conf.privilegesCacheMaxLength).forEach(item => delete conf.privilegesCache[item.authToken]);
         },
     }
@@ -74,7 +74,7 @@ const PrivilegesService = {
      * @param {integer} sessionId - value for the ID to get the site.
      * @returns {Promise{privileges}}
      */
-     async getJSONForUsernameAndSessionIdCached(username, sessionId) {
+    async getJSONForUsernameAndSessionIdCached(username, sessionId) {
         if (conf.privilegesCache && conf.privilegesCache[sessionId]) {
             const provilegeData = conf.privilegesCache[sessionId];
             provilegeData.lastUse = Date.now();

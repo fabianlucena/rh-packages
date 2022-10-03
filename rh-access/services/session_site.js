@@ -1,6 +1,7 @@
 const SiteService = require('./site');
 const conf = require('../index');
 const sqlUtil = require('sql-util');
+const ru = require('rofa-util');
 
 const SessionSiteService = {
     /**
@@ -67,7 +68,9 @@ const SessionSiteService = {
     async update(data, options) {
         try {
             await SessionSiteService.completeSessionIdAndSiteId(data);
-        } catch {}
+        } catch(err) {
+            err;
+        }
 
         return conf.global.models.SessionSite.update(data, options);
     },
