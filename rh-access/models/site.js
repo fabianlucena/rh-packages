@@ -8,8 +8,10 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             this.belongsToMany(models.Module,  {through: models.SiteModule,   foreignKey: 'siteId', otherKey: 'moduleId'});
             this.belongsToMany(models.Session, {through: models.SessionSite,  foreignKey: 'siteId', otherKey: 'sessionId'});
-            this.belongsToMany(models.User,    {through: models.UserRoleSite, foreignKey: 'siteId', otherKey: 'userId'});
-            this.belongsToMany(models.Role,    {through: models.UserRoleSite, foreignKey: 'siteId', otherKey: 'roleId'});
+        }
+        static postAssociate(models) {
+            this.belongsToMany(models.User,        {through: models.UserRoleSite, foreignKey: 'siteId', otherKey: 'userId'});
+            this.belongsToMany(models.Role,        {through: models.UserRoleSite, foreignKey: 'siteId', otherKey: 'roleId'});
 
             models.User.belongsToMany(models.Site, {through: models.UserRoleSite, foreignKey: 'userId', otherKey: 'siteId'});
         }

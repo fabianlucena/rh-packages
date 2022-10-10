@@ -7,10 +7,11 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             this.belongsTo(models.Module, {foreignKey: 'moduleId', allowNull: true});
 
-            this.belongsToMany(models.User,        {through: models.UserRoleSite,   foreignKey: 'roleId', otherKey: 'userId'});
             this.belongsToMany(models.Permission,  {through: models.RolePermission, foreignKey: 'roleId', otherKey: 'permissionId'});
+        }
+        static postAssociate(models) {
+            this.belongsToMany(models.User,        {through: models.UserRoleSite,   foreignKey: 'roleId', otherKey: 'userId'});
             this.belongsToMany(models.Site,        {through: models.UserRoleSite,   foreignKey: 'roleId', otherKey: 'siteId'});
-
             models.User.belongsToMany(models.Role, {through: models.UserRoleSite,   foreignKey: 'userId', otherKey: 'roleId'});
         }
     }

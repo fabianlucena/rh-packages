@@ -147,6 +147,8 @@ const httpUtil = {
         await httpUtil.configureModules(global, modules);
         await httpUtil.beforeSync(global);
         await httpUtil.syncDB(global);
+        if (global.postConfigureModels)
+            await global.postConfigureModels(global.sequelize);
         await httpUtil.afterSync(global);
         await httpUtil.afterConfig(global);
 
@@ -447,7 +449,7 @@ const httpUtil = {
         if (!global.sequelize)
             return;
 
-        await global.sequelize.sync();
+        await global.sequelize.sync(global.db.sync);
         const asyncMethodList = await httpUtil.getPropertyFromItems('check', global.sequelize.models);
         await httpUtil.execAsyncMethodList(asyncMethodList);
     },

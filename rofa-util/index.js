@@ -555,7 +555,7 @@ const ru = {
         const data = await ru.getErrorData(error, locale ?? l);
         const logTitle = data.name? data.name + ': ': '';
 
-        if (showInConsole) {
+        if (showInConsole || showInConsole === undefined) {
             console.error(logTitle + data.message);
             if (error.stack)
                 console.error(error.stack);

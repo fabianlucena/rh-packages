@@ -95,6 +95,17 @@ const sqlUtil = {
         }
     },
 
+    postConfigureModels(sequelize) {
+        if (!sequelize)
+            return;
+
+        Object.keys(sequelize.models).forEach(modelName => {
+            if (sequelize.models[modelName].postAssociate) {
+                sequelize.models[modelName].postAssociate(sequelize.models);
+            }
+        });
+    },
+
     async getSingle(rowList, options) {
         if (rowList.length == 1)
             return rowList[0];
