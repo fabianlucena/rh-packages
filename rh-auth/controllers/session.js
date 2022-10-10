@@ -16,7 +16,7 @@ module.exports = {
             
             const authToken = authorization.substring(7);
             SessionService.getForAuthTokenCached(authToken)
-                .then(session => ru.check(session?.deviceId == req?.device?.id && session, {_message: l._f('Invalid device'), statusCode: 400}))
+                .then(session => ru.checkAsync(session?.deviceId == req?.device?.id && session, {_message: l._f('Invalid device'), statusCode: 400}))
                 .then(session => {
                     req.session = session.toJSON();
                     req.user = req.session.User;

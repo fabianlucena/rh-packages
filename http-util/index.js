@@ -187,7 +187,7 @@ const httpUtil = {
     },
 
     async sendError(req, res, error) {
-        const data = await ru.errorHandler(error, req.locale);
+        const data = await ru.errorHandler(error, req.locale, req.showErrorInConsole);
         res.status(data.statusCode ?? 500).send(data);
     },
 

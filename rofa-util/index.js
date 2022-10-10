@@ -148,25 +148,23 @@ const ru = {
 
     setUpError: setUpError,
 
-    async log(msg) {
+    log(msg) {
         console.log(msg);
     },
 
-    async continueAsync() {},
-
-    async checkNull(obj, errMsj) {
+    checkNull(obj, errMsj) {
         if (obj)
             throw errMsj;
     },
   
-    async checkNotNull(obj, errMsj) {
+    checkNotNull(obj, errMsj) {
         if (obj)
             return obj;
 
         throw errMsj;
     },
 
-    async check(ok, options) {
+    check(ok, options) {
         if (typeof options === 'string')
             options = {message: options};
 
@@ -177,7 +175,11 @@ const ru = {
         if (result)
             return ok;
         
-        return new CheckError();
+        throw new ru.CheckError();
+    },
+
+    async checkAsync(ok, options) {
+        return ru.check(ok, options);
     },
 
     /**
@@ -543,16 +545,21 @@ const ru = {
         } else
             data.message = error;
 
+        if (!data.error)
+            data.error = data.name || data.message || 'Error';
+
         return data;
     },
 
-    async errorHandler(error, locale) {
+    async errorHandler(error, locale, showInConsole) {
         const data = await ru.getErrorData(error, locale ?? l);
         const logTitle = data.name? data.name + ': ': '';
 
-        console.error(logTitle + data.message);
-        if (error.stack)
-            console.error(error.stack);
+        if (showInConsole) {
+            console.error(logTitle + data.message);
+            if (error.stack)
+                console.error(error.stack);
+        }
 
         return data;
     },

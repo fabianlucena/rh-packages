@@ -156,7 +156,7 @@ const SessionService = {
      * @returns {Promise{Session}}
      */
     closeForId(id) {
-        return ru.check(id, {_message: l._f('There is no id for session')})
+        return ru.checkAsync(id, {_message: l._f('There is no id for session')})
             .then(() => SessionService.getForId(id))
             .then(session => {
                 const authToken = session.authToken;

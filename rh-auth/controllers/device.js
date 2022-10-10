@@ -1,13 +1,14 @@
 const DeviceService = require('../services/device');
 const sqlUtil = require('sql-util');
 const ru = require('rofa-util');
+const httpUtil = require('http-util');
 
 function middleware(options) {
     return (req, res, next) => {
         const cookieName = options.cookieName || 'device';
         let cookie = req.cookies[cookieName];
         
-        ru.check(cookie)
+        ru.checkAsync(cookie)
             .then(cookie => DeviceService.getForCookieCached(cookie))
             .then(device => {
                 req.device = device.toJSON();
@@ -23,7 +24,7 @@ function middleware(options) {
                         })
                         .catch(err => res.status(500).send({error: err}));
                 } else {
-                    res.status(500).send({error: err});
+                    httpUtil.sendError(req, res, err);
                 }
             });
     };

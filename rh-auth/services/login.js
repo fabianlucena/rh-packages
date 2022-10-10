@@ -2,6 +2,7 @@ const UserService = require('../services/user');
 const Identity = require('../services/identity');
 const Session = require('../services/session');
 const ru = require('rofa-util');
+const httpUtil = require('http-util');
 
 const LoginService = {
     /**
@@ -27,7 +28,7 @@ const LoginService = {
 
         await UserService.checkEnabledUser(user, username);
         if (!await Identity.checkLocalPasswordForUsername(username, password, locale))
-            throw new ru._Error('Invalid credentials');
+            throw new httpUtil.HttpError('Invalid credentials', 403);
 
         return Session.create({
             deviceId: deviceId,
