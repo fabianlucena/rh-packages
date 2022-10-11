@@ -1,13 +1,15 @@
-const app = require('../../../backend/app');
+let rt = require('../../rh-test');
+let {agent} = require('./index');
 const chai = require('chai');
-const chaiHttp = require('chai-http');
 const expect = chai.expect;
 
-chai.use(chaiHttp);
+let headers = {};
 
 describe('Login', () => {
+    rt.checkMethodNotAllowed(agent, '/api/login', 'HEAD', 'PUT', 'DELETE', 'PATCH');
+
     it('no get parameters error', done => {
-        chai.request(app)
+        agent
             .get('/api/login')
             .end((err, res) => {
                 expect(res).to.have.status(400);
@@ -17,21 +19,11 @@ describe('Login', () => {
             });
     });
 
-    it('$form get parameter should return a form structure with username and password properties', done => {
-        chai.request(app)
-            .get('/api/login?$form')
-            .end((err, res) => {
-                expect(res).to.have.status(200);
-                expect(res).to.be.json;
-                expect(res.body).to.have.property('username');
-                expect(res.body).to.have.property('password');
-                done();
-            });
-    });
+    rt.checkFormGet(agent, '/api/login', 'username', 'password');
 
     it('missing parameter error for username and password parameters', done => {
         let credentials = {};
-        chai.request(app)
+        agent
             .post('/api/login')
             .send(credentials)
             .end((err, res) => {
@@ -45,7 +37,7 @@ describe('Login', () => {
 
     it('missing parameter error for username parameter', done => {
         let credentials = {password: '1234'};
-        chai.request(app)
+        agent
             .post('/api/login')
             .send(credentials)
             .end((err, res) => {
@@ -59,7 +51,7 @@ describe('Login', () => {
 
     it('missing parameter error for password parameter', done => {
         let credentials = {username: 'admin'};
-        chai.request(app)
+        agent
             .post('/api/login')
             .send(credentials)
             .end((err, res) => {
@@ -76,7 +68,7 @@ describe('Login', () => {
             username: 'admin',
             password: '12345'
         };
-        chai.request(app)
+        agent
             .post('/api/login')
             .send(credentials)
             .end((err, res) => {
@@ -88,12 +80,18 @@ describe('Login', () => {
             });
     });
 
-    it('should returns a valid session authToken', done => {
+    const credentials = {
+        username: 'admin',
+        password: '1234'
+    };
+    rt.checkLogin(agent, '/api/login', credentials, res => headers.Authorization = `Bearer ${res.body.authToken}`);
+
+    it('should returns a distinct valid session authToken', done => {
         let credentials = {
             username: 'admin',
             password: '1234'
         };
-        chai.request(app)
+        agent
             .post('/api/login')
             .send(credentials)
             .end((err, res) => {
@@ -101,38 +99,48 @@ describe('Login', () => {
                 expect(res).to.be.json;
                 expect(res.body).to.have.property('authToken');
                 expect(res.body).to.have.property('index');
-                expect(res).to.have.cookie('device');
+                expect(headers.Authorization).to.be.not.equals(`Bearer ${res.body.authToken}`);
+                done();
+            });
+    });
+});
+
+describe('Logout', () => {
+    before(function () {
+        if (!headers?.Authorization)
+            this.skip();
+    });
+
+    rt.checkMethodNotAllowed(agent, '/api/logout', headers, 'HEAD', 'PUT', 'POST', 'DELETE', 'PATCH');
+
+    it('logout should return a HTTP error 204', done => {
+        agent
+            .get('/api/logout')
+            .set(headers)
+            .end((err, res) => {
+                expect(res).to.have.status(204);
+                expect(res.text).to.be.empty;
                 done();
             });
     });
 
-    it('HTTP method not allowed error for PUT', done => {
-        chai.request(app)
-            .put('/api/login')
+    it('duplicate logout should return a HTTP error 403', done => {
+        agent
+            .get('/api/logout')
+            .set(headers)
             .end((err, res) => {
-                expect(res).to.have.status(405);
+                expect(res).to.have.status(403);
                 expect(res).to.be.json;
                 expect(res.body).to.have.property('error');
                 done();
             });
     });
 
-    it('HTTP method not allowed error for DELETE', done => {
-        chai.request(app)
-            .delete('/api/login')
+    it('logout without authorization should return a HTTP error 401', done => {
+        agent
+            .get('/api/logout')
             .end((err, res) => {
-                expect(res).to.have.status(405);
-                expect(res).to.be.json;
-                expect(res.body).to.have.property('error');
-                done();
-            });
-    });
-
-    it('HTTP method not allowed error for PATCH', done => {
-        chai.request(app)
-            .patch('/api/login')
-            .end((err, res) => {
-                expect(res).to.have.status(405);
+                expect(res).to.have.status(401);
                 expect(res).to.be.json;
                 expect(res.body).to.have.property('error');
                 done();

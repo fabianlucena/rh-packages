@@ -490,6 +490,76 @@ const httpUtil = {
     
         global.app.use('/swagger', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
     },
+
+    cookies(response, cookieName, cookieProperty) {
+        const list = {};
+        let cookieHeader = response;
+        if (!cookieHeader)
+            return list;
+
+        if (cookieHeader.headers) {
+            cookieHeader = cookieHeader.headers;
+            if (!cookieHeader)
+                return list;
+        }
+        
+        if (cookieHeader['set-cookie']) {
+            cookieHeader = cookieHeader['set-cookie'];
+            if (!cookieHeader)
+                return list;
+        }
+
+        cookieHeader.forEach(cookieData => {
+            const cookieProps = cookieData.split(';');
+    
+            let [name, ...rest] = cookieProps[0].split('=');
+            name = name?.trim();
+            if (!name)
+                return;
+    
+            const value = rest.join('=').trim();
+            if (!value)
+                return;
+    
+            const cookie = {
+                value: decodeURIComponent(value),
+            };
+    
+            cookieProps.slice(1).forEach(prop => {
+                let [name, ...rest] = prop.split('=');
+                name = name?.trim();
+                if (!name)
+                    return;
+    
+                let value = rest.join('=').trim();
+                if (!value)
+                    return;
+                
+                if (name === 'Expires')
+                    value = new Date(value);
+                else
+                    value = decodeURIComponent(value);
+    
+                cookie[name] = decodeURIComponent(value);
+            });
+    
+            list[name] = cookie;
+        });
+
+        let result = list;
+
+        if (result) {
+            if (cookieName)
+                result = result[cookieName];
+
+            if (result) {
+                if (cookieProperty)
+                    result = result[cookieProperty];
+            }
+        }
+    
+        return result;
+    }
 };
 
 module.exports = httpUtil;

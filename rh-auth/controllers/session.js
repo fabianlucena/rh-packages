@@ -4,7 +4,6 @@ const ru = require('rofa-util');
 const l = ru.locale;
 
 module.exports = {
-
     middleware() {
         return async (req, res, next) => {
             const authorization = req.header('Authorization');
