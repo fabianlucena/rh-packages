@@ -1,4 +1,4 @@
-const {agent} = require('./index');
+const agent = require('./agent');
 const chai = require('chai');
 const expect = chai.expect;
 

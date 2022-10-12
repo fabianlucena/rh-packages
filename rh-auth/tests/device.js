@@ -1,5 +1,6 @@
 let rt = require('../../rh-test');
-const {agent, app} = require('./index');
+const app = require('./app');
+const agent = require('./agent');
 const httpUtil = require('http-util');
 const chai = require('chai');
 

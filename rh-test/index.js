@@ -13,7 +13,7 @@ const rt = {
      *  url: url            URL of the endpoint to test.
      *  headers:            optional JSON headers to send.
      *  query: query        optional query to send as get parameters.
-     *  [others]            others root properties but notAllowedMethods, send, get, post, put, patch, options, delete; will be used as default values for each test. @see rt.testEndPointMethodSend(test) for the rest of properties.
+     *  [others]            others root properties but notAllowedMethods, send, get, post, put, patch, delete, options, head; will be used as default values for each test. @see rt.testEndPointMethodSend(test) for the rest of properties.
      * 
      *  notAllowedMethods:  comma separated strings, list of strings, or object of type {method: options} to check for method not allowed. If the name of the method is prefixed with ! the method is skipped. If this is a string or a list, whis will be cnverted to object: {method: true, ...} or {method: false} if the method name is prefixed with !.
      *      true            for true values the default values are:
@@ -23,7 +23,7 @@ const rt = {
      *          haveProperties = undefined|['error'],       undefined for the head method, ['error'] for the rest.
      *      }
      * 
-     *  [method]:                       options to check HTTP methods: send, get, post, put, patch, options, delete. For the options @see rt.testEndPointMethodSend(test) method. This value can be an array of tests or a object. For array each test is completed with the default root options and the methos name defined. For object the default properties can be overrided.
+     *  [method]:                       options to check HTTP methods: send, get, post, put, patch, delete, options, head. For the options @see rt.testEndPointMethodSend(test) method. This value can be an array of tests or a object. For array each test is completed with the default root options and the methos name defined. For object the default properties can be overrided.
      *      For object:
      *          send:                   list of each test to perform. If this option is not defined a single test is performed. @see rt.testEndPointMethodSend(test) for the options.
      *          $form:                  perform a get with $form query parameter to get the form. Valid options are:
@@ -50,7 +50,7 @@ const rt = {
      * {
      *   agent: agent,                                              // agent is defined as global variable: agent = chai.request.agent(app);
      *   url: '/api/login',                                         // endpoint URL to test
-     *   notAllowedMethods: 'HEAD,PUT,DELETE,PATCH,OPTIONS',        // not allowed methods for this endpoint
+     *   notAllowedMethods: 'PUT,PATCH,DELETE,OPTIONS,HEAD',        // not allowed methods for this endpoint
      *   get: [                                                     // test for GET HTTP method using array
      *       'noParametersError',                                   // test for no parameters expect error
      *       {                                                      // begin test definition for get form
@@ -184,13 +184,15 @@ const rt = {
                 }
             }
 
-            for (const method in {send: true, get: true, post: true, put: true, patch: true, options: true, delete: true}) {
+            for (const method in {send: true, get: true, post: true, put: true, patch: true, delete: true, options: true, head: true}) {
                 let methodOptions = options[method];
                 if (methodOptions === undefined)
                     continue;
 
                 if (methodOptions instanceof Array)
                     methodOptions = {send: methodOptions};
+                else if (methodOptions === false)
+                    methodOptions = {skip: true};
                 else if (typeof methodOptions !== 'object')
                     methodOptions = {};
 
@@ -329,7 +331,10 @@ const rt = {
                 it;
 
         if (!test.title)
-            test.title = `${test.url} ${test.method} should return a ${test.status} HTTP status code`;
+            if (test.status)
+                test.title = `${test.url} ${test.method} should return a ${test.status} HTTP status code`;
+            else
+                test.title = `${test.url} ${test.method}`;
             
         if (!test.method)
             test.method = 'get';
@@ -371,9 +376,26 @@ const rt = {
      *          propertyName: ['one', 'two']
      *      },
      *      after: method                   call the method with response has parameter.
+     *      log: true|string|list           show a console.log of listed items from response. It this is true uses: [status, body]
      *  }
      */
     checkReponse(res, options) {
+        if (options.log) {
+            let log = options.log;
+            if (log === true)
+                log = ['status', 'body'];
+            else if (typeof log === 'string')
+                log = log.split(',');
+
+            const message = {};
+            for (const i in log) {
+                const k = log[i];
+                message[k] = res[k];
+            }
+
+            console.log(message);
+        }
+
         if (options.status != undefined && options.status !== false)
             expect(res).to.have.status(options.status);
 

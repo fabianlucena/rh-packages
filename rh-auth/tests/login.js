@@ -1,9 +1,13 @@
 let rt = require('../../rh-test');
-let {agent} = require('./index');
+let agent = require('./agent');
 const chai = require('chai');
 const expect = chai.expect;
 
-let headers = {};
+const credentials = {
+    username: 'admin',
+    password: '1234'
+};
+const headers = {};
 
 describe('Login', () => {
     rt.testEndPoint({
@@ -18,10 +22,7 @@ describe('Login', () => {
             },
         ],
         post: {
-            parameters: {
-                username: 'admin',
-                password: '1234'
-            },
+            parameters: credentials,
             send: [
                 'noParametersError',
                 {
@@ -61,23 +62,29 @@ describe('Login', () => {
 });
 
 describe('Logout', () => {
+    const localHeaders = {};
+
     before(function () {
         if (!headers?.Authorization)
             this.skip();
+
+        localHeaders.Authorization = headers.Authorization;
     });
 
     rt.testEndPoint({
         agent: agent,
         url: '/api/logout',
-        notAllowedMethods: 'HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
+        notAllowedMethods: 'POST,PUT,PATCH,DELETE,OPTIONS,HEAD',
         headers: headers,
         get: [
             {
                 title: 'valid logout should return a HTTP error 204',
                 status: 204,
                 empty: true,
+                after: () => {if (headers?.Authorization) delete headers.Authorization;},
             },
             {
+                headers: localHeaders,
                 title: 'duplicate logout should return a HTTP error 403',
                 status: 403,
                 haveProperties: 'error',
@@ -90,4 +97,8 @@ describe('Logout', () => {
             },
         ]
     });
+
+    rt.testLogin(agent, '/api/login', credentials, res => headers.Authorization = `Bearer ${res.body.authToken}`);
 });
+
+module.exports = headers;
