@@ -1,37 +1,30 @@
+let rt = require('../../rh-test');
 const {agent, app} = require('./index');
 const httpUtil = require('http-util');
 const chai = require('chai');
-const expect = chai.expect;
 
-let deviceCookie;
+let cookies = {};
 
 describe('Device', () => {
-    it('should get a value for cookie device', done => {
-        agent
-            .get('/api/not-found')
-            .end((err, res) => {
-                expect(res).to.have.cookie('device');
-                deviceCookie = httpUtil.cookies(res, 'device', 'value');
-                done();
-            });
+    rt.testEndPoint({
+        agent: agent,
+        url: '/api/not-found',
+        get: [
+            {
+                title: 'should get a value for cookie device',
+                haveCookies: 'device',
+                after: res => cookies.device = httpUtil.cookies(res, 'device', 'value') // after succesfull test, store the cookie
+            },
+            {
+                title: 'should not get a cookie device',
+                noHaveCookies: 'device',
+            },
+            {
+                agent: chai.request(app),
+                title: 'should get a distinct cookie device',
+                haveCookies: 'device',
+                before: test => test.noHaveCookies = {device: cookies.device},  // before send this request update the test for check the cookie distint to the stored one
+            },
+        ]
     });
-
-    it('should not get a cookie device', done => {
-        agent
-            .get('/api/not-found')
-            .end((err, res) => {
-                expect(res).to.not.have.cookie('device');
-                done();
-            });
-    });
-
-    it('should not get a distinct cookie device', done => {
-        chai.request(app)
-            .get('/api/not-found')
-            .end((err, res) => {
-                expect(res).to.have.cookie('device');
-                expect(res).to.not.have.cookie('device', deviceCookie);
-                done();
-            });
-    });    
 });

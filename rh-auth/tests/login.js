@@ -6,102 +6,57 @@ const expect = chai.expect;
 let headers = {};
 
 describe('Login', () => {
-    rt.checkMethodNotAllowed(agent, '/api/login', 'HEAD', 'PUT', 'DELETE', 'PATCH');
-
-    it('no get parameters error', done => {
-        agent
-            .get('/api/login')
-            .end((err, res) => {
-                expect(res).to.have.status(400);
-                expect(res).to.be.json;
-                expect(res.body).to.have.property('error');
-                done();
-            });
-    });
-
-    rt.checkFormGet(agent, '/api/login', 'username', 'password');
-
-    it('missing parameter error for username and password parameters', done => {
-        let credentials = {};
-        agent
-            .post('/api/login')
-            .send(credentials)
-            .end((err, res) => {
-                expect(res).to.have.status(400);
-                expect(res).to.be.json;
-                expect(res.body).to.have.property('error');
-                expect(res.body).to.have.property('missingParameters').contains('username').contains('password');
-                done();
-            });
-    });
-
-    it('missing parameter error for username parameter', done => {
-        let credentials = {password: '1234'};
-        agent
-            .post('/api/login')
-            .send(credentials)
-            .end((err, res) => {
-                expect(res).to.have.status(400);
-                expect(res).to.be.json;
-                expect(res.body).to.have.property('error');
-                expect(res.body).to.have.property('missingParameters').contains('username');
-                done();
-            });
-    });
-
-    it('missing parameter error for password parameter', done => {
-        let credentials = {username: 'admin'};
-        agent
-            .post('/api/login')
-            .send(credentials)
-            .end((err, res) => {
-                expect(res).to.have.status(400);
-                expect(res).to.be.json;
-                expect(res.body).to.have.property('error');
-                expect(res.body).to.have.property('missingParameters').contains('password');
-                done();
-            });
-    });
-
-    it('"Invalid credentials" login error', done => {
-        let credentials = {
-            username: 'admin',
-            password: '12345'
-        };
-        agent
-            .post('/api/login')
-            .send(credentials)
-            .end((err, res) => {
-                expect(res).to.have.status(403);
-                expect(res).to.be.json;
-                expect(res.body).to.have.property('error');
-                expect(res.body).to.have.property('message').contains('Invalid credentials');
-                done();
-            });
-    });
-
-    const credentials = {
-        username: 'admin',
-        password: '1234'
-    };
-    rt.checkLogin(agent, '/api/login', credentials, res => headers.Authorization = `Bearer ${res.body.authToken}`);
-
-    it('should returns a distinct valid session authToken', done => {
-        let credentials = {
-            username: 'admin',
-            password: '1234'
-        };
-        agent
-            .post('/api/login')
-            .send(credentials)
-            .end((err, res) => {
-                expect(res).to.have.status(201);
-                expect(res).to.be.json;
-                expect(res.body).to.have.property('authToken');
-                expect(res.body).to.have.property('index');
-                expect(headers.Authorization).to.be.not.equals(`Bearer ${res.body.authToken}`);
-                done();
-            });
+    rt.testEndPoint({
+        agent: agent,
+        url: '/api/login',
+        notAllowedMethods: 'HEAD,PUT,DELETE,PATCH,OPTIONS',
+        get: [
+            'noParametersError',
+            {
+                $form: true,
+                haveProperties: ['username', 'password']
+            },
+        ],
+        post: {
+            parameters: {
+                username: 'admin',
+                password: '1234'
+            },
+            send: [
+                'noParametersError',
+                {
+                    missingParameters: [
+                        ['username', 'password'],
+                        ['username'],
+                        ['password']
+                    ]
+                },
+                {
+                    title: '"Invalid credentials" login error',
+                    parameters: {
+                        username: 'admin',
+                        password: '12345'
+                    },        
+                    status: 403,
+                    haveProperties: 'error',
+                    propertyContains: {
+                        message: 'Invalid credentials'
+                    }
+                },
+                {
+                    title: 'login should returns a valid session authToken',
+                    status: 201,
+                    haveProperties: ['authToken', 'index'],
+                    after: res => headers.Authorization = `Bearer ${res.body.authToken}`, // after succesfull test, store the authToken for reuse as authorization header
+                },
+                {
+                    title: 'should returns a distinct valid session authToken',
+                    status: 201,
+                    haveProperties: ['authToken', 'index'],
+                    after: res => expect(headers.Authorization).to.be.not.equals(`Bearer ${res.body.authToken}`), // after succesfull test, use a custom check to verify the authToken
+                },
+            ]
+        }
     });
 });
 
@@ -111,39 +66,28 @@ describe('Logout', () => {
             this.skip();
     });
 
-    rt.checkMethodNotAllowed(agent, '/api/logout', headers, 'HEAD', 'PUT', 'POST', 'DELETE', 'PATCH');
-
-    it('logout should return a HTTP error 204', done => {
-        agent
-            .get('/api/logout')
-            .set(headers)
-            .end((err, res) => {
-                expect(res).to.have.status(204);
-                expect(res.text).to.be.empty;
-                done();
-            });
-    });
-
-    it('duplicate logout should return a HTTP error 403', done => {
-        agent
-            .get('/api/logout')
-            .set(headers)
-            .end((err, res) => {
-                expect(res).to.have.status(403);
-                expect(res).to.be.json;
-                expect(res.body).to.have.property('error');
-                done();
-            });
-    });
-
-    it('logout without authorization should return a HTTP error 401', done => {
-        agent
-            .get('/api/logout')
-            .end((err, res) => {
-                expect(res).to.have.status(401);
-                expect(res).to.be.json;
-                expect(res.body).to.have.property('error');
-                done();
-            });
+    rt.testEndPoint({
+        agent: agent,
+        url: '/api/logout',
+        notAllowedMethods: 'HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
+        headers: headers,
+        get: [
+            {
+                title: 'valid logout should return a HTTP error 204',
+                status: 204,
+                empty: true,
+            },
+            {
+                title: 'duplicate logout should return a HTTP error 403',
+                status: 403,
+                haveProperties: 'error',
+            },
+            {
+                title: 'logout without authorization should return a HTTP error 401',
+                headers: null,
+                status: 401,
+                haveProperties: 'error',
+            },
+        ]
     });
 });
