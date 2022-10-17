@@ -368,6 +368,12 @@ const httpUtil = {
         if (theModule.schema && global.createSchema)
             await global.createSchema(theModule.schema);
 
+        if (theModule.data)
+            global.data = await ru.deepMerge(global.data, theModule.data);
+    },
+
+    async installModule(global, theModule) {
+        theModule.global = global;
         if (theModule.routesPath)
             await httpUtil.configureRouter(theModule.routesPath, global.router, global.checkRoutePermission, theModule.routesPathOptions);
 
@@ -398,6 +404,9 @@ const httpUtil = {
 
         for (let i = 0, e = modules.length; i < e; i++)
             await httpUtil.configureModule(global, modules[i]);
+
+        for (let i = 0, e = modules.length; i < e; i++)
+            await httpUtil.installModule(global, modules[i]);
     },
 
     async getPropertyFromItems(propertyName, list) {

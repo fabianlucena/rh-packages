@@ -99,8 +99,6 @@ async function afterConfig(_, global) {
 }
 
 function configure(global) {
-    require('./services/site');
-
     if (global.router) {
         const PrivilegesController = require('./controllers/privileges');
         global.router.use(PrivilegesController.middleware());
