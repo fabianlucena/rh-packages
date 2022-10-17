@@ -348,6 +348,7 @@ const rt = {
      *  headers: headers                JSON headers to send to the endpoint.
      *  before: method                  method to call before send the request.
      *  check: method                   method to call after the request to check the response with the response and the test as paramaters. If it is not defined uses @see rt.checkReponse method.
+     *  requestLog: true|string|list    show a console.log of listed items from request. It this is true showe all calculates test options
      *  [checkOptions]                  options for checking the response @see rt.checkReponse for detail.
      * }
      */
@@ -368,20 +369,6 @@ const rt = {
             
         if (!test.method)
             test.method = 'get';
-
-        if (test.requestLog) {
-            let requestLog = test.requestLog;
-            if (typeof requestLog === 'string')
-                requestLog = requestLog.split(',');
-
-            if (requestLog instanceof Array) {
-                const message = {};
-                if (requestLog.includes('headers'))
-                    message.headers = test.headers;
-                
-                console.requestLog(message);
-            }
-        }
 
         test.test(test.title, done => {
             if (!test.agent) {
@@ -408,24 +395,39 @@ const rt = {
                 if (typeof requestLog === 'string')
                     requestLog = requestLog.split(',');
     
+                const message = {};
                 if (requestLog instanceof Array) {
-                    const message = {};
-                    if (requestLog.includes('headers'))
-                        message.headers = test.headers;
-                    
-                    console.requestLog(message);
+                    for (const i in requestLog) {
+                        const k = requestLog[i];
+                        message[k] = test[k];
+                    }
+                } else if (requestLog === true) {
+                    for (const k in test)
+                        message[k] = test[k];
+
+                    if (message.agent)
+                        message.agent = true;
                 }
+
+                if (message)
+                    console.log(message);
             }
 
             test.agent[test.method]((test.base ?? '') + test.url)
-                .query(test.query)
-                .set(test.headers)
-                .send(test.parameters)
-                .end((_, res) => {
+                .query(test.query ?? {})
+                .set(test.headers ?? {})
+                .send(test.parameters ?? {})
+                .end((err, res) => {
+                    if (err) {
+                        console.log(err);
+                        return;
+                    }
+
                     if (test.check)
                         test.check(res, test);
                     else
                         rt.checkReponse(res, test);
+
                     done();
                 });
         });
