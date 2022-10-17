@@ -112,7 +112,7 @@ async function siteGet(req, res) {
 }
 
 module.exports = {
-    currentSiteGet: currentSiteGet,
-    switchSitePost: switchSitePost,
-    siteGet: siteGet,
+    currentSiteGet,
+    switchSitePost,
+    siteGet,
 };

@@ -1,11 +1,11 @@
-const agent = require('./agent');
+const rt = require('rh-test');
 const chai = require('chai');
 const expect = chai.expect;
 
 describe('HTTP Errors', () => {
     it('HTTP 403 error for empty URL', (done) => {
         let credentials = {};
-        agent
+        rt.getAgent()
             .get('')
             .send(credentials)
             .end((err, res) => {
@@ -18,7 +18,7 @@ describe('HTTP Errors', () => {
     
     it('HTTP 401 error for URL "/api/not-found"', (done) => {
         let credentials = {};
-        agent
+        rt.getAgent()
             .get('/api/not-found')
             .send(credentials)
             .end((err, res) => {

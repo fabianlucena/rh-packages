@@ -75,6 +75,6 @@ async function privilegesGet(req, res) {
 }
 
 module.exports = {
-    middleware: middleware,
-    privilegesGet: privilegesGet,
+    middleware,
+    privilegesGet,
 };

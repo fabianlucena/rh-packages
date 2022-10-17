@@ -31,5 +31,5 @@ function middleware(options) {
 }
 
 module.exports = {
-    middleware: middleware,
+    middleware,
 };

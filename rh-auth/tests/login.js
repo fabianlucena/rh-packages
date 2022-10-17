@@ -1,5 +1,4 @@
-let rt = require('../../rh-test');
-let agent = require('./agent');
+const rt = require('rh-test');
 const chai = require('chai');
 const expect = chai.expect;
 
@@ -7,12 +6,10 @@ const credentials = {
     username: 'admin',
     password: '1234'
 };
-const headers = {};
 
 describe('Login', () => {
     rt.testEndPoint({
-        agent: agent,
-        url: '/api/login',
+        url: '/login',
         notAllowedMethods: 'HEAD,PUT,DELETE,PATCH,OPTIONS',
         get: [
             'noParametersError',
@@ -48,13 +45,13 @@ describe('Login', () => {
                     title: 'login should returns a valid session authToken',
                     status: 201,
                     haveProperties: ['authToken', 'index'],
-                    after: res => headers.Authorization = `Bearer ${res.body.authToken}`, // after succesfull test, store the authToken for reuse as authorization header
+                    after: res => rt.headers.Authorization = `Bearer ${res.body.authToken}`, // after succesfull test, store the authToken for reuse as authorization header
                 },
                 {
                     title: 'should returns a distinct valid session authToken',
                     status: 201,
                     haveProperties: ['authToken', 'index'],
-                    after: res => expect(headers.Authorization).to.be.not.equals(`Bearer ${res.body.authToken}`), // after succesfull test, use a custom check to verify the authToken
+                    after: res => expect(rt.headers.Authorization).to.be.not.equals(`Bearer ${res.body.authToken}`), // after succesfull test, use a custom check to verify the authToken
                 },
             ]
         }
@@ -65,23 +62,21 @@ describe('Logout', () => {
     const localHeaders = {};
 
     before(function () {
-        if (!headers?.Authorization)
+        if (!rt.headers?.Authorization)
             this.skip();
 
-        localHeaders.Authorization = headers.Authorization;
+        localHeaders.Authorization = rt.headers.Authorization;
     });
 
     rt.testEndPoint({
-        agent: agent,
-        url: '/api/logout',
+        url: '/logout',
         notAllowedMethods: 'POST,PUT,PATCH,DELETE,OPTIONS,HEAD',
-        headers: headers,
         get: [
             {
                 title: 'valid logout should return a HTTP error 204',
                 status: 204,
                 empty: true,
-                after: () => {if (headers?.Authorization) delete headers.Authorization;},
+                after: () => {if (rt.headers?.Authorization) delete rt.headers.Authorization;},
             },
             {
                 headers: localHeaders,
@@ -98,7 +93,5 @@ describe('Logout', () => {
         ]
     });
 
-    rt.testLogin(agent, '/api/login', credentials, res => headers.Authorization = `Bearer ${res.body.authToken}`);
+    rt.autoLogin({credentials});
 });
-
-module.exports = headers;

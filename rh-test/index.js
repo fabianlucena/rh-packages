@@ -1,9 +1,31 @@
 const chai = require('chai');
+const ru = require('rofa-util');
 
 chai.use(require('chai-http'));
 const expect = chai.expect;
 
 const rt = {
+    app: null,
+    agent: null, 
+    headers: {},
+
+    createAgent(app) {
+        return chai.request.agent(app ?? rt.app);
+    },
+
+    initAgent(app) {
+        rt.agent = rt.createAgent(app);
+
+        return rt.agent;
+    },
+
+    getAgent(app) {
+        if (app || !rt.agent)
+            rt.initAgent(app);
+
+        return rt.agent;
+    },
+
     /**
      * Test and endpoint
      * @param {*} options values to setup the test. This parameter can be an Array of test definitions objecta to send each of ones to @see rt.testEndPointMethodSend(test) method, or an object. If it is an object an array is created to send to @see rt.testEndPointMethodSend(test) method.
@@ -215,7 +237,12 @@ const rt = {
                     }
 
                     if (test.method === undefined)
-                        test.method = method;
+                        if (method !== 'send')
+                            test.method = method;
+                        else if (defaultOptions.method)
+                            test.method = defaultOptions.method;
+                        else
+                            test.method = 'get';
     
                     for (const k in methodOptions)
                         if (test[k] === undefined && k !== 'send')
@@ -315,7 +342,7 @@ const rt = {
      * Send a test to an endpoint.
      * @param {*} test test definition.
      * {
-     *  test: it || it.skip             method name to perform the test.
+     *  test: it || it.skip || it.only  method name to perform the test.
      *  title: title                    the test title. If it is not provided a default title is created.
      *  method: get|post|put|...        HTTP method to call the endpoint. If it is not provided uses a get.
      *  headers: headers                JSON headers to send to the endpoint.
@@ -326,9 +353,12 @@ const rt = {
      */
     testEndPointMethodSend(test) {
         if (test.test === undefined)
-            test.test = test.skip?
-                it.skip:
-                it;
+            if (test.only)
+                test.test = it.only;
+            else if (test.skip)
+                test.test = it.skip;
+            else
+                test.test = it;
 
         if (!test.title)
             if (test.status)
@@ -338,15 +368,56 @@ const rt = {
             
         if (!test.method)
             test.method = 'get';
-        
-        if (!test.headers)
-            test.headers = {};
-        
+
+        if (test.requestLog) {
+            let requestLog = test.requestLog;
+            if (typeof requestLog === 'string')
+                requestLog = requestLog.split(',');
+
+            if (requestLog instanceof Array) {
+                const message = {};
+                if (requestLog.includes('headers'))
+                    message.headers = test.headers;
+                
+                console.requestLog(message);
+            }
+        }
+
         test.test(test.title, done => {
+            if (!test.agent) {
+                test.agent = rt.agent;
+
+                if (!test.agent && rt.app)
+                    test.agent = chai.request(rt.app);
+            }
+            
+            if (test.base === undefined)
+                test.base = rt.base;
+
+            if (test.headers === undefined)
+                test.headers = rt.headers;
+
+            if (!test.headers)
+                test.headers = {};
+                
             if (test.before)
                 test.before(test);
 
-            test.agent[test.method](test.url)
+            if (test.requestLog) {
+                let requestLog = test.requestLog;
+                if (typeof requestLog === 'string')
+                    requestLog = requestLog.split(',');
+    
+                if (requestLog instanceof Array) {
+                    const message = {};
+                    if (requestLog.includes('headers'))
+                        message.headers = test.headers;
+                    
+                    console.requestLog(message);
+                }
+            }
+
+            test.agent[test.method]((test.base ?? '') + test.url)
                 .query(test.query)
                 .set(test.headers)
                 .send(test.parameters)
@@ -486,93 +557,112 @@ const rt = {
     },
 
     /**
+     * Perform a HTTP not allowed method testa on an end point expect errors. This method uses the @see rt.testEndPoint with get: {noParametersError: true} options.
+     * @param {*} options options for the method @see rt.testEndPoint method.
+     * @param  {...srting} notAllowedMethods method names to check not alloed.
+     * @returns 
+     */
+    testNotAllowedMethod(options, ...notAllowedMethods) {
+        options = ru.deepMerge(options, {notAllowedMethods});
+
+        rt.testEndPoint(options);
+    },
+
+    /**
+     * Perform a get test on an end point for no parameters and expect an error. This method uses the @see rt.testEndPoint with get: {noParametersError: true} options.
+     * @param {*} options options for the method @see rt.testEndPoint method.
+     */
+    testGetNoParametesError(options) {
+        options = ru.deepMerge(options, {get: {noParametersError: true}});
+
+        rt.testEndPoint(options);
+    },
+
+    /**
+     * Perform a test on an end point to get the form using the $form query get parameter. This method uses the @see rt.testEndPoint with get: {$form: {haveProperties: haveProperties}} options.
+     * @param {*} options options for the method @see rt.testEndPoint method.
+     * @param  {...string} haveProperties properties names to check in the result.
+     */
+    testGetForm(options, ...haveProperties) {
+        options = ru.deepMerge(
+            options,
+            {
+                get: {
+                    $form: {
+                        haveProperties,
+                    },
+                },
+            },
+        );
+
+        rt.testEndPoint(options);
+    },
+
+    /**
+     * Perform a login in the endpoint sending a post to the endpoint. This method uses @see rt.testEndPoint.
+     * @param {*} options options to use the @see rt.testEndPoint.
+     * Other options are:
+     *  credentials:    here you can specify the parameters,
+     *  username:       here you can specify the username of credentials,
+     *  password:       here you can specify the password of credentials,
+     * Username and password are used for create the credentials: {username, password}.
+     * This method uses as default values:
+     * {
+     *  title: 'login should returns a valid session authToken',
+     *  url: '/login',
+     *  method: 'post',
+     *  parameters: rt.credentials,
+     *  status: 201,
+     *  haveProperties: ['authToken', 'index'],
+     *  send: {},
+     * }
      * 
-     * @param {*} agent agent or app to perform login.
-     * @param {*} url  URL of the login service.
-     * @param {*} headersOrNotAllowedMethod can be a JSON headers or a method name to check not alloed.
-     * @param  {...any} notAllowedMethods method names to check not alloed.
-     * @returns 
+     * For use as method other than send you must set send to false or [];
      */
-    testNotAllowedMethod(agent, url, headersOrNotAllowedMethod, ...notAllowedMethods) {
-        let headers;
-        if (typeof headersOrNotAllowedMethod === 'object')
-            headers = headersOrNotAllowedMethod;
-        else if(headersOrNotAllowedMethod)
-            notAllowedMethods = [headersOrNotAllowedMethod, ...notAllowedMethods];
-
-        return rt.testEndPoint({
-            agent: agent,
-            url: url,
-            headers: headers,
-            notAllowedMethods: notAllowedMethods
-        });
-    },
-
-    /**
-     * Perform a get test on an end point for no parameters and expect and error. This method uses the @see rt.testEndPoint with get: {noParametersError: true} options.
-     * @param {*} agent agent or app to perform login.
-     * @param {*} url  URL of the login service.
-     * @param {*} headers optional JSON headers.
-     * @returns 
-     */
-    testGetNoParametesError(agent, url, headers) {
-        return rt.testEndPoint({
-            agent: agent,
-            url: url,
-            headers: headers,
-            get: {
-                noParametersError: true
-            }
-        });
-    },
-
-    /**
-     * Perform a test on an end point to get the form using the $form query get parameter.  This method uses the @see rt.testEndPoint with get: {$form: {haveProperties: haveProperties}} options.
-     * @param {*} agent agent or app to perform login.
-     * @param {*} url  URL of the login service.
-     * @param {*} headersOrProperty can be a JSON headers or a property name to check in the result.
-     * @param  {...any} haveProperties properties names to check in the result.
-     * @returns 
-     */
-    testGetForm(agent, url, headersOrProperty, ...haveProperties) {
-        let headers;
-        if (typeof headersOrProperty === 'object')
-            headers = headersOrProperty;
-        else if (headersOrProperty)
-            haveProperties = [headersOrProperty, ...haveProperties];
-
-        return rt.testEndPoint({
-            agent: agent,
-            url: url,
-            headers: headers,
-            get: {
-                $form: {
-                    haveProperties: haveProperties
-                }
-            }
-        });
-    },
-
-    /**
-     * Perform a login in the endpoint sending a post to the endpoint.
-     * @param {*} agent agent or app to perform login.
-     * @param {*} url  URL of the login service.
-     * @param {*} credentials params to send to in JSON format.
-     * @param {*} after method to call on successful login.
-     */
-    testLogin(agent, url, credentials, after) {
-        rt.testEndPoint({
-            agent: agent,
-            url: url,
-            post: {
+    testLogin(options) {
+        options = ru.merge(
+            options,
+            {
                 title: 'login should returns a valid session authToken',
-                parameters: credentials,
+                url: '/login',
+                method: 'post',
+                credentials: rt.credentials,
                 status: 201,
                 haveProperties: ['authToken', 'index'],
-                after: after,
-            },
-        });
+                send: {},
+            }
+        );
+
+        if (!options.parameters) {
+            options.credentials = ru.merge(
+                options.credentials,
+                {
+                    username: options.username,
+                    password: options.password,
+                }
+            );
+
+            options.parameters = options.credentials;
+        }
+
+        rt.testEndPoint(options);
     },
+
+    /**
+     * Perform an automatic login in the agent using the endpoint sending a post to the endpoint. This method uses @see rt.testLogin.
+     * @param {*} options Options for @see rt.testLogin.
+     * You can specify the agent or app method to override the rt.app or rt.agent values.
+     * This method test the existence of the rt.headers?.Authorization value if the value does not exists perform a new login.
+     */
+    autoLogin(options) {
+        if (rt.headers?.Authorization)
+            return;
+            
+        options = ru.merge(options, {after: res => rt.headers.Authorization = `Bearer ${res.body.authToken}`});
+
+        rt.getAgent(options.app);
+        rt.testLogin(options);
+    }
 };
 
 module.exports = rt;

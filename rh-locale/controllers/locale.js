@@ -8,5 +8,6 @@ function middleware() {
 }
 
 module.exports = {
-    middleware: middleware,
+    middleware
+    ,
 };
