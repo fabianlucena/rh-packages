@@ -101,15 +101,17 @@ const SiteService = {
         let site = await SiteService.getForSessionId(sessionId, ru.merge(options, {skipThroughAssociationAttributes: true, skipNoRowsError: true}));
         if (site)
             return site;
-            
+
         if (!conf.global.data.defaultSite)
             return;
 
         const SessionSiteService = require('./session_site');
-        return SessionSiteService.createOrUpdate({
+        await SessionSiteService.createOrUpdate({
             sessionId: sessionId,
             site: conf.global.data.defaultSite,
         });
+
+        return await SiteService.getForSessionId(sessionId, ru.merge(options, {skipThroughAssociationAttributes: true, skipNoRowsError: true}));
     },
 
     /**

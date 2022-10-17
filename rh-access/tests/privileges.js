@@ -14,7 +14,7 @@ describe('Privileges', () => {
             {
                 title: 'musth return the user\'s privileges',
                 status: 200,
-                log: true,
+                haveProperties: ['sites', 'site', 'roles', 'permissions'],
             },
         ],
     });
