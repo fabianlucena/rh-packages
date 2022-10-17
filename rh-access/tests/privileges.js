@@ -1,7 +1,7 @@
 require('./login');
 const rt = require('rh-test');
 
-describe.only('Privileges', () => {
+describe('Privileges', () => {
     before(function () {
         if (!rt.headers?.Authorization)
             this.skip('No authorization headers');
