@@ -3,28 +3,28 @@ const uuid = require('uuid');
 const l = ru.locale;
 
 class HttpError extends Error {
-    constructor(message, statusCode, ...params) {
+    constructor(message, httpStatusCode, ...params) {
         super();
         ru.setUpError(
             this,
             {
-                message: message,
-                statusCode: statusCode,
-                params: params
+                message,
+                httpStatusCode,
+                params
             }
         );
     }
 }
 
 class _HttpError extends Error {
-    constructor(message, statusCode, ...params) {
+    constructor(message, httpStatusCode, ...params) {
         super();
         ru.setUpError(
             this,
             {
                 _message: message,
-                statusCode: statusCode,
-                params: params
+                httpStatusCode,
+                params
             }
         );
     }
@@ -36,7 +36,7 @@ class NoPermissionError extends Error {
     static _zeroMessage = l._f('You do not have permission.');
     static _message = l._nf(0, 'You do not have permission: "%s"', 'You do not have any of permissions: "%s".');
 
-    statusCode = 403;
+    httpStatusCode = 403;
     permissions = [];
 
     constructor(permissions, options, ...params) {
@@ -65,7 +65,7 @@ class MethodNotAllowedError extends Error {
     static _message = l._nf(0, 'Method "%s" not allowed.', 'Methods "%s" not allowed.');
     static param = ['<unknown>'];
 
-    statusCode = 405;
+    httpStatusCode = 405;
     methods = [];
 
     constructor(...methods) {
@@ -91,7 +91,7 @@ class NoUUIDError extends Error {
     static _message = l._f('The "%s" parameter is not a valid UUID.');
     static param = ['<unknown>'];
 
-    statusCode = 403;
+    httpStatusCode = 403;
 
     constructor(paramName) {
         super();
@@ -190,7 +190,9 @@ const httpUtil = {
 
     async sendErrorAsync(req, res, error) {
         const data = await ru.errorHandlerAsync(error, req.locale, req.showErrorInConsole);
-        res.status(data.statusCode ?? 500).send(data);
+        if (data.stack)
+            delete data.stack;
+        res.status(data.httpStatusCode ?? 500).send(data);
     },
 
     errorHandlerAsync(req, res) {

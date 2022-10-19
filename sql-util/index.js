@@ -10,7 +10,7 @@ class NoRowsError extends Error {
         ru.setUpError(
             this,
             {
-                message: message
+                message
             }
         );
     }
@@ -27,8 +27,8 @@ class ManyRowsError extends Error {
         ru.setUpError(
             this,
             {
-                message: message,
-                length: length
+                message,
+                length
             }
         );
     }
@@ -47,8 +47,8 @@ class MissingPropertyError extends Error {
         ru.setUpError(
             this,
             {
-                objectName: objectName,
-                properties: properties,
+                objectName,
+                properties,
             }
         );
     }
@@ -119,6 +119,7 @@ const sqlUtil = {
                 _message: options?._noRowsError ?? options?._error,
                 params: options?.noRowsErrorParams ?? options?.params,
                 _params: options?._noRowsErrorParams ?? options?._params,
+                httpStatusCode: 404
             });
         }
         

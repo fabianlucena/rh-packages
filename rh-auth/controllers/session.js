@@ -15,7 +15,7 @@ module.exports = {
             
             const authToken = authorization.substring(7);
             SessionService.getForAuthTokenCached(authToken)
-                .then(session => ru.checkAsync(session?.deviceId == req?.device?.id && session, {_message: l._f('Invalid device'), statusCode: 400}))
+                .then(session => ru.checkAsync(session?.deviceId == req?.device?.id && session, {_message: l._f('Invalid device'), httpStatusCode: 400}))
                 .then(session => {
                     req.session = session.toJSON();
                     req.user = req.session.User;
@@ -27,11 +27,9 @@ module.exports = {
                     else {
                         let msg;
                         if (err instanceof Error)
-                            msg = await ru.getErrorMessageAsync(err);
+                            msg = await ru.getErrorMessageAsync(err, req.locale);
                         else
                             msg = err;
-
-                        console.error(msg);
 
                         if (msg)
                             res.status(401).send({error: await req.locale._('HTTP error 401 unauthorized: %s', msg)});
@@ -117,7 +115,7 @@ module.exports = {
     async sessionGet(req, res) {
         const definitions = {uuid: 'uuid', open: 'date', close: 'date', authToken: 'string', index: 'int'};
 
-        httpUtil.getOptionsFromParamsAndOData(req?.query, definitions)
+        httpUtil.getOptionsFromParamsAndODataAsync(req?.query, definitions)
             .then(options => new Promise(resolve => req.checkPermission('session.get')
                 .then(() => resolve(options))
                 .catch(() => resolve(ru.deepMerge(options, {where: {id: req.session.id}}))))

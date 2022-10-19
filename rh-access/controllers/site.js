@@ -49,7 +49,7 @@ function currentSiteGet(req, res) {
     const definitions = {uuid: 'uuid', name: 'string'},
         options = {view: true, limit: 10, offset: 0};
 
-    httpUtil.getOptionsFromParamsAndOData(req?.query, definitions, options)
+    httpUtil.getOptionsFromParamsAndODataAsync(req?.query, definitions, options)
         .then(options => SiteService.getForId(siteId, options))
         .then(element => res.status(200).send(element));
 }
@@ -105,7 +105,7 @@ function switchSitePost(req, res) {
  */
 async function siteGet(req, res) {
     const definitions = {uuid: 'uuid', name: 'string'},
-        options = await httpUtil.getOptionsFromParamsAndOData(req?.query, definitions, {view: true, limit: 10, offset: 0});
+        options = await httpUtil.getOptionsFromParamsAndODataAsync(req?.query, definitions, {view: true, limit: 10, offset: 0});
 
     const rows = await SiteService.getForUsername(req?.user?.username, options);
     res.status(200).send(rows);

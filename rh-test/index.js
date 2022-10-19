@@ -55,7 +55,8 @@ const rt = {
      *              query: '$form',
      *              title: 'should get a form usign $form query parameter',
      *          }
-     *          noParametersError:      test the endpoint for an error on get method without parameters
+     *          noParametersError:      test the endpoint for an error on method without parameters
+     *          noQueryError:           test the endpoint for an error on method without query parameters
      *          {
      *              status: 400,
      *              haveProperties: 'error',
@@ -74,51 +75,52 @@ const rt = {
      *   url: '/api/login',                                         // endpoint URL to test
      *   notAllowedMethods: 'PUT,PATCH,DELETE,OPTIONS,HEAD',        // not allowed methods for this endpoint
      *   get: [                                                     // test for GET HTTP method using array
-     *       'noParametersError',                                   // test for no parameters expect error
-     *       {                                                      // begin test definition for get form
-     *           $form: true,                                       // test for get form using the $form as query parameter '/api/login?$form'
-     *           haveProperties: ['username', 'password']           // check for the result exists the properties username andpassword
-     *       },
+     *      'noParametersError',                                    // test for no parameters expect error
+     *      'noQueryError',    
+     *      {                                                       // begin test definition for get form
+     *          $form: true,                                        // test for get form using the $form as query parameter '/api/login?$form'
+     *          haveProperties: ['username', 'password']            // check for the result exists the properties username andpassword
+     *      },
      *   ],
      *   post: {                                                    // test for POST HTTP method using object
-     *       parameters: {                                          // default parameters options for the rest of tests
-     *           username: 'admin',
-     *           password: '1234'
-     *       },
-     *       send: [                                                // test definitions
-     *           'noParametersError',                               // test for no parameters expect error (same as above)
-     *           {                                                  // begin test definition for missingParameters
-     *               missingParameters: [                       
-     *                   ['username', 'password'],                  // test for no parameters body = {}
-     *                   ['username'],                              // test for no parameters username
-     *                   ['password']                               // test for no parameters password
-     *               ]
-     *           },
-     *           {                                                  // begin custom test item for Invalid credentials
-     *               title: '"Invalid credentials" login error',    // test title
-     *               parameters: {                                  // override parameters for introduce an error
-     *                   username: 'admin',
-     *                   password: '12345'
-     *               },
-     *               status: 403,                                   // expected status
-     *               haveProperties: 'error',                       // expected property error in the result
-     *               propertyContains: {                            // expected message 'Invalid credentials' in the property message in the result
-     *                   message: 'Invalid credentials'
-     *               }
-     *           },
-     *           {                                                                              // begin custom test item for login
-     *               title: 'login should returns a valid session authToken',
-     *               status: 201,                                                               // expected status
-     *               haveProperties: ['authToken', 'index'],                                    // expected properties in the result
-     *               after: res => headers.Authorization = `Bearer ${res.body.authToken}`,      // after succesfull test, store the authToken for reuse as authorization header
-     *           },
-     *           {
-     *               title: 'should returns a distinct valid session authToken',                // begin custom test item for another login a distinct authToken is espected
-     *               status: 201,
-     *               haveProperties: ['authToken', 'index'],
-     *               after: res => expect(headers.Authorization).to.be.not.equals(`Bearer ${res.body.authToken}`),    // after succesfull test, use a custom check to verify the authToken
-     *           },
-     *       ]
+     *      parameters: {                                           // default parameters options for the rest of tests
+     *          username: 'admin',
+     *          password: '1234'
+     *      },
+     *      send: [                                                 // test definitions
+     *          'noParametersError',                                // test for no parameters expect error (same as above)
+     *          {                                                   // begin test definition for missingParameters
+     *              missingParameters: [                       
+     *                  ['username', 'password'],                   // test for no parameters body = {}
+     *                  ['username'],                               // test for no parameters username
+     *                  ['password']                                // test for no parameters password
+     *              ]
+     *          },
+     *          {                                                   // begin custom test item for Invalid credentials
+     *              title: '"Invalid credentials" login error',     // test title
+     *              parameters: {                                   // override parameters for introduce an error
+     *                  username: 'admin',
+     *                  password: '12345'
+     *              },
+     *              status: 403,                                    // expected status
+     *              haveProperties: 'error',                        // expected property error in the result
+     *              propertyContains: {                             // expected message 'Invalid credentials' in the property message in the result
+     *                  message: 'Invalid credentials'
+     *              }
+     *          },
+     *          {                                                                               // begin custom test item for login
+     *              title: 'login should returns a valid session authToken',
+     *              status: 201,                                                                // expected status
+     *              haveProperties: ['authToken', 'index'],                                     // expected properties in the result
+     *              after: res => headers.Authorization = `Bearer ${res.body.authToken}`,       // after succesfull test, store the authToken for reuse as authorization header
+     *          },
+     *          {
+     *              title: 'should returns a distinct valid session authToken',                 // begin custom test item for another login a distinct authToken is espected
+     *              status: 201,
+     *              haveProperties: ['authToken', 'index'],
+     *              after: res => expect(headers.Authorization).to.be.not.equals(`Bearer ${res.body.authToken}`),    // after succesfull test, use a custom check to verify the authToken
+     *          },
+     *      ]
      * }
      * 
      * @example of use for before and after
@@ -252,29 +254,50 @@ const rt = {
                         if (test[k] === undefined)
                             test[k] = defaultOptions[k];
 
-                    if (test.missingParameters !== undefined) {
-                        if (!test.parameters)
-                            throw new Error ('trying to define a missing parametes test withut parameters.');
+                    const paramTypes = {
+                        missingParameters: {
+                            container: 'parameters',
+                        },
+                        missingQuery: {
+                            container: 'query',
+                        },
+                    };
+                    let pushed = false;
+                    for (const paramType in paramTypes) {
+                        if (test[paramType] === undefined)
+                            continue;
 
-                        if (!test.missingParameters)
+                        const paramOptions = paramTypes[paramType];
+                        const containerName = paramOptions.container;
+
+                        if (!test[containerName])
+                            throw new Error (`trying to define a missing ${containerName} test without ${containerName}.`);
+
+                        if (!test[paramType])
                             test.skip = true;
-                        
-                        const missingParameters = test.missingParameters;
-                        delete test.missingParameters;
-                        for (const i in missingParameters) {
-                            const thisTest = {parameters: {}};
+
+                        let missing = test[paramType];
+                        delete test[paramType];
+                        if (!(missing instanceof Array))
+                            missing = [missing];
+
+                        for (const i in missing) {
+                            const thisTest = {};
+                            thisTest[containerName] = {};
                             for (const k in test)
-                                if (k !== 'parameters')
+                                if (k !== containerName)
                                     thisTest[k] = test[k];
 
-                            const thisMissingParameters = missingParameters[i];
+                            let thisMissing = missing[i];
+                            if (!(thisMissing instanceof Array))
+                                thisMissing = thisMissing.split(',');
 
-                            for (const k in test.parameters)
-                                if (!thisMissingParameters.includes(k))
-                                    thisTest.parameters[k] = test.parameters[k];
+                            for (const k in test[containerName])
+                                if (!thisMissing.includes(k))
+                                    thisTest[containerName][k] = test[containerName][k];
 
                             if (!thisTest.title)
-                                thisTest.title = `should get a missing parameter error for parameters: ${thisMissingParameters.join(', ')}`;
+                                thisTest.title = `should get a missing parameter in ${containerName} error for parameters: ${thisMissing.join(', ')}`;
                             
                             if (thisTest.status === undefined)
                                 thisTest.status = 400;
@@ -283,15 +306,15 @@ const rt = {
                                 thisTest.haveProperties = 'error';
 
                             if (thisTest.propertyContains === undefined)
-                                thisTest.propertyContains = {missingParameters: thisMissingParameters};
+                                thisTest.propertyContains = {missingParameters: thisMissing};
 
+                            pushed = true;
                             tests.push(thisTest);
                         }
-
-                        continue;
                     }
 
-                    tests.push(test);
+                    if (!pushed)
+                        tests.push(test);
                 }
             }
         }
@@ -301,6 +324,13 @@ const rt = {
                 status: 400,
                 haveProperties: 'error',
                 title: 'should get a no parameters error',
+                helperMethod: test => delete test.parameters,
+            }, 
+            noQueryError: {
+                status: 400,
+                haveProperties: 'error',
+                title: 'should get a no parameters error',
+                helperMethod: test => delete test.query,
             }, 
             $form: {
                 status: 200,
@@ -308,6 +338,29 @@ const rt = {
                 query: '$form',
                 title: 'should get a form usign $form query parameter',
             }
+        };
+        const defaultMethodsOptions = {
+            get: {
+                status: 200,
+            },
+            head: {
+                status: 204,
+            },
+            post: {
+                status: 204,
+            },
+            put: {
+                status: 201,
+            },
+            patch: {
+                status: 200,
+            },
+            delete: {
+                status: 204,
+            },
+            options: {
+                status: 204,
+            },
         };
         for (const i in tests) {
             const test = tests[i];
@@ -321,15 +374,20 @@ const rt = {
 
                     const defaultData = helpers[helper];
                     for (const k in defaultData)
-                        if (test[k] === undefined)
+                        if (test[k] === undefined && k !== 'helperMethod')
                             test[k] = defaultData[k];
 
-                    if (helper === 'noParametersError')
-                        delete test.parameters;
+                    if (defaultData.helperMethod)
+                        defaultData.helperMethod(test);
 
                     delete test[helper];
                 }
             }
+            const defaultMethodOptions = defaultMethodsOptions[test.method];
+            if (defaultMethodOptions)
+                for (const k in defaultMethodOptions)
+                    if (test[k] === undefined)
+                        test[k] = defaultMethodOptions[k];
 
             tests[i] = test;
         }
@@ -349,6 +407,7 @@ const rt = {
      *  before: method                  method to call before send the request.
      *  check: method                   method to call after the request to check the response with the response and the test as paramaters. If it is not defined uses @see rt.checkReponse method.
      *  requestLog: true|string|list    show a console.log of listed items from request. It this is true showe all calculates test options
+     *  logRequest: true|string|list    alias for requestLog
      *  [checkOptions]                  options for checking the response @see rt.checkReponse for detail.
      * }
      */
@@ -392,6 +451,9 @@ const rt = {
                 
             if (test.before)
                 test.before(test);
+
+            if (test.requestLog === undefined && test.logRequest !== undefined)
+                test.requestLog = test.logRequest;
 
             if (test.requestLog) {
                 let requestLog = test.requestLog;
@@ -443,8 +505,8 @@ const rt = {
      *      noHaveCookies: cookies          check the headers response for the given cookies to not exists. This option can be a string for a single cookie, a list for multiple cookies, or a object in this case check the cookies to be distinct value.
      *      empty: true,                    check the response body to be empty.
      *      json: true,                     check the response body to be a JSON. If this option is not specified but haveProperties or noHaveProperties it is this option will be set to true.
-     *      haveProperties: properties,     check the response body for the given properties to exist. This option can be a string for a single property, a list for multiple properties, or a object in this case check the properties value.
-     *      noHaveProperties: properties,   check the response body for the given properties to not exist. This option can be a string for a single property, a list for multiple properties, or a object in this case check the properties to be distinct value.
+     *      haveProperties: properties,     check the response body for the given properties to exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties value.
+     *      noHaveProperties: properties,   check the response body for the given properties to not exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties to be distinct value.
      *      propertyContains: {             check the response body to have a property and its value contains the given values.
      *          propertyName: ['one', 'two']
      *      },
@@ -519,7 +581,7 @@ const rt = {
         if (options.haveProperties) {
             let haveProperties = options.haveProperties;
             if (typeof haveProperties === 'string')
-                haveProperties = [haveProperties];
+                haveProperties = haveProperties.split(',').map(item => item.trim());
 
             if (haveProperties instanceof Array) {
                 for (const i in haveProperties)
@@ -534,7 +596,7 @@ const rt = {
         if (options.noHaveProperties) {
             let noHaveProperties = options.noHaveProperties;
             if (typeof noHaveProperties === 'string')
-                noHaveProperties = [noHaveProperties];
+                noHaveProperties = noHaveProperties.split(',').map(item => item.trim());
 
             if (noHaveProperties instanceof Array) {
                 for (const i in noHaveProperties)

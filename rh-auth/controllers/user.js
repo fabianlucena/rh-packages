@@ -121,7 +121,7 @@ module.exports = {
         const definitions = {uuid: 'uuid', username: 'string'},
             options = {view: true, limit: 10, offset: 0};
 
-        httpUtil.getOptionsFromParamsAndOData(req?.query, definitions, options)
+        httpUtil.getOptionsFromParamsAndODataAsync(req?.query, definitions, options)
             .then(options => UserService.getList(options))
             .then(rows => res.status(200).send(rows));
     },

@@ -42,7 +42,7 @@ function setUpError(error, options) {
     const arranged = {};
     for (const name in options) {
         const value = options[name];
-        if (name == 'message' || name == 'statusCode' || error.constructor?.NoObjectValues?.includes(name)) {
+        if (name == 'message' || name == 'httpStatusCode' || error.constructor?.NoObjectValues?.includes(name)) {
             if (typeof value === 'object' && !(value instanceof Array)) {
                 ru.replace(arranged, value);
                 continue;
@@ -92,7 +92,7 @@ class MissingParameterError extends Error {
     static _zeroMessage = l._f('Mising parameters.');
     static _message = l._nf(0, 'Mising parameter: "%s".', 'Mising parameters: "%s".');
 
-    statusCode = 400;
+    httpStatusCode = 400;
     missingParameters = [];
     
     constructor(...missingParameters) {
@@ -100,7 +100,7 @@ class MissingParameterError extends Error {
         ru.setUpError(
             this,
             {
-                missingParameters: missingParameters
+                missingParameters
             }
         );
     }
@@ -169,13 +169,13 @@ const ru = {
             options = {message: options};
 
         const result = options?.method?
-            options?.method(ok):
+            options.method(ok):
             ok;
 
         if (result)
             return ok;
         
-        throw new ru.CheckError();
+        throw new ru.CheckError(options);
     },
 
     async checkAsync(ok, options) {
@@ -355,14 +355,14 @@ const ru = {
         if (all) {
             return Promise.all(await params.map(async param => {
                 if (param instanceof Array)
-                    return locale._(...param);
+                    return await locale._(...param);
                 else
-                    return locale._(param);
+                    return await locale._(param);
             }));
         } else {
             return Promise.all(await params.map(async param => {
                 if (param instanceof Array)
-                    return locale._(...param);
+                    return await locale._(...param);
                 else
                     return param;
             }));
@@ -494,14 +494,14 @@ const ru = {
         if (!options)
             options = {};
 
-        if (!options.statusCode)
-            options.statusCode = 500;
+        if (!options.httpStatusCode)
+            options.httpStatusCode = 500;
             
         if (!options.method)
             options.method = uuid.validate;
 
         if (!options._message)
-            options._message = ['%s is not a valid UUID', paramName];
+            options._message = ['%s is not a valid UUID value', paramName];
 
         return ru.check(value, options);
     },
@@ -522,8 +522,8 @@ const ru = {
     },
 
     checkParameterUUID(value, paramName) {
-        ru.checkParameter(value, paramName);
-        return ru.validateUUID(value, paramName, {statusCode: 400});
+        value = ru.checkParameter(value, paramName);
+        return ru.validateUUID(value, paramName, {httpStatusCode: 400});
     },
 
     async getErrorDataAsync(error, locale) {
@@ -538,8 +538,8 @@ const ru = {
             else
                 data = ru.merge(data, error, ['message', 'length', 'fileName', 'lineNumber', 'columnNumber', 'stack']);
 
-            if (error.statusCode)
-                data.statusCode = error.statusCode;
+            if (error.httpStatusCode)
+                data.httpStatusCode = error.httpStatusCode;
 
             data.message = await ru.getErrorMessageAsync(error, locale);
         } else
