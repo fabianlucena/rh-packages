@@ -208,6 +208,17 @@ const rt = {
                 }
             }
 
+            let haveAnyMethod = false;
+            for (const method in {notAllowedMethods: true, send: true, get: true, post: true, put: true, patch: true, delete: true, options: true, head: true}) {
+                if (options[method]) {
+                    haveAnyMethod = true;
+                    break;
+                }
+            }
+
+            if (!haveAnyMethod)
+                options.get = true;
+
             for (const method in {send: true, get: true, post: true, put: true, patch: true, delete: true, options: true, head: true}) {
                 let methodOptions = options[method];
                 if (methodOptions === undefined)
