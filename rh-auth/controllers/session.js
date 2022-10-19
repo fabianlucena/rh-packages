@@ -12,7 +12,7 @@ module.exports = {
 
             if (!authorization.startsWith('Bearer '))
                 return res.status(401).send({error: await req.locale._('HTTP error 401 unauthorized, authorization schema is no Bearer.')});
-            
+
             const authToken = authorization.substring(7);
             SessionService.getForAuthTokenCached(authToken)
                 .then(session => ru.checkAsync(session?.deviceId == req?.device?.id && session, {_message: l._f('Invalid device'), httpStatusCode: 400}))

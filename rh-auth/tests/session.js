@@ -81,20 +81,11 @@ describe('Session', () => {
             url: '/session',
             title: 'should get a session list',
         });
-        rt.initAgent();
         rt.testEndPoint({
             url: '/session',
+            before: test => test.agent = rt.createAgent(), // Change the agent to change the cookie device
             title: 'should get an error because the device is changed',
             status: 401,
-        });
-        rt.testEndPoint({
-            url: '/session',
-            skip: true,
-            title: 'Test IP change case',
-            status: 401,
-            before: () => {
-                // Get the session row and change the IP
-            },
         });
     });
 });
