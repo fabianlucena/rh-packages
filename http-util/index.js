@@ -53,7 +53,7 @@ class NoPermissionError extends Error {
 
     _n() {return this.permissions.length;}
 
-    async getMessageParams(locale) {
+    async getMessageParamsAsync(locale) {
         return [await locale._or(...this.permissions)];
     }
 }
@@ -80,7 +80,7 @@ class MethodNotAllowedError extends Error {
 
     _n() {return this.methods.length;}
 
-    async getMessageParams(locale) {
+    async getMessageParamsAsync(locale) {
         return [await locale._or(...this.methods)];
     }
 }
@@ -119,10 +119,10 @@ const httpUtil = {
         router: null,
         sequelize: null,
         beforeConfig: [],
-        afterConfig: []
+        afterConfigAsync: []
     },
 
-    async configure(global, ...modules) {
+    async configureAsync(global, ...modules) {
         if (!global)
             global = httpUtil.defaultGlobal;
 
@@ -130,7 +130,7 @@ const httpUtil = {
             global.checkRoutePermission = (...permission) => (req, res, next) => {
                 global.checkPermissionHandler(req, ...permission)
                     .then(() => next())
-                    .catch(httpUtil.errorHandler(req, res));
+                    .catch(httpUtil.errorHandlerAsync(req, res));
             };
         }
 
@@ -143,16 +143,16 @@ const httpUtil = {
                 global.models = {};
         }
 
-        await httpUtil.beforeConfig(global);
-        await httpUtil.configureModules(global, modules);
-        await httpUtil.beforeSync(global);
-        await httpUtil.syncDB(global);
+        await httpUtil.beforeConfigAsync(global);
+        await httpUtil.configureModulesAsync(global, modules);
+        await httpUtil.beforeSyncAsync(global);
+        await httpUtil.syncDBAsync(global);
         if (global.postConfigureModels)
-            await global.postConfigureModels(global.sequelize);
-        await httpUtil.afterSync(global);
-        await httpUtil.afterConfig(global);
+            global.postConfigureModels(global.sequelize);
+        await httpUtil.afterSyncAsync(global);
+        await httpUtil.afterConfigAsync(global);
 
-        await httpUtil.configureSwagger(global);
+        httpUtil.configureSwagger(global);
     },
 
     methodNotAllowed(req) {
@@ -188,13 +188,13 @@ const httpUtil = {
             .forEach(file => services[ru.camelize(file.substring(0, file.length - 3))] = require(path.join(servicesPath, file)));
     },
 
-    async sendError(req, res, error) {
-        const data = await ru.errorHandler(error, req.locale, req.showErrorInConsole);
+    async sendErrorAsync(req, res, error) {
+        const data = await ru.errorHandlerAsync(error, req.locale, req.showErrorInConsole);
         res.status(data.statusCode ?? 500).send(data);
     },
 
-    errorHandler(req, res) {
-        return async error => httpUtil.sendError(req, res, error);
+    errorHandlerAsync(req, res) {
+        return async error => await httpUtil.sendErrorAsync(req, res, error);
     },
 
     asyncHandler(method) {
@@ -208,104 +208,102 @@ const httpUtil = {
         };
     },
 
-    getOptionsFromOData(params, options) {
-        return new Promise((resolve, reject) => {
-            if (!options)
-                options = {};
+    async getOptionsFromODataAsync(params, options) {
+        if (!options)
+            options = {};
 
-            if (params) {
-                if (params.$select) {
-                    if (!options.attributes)
-                        options.attributes = [];
+        if (params) {
+            if (params.$select) {
+                if (!options.attributes)
+                    options.attributes = [];
 
-                    params.$select.split(',')
-                        .forEach(column => options.attributes.push(column.trim()));
-                }
-
-                if (params.$top) {
-                    const limit = parseInt(params.$top);
-                    if (isNaN(limit))
-                        return reject(new httpUtil._HttpError(l._fp('Error to convert $top = "%s" parameter value to a integer number.', params.$top)));
-
-                    if (limit > httpUtil.maxRowsInResult)
-                        return reject(new httpUtil._HttpError(l._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', httpUtil.maxRowsInResult)));
-            
-                    if (limit > options.maxLimit)
-                        return reject(new httpUtil._HttpError(l._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', options.maxLimit)));
-            
-                    if (limit < 0)
-                        return reject(new httpUtil._HttpError(l._fp('The $top parameter cannot be negative.'), 400));
-
-                    options.limit = limit;
-                }
-
-                if (!options.limit)
-                    options.limit = httpUtil.defaultRowsInResult;
-            
-                if (params.$skip) {
-                    const offset = parseInt(params.$skip);
-                    if (isNaN(offset))
-                        return reject(new httpUtil._HttpError(l._fp('Error to convert $skip = "%s" parameter value to a integer number.', params.$skip)));
-
-                    if (offset < 0)
-                        return reject(new httpUtil._HttpError(l._f('The $skip param cannot be negative.'), 400));
-                    
-                    options.offset = offset;
-                }
-
-                if (!options.offset)
-                    options.offset = 0;
+                params.$select.split(',')
+                    .forEach(column => options.attributes.push(column.trim()));
             }
 
-            resolve(options);
-        });
+            if (params.$top) {
+                const limit = parseInt(params.$top);
+                if (isNaN(limit))
+                    throw new httpUtil._HttpError(l._fp('Error to convert $top = "%s" parameter value to a integer number.', params.$top));
+
+                if (limit > httpUtil.maxRowsInResult)
+                    throw new httpUtil._HttpError(l._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', httpUtil.maxRowsInResult));
+        
+                if (limit > options.maxLimit)
+                    throw new httpUtil._HttpError(l._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', options.maxLimit));
+        
+                if (limit < 0)
+                    throw new httpUtil._HttpError(l._fp('The $top parameter cannot be negative.'), 400);
+
+                options.limit = limit;
+            }
+
+            if (!options.limit)
+                options.limit = httpUtil.defaultRowsInResult;
+        
+            if (params.$skip) {
+                const offset = parseInt(params.$skip);
+                if (isNaN(offset))
+                    throw new httpUtil._HttpError(l._fp('Error to convert $skip = "%s" parameter value to a integer number.', params.$skip));
+
+                if (offset < 0)
+                    throw new httpUtil._HttpError(l._f('The $skip param cannot be negative.'), 400);
+                
+                options.offset = offset;
+            }
+
+            if (!options.offset)
+                options.offset = 0;
+        }
+
+        return options;
     },
 
-    getWhereOptionsFromParams(params, definitions, options) {
-        return new Promise((resolve, reject) => {
-            if (!options)
-                options = {};
+    async getWhereOptionsFromParamsAsync(params, definitions, options) {
+        if (!options)
+            options = {};
 
-            if (params && definitions) {
-                for(const name in definitions) {
-                    const value = params[name];
-                    if (value !== undefined) {
-                        const def = definitions[name];
-                        switch (def) {
-                        case 'uuid':
-                            if (!uuid.validate(params.uuid))
-                                return reject(new NoUUIDError(name));
-                        }
-                    
-                        if (!options.where)
-                            options.where = {};
-
-                        options.where[name] = value;
+        if (params && definitions) {
+            for(const name in definitions) {
+                const value = params[name];
+                if (value !== undefined) {
+                    const def = definitions[name];
+                    switch (def) {
+                    case 'uuid':
+                        if (!uuid.validate(params.uuid))
+                            throw new NoUUIDError(name);
                     }
+                
+                    if (!options.where)
+                        options.where = {};
+
+                    options.where[name] = value;
                 }
             }
+        }
 
-            resolve(options);
-        });
+        return options;
     },
 
-    getOptionsFromParamsAndOData(params, definitions, options) {
-        return httpUtil.getOptionsFromOData(params, options)
-            .then(options => httpUtil.getWhereOptionsFromParams(params, definitions, options));
+    async getOptionsFromParamsAndODataAsync(params, definitions, options) {
+        options = await httpUtil.getOptionsFromODataAsync(params, options);
+        return await httpUtil.getWhereOptionsFromParamsAsync(params, definitions, options);
     },
 
-    deleteHandler(req, res) {
-        return async rowCount => {
-            if (!rowCount)
-                res.status(200).send({msg: await req.locale._('Nothing to delete.')});
-            else if (rowCount != 1)
-                res.status(200).send({msg: await req.locale._('%s rows deleted.', rowCount)});
-            else
-                res.sendStatus(204);
-        };
+    async deleteHandlerAsync(req, res, rowCount) {
+        if (!rowCount)
+            res.status(200).send({msg: await req.locale._('Nothing to delete.')});
+        else if (rowCount != 1)
+            res.status(200).send({msg: await req.locale._('%s rows deleted.', rowCount)});
+        else
+            res.sendStatus(204);
     },
 
-    async execAsyncMethodList(asyncMethodList, singleItemName, ...params) {
+    getDeleteHandler(req, res) {
+        return async rowCount => httpUtil.deleteHandlerAsync(req, res, rowCount);
+    },
+
+    async execAsyncMethodListAsync(asyncMethodList, singleItemName, ...params) {
         let method,
             isEmpty,
             itemName;
@@ -346,10 +344,10 @@ const httpUtil = {
         if (isEmpty || (singleItemName !== undefined && singleItemName !== null))
             return;
                 
-        return httpUtil.execAsyncMethodList(asyncMethodList, null, ...params);
+        return await httpUtil.execAsyncMethodListAsync(asyncMethodList, null, ...params);
     },
 
-    async configureModule(global, theModule) {
+    async configureModuleAsync(global, theModule) {
         if (!theModule.name)
             throw new Error('Module does not have a name.');
 
@@ -372,7 +370,7 @@ const httpUtil = {
             global.data = await ru.deepMerge(global.data, theModule.data);
     },
 
-    async installModule(global, theModule) {
+    async installModuleAsync(global, theModule) {
         theModule.global = global;
         if (theModule.routesPath)
             await httpUtil.configureRouter(theModule.routesPath, global.router, global.checkRoutePermission, theModule.routesPathOptions);
@@ -383,16 +381,16 @@ const httpUtil = {
         if (theModule.init)
             await Promise.all(await theModule.init.map(async method => await method()));
 
-        if (theModule.afterConfig) {
-            const afterConfig = (theModule.afterConfig instanceof Array)?
-                theModule.afterConfig:
-                [theModule.afterConfig];
+        if (theModule.afterConfigAsync) {
+            const afterConfigAsync = (theModule.afterConfigAsync instanceof Array)?
+                theModule.afterConfigAsync:
+                [theModule.afterConfigAsync];
             
-            global.afterConfig.push(...afterConfig);
+            global.afterConfigAsync.push(...afterConfigAsync);
         }
     },
 
-    async configureModules(global, modules) {
+    async configureModulesAsync(global, modules) {
         ru.complete(
             global,
             {
@@ -403,13 +401,13 @@ const httpUtil = {
         );
 
         for (let i = 0, e = modules.length; i < e; i++)
-            await httpUtil.configureModule(global, modules[i]);
+            await httpUtil.configureModuleAsync(global, modules[i]);
 
         for (let i = 0, e = modules.length; i < e; i++)
-            await httpUtil.installModule(global, modules[i]);
+            await httpUtil.installModuleAsync(global, modules[i]);
     },
 
-    async getPropertyFromItems(propertyName, list) {
+    getPropertyFromItems(propertyName, list) {
         if (list instanceof Array) {
             const checkList = [];
             list.forEach(item => {
@@ -432,38 +430,38 @@ const httpUtil = {
         }
     },
 
-    async beforeConfig(global) {
-        await httpUtil.execAsyncMethodList(global.beforeConfig);
+    async beforeConfigAsync(global) {
+        await httpUtil.execAsyncMethodListAsync(global.beforeConfigAsync);
     },
 
-    async afterConfig(global) {
-        await httpUtil.execAsyncMethodList(global.afterConfig, null, global);
+    async afterConfigAsync(global) {
+        await httpUtil.execAsyncMethodListAsync(global.afterConfigAsync, null, global);
     },
 
-    async beforeSync(global) {
+    async beforeSyncAsync(global) {
         if (global.sequelize) {
-            const list = await httpUtil.getPropertyFromItems('beforeSync', global.modules);
-            await httpUtil.execAsyncMethodList(list);
+            const list = httpUtil.getPropertyFromItems('beforeSyncAsync', global.modules);
+            await httpUtil.execAsyncMethodListAsync(list);
         }
     },
 
-    async afterSync(global) {
+    async afterSyncAsync(global) {
         if (global.sequelize) {
-            const list = await httpUtil.getPropertyFromItems('afterSync', global.modules);
-            await httpUtil.execAsyncMethodList(list);
+            const list = httpUtil.getPropertyFromItems('afterSyncAsync', global.modules);
+            await httpUtil.execAsyncMethodListAsync(list);
         }
     },
 
-    async syncDB(global) {
+    async syncDBAsync(global) {
         if (!global.sequelize)
             return;
 
         await global.sequelize.sync(global.db.sync);
-        const asyncMethodList = await httpUtil.getPropertyFromItems('check', global.sequelize.models);
-        await httpUtil.execAsyncMethodList(asyncMethodList);
+        const asyncMethodList = httpUtil.getPropertyFromItems('check', global.sequelize.models);
+        await httpUtil.execAsyncMethodListAsync(asyncMethodList);
     },
 
-    async configureSwagger(global) {
+    configureSwagger(global) {
         if (!global.swagger)
             return;
             

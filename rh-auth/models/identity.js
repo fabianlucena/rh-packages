@@ -13,8 +13,8 @@ module.exports = (sequelize, DataTypes) => {
 
         static check(asyncMethodList) {
             let userId;
-            return httpUtil.execAsyncMethodList(asyncMethodList, 'User')
-                .then(() => httpUtil.execAsyncMethodList(asyncMethodList, 'IdentityType'))
+            return httpUtil.execAsyncMethodListAsync(asyncMethodList, 'User')
+                .then(() => httpUtil.execAsyncMethodListAsync(asyncMethodList, 'IdentityType'))
                 .then(() => sqlUtil.getSingleRowProperty(sequelize.models.User, {username: 'admin'}, 'id'))
                 .then(uId => userId = uId)
                 .then(() => sqlUtil.getSingleRowProperty(sequelize.models.IdentityType, {name: 'local'}, 'id'))

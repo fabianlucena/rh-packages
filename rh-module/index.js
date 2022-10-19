@@ -7,10 +7,10 @@ const conf = {
     modelsPath: __dirname + '/models',
     servicesPath: __dirname + '/services',
     apis: [__dirname + '/routes/*.js', __dirname + '/controllers/*.js'],
-    afterConfig: afterConfig,
+    afterConfigAsync,
 };
 
-async function afterConfig() {
+async function afterConfigAsync() {
     const ModuleService = require('./services/module');
     for (const moduleName in conf?.global?.modules)
         await ModuleService.createIfNotExists(conf.global.modules[moduleName]);

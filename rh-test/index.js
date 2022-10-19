@@ -381,11 +381,14 @@ const rt = {
             if (test.base === undefined)
                 test.base = rt.base;
 
-            if (test.headers === undefined)
-                test.headers = rt.headers;
-
             if (!test.headers)
-                test.headers = {};
+                test.headers = rt.headers ?? {};
+
+            if (!test.query)
+                test.query = {};
+
+            if (!test.parameters)
+                test.parameters = {};
                 
             if (test.before)
                 test.before(test);
@@ -414,16 +417,13 @@ const rt = {
             }
 
             test.agent[test.method]((test.base ?? '') + test.url)
-                .query(test.query ?? {})
                 .set(test.headers ?? {})
+                .query(test.query ?? {})
                 .send(test.parameters ?? {})
                 .end((err, res) => {
-                    if (err) {
+                    if (err)
                         console.log(err);
-                        return;
-                    }
-
-                    if (test.check)
+                    else if (test.check)
                         test.check(res, test);
                     else
                         rt.checkReponse(res, test);
@@ -512,6 +512,10 @@ const rt = {
         if (options.json)
             expect(res).to.be.json;
 
+        let value = res.body;
+        if (options.checkItem !== undefined)
+            value = value[options.checkItem];
+
         if (options.haveProperties) {
             let haveProperties = options.haveProperties;
             if (typeof haveProperties === 'string')
@@ -519,10 +523,10 @@ const rt = {
 
             if (haveProperties instanceof Array) {
                 for (const i in haveProperties)
-                    expect(res.body).to.have.property(haveProperties[i]);
+                    expect(value).to.have.property(haveProperties[i]);
             } else if (typeof haveProperties === 'object') {
                 for (const cookie in haveProperties)
-                    expect(res.body).to.have.property(cookie, haveProperties[cookie]);
+                    expect(value).to.have.property(cookie, haveProperties[cookie]);
             } else
                 throw new Error('error to check body result values. haveProperties option must be a string for a single property, a list or a object');
         }
@@ -534,17 +538,17 @@ const rt = {
 
             if (noHaveProperties instanceof Array) {
                 for (const i in noHaveProperties)
-                    expect(res.body).to.not.have.property(noHaveProperties[i]);
+                    expect(value).to.not.have.property(noHaveProperties[i]);
             } else if (typeof noHaveProperties === 'object') {
                 for (const property in noHaveProperties)
-                    expect(res.body).to.not.have.property(property, noHaveProperties[property]);
+                    expect(value).to.not.have.property(property, noHaveProperties[property]);
             } else
-                throw new Error('error to check body result  values. noHaveProperties option must be a string for a single property, a list or a object');
+                throw new Error('error to check body result values. noHaveProperties option must be a string for a single property, a list or a object');
         }
 
         if (options.propertyContains) {
             for (const property in options.propertyContains) {
-                const properties = expect(res.body).to.have.property(property);
+                const properties = expect(value).to.have.property(property);
                 const contains = options.propertyContains[property];
                 if (contains instanceof Array)
                     for (const i in contains)

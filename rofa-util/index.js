@@ -107,7 +107,7 @@ class MissingParameterError extends Error {
 
     _n() {return this.missingParameters.length;}
 
-    async getMessageParams(locale) {
+    async getMessageParamsAsync(locale) {
         return [await locale._and(...this.missingParameters)];
     }
 }
@@ -128,7 +128,7 @@ class MergeTypeError extends Error {
         );
     }
 
-    async getMessageParams(locale) {  // eslint-disable-line no-unused-vars
+    async getMessageParamAsync(locale) {  // eslint-disable-line no-unused-vars
         return [this.dstType, this.srcType];
     }
 }
@@ -351,7 +351,7 @@ const ru = {
         return ru.merge(dst, src, ru.merge(options, {skipExistent: true, replace: true, deep: -1}));
     },
 
-    async getTranslatedParams(params, all, locale) {
+    async getTranslatedParamsAsync(params, all, locale) {
         if (all) {
             return Promise.all(await params.map(async param => {
                 if (param instanceof Array)
@@ -369,28 +369,28 @@ const ru = {
         }
     },
 
-    async getErrorMessageParams(error, locale) {
-        if (error.getMessageParams)
-            return error.getMessageParams(locale) || [];
+    async getErrorMessageParamsAsync(error, locale) {
+        if (error.getMessageParamsAsync)
+            return await error.getMessageParamsAsync(locale) || [];
 
         let _params = error._params;
         if (!_params) {
             let params = error.params;
             if (params)
-                return ru.getTranslatedParams(params, false, locale);
+                return await ru.getTranslatedParamsAsync(params, false, locale);
 
             _params = error.constructor._params;
             if (!_params)
                 return error.constructor.params || [];
         }
 
-        return ru.getTranslatedParams(_params, true, locale);
+        return await ru.getTranslatedParamsAsync(_params, true, locale);
     },
 
-    async getErrorMessage(error, locale) {
+    async getErrorMessageAsync(error, locale) {
         let message;
-        if (error.getMessage) {
-            message = await error.getMessage(locale);
+        if (error.getMessageAsync) {
+            message = await error.getMessageAsync(locale);
             if (message)
                 return message;
         }
@@ -410,10 +410,10 @@ const ru = {
 
                 let params;
                 if (error.message instanceof Array) {
-                    params = await ru.getTranslatedParams(message.slice(1), false, locale);
+                    params = await ru.getTranslatedParamsAsync(message.slice(1), false, locale);
                     message = message[0];
                 } else
-                    params = await ru.getErrorMessageParams(error, locale);
+                    params = await ru.getErrorMessageParamsAsync(error, locale);
 
                 return util.format(message, params);
             }
@@ -427,10 +427,10 @@ const ru = {
                 _message = _message[0];
 
                 if (_params)
-                    params = await ru.getTranslatedParams(_params, true, locale);
+                    params = await ru.getTranslatedParamsAsync(_params, true, locale);
             }
             else
-                params = await ru.getErrorMessageParams(error, locale);
+                params = await ru.getErrorMessageParamsAsync(error, locale);
 
             return locale._(_message, ...params);
         }
@@ -454,20 +454,20 @@ const ru = {
 
             if (_message) {
                 if (_message instanceof Array) {
-                    params = await ru.getTranslatedParams(_message.slice(1), false, locale);
+                    params = await ru.getTranslatedParamsAsync(_message.slice(1), false, locale);
                     _message = message[0];
                 } else
-                    params = await ru.getErrorMessageParams(error, locale);
+                    params = await ru.getErrorMessageParamsAsync(error, locale);
 
                 return locale._(_message, params);
             }
 
             if (message) {
                 if (message instanceof Array) {
-                    params = await ru.getTranslatedParams(message.slice(1), false, locale);
+                    params = await ru.getTranslatedParamsAsync(message.slice(1), false, locale);
                     message = message[0];
                 } else
-                    params = await ru.getErrorMessageParams(error, locale);
+                    params = await ru.getErrorMessageParamsAsync(error, locale);
 
                 return util.format(message, params);
             }
@@ -481,11 +481,11 @@ const ru = {
             params;
 
         if (_params && _params.length > 0)
-            params = await ru.getTranslatedParams(_params, true, locale);
-        else if (error.getMessageParams)
-            params = await error.getMessageParams(locale) || [];
+            params = await ru.getTranslatedParamsAsync(_params, true, locale);
+        else if (error.getMessageParamsAsync)
+            params = await error.getMessageParamsAsync(locale) || [];
         else
-            params = await ru.getErrorMessageParams(error, locale);
+            params = await ru.getErrorMessageParamsAsync(error, locale);
 
         return locale._n(_n, _singular, _plural, ...params);
     },
@@ -521,12 +521,12 @@ const ru = {
         return value[paramName];
     },
 
-    async checkParameterUUID(value, paramName) {
-        await ru.checkParameter(value, paramName);
+    checkParameterUUID(value, paramName) {
+        ru.checkParameter(value, paramName);
         return ru.validateUUID(value, paramName, {statusCode: 400});
     },
 
-    async getErrorData(error, locale) {
+    async getErrorDataAsync(error, locale) {
         let data = {};
         if (error instanceof Error) {
             data.name = error.constructor.name;
@@ -541,7 +541,7 @@ const ru = {
             if (error.statusCode)
                 data.statusCode = error.statusCode;
 
-            data.message = await ru.getErrorMessage(error, locale);
+            data.message = await ru.getErrorMessageAsync(error, locale);
         } else
             data.message = error;
 
@@ -551,8 +551,8 @@ const ru = {
         return data;
     },
 
-    async errorHandler(error, locale, showInConsole) {
-        const data = await ru.getErrorData(error, locale ?? l);
+    async errorHandlerAsync(error, locale, showInConsole) {
+        const data = await ru.getErrorDataAsync(error, locale ?? l);
         const logTitle = data.name? data.name + ': ': '';
 
         if (showInConsole || showInConsole === undefined) {

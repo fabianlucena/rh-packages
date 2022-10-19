@@ -15,7 +15,7 @@ function middleware() {
                 next();
             })
             .catch(err => {
-                ru.errorHandler(err);
+                ru.errorHandlerAsync(err);
                 next();
             });
     };

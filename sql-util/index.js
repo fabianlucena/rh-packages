@@ -55,7 +55,7 @@ class MissingPropertyError extends Error {
 
     _n() {return this.properties.length;}
 
-    async getMessageParams(locale) {
+    async getMessageParamsAsync(locale) {
         return [await locale._and(...this.properties), this.objectName];
     }
 }

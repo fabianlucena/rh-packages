@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
         }
 
         static async check(asyncMethodList) {
-            await httpUtil.execAsyncMethodList(asyncMethodList, 'UserType');
+            await httpUtil.execAsyncMethodListAsync(asyncMethodList, 'UserType');
             const userTypeId = await sqlUtil.getSingleRowProperty(sequelize.models.UserType, {name: 'user'}, 'id');
             await sqlUtil.addIfNotExists(
                 User,

@@ -9,10 +9,10 @@ const conf = {
     modelsPath: __dirname + '/models',
     servicesPath: __dirname + '/services',
     apis: [__dirname + '/routes/*.js', __dirname + '/controllers/*.js'],
-    afterConfig: afterConfig,
+    afterConfigAsync,
 };
 
-async function afterConfig(_, options) {
+async function afterConfigAsync(_, options) {
     const MenuItemService = require('./services/menu_item');
     
     for (const permissionName in options?.data?.permissions) {

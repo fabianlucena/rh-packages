@@ -27,7 +27,7 @@ module.exports = {
                     else {
                         let msg;
                         if (err instanceof Error)
-                            msg = await ru.getErrorMessage(err);
+                            msg = await ru.getErrorMessageAsync(err);
                         else
                             msg = err;
 
@@ -114,7 +114,7 @@ module.exports = {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    sessionGet(req, res) {
+    async sessionGet(req, res) {
         const definitions = {uuid: 'uuid', open: 'date', close: 'date', authToken: 'string', index: 'int'};
 
         httpUtil.getOptionsFromParamsAndOData(req?.query, definitions)
@@ -165,10 +165,9 @@ module.exports = {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    sessionDelete(req, res) {
-        ru.checkParameterUUID(req?.query, 'uuid')
-            .then(uuid => SessionService.deleteForUuid(uuid))
-            .then(httpUtil.deleteHandler(req, res));
+    async sessionDelete(req, res) {
+        const uuid = ru.checkParameterUUID(req?.query, 'uuid');
+        const rowCount = await SessionService.deleteForUuid(uuid);
+        await httpUtil.deleteHandlerAsync(req, res, rowCount);
     },
-
 };

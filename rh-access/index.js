@@ -9,12 +9,12 @@ const conf = {
     version: '0.1',
     schema: 'acc',
     init: [],
-    configure: configure,
+    configure,
     routesPath: __dirname + '/routes',
     modelsPath: __dirname + '/models',
     servicesPath: __dirname + '/services',
     apis: [__dirname + '/routes/*.js', __dirname + '/controllers/*.js'],
-    afterConfig: afterConfig,
+    afterConfigAsync,
     data: {
         permissions: {
             'current-site.switch': {title: l._f('Switch site'),      type: 'private', roles: 'user', module: name, menuItem: {service: 'site',  action: 'form'}},
@@ -60,7 +60,7 @@ function getCheckPermissionHandler(chain) {
     };
 }
 
-async function afterConfig(_, global) {
+async function afterConfigAsync(_, global) {
     const SiteService = require('./services/site');
     for (const siteName in global?.data?.sites) {
         const data = global.data.sites[siteName];

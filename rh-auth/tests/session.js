@@ -7,19 +7,25 @@ describe('Session', () => {
             this.skip();
     });
 
+    let sessionToDelete;
+
     rt.testEndPoint({
         url: '/session',
         notAllowedMethods: 'POST,PUT,PATCH,OPTIONS,HEAD',
         get: [
             {
-                skip: true,
                 title: 'should get a session list',
-                log: true,
+                status: 200,
+                checkItem: 0,
+                haveProperties: ['uuid', 'index', 'open', 'close', 'User', 'Device'],
+                after: res => sessionToDelete = res.body[0].uuid,
             },
         ],
         delete: {
-            skip: true,
+            title: 'delete the first session listed',
+            before: test => test.query.uuid = sessionToDelete,
             log: true,
+            requestLog: true,
         },
     });
 });

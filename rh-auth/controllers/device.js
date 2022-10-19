@@ -24,7 +24,7 @@ function middleware(options) {
                         })
                         .catch(err => res.status(500).send({error: err}));
                 } else {
-                    httpUtil.sendError(req, res, err);
+                    httpUtil.sendErrorAsync(req, res, err);
                 }
             });
     };
