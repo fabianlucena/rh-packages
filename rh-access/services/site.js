@@ -115,7 +115,7 @@ const SiteService = {
     },
 
     /**
-     * Gets a site list for a user with the username.
+     * Gets a site list for an user with the username.
      * @param {string} username - 
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{[]Site]}}
@@ -128,7 +128,7 @@ const SiteService = {
     },
 
     /**
-     * Gets a site name list for a user with the username.
+     * Gets a site name list for an user with the username.
      * @param {string} username - 
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{[]Site]}}

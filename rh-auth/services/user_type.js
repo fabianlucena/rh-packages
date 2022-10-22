@@ -23,7 +23,7 @@ const UserTypeService = {
     },
 
     /**
-     * Gets a user type for its name. For many coincidences and for no rows this method fails.
+     * Gets an user type for its name. For many coincidences and for no rows this method fails.
      * @param {string} name - name for the user type to get.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{UserType}}

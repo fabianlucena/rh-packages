@@ -103,6 +103,6 @@ async function loginPost(req, res) {
 }
 
 module.exports = {
-    loginGetForm: loginGetForm,
-    loginPost: loginPost
+    loginGetForm,
+    loginPost
 };

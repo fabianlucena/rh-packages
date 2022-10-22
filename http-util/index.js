@@ -108,11 +108,11 @@ const httpUtil = {
     maxRowsInResult: 100,
     defaultRowsInResult: 20,
 
-    HttpError: HttpError,
-    _HttpError: _HttpError,
-    NoPermissionError: NoPermissionError,
-    MethodNotAllowedError: MethodNotAllowedError,
-    NoUUIDError: NoUUIDError,
+    HttpError,
+    _HttpError,
+    NoPermissionError,
+    MethodNotAllowedError,
+    NoUUIDError,
 
     defaultGlobal: {
         app: null,

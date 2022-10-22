@@ -27,8 +27,8 @@ describe('Session', () => {
                     'noQueryError',
                     {missingQuery: 'uuid'},
                     {
-                        query: {uuid: 'Invalud UUID'},
                         title: 'error in UUID parameter must return an error',
+                        query: {uuid: 'Invalid UUID'},
                         status: 400,
                         haveProperties: 'error,message',
                     },

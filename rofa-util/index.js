@@ -64,7 +64,7 @@ class _Error extends Error {
             this,
             {
                 _message: message,
-                params: params
+                params
             }
         );
     }
