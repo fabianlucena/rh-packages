@@ -36,6 +36,7 @@ const rt = {
      *  headers:            optional JSON headers to send.
      *  query: query        optional query to send as get parameters.
      *  [others]            others root properties but notAllowedMethods, send, get, post, put, patch, delete, options, head; will be used as default values for each test. @see rt.testEndPointMethodSend(test) for the rest of properties.
+     *  trace: true         show partial construction of the tests
      * 
      *  notAllowedMethods:  comma separated strings, list of strings, or object of type {method: options} to check for method not allowed. If the name of the method is prefixed with ! the method is skipped. If this is a string or a list, whis will be cnverted to object: {method: true, ...} or {method: false} if the method name is prefixed with !.
      *      true            for true values the default values are:
@@ -50,7 +51,7 @@ const rt = {
      *          send:                   list of each test to perform. If this option is not defined a single test is performed. @see rt.testEndPointMethodSend(test) for the options.
      *          $form:                  perform a get with $form query parameter to get the form. Valid options are:
      *          {
-     *              status: 200,
+     *              status: 200,        expected status @see rt.checkStatus() for the options.
      *              haveProperties = 'error',
      *              query: '$form',
      *              title: 'should get a form usign $form query parameter',
@@ -216,13 +217,23 @@ const rt = {
                 }
             }
 
-            if (!haveAnyMethod)
-                options.get = true;
+            if (!haveAnyMethod) {
+                if (options.method && options[options.method] === undefined)
+                    options[options.method] = true;
+                else
+                    options.get = true;
+            }
+
+            if (options.trace)
+                console.log(options);
 
             for (const method in {send: true, get: true, post: true, put: true, patch: true, delete: true, options: true, head: true}) {
                 let methodOptions = options[method];
                 if (methodOptions === undefined)
                     continue;
+
+                if (methodOptions.trace)
+                    console.log(methodOptions);
 
                 if (methodOptions instanceof Array)
                     methodOptions = {send: methodOptions};
@@ -296,7 +307,7 @@ const rt = {
                             const thisTest = {};
                             thisTest[containerName] = {};
                             for (const k in test)
-                                if (k !== containerName)
+                                if (k !== 'title' && k !== containerName)
                                     thisTest[k] = test[k];
 
                             let thisMissing = missing[i];
@@ -308,7 +319,7 @@ const rt = {
                                     thisTest[containerName][k] = test[containerName][k];
 
                             if (!thisTest.title)
-                                thisTest.title = `should get a missing parameter in ${containerName} error for parameters: ${thisMissing.join(', ')}`;
+                                thisTest.title = `${thisTest.method.toUpperCase()} should get a missing parameter in ${containerName} error for parameters: ${thisMissing.join(', ')}`;
                             
                             if (thisTest.status === undefined)
                                 thisTest.status = 400;
@@ -324,7 +335,7 @@ const rt = {
                         }
                     }
 
-                    if (!pushed)
+                    if (!pushed || test.get || test.post || test.put || test.patch || test.delete || test.options || test.head)
                         tests.push(test);
                 }
             }
@@ -384,9 +395,14 @@ const rt = {
                         test.skip = false;
 
                     const defaultData = helpers[helper];
-                    for (const k in defaultData)
-                        if (test[k] === undefined && k !== 'helperMethod')
-                            test[k] = defaultData[k];
+                    for (const k in defaultData) {
+                        if (test[k] === undefined && k !== 'helperMethod') {
+                            if (k === 'title')
+                                test[k] = `${test.method.toUpperCase()} ${defaultData[k]}`;
+                            else
+                                test[k] = defaultData[k];
+                        }
+                    }
 
                     if (defaultData.helperMethod)
                         defaultData.helperMethod(test);
@@ -431,11 +447,11 @@ const rt = {
             else
                 test.test = it;
 
-        if (!test.title)
+        if (!test.title) {
+            test.title = `${test.method.toUpperCase()} ${test.url}`;
             if (test.status)
-                test.title = `${test.url} ${test.method} should return a ${test.status} HTTP status code`;
-            else
-                test.title = `${test.url} ${test.method}`;
+                test.title += ` should return a ${test.status} HTTP status code`;
+        }
             
         if (!test.method)
             test.method = 'get';
@@ -511,14 +527,17 @@ const rt = {
      * @param {*} res response
      * @param {*} options options to check the response. Valid options are:
      *  {
-     *      status: 200,                    check the status code if exists except if is undefined or false.
+     *      status: 200,                    check the status code if exists except if is undefined or false, @see rt.checkStatus for reference.
      *      haveCookies: cookies            check the headers response for the given cookies to exists. This option can be a string for a single cookie, a list for multiple cookies, or a object in this case check the cookies value.
      *      noHaveCookies: cookies          check the headers response for the given cookies to not exists. This option can be a string for a single cookie, a list for multiple cookies, or a object in this case check the cookies to be distinct value.
      *      empty: true,                    check the response body to be empty.
      *      json: true,                     check the response body to be a JSON. If this option is not specified but haveProperties or noHaveProperties it is this option will be set to true.
-     *      haveProperties: properties,     check the response body for the given properties to exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties value.
-     *      noHaveProperties: properties,   check the response body for the given properties to not exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties to be distinct value.
-     *      propertyContains: {             check the response body to have a property and its value contains the given values.
+     *      bodyLengthOf: int               check the response body to have the given items bodyLengthOf.
+     *      checkItem: int|string           search a specific item in the body to check
+     *      lengthOf: int                   check the value to have the given items lengthOf.
+     *      haveProperties: properties,     check the value for the given properties to exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties value.
+     *      noHaveProperties: properties,   check the value for the given properties to not exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties to be distinct value.
+     *      propertyContains: {             check the value to have a property and its value contains the given values.
      *          propertyName: ['one', 'two']
      *      },
      *      after: method                   call the method with response has parameter.
@@ -542,8 +561,7 @@ const rt = {
             console.log(message);
         }
 
-        if (options.status != undefined && options.status !== false)
-            expect(res).to.have.status(options.status);
+        rt.checkStatus(res, options);
 
         if (options.haveCookies) {
             let haveCookies = options.haveCookies;
@@ -578,16 +596,22 @@ const rt = {
         if (options.empty)
             expect(res.text).to.be.empty;
 
-        if (options.haveProperties || options.noHaveProperties)
+        if (options.haveProperties || options.noHaveProperties || options.bodyLengthOf || options.lengthOf)
             if (options.json === undefined)
                 options.json = true;
 
         if (options.json)
             expect(res).to.be.json;
 
+        if (options.bodyLengthOf)
+            expect(res.body).to.have.lengthOf(options.bodyLengthOf);
+
         let value = res.body;
         if (options.checkItem !== undefined)
             value = value[options.checkItem];
+
+        if (options.lengthOf)
+            expect(value).to.have.lengthOf(options.lengthOf);
 
         if (options.haveProperties) {
             let haveProperties = options.haveProperties;
@@ -633,6 +657,79 @@ const rt = {
 
         if (options.after)
             options.after(res);
+    },
+
+    /**
+     * Checks the status code
+     * @param {*} res response
+     * @param {*} options options to check the status response. Valid values are:
+     *  positive integer                any number and equality is checked
+     *  negative integer                any number and if the number exists in the response the check is not passed
+     *  RegExp                          regular expression to test against the status response
+     *  string                          string can be:
+     *      '200'                       a number to check for positive
+     *      '!200'                      a number prefixed with !, to check for negative
+     *      '2xx' | '!2xx'              the "x" represent any number in that place
+     *  Array                           A list of any prior values. The first match resolve the entire check list for the positive or for the negative way.
+     *  Comma separated strings         It is interpreted as Array
+     *      '!2xx,!4xx'
+     * @returns 
+     */
+    checkStatus(res, options) {
+        if (!options.status)
+            return;
+
+        if (Number.isInteger(options.status)) {
+            if (options.status > 0)
+                expect(res).to.have.status(options.status);
+            else
+                expect(res).to.not.have.status(-options.status);
+
+            return;
+        }
+        
+        let expectedStatusList = options.status;
+        if (!(expectedStatusList instanceof Array)) {
+            if (typeof expectedStatusList === 'string')
+                expectedStatusList = expectedStatusList.split(',').map(s => s.trim());
+            else if (expectedStatusList instanceof RegExp)
+                expectedStatusList = [expectedStatusList];
+            else 
+                throw new Error(`cheking for status ${expectedStatusList} is unknown`);
+        }
+
+        const status = res.status;
+        for (const i in expectedStatusList) {
+            const expectedStatus = expectedStatusList[i];
+            if (expectedStatus instanceof RegExp) {
+                if (expectedStatus.test(status))
+                    return expect(res).to.have.status(status);
+            } else if (Number.isInteger(expectedStatus)) {
+                if (expectedStatus > 0) {
+                    if (expectedStatus === status)
+                        return expect(res).to.have.status(status);
+                } else {
+                    if (-expectedStatus === status)
+                        expect(res).to.not.have.status(status);
+                }
+            } else if (typeof expectedStatus === 'string') {
+                const checkType = expectedStatus[0] !== '!';
+                let expectedStatusRegExp = expectedStatus.replaceAll('x', '\\d');
+                if (!checkType)
+                    expectedStatusRegExp = expectedStatusRegExp.substring(1);
+
+                expectedStatusRegExp = new RegExp('^' + expectedStatusRegExp + '$');
+                if (expectedStatusRegExp.test(status)) {
+                    if (checkType) {
+                        return expect(res).to.have.status(status);
+                    } else {
+                        return expect(res).to.not.have.status(status);
+                    }
+                }
+            } else {
+                throw new Error(`cheking for status ${expectedStatus} is unknown`);
+            }
+        }
     },
 
     /**
@@ -741,7 +838,255 @@ const rt = {
 
         rt.getAgent(options.app);
         rt.testLogin(options);
-    }
+    },
+
+    /**
+     * Check the tests for the general behavior of an endponit. This method uses the @see rt.testEndPoint method several times.
+     * @param {*} options options, see the example for detail.
+     * 
+     * Perform several checks for the endpoint:
+     *  - Not allowed HTTP methods
+     *  - POST create object with missing params
+     *  - POST create object with the right params
+     *  - GET objects
+     *  - POST forbiden double creation of object
+     *  - GET the created object
+     *  - GET single object using query parameters
+     *  - GET single object using URL parameters
+     *  - GET objects using query parameters
+     *  - GET objects using URL parameters
+     *  - DELETE tests only if the DELETE method is not in the not allowed HTTP method list
+     *  - DELETE object no query error
+     *  - DELETE error in UUID parameter
+     *  - DELETE delete the previously created object by query
+     *  - DELETE trying to delete a second time the same record must return an error
+     *  - GET trying to get the deleted object
+     *  - POST should create a new object again
+     *  - GET should get the recently create objects
+     *  - DELETE delete the previously created object by URL
+     * 
+     * @example
+     *  {
+     *      url: '/user',                                       // URL of the endpoint to check, @see rt.testEndPoint.
+     *      notAllowedMethods: 'PUT,PATCH,OPTIONS,HEAD',        // Not allowed method, @see rt.testEndPoint.
+     *      parameters: {                                       // Parameters, @see rt.testEndPoint.
+     *          username: 'test1',
+     *          displayName: 'Test 1',
+     *          password: 'abc123',
+     *      },
+     *      missingParameters: [                                // Test for missing parameters, @see rt.testEndPoint.
+     *          ['username'],
+     *          ['displayName'],
+     *          ['username','displayName'],
+     *      ],
+     *      forbiddenDoubleCreation: true,                                                  // Test for forbiden double creation of the same object
+     *      getProperties: ['uuid', 'isEnabled', 'username', 'displayName', 'UserType'],    // Properties to check the GET method.
+     *      getCreated: {query:{username:'test1'}},                                         // Options to get the created object to perform the rest of the tests.
+     *      getByQuery: ['username', 'uuid'],                                               // Test to get objects using the query params
+     *      getSingleByQuery: ['username', 'uuid'],                                         // Test to get single object using the query params
+     *      getByUrl: ['uuid'],                                                             // Test to get objects using the URL params
+     *      getSingleByUrl: ['uuid'],                                                       // Test to get single object using the URL params
+     *  }
+     */
+    testGeneralBehaviorEndPoint(options) {
+        describe('General behavior', () => {
+            rt.testEndPoint({
+                url: options.url,
+                notAllowedMethods: options.notAllowedMethods,
+                send: [
+                    {
+                        title: 'POST should not create a new object',
+                        method: 'post',
+                        parameters: options.parameters,
+                        missingParameters: options.missingParameters,
+                    },
+                    {
+                        title: 'POST should create a new object',
+                        method: 'post',
+                        parameters: options.parameters,
+                    },
+                    {
+                        title: 'GET should get a objects list',
+                        checkItem: 0,
+                        haveProperties: options.getProperties,
+                    },
+                ]
+            });
+
+            if (options.forbiddenDoubleCreation) {
+                rt.testEndPoint({
+                    url: options.url,
+                    title: 'POST should not create the same object again',
+                    method: 'post',
+                    parameters: options.parameters,
+                    status: '!2xx,!4xx',
+                    haveProperties: 'error,message',
+                });
+            }
+
+            let createdObject;
+            if (options.getCreated) {
+                rt.testEndPoint({
+                    url: options.url,
+                    checkItem: 0,
+                    haveProperties: options.getProperties,
+                    get: {
+                        title: 'GET should get the recently create objects',
+                        query: options.getCreated.query,
+                        bodyLengthOf: 1,
+                        after: res => createdObject = res.body[0],
+                    },
+                });
+            }
+
+            const gets = {
+                getByQuery: {inQuery: true}, 
+                getSingleByQuery: {inQuery: true, single: true}, 
+                getByUrl: {inUrl: true}, 
+                getSingleByUrl: {inUrl: true, single: true}, 
+            };
+
+            for (const getName in gets) {
+                if (!options[getName])
+                    continue;
+
+                if (!options.getCreated)
+                    throw new Error(`cannot test ${getName} because no getCreated is defined.`);
+
+                const getOptions = gets[getName];
+                const sendOptions = {
+                    url: options.url,
+                    checkItem: 0,
+                    haveProperties: options.getProperties,
+                    get: {query: {}},
+                };
+
+                let getByPropertiesList = options[getName];
+                if (!(getByPropertiesList instanceof Array))
+                    getByPropertiesList = [getByPropertiesList];
+
+                for (let i in getByPropertiesList)  {
+                    let properties = getByPropertiesList[i];
+                    if (!(properties instanceof Array))
+                        properties = [properties];
+
+                    const query = {};
+                    for (const i in properties)
+                        query[properties[i]] = '';
+
+                    if (!sendOptions.get.method)
+                        sendOptions.get.method = 'get';
+
+                    if (getOptions.inQuery) {
+                        sendOptions.get.title = `${sendOptions.get.method.toUpperCase()} should get a single object by ${properties.join(', ')} in query`;
+                        sendOptions.get.before = test => {
+                            for (const k in query)
+                                test.query[k] = createdObject[k];
+                        };
+                    }
+
+                    if (getOptions.inUrl) {
+                        sendOptions.get.title = `${sendOptions.get.method.toUpperCase()} should get a single object by ${properties.join(', ')} in URL`;
+                        sendOptions.get.before = test => {
+                            if (properties.length === 1 && properties[0] === 'uuid')
+                                test.url += '/' + createdObject.uuid;
+                            else 
+                                for (const k in query)
+                                    test.url += '/' + k + '/' + createdObject[k];
+                        };
+                    }
+
+                    if (getOptions.single)
+                        sendOptions.get.bodyLengthOf = 1;
+                    else if (sendOptions.get.bodyLengthOf !== undefined)
+                        delete sendOptions.get.bodyLengthOf;
+
+                    rt.testEndPoint(sendOptions);
+                }
+            }
+
+            let isDeleteMethodNotAllowed;
+            if (!options.notAllowedMethods)
+                isDeleteMethodNotAllowed = false;
+            else if (typeof options.notAllowedMethods === 'string')
+                isDeleteMethodNotAllowed = options.notAllowedMethods.toUpperCase().indexOf('DELETE') >= 0;
+            else if (options.notAllowedMethods instanceof Array)
+                options.notAllowedMethods.forEach(method => {
+                    if (method.toUpperCase() === 'DELETE') 
+                        isDeleteMethodNotAllowed = true;
+                });
+            else
+                throw new Error('notAllowedMethods option is not a string or Array');
+
+            if (!isDeleteMethodNotAllowed) {
+                if (!options.getCreated)
+                    throw new Error('cannot test DELETE because no getCreated is defined.');
+
+                if (!options.deleteQuery)
+                    options.deleteQuery = {uuid:''};
+                
+                if (!options.deleteMissingQuery)
+                    options.deleteMissingQuery = 'uuid';
+
+                rt.testEndPoint({
+                    url: options.url,
+                    delete: {
+                        query: options.deleteQuery,
+                        send: [
+                            'noQueryError',
+                            {missingQuery: options.deleteMissingQuery},
+                            {
+                                title: 'DELETE error in UUID parameter must return an error',
+                                query: {uuid: 'Invalid UUID'},
+                                status: 400,
+                                haveProperties: 'error,message',
+                            },
+                            {
+                                title: 'DELETE delete the previously created object by query',
+                                before: test => test.query.uuid = createdObject.uuid,
+                            },
+                            {
+                                title: 'DELETE trying to delete a second time the same record must return an error',
+                                before: test => test.query.uuid = createdObject.uuid,
+                                status: 403,
+                                haveProperties: 'error,message',
+                            },
+                            {
+                                title: 'GET trying to get the deleted object',
+                                method: 'get',
+                                before: test => test.query.uuid = createdObject.uuid,
+                                lengthOf: 0,
+                            },
+                        ],
+                    },
+                });
+
+                rt.testEndPoint({
+                    url: options.url,
+                    send: [
+                        {
+                            title: 'POST should create a new object again',
+                            method: 'post',
+                            parameters: options.parameters,
+                        },
+                        {
+                            title: 'GET should get the recently create objects',
+                            query: options.getCreated.query,
+                            bodyLengthOf: 1,
+                            checkItem: 0,
+                            haveProperties: options.getProperties,
+                            after: res => createdObject = res.body[0],
+                        },
+                        {
+                            title: 'DELETE delete the previously created object by URL',
+                            method: 'delete',
+                            before: test => test.url += '/' + createdObject.uuid,
+                        },
+                    ],
+                });
+            }
+        });
+    },
 };
 
 module.exports = rt;
