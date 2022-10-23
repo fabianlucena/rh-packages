@@ -13,6 +13,10 @@ const rt = {
         return chai.request.agent(app ?? rt.app);
     },
 
+    createRequest(app) {
+        return chai.request(app ?? rt.app);
+    },
+
     initAgent(app) {
         rt.agent = rt.createAgent(app);
 
@@ -97,16 +101,16 @@ const rt = {
      *                  ['password']                                // test for no parameters password
      *              ]
      *          },
-     *          {                                                   // begin custom test item for Invalid credentials
-     *              title: '"Invalid credentials" login error',     // test title
+     *          {                                                   // begin custom test item for Invalid login
+     *              title: '"Invalid login" login error',           // test title
      *              parameters: {                                   // override parameters for introduce an error
      *                  username: 'admin',
      *                  password: '12345'
      *              },
      *              status: 403,                                    // expected status
      *              haveProperties: 'error',                        // expected property error in the result
-     *              propertyContains: {                             // expected message 'Invalid credentials' in the property message in the result
-     *                  message: 'Invalid credentials'
+     *              propertyContains: {                             // expected message 'Invalid login' in the property message in the result
+     *                  message: 'Invalid login'
      *              }
      *          },
      *          {                                                                               // begin custom test item for login
@@ -375,7 +379,7 @@ const rt = {
                 status: 201,
             },
             patch: {
-                status: 200,
+                status: 204,
             },
             delete: {
                 status: 204,
@@ -497,8 +501,12 @@ const rt = {
                     for (const k in test)
                         message[k] = test[k];
 
-                    if (message.agent)
-                        message.agent = true;
+                    if (message.agent) {
+                        if (message.agent === rt.agent)
+                            message.agent = 'custom';
+                        else
+                            message.agent = true;
+                    }
                 }
 
                 if (message)
@@ -796,7 +804,7 @@ const rt = {
      * For use as method other than send you must set send to false or [];
      */
     testLogin(options) {
-        options = ru.merge(
+        options = ru.complete(
             options,
             {
                 title: 'login should returns a valid session authToken',
@@ -836,7 +844,9 @@ const rt = {
             
         options = ru.merge(options, {after: res => rt.headers.Authorization = `Bearer ${res.body.authToken}`});
 
-        rt.getAgent(options.app);
+        if (!options.agent)
+            rt.getAgent(options.app);
+
         rt.testLogin(options);
     },
 
@@ -863,6 +873,7 @@ const rt = {
      *  - GET trying to get the deleted object
      *  - POST should create a new object again
      *  - GET should get the recently create objects
+     *  - PATCH updates the created objets
      *  - DELETE delete the previously created object by URL
      * 
      * @example
@@ -879,13 +890,26 @@ const rt = {
      *          ['displayName'],
      *          ['username','displayName'],
      *      ],
+     *      id: 'uuid'                                                                      // name for the object id by default is uuid
      *      forbiddenDoubleCreation: true,                                                  // Test for forbiden double creation of the same object
      *      getProperties: ['uuid', 'isEnabled', 'username', 'displayName', 'UserType'],    // Properties to check the GET method.
      *      getCreated: {query:{username:'test1'}},                                         // Options to get the created object to perform the rest of the tests.
-     *      getByQuery: ['username', 'uuid'],                                               // Test to get objects using the query params
-     *      getSingleByQuery: ['username', 'uuid'],                                         // Test to get single object using the query params
-     *      getByUrl: ['uuid'],                                                             // Test to get objects using the URL params
-     *      getSingleByUrl: ['uuid'],                                                       // Test to get single object using the URL params
+     *      getByQuery: [                                                                   // Test to get objects using the query params, each item is a separated test
+     *          'username', string|CSV|array                                                // Use the values listed in parameters to get objects
+     *          'uuid'
+     *      ],
+     *      getSingleByQuery: [                                                             // Same as above but check single result
+     *          'username',
+     *          'uuid'
+     *      ],
+     *      getByUrl: ['uuid'],                                                             // Same as above the form used is URL/name1/value1/name2/value2, when a test with the id parameter as the only parameter the form URL/idValue is used.
+     *      getSingleByUrl: ['uuid'],                                                       // Same as above but check single result
+     *      patchParameters: [                                                              // Test the HTTP patch method for each element in the list.
+     *          {
+     *              name1: value1,
+     *              name2, value2
+     *          },
+     *      ]
      *  }
      */
     testGeneralBehaviorEndPoint(options) {
@@ -939,6 +963,9 @@ const rt = {
                 });
             }
 
+            if (!options.id)
+                options.id = 'uuid';
+
             const gets = {
                 getByQuery: {inQuery: true}, 
                 getSingleByQuery: {inQuery: true, single: true}, 
@@ -988,8 +1015,8 @@ const rt = {
                     if (getOptions.inUrl) {
                         sendOptions.get.title = `${sendOptions.get.method.toUpperCase()} should get a single object by ${properties.join(', ')} in URL`;
                         sendOptions.get.before = test => {
-                            if (properties.length === 1 && properties[0] === 'uuid')
-                                test.url += '/' + createdObject.uuid;
+                            if (properties.length === 1 && properties[0] === options.id)
+                                test.url += '/' + createdObject[options.id];
                             else 
                                 for (const k in query)
                                     test.url += '/' + k + '/' + createdObject[k];
@@ -1018,15 +1045,48 @@ const rt = {
             else
                 throw new Error('notAllowedMethods option is not a string or Array');
 
+            if (options.patchParameters) {
+                if (!options.getCreated)
+                    throw new Error('cannot test PATCH because no getCreated is defined.');
+                    
+                let patchParameters = options.patchParameters;
+                if (!(patchParameters instanceof Array))
+                    patchParameters = [patchParameters];
+                
+                for (const i in patchParameters) {
+                    rt.testEndPoint({
+                        url: options.url,
+                        patch: {
+                            title: 'PATCH change data for object',
+                            parameters: patchParameters[i],
+                            before: test => test.parameters[options.id] = createdObject[options.id],
+                        },
+                    });
+
+                    rt.testEndPoint({
+                        url: options.url,
+                        get: {
+                            title: 'GET changed data object',
+                            before: test => test.url += '/' + createdObject[options.id],
+                            bodyLengthOf: 1,
+                            checkItem: 0,
+                            haveProperties: patchParameters[i],
+                        },
+                    });
+                }
+            }
+
             if (!isDeleteMethodNotAllowed) {
                 if (!options.getCreated)
                     throw new Error('cannot test DELETE because no getCreated is defined.');
 
-                if (!options.deleteQuery)
-                    options.deleteQuery = {uuid:''};
+                if (!options.deleteQuery) {
+                    options.deleteQuery = {};
+                    options.deleteQuery[options.id] = '';
+                }
                 
                 if (!options.deleteMissingQuery)
-                    options.deleteMissingQuery = 'uuid';
+                    options.deleteMissingQuery = options.id;
 
                 rt.testEndPoint({
                     url: options.url,
@@ -1037,24 +1097,24 @@ const rt = {
                             {missingQuery: options.deleteMissingQuery},
                             {
                                 title: 'DELETE error in UUID parameter must return an error',
-                                query: {uuid: 'Invalid UUID'},
+                                before: test => test.query[options.id] = 'Invalid ID',
                                 status: 400,
                                 haveProperties: 'error,message',
                             },
                             {
                                 title: 'DELETE delete the previously created object by query',
-                                before: test => test.query.uuid = createdObject.uuid,
+                                before: test => test.query[options.id] = createdObject[options.id],
                             },
                             {
                                 title: 'DELETE trying to delete a second time the same record must return an error',
-                                before: test => test.query.uuid = createdObject.uuid,
+                                before: test => test.query[options.id] = createdObject[options.id],
                                 status: 403,
                                 haveProperties: 'error,message',
                             },
                             {
                                 title: 'GET trying to get the deleted object',
                                 method: 'get',
-                                before: test => test.query.uuid = createdObject.uuid,
+                                before: test => test.query[options.id] = createdObject[options.id],
                                 lengthOf: 0,
                             },
                         ],
@@ -1080,7 +1140,7 @@ const rt = {
                         {
                             title: 'DELETE delete the previously created object by URL',
                             method: 'delete',
-                            before: test => test.url += '/' + createdObject.uuid,
+                            before: test => test.url += '/' + createdObject[options.id],
                         },
                     ],
                 });
