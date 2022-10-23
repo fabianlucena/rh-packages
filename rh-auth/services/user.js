@@ -10,20 +10,16 @@ const UserService = {
      * @param {{typeId: integer, type: string}} data - data object to complete. If type is not provided returns the type: 'user'.
      * @returns {Promise{data}}
      */
-    completeTypeId(data) {
-        return new Promise(resolve => {
-            if (data.typeId)
-                return resolve(data);
-
+    async completeTypeId(data) {
+        if (!data.typeId) {
             if (!data.type)
                 data.type = 'user';
 
-            return UserTypeService.getForName(data.type)
-                .then(ut => {
-                    data.typeId = ut.id;
-                    resolve(data);
-                });
-        });
+            const userType = await UserTypeService.getForName(data.type);
+            data.typeId = userType.id;
+        }
+
+        return data;
     },
 
     /**
@@ -32,21 +28,16 @@ const UserService = {
      *  - username: must be unique.
      * @returns {Promise{UserType}}
      */
-    create(data) {
-        return this.completeTypeId(data)
-            .then(data => {
-                return conf.global.models.User.create(data)
-                    .then(u => {
-                        if (data.password) {
-                            const identityData = {
-                                password: data.password,
-                                userId: u.id,
-                            };
-                        
-                            return IdentityService.createLocal(identityData);
-                        }
-                    });
+    async create(data) {
+        data = await UserService.completeTypeId(data);
+        const user = await conf.global.models.User.create(data);
+        if (data.password)
+            await IdentityService.createLocal({
+                password: data.password,
+                userId: user.id,
             });
+
+        return user;
     },
 
     /**
@@ -55,7 +46,7 @@ const UserService = {
      *  - view: show visible peoperties.
      * @returns {Promise{UserList}]
      */
-    getList(options) {
+    async getList(options) {
         options = ru.deepComplete(options, {where: {isEnabled: true}});
         if (options.view) {
             if (!options.attributes)
@@ -71,11 +62,11 @@ const UserService = {
             }
         }
 
-        return conf.global.models.User.findAll(options);
+        return await conf.global.models.User.findAll(options);
     },
 
     /**
-     * Gets a user for its UUID. For many coincidences and for no rows this method fails.
+     * Gets an user for its UUID. For many coincidences and for no rows this method fails.
      * @param {string} uuid - UUID for the user to get.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{User}}
@@ -86,7 +77,7 @@ const UserService = {
     },
 
     /**
-     * Gets a user for its username. For many coincidences and for no rows this method fails.
+     * Gets an user for its username. For many coincidences and for no rows this method fails.
      * @param {string} username - username for the user to get.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{User}}
@@ -97,7 +88,7 @@ const UserService = {
     },
 
     /**
-     * Gets a user for its username. For many coincidences and for no rows this method fails.
+     * Gets an user for its username. For many coincidences and for no rows this method fails.
      * @param {string} username - username for the user to get.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{User}}
@@ -121,12 +112,30 @@ const UserService = {
     },
 
     /**
-     * Deletes a user for a given UUID.
+     * Deletes an user for a given UUID.
      * @param {string} uuid - UUID for the user o delete.
-     * @returns {Promise{Result}}
+     * @returns {Promise{Result}} deleted rows count.
      */
-    deleteForUuid(uuid) {
-        return conf.global.models.User.destroy({where:{uuid: uuid}});
+    async deleteForUuid(uuid) {
+        return await conf.global.models.User.destroy({where:{uuid: uuid}});
+    },
+
+    /**
+     * Enables an user for a given UUID.
+     * @param {string} uuid - UUID for the user o enable.
+     * @returns {Promise{Result}} enabled rows count.
+     */
+    async enableForUuid(uuid) {
+        return await conf.global.models.User.update({isEnabled: true}, {where:{uuid: uuid}});
+    },
+
+    /**
+     * Disables an user for a given UUID.
+     * @param {string} uuid - UUID for the user o disable.
+     * @returns {Promise{Result}} disabled rows count.
+     */
+    async disableForUuid(uuid) {
+        return await conf.global.models.User.update({isEnabled: false}, {where:{uuid: uuid}});
     },
 };
 

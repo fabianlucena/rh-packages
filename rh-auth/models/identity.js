@@ -7,7 +7,7 @@ const sqlUtil = require('sql-util');
 module.exports = (sequelize, DataTypes) => {
     class Identity extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.User,         {foreignKey: 'userId', allowNull: false});
+            this.belongsTo(models.User,         {foreignKey: 'userId', allowNull: false, onDelete: 'cascade'});
             this.belongsTo(models.IdentityType, {foreignKey: 'typeId', allowNull: false});
         }
 
