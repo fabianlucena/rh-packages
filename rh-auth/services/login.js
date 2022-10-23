@@ -28,7 +28,7 @@ const LoginService = {
 
         await UserService.checkEnabledUser(user, username);
         if (!await Identity.checkLocalPasswordForUsername(username, password, locale))
-            throw new httpUtil.HttpError('Invalid credentials', 403);
+            throw new httpUtil.HttpError('Invalid login', 403);
 
         return Session.create({
             deviceId: deviceId,

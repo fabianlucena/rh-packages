@@ -213,10 +213,10 @@ module.exports = {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    async userEnable(req, res) {
+    async userEnablePost(req, res) {
         const uuid = await ru.checkParameterUUID(ru.merge(req.query, req.params), 'uuid');
-        const rowsDeleted = await UserService.enableForUuid(uuid);
-        if (!rowsDeleted)
+        const rowsUpdated = await UserService.enableForUuid(uuid);
+        if (!rowsUpdated)
             throw new httpUtil._HttpError('User with UUID %s does not exists.', 403, uuid);
 
         res.sendStatus(204);
@@ -261,10 +261,56 @@ module.exports = {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    async userDisable(req, res) {
+    async userDisablePost(req, res) {
         const uuid = await ru.checkParameterUUID(ru.merge(req.query, req.params), 'uuid');
-        const rowsDeleted = await UserService.disableForUuid(uuid);
-        if (!rowsDeleted)
+        const rowsUpdated = await UserService.disableForUuid(uuid);
+        if (!rowsUpdated)
+            throw new httpUtil._HttpError('User with UUID %s does not exists.', 403, uuid);
+
+        res.sendStatus(204);
+    },
+
+    /**
+     * @swagger
+     * /api/user/disable:
+     *  patch:
+     *      tags:
+     *          - User
+     *      summary: Disable an user
+     *      description: Disable an user from its UUID
+     *      security:
+     *          -   bearerAuth: []
+     *      produces:
+     *          -   application/json
+     *      parameters:
+     *          -  name: body
+     *             in: body
+     *             schema:
+     *                $ref: '#/definitions/User'
+     *      responses:
+     *          '204':
+     *              description: Success
+     *          '400':
+     *              description: Missing parameters or parameters error
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '401':
+     *              description: Unauthorized
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '403':
+     *              description: Forbidden
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '500':
+     *              description: Internal server error
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     */
+    async userPatch(req, res) {
+        const uuid = await ru.checkParameterUUID(ru.merge(req.body, req.params), 'uuid');
+        const rowsUpdated = await UserService.updateForUuid(req.body, uuid);
+        if (!rowsUpdated)
             throw new httpUtil._HttpError('User with UUID %s does not exists.', 403, uuid);
 
         res.sendStatus(204);

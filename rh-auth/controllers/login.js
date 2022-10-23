@@ -1,5 +1,6 @@
 const LoginService = require('../services/login');
 const ru = require('rofa-util');
+const httpUtil = require('http-util');
 
 /**
  * @swagger
@@ -86,20 +87,24 @@ async function loginGetForm(req, res) {
  *              schema:
  *                  $ref: '#/definitions/Error'
  *          '403':
- *              description: Invalid credentials, failed login, or other error
+ *              description: Invalid login, failed login, or other error
  *              schema:
  *                  $ref: '#/definitions/Error'
  */
 async function loginPost(req, res) {
     ru.checkParameter(req?.body, 'username', 'password');
     
-    const session = await LoginService.loginForUsernamePasswordAndDeviceId(req?.body?.username, req?.body?.password, req?.device?.id, req?.sessionIndex, req.locale);
-    req.session = session;
-    res.header('Authorization', 'Bearer ' + session.authToken);
-    res.status(201).send({
-        index: session.index,
-        authToken: session.authToken,
-    });
+    try {
+        const session = await LoginService.loginForUsernamePasswordAndDeviceId(req?.body?.username, req?.body?.password, req?.device?.id, req?.sessionIndex, req.locale);
+        req.session = session;
+        res.header('Authorization', 'Bearer ' + session.authToken);
+        res.status(201).send({
+            index: session.index,
+            authToken: session.authToken,
+        });
+    } catch (_) {
+        throw new httpUtil.HttpError('Invalid login', 403);
+    }
 }
 
 module.exports = {

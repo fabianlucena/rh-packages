@@ -7,11 +7,9 @@ describe('User', () => {
             this.skip();
     });
 
-    
-
     rt.testGeneralBehaviorEndPoint({
         url: '/user',
-        notAllowedMethods: 'PUT,PATCH,OPTIONS,HEAD',
+        notAllowedMethods: 'PUT,OPTIONS,HEAD',
         parameters: {
             username: 'test1',
             displayName: 'Test 1',
@@ -27,6 +25,9 @@ describe('User', () => {
         getCreated: {query:{username:'test1'}},
         getSingleByQuery: ['username', 'uuid'],
         getSingleByUrl: ['uuid'],
+        patchParameters: {
+            displayName: 'New display name',
+        },
     });
 
     describe('Specific behavior', () => {
@@ -52,10 +53,10 @@ describe('User', () => {
             },
         });
 
-        rt.autoLogin({
+        rt.testLogin({
+            agent: rt.createRequest(),
             username: 'test2',
             password: 'abc123',
-            agent: rt.createAgent(),
         });
 
         rt.testEndPoint({
@@ -66,38 +67,44 @@ describe('User', () => {
             },
         });
 
+        rt.testLogin({
+            agent: rt.createRequest(),
+            title: 'Try login with the disabled user',
+            username: 'test2',
+            password: 'abc123',
+            status: 403,
+            haveProperties: ['error', 'message'],
+        });
+
         rt.testEndPoint({
-            url: '/login',
-            agent: rt.createAgent(),
+            url: '/user/enable',
+            title: 'POST enable the user',
             post: {
-                title: 'Login with the disabled user',
-                parameters: {
-                    username: 'test2',
-                    password: 'abc123',
-                },
-                status: 201,
-                haveProperties: ['authToken', 'index'],
+                before: test => test.url += '/' + testUser.uuid,
             },
         });
 
-        rt.autoLogin({
+        rt.testLogin({
+            agent: rt.createRequest(),
             username: 'test2',
             password: 'abc123',
-            agent: rt.createAgent(),
         });
 
         rt.testEndPoint({
             url: '/user',
-            title: 'should create a new user',
-            skip: true,
-            send: [
-                {title: 'Enable user'},
-                {title: 'Login with disable user'},
-                {title: 'Login with reenable user'},
-                {title: 'Login with deleted user'},
-                {title: 'Delete user and check access'},
-                {title: 'Change display name'},
-            ],
+            title: 'POST delete the user',
+            delete: {
+                before: test => test.url += '/' + testUser.uuid,
+            },
+        });
+
+        rt.testLogin({
+            agent: rt.createRequest(),
+            title: 'Try login with the deleted user',
+            username: 'test2',
+            password: 'abc123',
+            status: 403,
+            haveProperties: ['error', 'message'],
         });
     });
 });

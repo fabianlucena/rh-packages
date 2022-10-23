@@ -12,5 +12,7 @@ module.exports = (app, checkPermission) => {
     app.post('/user/enable/:uuid', checkPermission('user.update'), httpUtil.asyncHandler(userController.userEnablePost));
     app.post('/user/disable', checkPermission('user.update'), httpUtil.asyncHandler(userController.userDisablePost));
     app.post('/user/disable/:uuid', checkPermission('user.update'), httpUtil.asyncHandler(userController.userDisablePost));
+    app.patch('/user', checkPermission('user.update'), httpUtil.asyncHandler(userController.userPatch));
+    app.patch('/user/:uuid', checkPermission('user.update'), httpUtil.asyncHandler(userController.userPatch));
     app.all('/user', httpUtil.methodNotAllowed);
 };

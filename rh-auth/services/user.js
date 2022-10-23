@@ -121,12 +121,22 @@ const UserService = {
     },
 
     /**
+     * Updates an user.
+     * @param {object} data - Data to update.
+     * @param {object} uuid - UUID of the uer to update.
+     * @returns {Promise{Result}} updated rows count.
+     */
+    async updateForUuid(data, uuid) {
+        return await conf.global.models.User.update(data, {where:{uuid: uuid}});
+    },
+
+    /**
      * Enables an user for a given UUID.
      * @param {string} uuid - UUID for the user o enable.
      * @returns {Promise{Result}} enabled rows count.
      */
     async enableForUuid(uuid) {
-        return await conf.global.models.User.update({isEnabled: true}, {where:{uuid: uuid}});
+        return await UserService.updateForUuid({isEnabled: true}, uuid);
     },
 
     /**
@@ -135,7 +145,7 @@ const UserService = {
      * @returns {Promise{Result}} disabled rows count.
      */
     async disableForUuid(uuid) {
-        return await conf.global.models.User.update({isEnabled: false}, {where:{uuid: uuid}});
+        return await UserService.updateForUuid({isEnabled: false}, uuid);
     },
 };
 

@@ -37,7 +37,7 @@ describe('Login', () => {
                         ]
                     },
                     {
-                        title: '"Invalid credentials" login error',
+                        title: '"Invalid login" login error',
                         parameters: {
                             username: 'admin',
                             password: '12345'
@@ -45,7 +45,7 @@ describe('Login', () => {
                         status: 403,
                         haveProperties: 'error',
                         propertyContains: {
-                            message: 'Invalid credentials'
+                            message: 'Invalid login'
                         }
                     },
                     {
