@@ -1,16 +1,16 @@
-module.exports = (app, checkPermission) => {
-    const siteController = require('../controllers/site');
-    const httpUtil = require('http-util');
+import {SiteController} from '../controllers/site.js';
+import {methodNotAllowed, asyncHandler} from 'http-util';
 
-    app.head('/switch-site', httpUtil.methodNotAllowed);
-    app.post('/switch-site', checkPermission('current-site.switch'), httpUtil.asyncHandler(siteController.switchSitePost));
-    app.all('/switch-site', httpUtil.methodNotAllowed);
+export default async (app, checkPermission) =>  {
+    app.head('/switch-site', methodNotAllowed);
+    app.post('/switch-site', checkPermission('current-site.switch'), asyncHandler(SiteController.switchSitePost));
+    app.all('/switch-site', methodNotAllowed);
    
-    app.head('/current-site', httpUtil.methodNotAllowed);
-    app.get('/current-site', checkPermission('current-site.get'), httpUtil.asyncHandler(siteController.currentSiteGet));
-    app.all('/current-site', httpUtil.methodNotAllowed);
+    app.head('/current-site', methodNotAllowed);
+    app.get('/current-site', checkPermission('current-site.get'), asyncHandler(SiteController.currentSiteGet));
+    app.all('/current-site', methodNotAllowed);
 
-    app.head('/site', httpUtil.methodNotAllowed);
-    app.get('/site', checkPermission('site.get'), httpUtil.asyncHandler(siteController.siteGet));
-    app.all('/site', httpUtil.methodNotAllowed);
+    app.head('/site', methodNotAllowed);
+    app.get('/site', checkPermission('site.get'), asyncHandler(SiteController.siteGet));
+    app.all('/site', methodNotAllowed);
 };

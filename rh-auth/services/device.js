@@ -1,9 +1,9 @@
-const conf = require('../index');
-const sqlUtil = require('sql-util');
-const ru = require('rofa-util');
-const crypto = require('crypto');
+import {conf} from '../conf.js';
+import {getSingle} from 'sql-util';
+import {complete, deepComplete} from 'rofa-util';
+import crypto from 'crypto';
 
-ru.complete(
+complete(
     conf,
     {
         deviceCache: {},
@@ -33,27 +33,27 @@ ru.complete(
 
 conf.init.push(() => conf.deviceCacheMaintenance = setInterval(conf.deviceCacheMaintenanceMethod, conf.deviceCacheMaintenanceInterval));
 
-const DeviceService = {
+export class DeviceService {
     /**
      * Creates a new device into DB.
      * @param {{cookie: string, data: JSON}} data - data of the new device.
      * @returns {Promise{Device}}
      */
-    create(data) {
+    static create(data) {
         if (!data.cookie)
             data.cookie = crypto.randomBytes(64).toString('hex');
 
         return conf.global.models.Device.create(data);
-    },
+    }
 
     /**
      * Gets a list of devices.
      * @param {Options} options - options for the @see sequelize.findAll method.
      * @returns {Promise{DeviceList}]
      */
-    getList(options) {
-        return conf.global.models.Device.findAll(ru.complete(options, {}));
-    },
+    static getList(options) {
+        return conf.global.models.Device.findAll(complete(options, {}));
+    }
 
     /**
      * Gets a device for a given cookie value. For many coincidences and for no rows this method fails.
@@ -61,17 +61,17 @@ const DeviceService = {
      * @param {Options} options - Options for the @see getList method.
      * @returns {Promise{Device}}
      */
-    getForCookie(cookie, options) {
-        return this.getList(ru.deepComplete(options, {where:{cookie: cookie}, limit: 2}))
-            .then(rowList => sqlUtil.getSingle(rowList, ru.deepComplete(options, {params: ['devices', 'cookie', cookie, 'Device']})));
-    },
+    static getForCookie(cookie, options) {
+        return this.getList(deepComplete(options, {where:{cookie: cookie}, limit: 2}))
+            .then(rowList => getSingle(rowList, deepComplete(options, {params: ['devices', 'cookie', cookie, 'Device']})));
+    }
 
     /**
      * Get a device for a given cookie value from the cache or from the DB. @see getForCookie method.
      * @param {string} cookie - value for the cookie to get the device.
      * @returns {Promise{Device}}
      */
-    getForCookieCached(cookie) {
+    static getForCookieCached(cookie) {
         if (conf.deviceCache && conf.deviceCache[cookie]) {
             const deviceData = conf.deviceCache[cookie];
             deviceData.lastUse = Date.now();
@@ -87,8 +87,6 @@ const DeviceService = {
 
                 resolve(device);
             }));
-    },
-};
-
-module.exports = DeviceService;
+    }
+}
     

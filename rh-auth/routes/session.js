@@ -1,9 +1,9 @@
-module.exports = (app, checkPermission) => {
-    const sessionController = require('../controllers/session');
-    const httpUtil = require('http-util');
+import {SessionController} from '../controllers/session.js';
+import {methodNotAllowed, asyncHandler} from 'http-util';
 
-    app.head('/session', httpUtil.methodNotAllowed);
-    app.get('/session', checkPermission('ownsession.get', 'session.get'), httpUtil.asyncHandler(sessionController.sessionGet));
-    app.delete('/session', checkPermission('session.delete'), httpUtil.asyncHandler(sessionController.sessionDelete));
-    app.all('/session', httpUtil.methodNotAllowed);
+export default (app, checkPermission) => {
+    app.head('/session', methodNotAllowed);
+    app.get('/session', checkPermission('ownsession.get', 'session.get'), asyncHandler(SessionController.get));
+    app.delete('/session', checkPermission('session.delete'), asyncHandler(SessionController.delete));
+    app.all('/session', methodNotAllowed);
 };

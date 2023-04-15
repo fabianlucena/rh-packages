@@ -1,16 +1,16 @@
-const UserTypeService = require('../services/user_type');
-const IdentityService = require('../services/identity');
-const conf = require('../index');
-const sqlUtil = require('sql-util');
-const ru = require('rofa-util');
+import {UserTypeService} from '../services/user_type.js';
+import {IdentityService} from '../services/identity.js';
+import {conf} from '../conf.js';
+import {getSingle} from 'sql-util';
+import {complete, deepComplete, _Error} from 'rofa-util';
 
-const UserService = {
+export class UserService {
     /**
      * Completes the data with the right typeId property value, from the type property value.
      * @param {{typeId: integer, type: string}} data - data object to complete. If type is not provided returns the type: 'user'.
      * @returns {Promise{data}}
      */
-    async completeTypeId(data) {
+    static async completeTypeId(data) {
         if (!data.typeId) {
             if (!data.type)
                 data.type = 'user';
@@ -20,7 +20,7 @@ const UserService = {
         }
 
         return data;
-    },
+    }
 
     /**
      * Creates a new user row into DB. If no typeId provided or type, 'user' type is used. If a password is provided also a local @ref Identity is created.
@@ -28,7 +28,7 @@ const UserService = {
      *  - username: must be unique.
      * @returns {Promise{UserType}}
      */
-    async create(data) {
+    static async create(data) {
         data = await UserService.completeTypeId(data);
         const user = await conf.global.models.User.create(data);
         if (data.password)
@@ -38,7 +38,7 @@ const UserService = {
             });
 
         return user;
-    },
+    }
 
     /**
      * Gets a list of users. If not isEnabled filter provided returns only the enabled users.
@@ -46,8 +46,8 @@ const UserService = {
      *  - view: show visible peoperties.
      * @returns {Promise{UserList}]
      */
-    async getList(options) {
-        options = ru.deepComplete(options, {where: {isEnabled: true}});
+    static async getList(options) {
+        options = deepComplete(options, {where: {isEnabled: true}});
         if (options.view) {
             if (!options.attributes)
                 options.attributes = ['uuid', 'isEnabled', 'username', 'displayName'];
@@ -63,7 +63,7 @@ const UserService = {
         }
 
         return await conf.global.models.User.findAll(options);
-    },
+    }
 
     /**
      * Gets an user for its UUID. For many coincidences and for no rows this method fails.
@@ -71,10 +71,10 @@ const UserService = {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{User}}
      */
-    getForUUID(uuid, options) {
-        return UserService.getList(ru.deepComplete(options, {where: {uuid: uuid}, limit: 2}))
-            .then(rowList => sqlUtil.getSingle(rowList, ru.complete(options, {params: ['user', ['UUID = %s', uuid], 'User']})));
-    },
+    static getForUUID(uuid, options) {
+        return UserService.getList(deepComplete(options, {where: {uuid: uuid}, limit: 2}))
+            .then(rowList => getSingle(rowList, complete(options, {params: ['user', ['UUID = %s', uuid], 'User']})));
+    }
 
     /**
      * Gets an user for its username. For many coincidences and for no rows this method fails.
@@ -82,10 +82,10 @@ const UserService = {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{User}}
      */
-    getForUsername(username, options) {
-        return UserService.getList(ru.deepComplete(options, {where: {username: username}, limit: 2}))
-            .then(rowList => sqlUtil.getSingle(rowList, ru.complete(options, {params: ['user', ['username = %s', username], 'User']})));
-    },
+    static getForUsername(username, options) {
+        return UserService.getList(deepComplete(options, {where: {username: username}, limit: 2}))
+            .then(rowList => getSingle(rowList, complete(options, {params: ['user', ['username = %s', username], 'User']})));
+    }
 
     /**
      * Gets an user for its username. For many coincidences and for no rows this method fails.
@@ -93,9 +93,9 @@ const UserService = {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{User}}
      */
-    async getIdForUsername(username, options) {
-        return (await UserService.getForUsername(username, ru.deepComplete(options, {attributes: ['id']}))).id;
-    },
+    static async getIdForUsername(username, options) {
+        return (await UserService.getForUsername(username, deepComplete(options, {attributes: ['id']}))).id;
+    }
 
     /**
      * Checks for an existent and enabled user. If the user exists and is enabled resolve, otherwise fail.
@@ -103,22 +103,22 @@ const UserService = {
      * @param {*string} username - username only for result message purpuose.
      * @returns 
      */
-    async checkEnabledUser(user, username) {
+    static async checkEnabledUser(user, username) {
         if (!user)
-            throw new ru._Error('User "%s" does not exist', username);
+            throw new _Error('User "%s" does not exist', username);
 
         if (!user.isEnabled)
-            throw new ru._Error('User "%s" is not enabled', username);
-    },
+            throw new _Error('User "%s" is not enabled', username);
+    }
 
     /**
      * Deletes an user for a given UUID.
      * @param {string} uuid - UUID for the user o delete.
      * @returns {Promise{Result}} deleted rows count.
      */
-    async deleteForUuid(uuid) {
+    static async deleteForUuid(uuid) {
         return await conf.global.models.User.destroy({where:{uuid: uuid}});
-    },
+    }
 
     /**
      * Updates an user.
@@ -126,27 +126,25 @@ const UserService = {
      * @param {object} uuid - UUID of the uer to update.
      * @returns {Promise{Result}} updated rows count.
      */
-    async updateForUuid(data, uuid) {
+    static async updateForUuid(data, uuid) {
         return await conf.global.models.User.update(data, {where:{uuid: uuid}});
-    },
+    }
 
     /**
      * Enables an user for a given UUID.
      * @param {string} uuid - UUID for the user o enable.
      * @returns {Promise{Result}} enabled rows count.
      */
-    async enableForUuid(uuid) {
+    static async enableForUuid(uuid) {
         return await UserService.updateForUuid({isEnabled: true}, uuid);
-    },
+    }
 
     /**
      * Disables an user for a given UUID.
      * @param {string} uuid - UUID for the user o disable.
      * @returns {Promise{Result}} disabled rows count.
      */
-    async disableForUuid(uuid) {
+    static async disableForUuid(uuid) {
         return await UserService.updateForUuid({isEnabled: false}, uuid);
-    },
-};
-
-module.exports = UserService;
+    }
+}

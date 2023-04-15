@@ -1,8 +1,8 @@
 'use strict';
 
-const conf = require('../index');
+import {conf} from '../conf.js';
 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
     class MenuItem extends sequelize.Sequelize.Model {
         static associate(models) {
             this.belongsTo(models.MenuItem,   {foreignKey: 'parentId', allowNull: true, onUpdate: 'NO ACTION', onDelete: 'NO ACTION'});

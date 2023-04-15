@@ -1,8 +1,8 @@
 'use strict';
 
-const conf = require('../index');
+import {conf} from '../conf.js';
 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
     class Module extends sequelize.Sequelize.Model {
     }
     Module.init({

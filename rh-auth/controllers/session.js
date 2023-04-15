@@ -1,10 +1,9 @@
-const SessionService = require('../services/session');
-const httpUtil = require('http-util');
-const ru = require('rofa-util');
-const l = ru.locale;
+import {SessionService, SessionClosedError} from '../services/session.js';
+import {getOptionsFromParamsAndODataAsync, deleteHandlerAsync} from 'http-util';
+import {locale as l, checkAsync, getErrorMessageAsync, deepMerge, replace, checkParameterUUID} from 'rofa-util';
 
-module.exports = {
-    middleware() {
+export class SessionController {
+    static configureMiddleware() {
         return async (req, res, next) => {
             const authorization = req.header('Authorization');
             if (!authorization)
@@ -15,19 +14,19 @@ module.exports = {
 
             const authToken = authorization.substring(7);
             SessionService.getForAuthTokenCached(authToken)
-                .then(session => ru.checkAsync(session?.deviceId == req?.device?.id && session, {_message: l._f('Invalid device'), httpStatusCode: 400}))
+                .then(session => checkAsync(session?.deviceId == req?.device?.id && session, {_message: l._f('Invalid device'), httpStatusCode: 400}))
                 .then(session => {
                     req.session = session.toJSON();
                     req.user = req.session.User;
                     next();
                 })
                 .catch(async err => {
-                    if (err instanceof SessionService.IsClosedError)
+                    if (err instanceof SessionClosedError)
                         res.status(403).send({error: await req.locale._('HTTP error 403 forbiden, session is closed.')});
                     else {
                         let msg;
                         if (err instanceof Error)
-                            msg = await ru.getErrorMessageAsync(err, req.locale);
+                            msg = await getErrorMessageAsync(err, req.locale);
                         else
                             msg = err;
 
@@ -38,7 +37,7 @@ module.exports = {
                     }
                 });
         };
-    },
+    }
 
     /**
      * @swagger
@@ -112,17 +111,17 @@ module.exports = {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    async sessionGet(req, res) {
+    static async get(req, res) {
         const definitions = {uuid: 'uuid', open: 'date', close: 'date', authToken: 'string', index: 'int'};
 
-        httpUtil.getOptionsFromParamsAndODataAsync(req?.query, definitions)
+        getOptionsFromParamsAndODataAsync(req?.query, definitions)
             .then(options => new Promise(resolve => req.checkPermission('session.get')
                 .then(() => resolve(options))
-                .catch(() => resolve(ru.deepMerge(options, {where: {id: req.session.id}}))))
+                .catch(() => resolve(deepMerge(options, {where: {id: req.session.id}}))))
             )
-            .then(options => SessionService.getList(ru.replace(options, {view: true})))
+            .then(options => SessionService.getList(replace(options, {view: true})))
             .then(rows => res.status(200).send(rows));
-    },
+    }
 
     /**
      * @swagger
@@ -163,9 +162,9 @@ module.exports = {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    async sessionDelete(req, res) {
-        const uuid = ru.checkParameterUUID(req?.query, 'uuid');
+    static async delete(req, res) {
+        const uuid = checkParameterUUID(req?.query, 'uuid');
         const rowCount = await SessionService.deleteForUuid(uuid);
-        await httpUtil.deleteHandlerAsync(req, res, rowCount);
-    },
-};
+        await deleteHandlerAsync(req, res, rowCount);
+    }
+}

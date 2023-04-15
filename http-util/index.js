@@ -1,11 +1,12 @@
-const ru = require('rofa-util');
-const uuid = require('uuid');
-const l = ru.locale;
+import {locale as l, setUpError, errorHandlerAsync, camelize} from 'rofa-util';
+import * as uuid from 'uuid';
+import fs from 'fs';
+import path from 'path';
 
-class HttpError extends Error {
+export class HttpError extends Error {
     constructor(message, httpStatusCode, ...params) {
         super();
-        ru.setUpError(
+        setUpError(
             this,
             {
                 message,
@@ -16,10 +17,10 @@ class HttpError extends Error {
     }
 }
 
-class _HttpError extends Error {
+export class _HttpError extends Error {
     constructor(message, httpStatusCode, ...params) {
         super();
-        ru.setUpError(
+        setUpError(
             this,
             {
                 _message: message,
@@ -30,7 +31,7 @@ class _HttpError extends Error {
     }
 }
 
-class NoPermissionError extends Error {
+export class NoPermissionError extends Error {
     static NoObjectValues = ['permissions'];
     static VisibleProperties = ['message', 'permissions'];
     static _zeroMessage = l._f('You do not have permission.');
@@ -41,7 +42,7 @@ class NoPermissionError extends Error {
 
     constructor(permissions, options, ...params) {
         super();
-        ru.setUpError(
+        setUpError(
             this,
             {
                 permissions: permissions,
@@ -58,7 +59,7 @@ class NoPermissionError extends Error {
     }
 }
 
-class MethodNotAllowedError extends Error {
+export class MethodNotAllowedError extends Error {
     static NoObjectValues = ['methods'];
     static VisibleProperties = ['message', 'methods'];
     static _zeroMessage = l._f('Method not allowed.');
@@ -70,7 +71,7 @@ class MethodNotAllowedError extends Error {
 
     constructor(...methods) {
         super();
-        ru.setUpError(
+        setUpError(
             this,
             {
                 methods: methods
@@ -85,7 +86,7 @@ class MethodNotAllowedError extends Error {
     }
 }
 
-class NoUUIDError extends Error {
+export class NoUUIDError extends Error {
     static NoObjectValues = ['paramName'];
     static VisibleProperties = ['message', 'paramName'];
     static _message = l._f('The "%s" parameter is not a valid UUID.');
@@ -95,7 +96,7 @@ class NoUUIDError extends Error {
 
     constructor(paramName) {
         super();
-        ru.setUpError(
+        setUpError(
             this,
             {
                 paramName: paramName
@@ -104,471 +105,468 @@ class NoUUIDError extends Error {
     }
 }
 
-const httpUtil = {
-    maxRowsInResult: 100,
-    defaultRowsInResult: 20,
+export const maxRowsInResult = 100;
+export const defaultRowsInResult = 20;
+export const defaultGlobal = {
+    app: null,
+    router: null,
+    sequelize: null,
+    beforeConfig: [],
+    afterConfigAsync: []
+};
 
-    HttpError,
-    _HttpError,
-    NoPermissionError,
-    MethodNotAllowedError,
-    NoUUIDError,
+export async function httpUtilConfigureAsync(global, ...modules) {
+    if (!global)
+        global = defaultGlobal;
 
-    defaultGlobal: {
-        app: null,
-        router: null,
-        sequelize: null,
-        beforeConfig: [],
-        afterConfigAsync: []
-    },
-
-    async configureAsync(global, ...modules) {
-        if (!global)
-            global = httpUtil.defaultGlobal;
-
-        if (global.checkRoutePermission === undefined) {
-            global.checkRoutePermission = (...permission) => (req, res, next) => {
-                global.checkPermissionHandler(req, ...permission)
-                    .then(() => next())
-                    .catch(httpUtil.errorHandlerAsync(req, res));
-            };
-        }
-
-        if (!global.sequelize.Sequelize && global.Sequelize)
-            global.sequelize.Sequelize = global.Sequelize;
-
-        if (!global.models) {
-            global.models = global.sequelize.models;
-            if (!global.models)
-                global.models = {};
-        }
-
-        await httpUtil.beforeConfigAsync(global);
-        await httpUtil.configureModulesAsync(global, modules);
-        await httpUtil.beforeSyncAsync(global);
-        await httpUtil.syncDBAsync(global);
-        if (global.postConfigureModels)
-            global.postConfigureModels(global.sequelize);
-        await httpUtil.afterSyncAsync(global);
-        await httpUtil.afterConfigAsync(global);
-
-        httpUtil.configureSwagger(global);
-    },
-
-    methodNotAllowed(req) {
-        throw new httpUtil.MethodNotAllowedError(req.method);
-    },
-
-    configureRouter(routesPath, router, checkPermission, options) {
-        if (!router)
-            return;
-    
-        if (!routesPath)
-            return;
-
-        const fs = require('fs');
-        const path = require('path');
-            
-        fs
-            .readdirSync(routesPath)
-            .filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js' && (!options?.exclude || !options.exclude.test(file)))
-            .forEach(file => require(path.join(routesPath, file))(router, checkPermission));
-    },
-
-    configureServices(services, servicesPath, options) {
-        if (!servicesPath)
-            return;
-
-        const fs = require('fs');
-        const path = require('path');
-            
-        fs
-            .readdirSync(servicesPath)
-            .filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js' && (!options?.exclude || !options.exclude.test(file)))
-            .forEach(file => services[ru.camelize(file.substring(0, file.length - 3))] = require(path.join(servicesPath, file)));
-    },
-
-    async sendErrorAsync(req, res, error) {
-        const data = await ru.errorHandlerAsync(error, req.locale, req.showErrorInConsole);
-        if (data.stack)
-            delete data.stack;
-        res.status(data.httpStatusCode ?? 500).send(data);
-    },
-
-    errorHandlerAsync(req, res) {
-        return async error => await httpUtil.sendErrorAsync(req, res, error);
-    },
-
-    asyncHandler(method) {
-        return async (req, res, next) => {
-            try {
-                await method(req, res, next);
-            }
-            catch(err) {
-                next(err);
-            }
+    if (global.checkRoutePermission === undefined) {
+        global.checkRoutePermission = (...permission) => (req, res, next) => {
+            global.checkPermissionHandler(req, ...permission)
+                .then(() => next())
+                .catch(httpErrorHandlerAsync(req, res));
         };
-    },
+    }
 
-    async getOptionsFromODataAsync(params, options) {
-        if (!options)
-            options = {};
+    if (!global.sequelize.Sequelize && global.Sequelize)
+        global.sequelize.Sequelize = global.Sequelize;
 
-        if (params) {
-            if (params.$select) {
-                if (!options.attributes)
-                    options.attributes = [];
+    if (!global.models) {
+        global.models = global.sequelize.models;
+        if (!global.models)
+            global.models = {};
+    }
 
-                params.$select.split(',')
-                    .forEach(column => options.attributes.push(column.trim()));
-            }
+    await beforeConfigAsync(global);
+    await configureModulesAsync(global, modules);
+    await beforeSyncAsync(global);
+    await syncDBAsync(global);
+    if (global.postConfigureModels)
+        global.postConfigureModels(global.sequelize);
+    await afterSyncAsync(global);
+    await afterConfigAsync(global);
+    
+    configureSwagger(global);
+}
 
-            if (params.$top) {
-                const limit = parseInt(params.$top);
-                if (isNaN(limit))
-                    throw new httpUtil._HttpError(l._fp('Error to convert $top = "%s" parameter value to a integer number.', params.$top));
+export function methodNotAllowed(req) {
+    throw new MethodNotAllowedError(req.method);
+}
 
-                if (limit > httpUtil.maxRowsInResult)
-                    throw new httpUtil._HttpError(l._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', httpUtil.maxRowsInResult));
+export function configureRouter(routesPath, router, checkPermission, options) {
+    if (!router)
+        return;
+
+    if (!routesPath)
+        return;
         
-                if (limit > options.maxLimit)
-                    throw new httpUtil._HttpError(l._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', options.maxLimit));
+    fs
+        .readdirSync(routesPath)
+        .filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js' && (!options?.exclude || !options.exclude.test(file)))
+        .forEach(async file => {
+            const fullFile = 'file://' + path.join(routesPath, file);
+            const configureRouter = (await import(fullFile)).default;
+            configureRouter(router, checkPermission);
+        });
+}
+
+export function configureServices(services, servicesPath, options) {
+    if (!servicesPath)
+        return;
         
-                if (limit < 0)
-                    throw new httpUtil._HttpError(l._fp('The $top parameter cannot be negative.'), 400);
+    fs
+        .readdirSync(servicesPath)
+        .filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js' && (!options?.exclude || !options.exclude.test(file)))
+        .forEach(async file => services[camelize(file.substring(0, file.length - 3))] = (await import('file://' + path.join(servicesPath, file))));
+}
 
-                options.limit = limit;
-            }
+export async function sendErrorAsync(req, res, error) {
+    const data = await errorHandlerAsync(error, req.locale, req.showErrorInConsole);
+    if (data.stack)
+        delete data.stack;
+    res.status(data.httpStatusCode ?? 500).send(data);
+}
 
-            if (!options.limit)
-                options.limit = httpUtil.defaultRowsInResult;
-        
-            if (params.$skip) {
-                const offset = parseInt(params.$skip);
-                if (isNaN(offset))
-                    throw new httpUtil._HttpError(l._fp('Error to convert $skip = "%s" parameter value to a integer number.', params.$skip));
+export function httpErrorHandlerAsync(req, res) {
+    return async error => await sendErrorAsync(req, res, error);
+}
 
-                if (offset < 0)
-                    throw new httpUtil._HttpError(l._f('The $skip param cannot be negative.'), 400);
-                
-                options.offset = offset;
-            }
+export function asyncHandler(method) {
+    return async (req, res, next) => {
+        try {
+            await method(req, res, next);
+        }
+        catch(err) {
+            next(err);
+        }
+    };
+}
 
-            if (!options.offset)
-                options.offset = 0;
+export async function getOptionsFromODataAsync(params, options) {
+    if (!options)
+        options = {};
+
+    if (params) {
+        if (params.$select) {
+            if (!options.attributes)
+                options.attributes = [];
+
+            params.$select.split(',')
+                .forEach(column => options.attributes.push(column.trim()));
         }
 
-        return options;
-    },
+        if (params.$top) {
+            const limit = parseInt(params.$top);
+            if (isNaN(limit))
+                throw new _HttpError(l._fp('Error to convert $top = "%s" parameter value to a integer number.', params.$top));
 
-    async getWhereOptionsFromParamsAsync(params, definitions, options) {
-        if (!options)
-            options = {};
+            if (limit > maxRowsInResult)
+                throw new _HttpError(l._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', maxRowsInResult));
+    
+            if (limit > options.maxLimit)
+                throw new _HttpError(l._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', options.maxLimit));
+    
+            if (limit < 0)
+                throw new _HttpError(l._fp('The $top parameter cannot be negative.'), 400);
 
-        if (params && definitions) {
-            for(const name in definitions) {
-                const value = params[name];
-                if (value !== undefined) {
-                    const def = definitions[name];
-                    switch (def) {
-                    case 'uuid':
-                        if (!uuid.validate(params.uuid))
-                            throw new NoUUIDError(name);
-                    }
-                
-                    if (!options.where)
-                        options.where = {};
-
-                    options.where[name] = value;
-                }
-            }
+            options.limit = limit;
         }
 
-        return options;
-    },
+        if (!options.limit)
+            options.limit = defaultRowsInResult;
+    
+        if (params.$skip) {
+            const offset = parseInt(params.$skip);
+            if (isNaN(offset))
+                throw new _HttpError(l._fp('Error to convert $skip = "%s" parameter value to a integer number.', params.$skip));
 
-    async getOptionsFromParamsAndODataAsync(params, definitions, options) {
-        options = await httpUtil.getOptionsFromODataAsync(params, options);
-        return await httpUtil.getWhereOptionsFromParamsAsync(params, definitions, options);
-    },
-
-    async deleteHandlerAsync(req, res, rowCount) {
-        if (!rowCount)
-            res.status(200).send({msg: await req.locale._('Nothing to delete.')});
-        else if (rowCount != 1)
-            res.status(200).send({msg: await req.locale._('%s rows deleted.', rowCount)});
-        else
-            res.sendStatus(204);
-    },
-
-    getDeleteHandler(req, res) {
-        return async rowCount => httpUtil.deleteHandlerAsync(req, res, rowCount);
-    },
-
-    async execAsyncMethodListAsync(asyncMethodList, singleItemName, ...params) {
-        let method,
-            isEmpty,
-            itemName;
-        if (asyncMethodList instanceof Array) {
-            if (!asyncMethodList.length)
-                return;
-
-            itemName = singleItemName;
-            if (singleItemName === undefined || singleItemName === null || singleItemName < 0 || singleItemName >= asyncMethodList.length)
-                itemName = 0;
-
-            method = asyncMethodList.splice(itemName, 1)[0];
-            isEmpty = !asyncMethodList.length;
-        } else {
-            itemName = singleItemName;
-            if (itemName === undefined || itemName === null) {
-                for (let name in asyncMethodList) {
-                    if (typeof asyncMethodList[name] == 'function') {
-                        itemName = name;
-                        break;
-                    }
-                }
-
-                if (!itemName)
-                    return;
-            }
-
-            method = asyncMethodList[itemName];
-            delete asyncMethodList[itemName];
-
-            isEmpty = !Object.keys(asyncMethodList).length;
-        }
-
-        if (!method)
-            return;
-
-        await method(asyncMethodList, ...params);
-        if (isEmpty || (singleItemName !== undefined && singleItemName !== null))
-            return;
-                
-        return await httpUtil.execAsyncMethodListAsync(asyncMethodList, null, ...params);
-    },
-
-    async configureModuleAsync(global, theModule) {
-        if (!theModule.name)
-            throw new Error('Module does not have a name.');
-
-        global.modules[theModule.name] = theModule;
-        theModule.global = global;
-
-        if (theModule.configure)
-            await theModule.configure(global);
-
-        if (theModule.modelsPath && global.configureModels)
-            await global.configureModels(theModule.modelsPath, global.sequelize);
-
-        if (theModule.servicesPath)
-            await httpUtil.configureServices(global.services, theModule.servicesPath);
-
-        if (theModule.schema && global.createSchema)
-            await global.createSchema(theModule.schema);
-
-        if (theModule.data)
-            global.data = await ru.deepMerge(global.data, theModule.data);
-    },
-
-    async installModuleAsync(global, theModule) {
-        theModule.global = global;
-        if (theModule.routesPath)
-            await httpUtil.configureRouter(theModule.routesPath, global.router, global.checkRoutePermission, theModule.routesPathOptions);
-
-        if (theModule.data)
-            global.data = await ru.deepMerge(global.data, theModule.data);
-
-        if (theModule.init)
-            await Promise.all(await theModule.init.map(async method => await method()));
-
-        if (theModule.afterConfigAsync) {
-            const afterConfigAsync = (theModule.afterConfigAsync instanceof Array)?
-                theModule.afterConfigAsync:
-                [theModule.afterConfigAsync];
+            if (offset < 0)
+                throw new _HttpError(l._f('The $skip param cannot be negative.'), 400);
             
-            global.afterConfigAsync.push(...afterConfigAsync);
+            options.offset = offset;
         }
-    },
 
-    async configureModulesAsync(global, modules) {
-        ru.complete(
-            global,
-            {
-                modules: {},
-                services: {},
-                data: {},
+        if (!options.offset)
+            options.offset = 0;
+    }
+
+    return options;
+}
+
+export async function getWhereOptionsFromParamsAsync(params, definitions, options) {
+    if (!options)
+        options = {};
+
+    if (params && definitions) {
+        for(const name in definitions) {
+            const value = params[name];
+            if (value !== undefined) {
+                const def = definitions[name];
+                switch (def) {
+                case 'uuid':
+                    if (!uuid.validate(params.uuid))
+                        throw new NoUUIDError(name);
+                }
+            
+                if (!options.where)
+                    options.where = {};
+
+                options.where[name] = value;
             }
-        );
+        }
+    }
 
-        for (let i = 0, e = modules.length; i < e; i++)
-            await httpUtil.configureModuleAsync(global, modules[i]);
+    return options;
+}
 
-        for (let i = 0, e = modules.length; i < e; i++)
-            await httpUtil.installModuleAsync(global, modules[i]);
-    },
+export async function getOptionsFromParamsAndODataAsync(params, definitions, options) {
+    options = await getOptionsFromODataAsync(params, options);
+    return await getWhereOptionsFromParamsAsync(params, definitions, options);
+}
 
-    getPropertyFromItems(propertyName, list) {
-        if (list instanceof Array) {
-            const checkList = [];
-            list.forEach(item => {
-                const v = item[propertyName];
-                if (v !== undefined)
-                    checkList.push(v);
+export async function deleteHandlerAsync(req, res, rowCount) {
+    if (!rowCount)
+        res.status(200).send({msg: await req.locale._('Nothing to delete.')});
+    else if (rowCount != 1)
+        res.status(200).send({msg: await req.locale._('%s rows deleted.', rowCount)});
+    else
+        res.sendStatus(204);
+}
+
+export function getDeleteHandler(req, res) {
+    return async rowCount => deleteHandlerAsync(req, res, rowCount);
+}
+
+export async function execAsyncMethodListAsync(asyncMethodList, singleItemName, ...params) {
+    let method,
+        isEmpty,
+        itemName;
+    if (asyncMethodList instanceof Array) {
+        if (!asyncMethodList.length)
+            return;
+
+        itemName = singleItemName;
+        if (singleItemName === undefined || singleItemName === null || singleItemName < 0 || singleItemName >= asyncMethodList.length)
+            itemName = 0;
+
+        method = asyncMethodList.splice(itemName, 1)[0];
+        isEmpty = !asyncMethodList.length;
+    } else {
+        itemName = singleItemName;
+        if (itemName === undefined || itemName === null) {
+            for (let name in asyncMethodList) {
+                if (typeof asyncMethodList[name] == 'function') {
+                    itemName = name;
+                    break;
+                }
+            }
+
+            if (!itemName)
+                return;
+        }
+
+        method = asyncMethodList[itemName];
+        delete asyncMethodList[itemName];
+
+        isEmpty = !Object.keys(asyncMethodList).length;
+    }
+
+    if (!method)
+        return;
+
+    await method(asyncMethodList, ...params);
+    if (isEmpty || (singleItemName !== undefined && singleItemName !== null))
+        return;
+            
+    return await execAsyncMethodListAsync(asyncMethodList, null, ...params);
+}
+
+export async function configureModuleAsync(global, theModule) {
+    if (typeof theModule === 'string')
+        theModule = (await import(theModule)).conf;
+
+    if (!theModule.name)
+        throw new Error('Module does not have a name.');
+
+    global.modules[theModule.name] = theModule;
+    theModule.global = global;
+
+    if (theModule.configure)
+        await theModule.configure(global);
+
+    if (theModule.modelsPath && global.configureModelsAsync)
+        await global.configureModelsAsync(theModule.modelsPath, global.sequelize);
+
+    if (theModule.servicesPath)
+        await configureServices(global.services, theModule.servicesPath);
+
+    if (theModule.schema && global.createSchema)
+        await global.createSchema(theModule.schema);
+
+    if (theModule.data)
+        global.data = {...global.data, ...theModule.data};
+
+    return theModule;
+}
+
+export async function installModuleAsync(global, theModule) {
+    theModule.global = global;
+    if (theModule.routesPath)
+        await configureRouter(theModule.routesPath, global.router, global.checkRoutePermission, theModule.routesPathOptions);
+
+    if (theModule.data)
+        global.data = {...global.data, ...theModule.data};
+
+    if (theModule.init)
+        await Promise.all(await theModule.init.map(async method => await method()));
+
+    if (theModule.afterConfigAsync) {
+        const afterConfigAsync = (theModule.afterConfigAsync instanceof Array)?
+            theModule.afterConfigAsync:
+            [theModule.afterConfigAsync];
+        
+        global.afterConfigAsync.push(...afterConfigAsync);
+    }
+}
+
+export async function configureModulesAsync(global, modules) {
+    if (!global.modules)
+        global.modules = {};
+
+    if (!global.services)
+        global.services = {};
+            
+    if (!global.data)
+        global.data = {};
+
+    for (let i = 0, e = modules.length; i < e; i++)
+        modules[i] = await configureModuleAsync(global, modules[i]);
+
+    for (let i = 0, e = modules.length; i < e; i++)
+        await installModuleAsync(global, modules[i]);
+}
+
+export function getPropertyFromItems(propertyName, list) {
+    if (list instanceof Array) {
+        const checkList = [];
+        list.forEach(item => {
+            const v = item[propertyName];
+            if (v !== undefined)
+                checkList.push(v);
+        });
+
+        return checkList;
+    } else {
+        const checkList = {};
+        for (let name in list) {
+            const item = list[name];
+            const v = item[propertyName];
+            if (v !== undefined)
+                checkList[name] = v;
+        }
+
+        return checkList;
+    }
+}
+
+export async function beforeConfigAsync(global) {
+    await execAsyncMethodListAsync(global.beforeConfigAsync);
+}
+
+export async function afterConfigAsync(global) {
+    await execAsyncMethodListAsync(global.afterConfigAsync, null, global);
+}
+
+export async function beforeSyncAsync(global) {
+    if (global.sequelize) {
+        const list = getPropertyFromItems('beforeSyncAsync', global.modules);
+        await execAsyncMethodListAsync(list);
+    }
+}
+
+export async function afterSyncAsync(global) {
+    if (global.sequelize) {
+        const list = getPropertyFromItems('afterSyncAsync', global.modules);
+        await execAsyncMethodListAsync(list);
+    }
+}
+
+export async function syncDBAsync(global) {
+    if (!global.sequelize)
+        return;
+
+    await global.sequelize.sync(global?.config?.db?.sync);
+    const asyncMethodList = getPropertyFromItems('check', global.sequelize.models);
+    await execAsyncMethodListAsync(asyncMethodList);
+}
+
+export function configureSwagger(global) {
+    if (!global.swagger)
+        return;
+        
+    let swaggerJSDoc;
+    import('swagger-jsdoc')
+        .then(module => {
+            swaggerJSDoc = module.default;
+            return import('swagger-ui-express');
+        })
+        .then(swaggerUI => {
+            let apis = [];
+            for (const moduleName in global.modules) {
+                const module = global.modules[moduleName];
+                if (module.apis)
+                    apis.push(...module.apis);
+            }
+
+            const swaggerDocs = swaggerJSDoc({
+                swaggerDefinition: {
+                    info: {
+                        title:'Bookkeeper API',
+                        version:'1.0.0',
+                        descrition: 'System to use accontable accounts'
+                    },
+                    securityDefinitions: {
+                        bearerAuth: {
+                            description: 'Enter token in format (Bearer &lt;token&gt;)',
+                            type: 'apiKey',
+                            in: 'header',
+                            name: 'Authorization',
+                            scheme: 'bearer',
+                        }
+                    }
+                },
+                apis: apis
             });
 
-            return checkList;
-        } else {
-            const checkList = {};
-            for (let name in list) {
-                const item = list[name];
-                const v = item[propertyName];
-                if (v !== undefined)
-                    checkList[name] = v;
-            }
-
-            return checkList;
-        }
-    },
-
-    async beforeConfigAsync(global) {
-        await httpUtil.execAsyncMethodListAsync(global.beforeConfigAsync);
-    },
-
-    async afterConfigAsync(global) {
-        await httpUtil.execAsyncMethodListAsync(global.afterConfigAsync, null, global);
-    },
-
-    async beforeSyncAsync(global) {
-        if (global.sequelize) {
-            const list = httpUtil.getPropertyFromItems('beforeSyncAsync', global.modules);
-            await httpUtil.execAsyncMethodListAsync(list);
-        }
-    },
-
-    async afterSyncAsync(global) {
-        if (global.sequelize) {
-            const list = httpUtil.getPropertyFromItems('afterSyncAsync', global.modules);
-            await httpUtil.execAsyncMethodListAsync(list);
-        }
-    },
-
-    async syncDBAsync(global) {
-        if (!global.sequelize)
-            return;
-
-        await global.sequelize.sync(global.db.sync);
-        const asyncMethodList = httpUtil.getPropertyFromItems('check', global.sequelize.models);
-        await httpUtil.execAsyncMethodListAsync(asyncMethodList);
-    },
-
-    configureSwagger(global) {
-        if (!global.swagger)
-            return;
-            
-        const swaggerJSDoc = require('swagger-jsdoc');
-        const swaggerUI = require('swagger-ui-express');
-
-        let apis = [];
-        for (const moduleName in global.modules) {
-            const module = global.modules[moduleName];
-            if (module.apis)
-                apis.push(...module.apis);
-        }
-
-        const swaggerDocs = swaggerJSDoc({
-            swaggerDefinition: {
-                info: {
-                    title:'Bookkeeper API',
-                    version:'1.0.0',
-                    descrition: 'System to use accontable accounts'
-                },
-                securityDefinitions: {
-                    bearerAuth: {
-                        description: 'Enter token in format (Bearer &lt;token&gt;)',
-                        type: 'apiKey',
-                        in: 'header',
-                        name: 'Authorization',
-                        scheme: 'bearer',
-                    }
-                }
-            },
-            apis: apis
+            global.app.use('/swagger', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
         });
-    
-        global.app.use('/swagger', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
-    },
+}
 
-    cookies(response, cookieName, cookieProperty) {
-        const list = {};
-        let cookieHeader = response;
+export function cookies(response, cookieName, cookieProperty) {
+    const list = {};
+    let cookieHeader = response;
+    if (!cookieHeader)
+        return list;
+
+    if (cookieHeader.headers) {
+        cookieHeader = cookieHeader.headers;
         if (!cookieHeader)
             return list;
-
-        if (cookieHeader.headers) {
-            cookieHeader = cookieHeader.headers;
-            if (!cookieHeader)
-                return list;
-        }
-        
-        if (cookieHeader['set-cookie']) {
-            cookieHeader = cookieHeader['set-cookie'];
-            if (!cookieHeader)
-                return list;
-        }
-
-        cookieHeader.forEach(cookieData => {
-            const cookieProps = cookieData.split(';');
+    }
     
-            let [name, ...rest] = cookieProps[0].split('=');
+    if (cookieHeader['set-cookie']) {
+        cookieHeader = cookieHeader['set-cookie'];
+        if (!cookieHeader)
+            return list;
+    }
+
+    cookieHeader.forEach(cookieData => {
+        const cookieProps = cookieData.split(';');
+
+        let [name, ...rest] = cookieProps[0].split('=');
+        name = name?.trim();
+        if (!name)
+            return;
+
+        const value = rest.join('=').trim();
+        if (!value)
+            return;
+
+        const cookie = {
+            value: decodeURIComponent(value),
+        };
+
+        cookieProps.slice(1).forEach(prop => {
+            let [name, ...rest] = prop.split('=');
             name = name?.trim();
             if (!name)
                 return;
-    
-            const value = rest.join('=').trim();
+
+            let value = rest.join('=').trim();
             if (!value)
                 return;
-    
-            const cookie = {
-                value: decodeURIComponent(value),
-            };
-    
-            cookieProps.slice(1).forEach(prop => {
-                let [name, ...rest] = prop.split('=');
-                name = name?.trim();
-                if (!name)
-                    return;
-    
-                let value = rest.join('=').trim();
-                if (!value)
-                    return;
-                
-                if (name === 'Expires')
-                    value = new Date(value);
-                else
-                    value = decodeURIComponent(value);
-    
-                cookie[name] = decodeURIComponent(value);
-            });
-    
-            list[name] = cookie;
+            
+            if (name === 'Expires')
+                value = new Date(value);
+            else
+                value = decodeURIComponent(value);
+
+            cookie[name] = decodeURIComponent(value);
         });
 
-        let result = list;
+        list[name] = cookie;
+    });
+
+    let result = list;
+
+    if (result) {
+        if (cookieName)
+            result = result[cookieName];
 
         if (result) {
-            if (cookieName)
-                result = result[cookieName];
-
-            if (result) {
-                if (cookieProperty)
-                    result = result[cookieProperty];
-            }
+            if (cookieProperty)
+                result = result[cookieProperty];
         }
-    
-        return result;
     }
-};
 
-module.exports = httpUtil;
+    return result;
+}

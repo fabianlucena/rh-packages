@@ -1,19 +1,28 @@
-const ru = require('rofa-util');
-const l = ru.locale;
+import {SiteService} from './services/site.js';
+import {RoleService} from './services/role.js';
+import {PermissionService} from './services/permission.js';
+import {RolePermissionService} from './services/role_permission.js';
+import {UserRoleSiteService} from './services/user_role_site.js';
+import {PrivilegesController} from './controllers/privileges.js';
+import {NoPermissionError} from 'http-util';
+import {locale as l} from 'rofa-util';
+import url from 'url';
+import path from 'path';
 
 const name = 'rhAccess';
+const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
-const conf = {
+export const conf = {
     name: name,
     title: 'Access',
     version: '0.1',
     schema: 'acc',
     init: [],
     configure,
-    routesPath: __dirname + '/routes',
-    modelsPath: __dirname + '/models',
-    servicesPath: __dirname + '/services',
-    apis: [__dirname + '/routes/*.js', __dirname + '/controllers/*.js'],
+    routesPath: dirname + '/routes',
+    modelsPath: dirname + '/models',
+    servicesPath: dirname + '/services',
+    apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
     afterConfigAsync,
     data: {
         permissions: {
@@ -55,43 +64,37 @@ function getCheckPermissionHandler(chain) {
         if (chain && await chain(req, ...requiredPermissions))
             return;
 
-        const httpUtil = require('http-util');
-        throw new httpUtil.NoPermissionError({permissions: requiredPermissions});
+        throw new NoPermissionError({permissions: requiredPermissions});
     };
 }
 
 async function afterConfigAsync(_, global) {
-    const SiteService = require('./services/site');
     for (const siteName in global?.data?.sites) {
         const data = global.data.sites[siteName];
         data.name = siteName;
         await SiteService.createIfNotExists(data);
     }
 
-    const RoleService = require('./services/role');
     for (const roleName in global?.data?.roles) {
         const data = global.data.roles[roleName];
         data.name = roleName;
         await RoleService.createIfNotExists(data);
     }
 
-    const PermissionService = require('./services/permission');
     for (const permissionName in global?.data?.permissions) {
         const data = global.data.permissions[permissionName];
 
-        await PermissionService.createIfNotExists(ru.merge(data, {name: permissionName}));
+        await PermissionService.createIfNotExists({...data, name: permissionName});
 
         if (data.roles) {
             const roles = data.roles instanceof Array?
                 data.roles:
                 data.roles.split(',');
 
-            const RolePermissionService = require('./services/role_permission');
             await Promise.all(roles.map(async roleName => await RolePermissionService.createIfNotExists({role: roleName, permission: permissionName})));
         }
     }
 
-    const UserRoleSiteService = require('./services/user_role_site');
     for (const userRoleSiteName in global?.data?.userRoleSites) {
         const userRoleSite = global.data.userRoleSites[userRoleSiteName];
         await UserRoleSiteService.createIfNotExists(userRoleSite);
@@ -99,12 +102,8 @@ async function afterConfigAsync(_, global) {
 }
 
 function configure(global) {
-    if (global.router) {
-        const PrivilegesController = require('./controllers/privileges');
+    if (global.router)
         global.router.use(PrivilegesController.middleware());
-    }
 
     global.checkPermissionHandler = getCheckPermissionHandler(global.checkPermissionHandler);
 }
-
-module.exports = conf;

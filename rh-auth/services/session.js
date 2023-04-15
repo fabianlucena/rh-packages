@@ -1,12 +1,11 @@
-const conf = require('../index');
-const sqlUtil = require('sql-util');
-const ru = require('rofa-util');
-const crypto = require('crypto');
-const l = ru.locale;
+import {conf} from '../conf.js';
+import {checkViewOptions, getSingle} from 'sql-util';
+import {locale as l, complete, deepComplete, checkAsync} from 'rofa-util';
+import crypto from 'crypto';
 
-class IsClosedError extends Error {}
+export class SessionClosedError extends Error {}
 
-ru.complete(
+complete(
     conf,
     {
         sessionCache: {},
@@ -36,10 +35,7 @@ ru.complete(
 
 conf.init.push(() => conf.sessionCacheMaintenance = setInterval(conf.sessionCacheMaintenanceMethod, conf.sessionCacheMaintenanceInterval));
 
-const SessionService = {
-
-    IsClosedError: IsClosedError,
-
+export class SessionService {
     /**
      * Creates a new session row into DB.
      * @param {{
@@ -52,12 +48,12 @@ const SessionService = {
      * }} data - data of the new session. Close property could be null.
      * @returns {Promise{Device}}
      */
-    create(data) {
+    static create(data) {
         if (!data.authToken)
             data.authToken = crypto.randomBytes(64).toString('hex');
         
         return conf.global.models.Session.create(data);
-    },
+    }
 
     /**
      * Gets a list of sessions.
@@ -65,7 +61,7 @@ const SessionService = {
      *  - view: show visible peoperties.
      * @returns {Promise{SessionList}]
      */
-    getList(options) {
+    static getList(options) {
         if (!options)
             options = {};
 
@@ -87,9 +83,9 @@ const SessionService = {
             }
         }
 
-        return sqlUtil.checkViewOptions(options)
+        return checkViewOptions(options)
             .then(options => conf.global.models.Session.findAll(options));
-    },
+    }
 
     /**
      * Gets a session for its name. For many coincidences and for no rows this method fails.
@@ -97,10 +93,10 @@ const SessionService = {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Session}}
      */
-    getForId(id, options) {
-        return SessionService.getList(ru.deepComplete(options, {where: {id: id}, limit: 2}))
-            .then(rowList => sqlUtil.getSingle(rowList, ru.complete(options, {params: ['session', ['id = %s', id], 'Session']})));
-    },
+    static getForId(id, options) {
+        return SessionService.getList(deepComplete(options, {where: {id: id}, limit: 2}))
+            .then(rowList => getSingle(rowList, complete(options, {params: ['session', ['id = %s', id], 'Session']})));
+    }
 
     /**
      * Gets a session for its UUID. For many coincidences and for no rows this method fails.
@@ -108,10 +104,10 @@ const SessionService = {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Session}}
      */
-    getForUUID(uuid, options) {
-        return SessionService.getList(ru.deepComplete(options, {where: {uuid: uuid}, limit: 2}))
-            .then(rowList => sqlUtil.getSingle(rowList, ru.complete(options, {params: ['session', ['UUID = %s', uuid], 'Session']})));
-    },
+    static getForUUID(uuid, options) {
+        return SessionService.getList(deepComplete(options, {where: {uuid: uuid}, limit: 2}))
+            .then(rowList => getSingle(rowList, complete(options, {params: ['session', ['UUID = %s', uuid], 'Session']})));
+    }
 
     /**
      * Gets a session for its authToken. For many coincidences and for no rows this method fails.
@@ -119,17 +115,17 @@ const SessionService = {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Session}}
      */
-    getForAuthToken(authToken, options) {
-        return SessionService.getList(ru.deepComplete(options, {where: {authToken: authToken}, limit: 2}))
-            .then(rowList => sqlUtil.getSingle(rowList, ru.complete(options, {params: ['session', ['authToken = %s', authToken], 'Session']})));
-    },
+    static getForAuthToken(authToken, options) {
+        return SessionService.getList(deepComplete(options, {where: {authToken: authToken}, limit: 2}))
+            .then(rowList => getSingle(rowList, complete(options, {params: ['session', ['authToken = %s', authToken], 'Session']})));
+    }
 
     /**
      * Get a session for a given authToken from the cache or from the DB. @see getForCookie method.
      * @param {string} authToken - value for the authToken to get the session.
      * @returns {Promise{Device}}
      */
-    getForAuthTokenCached(authToken) {
+    static getForAuthTokenCached(authToken) {
         if (conf.sessionCache && conf.sessionCache[authToken]) {
             const sessionData = conf.sessionCache[authToken];
             sessionData.lastUse = Date.now();
@@ -139,7 +135,7 @@ const SessionService = {
         return SessionService.getForAuthToken(authToken, {include: [{model: conf.global.models.User}]})
             .then(session => new Promise((resolve, reject) => {
                 if (session.close)
-                    return reject(new IsClosedError());
+                    return reject(new SessionClosedError());
 
                 conf.sessionCache[authToken] = {
                     session: session,
@@ -148,15 +144,15 @@ const SessionService = {
 
                 resolve(session);
             }));
-    },
+    }
 
     /**
      * Closes a session for a given ID.
      * @param {number} id - ID for the session o close.
      * @returns {Promise{Session}}
      */
-    closeForId(id) {
-        return ru.checkAsync(id, {_message: l._f('There is no id for session')})
+    static closeForId(id) {
+        return checkAsync(id, {_message: l._f('There is no id for session')})
             .then(() => SessionService.getForId(id))
             .then(session => {
                 const authToken = session.authToken;
@@ -171,14 +167,14 @@ const SessionService = {
                     }
                 });
             });
-    },
+    }
 
     /**
      * Deletes a session for a given UUID.
      * @param {string} uuid - UUID for the session o delete.
      * @returns {Promise{Result}}
      */
-    async deleteForUuid(uuid) {
+    static async deleteForUuid(uuid) {
         const session = await SessionService.getForUUID(uuid, {_noRowsError: l._f('Row for UUID %s does not exist', uuid)});
         if (session) {
             if (conf.sessionCache[session.authToken])
@@ -186,7 +182,5 @@ const SessionService = {
 
             return conf.global.models.Session.destroy({where:{uuid: uuid}});
         }
-    },
-};
-
-module.exports = SessionService;
+    }
+}

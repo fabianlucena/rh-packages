@@ -1,9 +1,9 @@
 'use strict';
 
-const conf = require('../index');
-const sqlUtil = require('sql-util');
+import {conf} from '../conf.js';
+import {addIfNotExistsByName} from 'sql-util';
 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
     class Site extends sequelize.Sequelize.Model {
         static associate(models) {
             this.belongsToMany(models.Module,  {through: models.SiteModule,   foreignKey: 'siteId', otherKey: 'moduleId'});
@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
             models.User.belongsToMany(models.Site, {through: models.UserRoleSite, foreignKey: 'userId', otherKey: 'siteId'});
         }
         static async check() {
-            return sqlUtil.addIfNotExistsByName(
+            return addIfNotExistsByName(
                 Site,
                 {
                     name:  'system',

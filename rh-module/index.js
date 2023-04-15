@@ -1,19 +1,9 @@
-const conf = {
-    name: 'rhModule',
-    title: 'Modules',
-    version: '0.1',
-    schema: 'module',
-    routesPath: __dirname + '/routes',
-    modelsPath: __dirname + '/models',
-    servicesPath: __dirname + '/services',
-    apis: [__dirname + '/routes/*.js', __dirname + '/controllers/*.js'],
-    afterConfigAsync,
-};
+import {ModuleService} from './services/module.js';
+import {conf as localConf} from './conf.js';
 
-async function afterConfigAsync() {
-    const ModuleService = require('./services/module');
+export const conf = localConf;
+
+conf.afterConfigAsync = async function() {
     for (const moduleName in conf?.global?.modules)
         await ModuleService.createIfNotExists(conf.global.modules[moduleName]);
-}
-
-module.exports = conf;
+};

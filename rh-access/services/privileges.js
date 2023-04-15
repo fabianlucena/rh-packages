@@ -1,10 +1,10 @@
-const RoleService = require('./role');
-const SiteService = require('./site');
-const PermissionService = require('./permission');
-const conf = require('../index');
-const ru = require('rofa-util');
+import {RoleService} from './role.js';
+import {SiteService} from './site.js';
+import {PermissionService} from './permission.js';
+import {conf} from '../conf.js';
+import {complete} from 'rofa-util';
 
-ru.complete(
+complete(
     conf,
     {
         privilegesCache: {},
@@ -34,7 +34,7 @@ ru.complete(
 
 conf.init.push(() => conf.privilegesCacheMaintenance = setInterval(conf.privilegesCacheMaintenanceMethod, conf.privilegesCacheMaintenanceInterval));
 
-const PrivilegesService = {
+export class PrivilegesService {
     /**
      * Gets the privileges data for a given username and site name.
      * @param {string} username - username for the privileges to get.
@@ -66,7 +66,7 @@ const PrivilegesService = {
             result.permissions = await PermissionService.getAllNameForUsernameAndSiteName(username, siteName);
 
         return result;
-    },
+    }
 
     /**
      * Get the privileges for a given username and session ID from the cache or from the DB. @see getForUsernameAndSiteName method.
@@ -92,7 +92,5 @@ const PrivilegesService = {
         };
 
         return privileges;
-    },
-};
-
-module.exports = PrivilegesService;
+    }
+}

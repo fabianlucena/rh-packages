@@ -1,10 +1,11 @@
-const chai = require('chai');
-const ru = require('rofa-util');
+import {deepMerge, complete} from 'rofa-util';
+import chai from 'chai';
+import chaiHttp from 'chai-http';
 
-chai.use(require('chai-http'));
+chai.use(chaiHttp);
 const expect = chai.expect;
 
-const rt = {
+export const rt = {
     app: null,
     agent: null, 
     headers: {},
@@ -747,7 +748,7 @@ const rt = {
      * @returns 
      */
     testNotAllowedMethod(options, ...notAllowedMethods) {
-        options = ru.deepMerge(options, {notAllowedMethods});
+        options = deepMerge(options, {notAllowedMethods});
 
         rt.testEndPoint(options);
     },
@@ -757,7 +758,7 @@ const rt = {
      * @param {*} options options for the method @see rt.testEndPoint method.
      */
     testGetNoParametesError(options) {
-        options = ru.deepMerge(options, {get: {noParametersError: true}});
+        options = deepMerge(options, {get: {noParametersError: true}});
 
         rt.testEndPoint(options);
     },
@@ -768,7 +769,7 @@ const rt = {
      * @param  {...string} haveProperties properties names to check in the result.
      */
     testGetForm(options, ...haveProperties) {
-        options = ru.deepMerge(
+        options = deepMerge(
             options,
             {
                 get: {
@@ -804,10 +805,10 @@ const rt = {
      * For use as method other than send you must set send to false or [];
      */
     testLogin(options) {
-        options = ru.complete(
+        options = complete(
             options,
             {
-                title: 'login should returns a valid session authToken',
+                title: 'login endpoint should returns a valid session authToken',
                 url: '/login',
                 method: 'post',
                 credentials: rt.credentials,
@@ -818,13 +819,11 @@ const rt = {
         );
 
         if (!options.parameters) {
-            options.credentials = ru.merge(
-                options.credentials,
-                {
-                    username: options.username,
-                    password: options.password,
-                }
-            );
+            options.credentials = {
+                ...options.credentials,
+                username: options.username,
+                password: options.password,
+            };
 
             options.parameters = options.credentials;
         }
@@ -842,8 +841,7 @@ const rt = {
         if (rt.headers?.Authorization)
             return;
             
-        options = ru.merge(options, {after: res => rt.headers.Authorization = `Bearer ${res.body.authToken}`});
-
+        options = {...options, after: res => rt.headers.Authorization = `Bearer ${res.body.authToken}`};
         if (!options.agent)
             rt.getAgent(options.app);
 
@@ -1148,5 +1146,3 @@ const rt = {
         });
     },
 };
-
-module.exports = rt;

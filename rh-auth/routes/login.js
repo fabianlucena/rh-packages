@@ -1,9 +1,9 @@
-module.exports = (app, checkPermission) => {
-    const loginController = require('../controllers/login');
-    const httpUtil = require('http-util');
-    
-    app.head('/login', httpUtil.methodNotAllowed);
-    app.get('/login', checkPermission('login'), httpUtil.asyncHandler(loginController.loginGetForm));
-    app.post('/login', checkPermission('login'), httpUtil.asyncHandler(loginController.loginPost));
-    app.all('/login', httpUtil.methodNotAllowed);
+import {LoginController} from '../controllers/login.js';
+import {methodNotAllowed, asyncHandler} from 'http-util';
+
+export default (app, checkPermission) => {
+    app.head('/login', methodNotAllowed);
+    app.get('/login', checkPermission('login'), asyncHandler(LoginController.getForm));
+    app.post('/login', checkPermission('login'), asyncHandler(LoginController.post));
+    app.all('/login', methodNotAllowed);
 };

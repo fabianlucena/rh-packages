@@ -1,10 +1,10 @@
-const RoleService = require('./role');
-const SiteService = require('./site');
-const conf = require('../index');
-const ru = require('rofa-util');
-const sqlUtil = require('sql-util');
+import {RoleService} from './role.js';
+import {SiteService} from './site.js';
+import {conf} from '../conf.js';
+import {MissingPropertyError, skipAssociationAttributes} from 'sql-util';
+import {complete} from 'rofa-util';
 
-const UserRoleSiteService = {
+export class UserRoleSiteService {
     /**
      * Complete the data object with the userId property if not exists. 
      * @param {{username: string, userId: integer, ...}} data 
@@ -13,12 +13,12 @@ const UserRoleSiteService = {
     async completeUserId(data) {
         if (!data.userId)
             if (!data.username)
-                throw new sqlUtil.MissingPropertyError('UserRoleSite', 'username', 'userId');
+                throw new MissingPropertyError('UserRoleSite', 'username', 'userId');
             else
                 data.userId = await conf.global.services.user.getIdForUsername(data.username);
 
         return data;
-    },
+    }
     
     /**
      * Complete the data object with the roleId property if not exists. 
@@ -28,12 +28,12 @@ const UserRoleSiteService = {
     async completeRoleId(data) {
         if (!data.roleId)
             if (!data.role)
-                throw new sqlUtil.MissingPropertyError('UserRoleSite', 'role', 'roleId');
+                throw new MissingPropertyError('UserRoleSite', 'role', 'roleId');
             else
                 data.roleId = await RoleService.getIdForName(data.role);
 
         return data;
-    },
+    }
 
     /**
      * Complete the data object with the siteId property if not exists. 
@@ -43,12 +43,12 @@ const UserRoleSiteService = {
     async completeSiteId(data) {
         if (!data.siteId)
             if (!data.site)
-                throw new sqlUtil.MissingPropertyError('UserRoleSite', 'site', 'siteId');
+                throw new MissingPropertyError('UserRoleSite', 'site', 'siteId');
             else
                 data.siteId = await SiteService.getIdForName(data.site, {foreign:{module: false}});
 
         return data;
-    },
+    }
 
     /**
      * Complete the data object with the userId, roleId, and siteId properties if not exists. 
@@ -59,7 +59,7 @@ const UserRoleSiteService = {
         await UserRoleSiteService.completeUserId(data);
         await UserRoleSiteService.completeRoleId(data);
         await UserRoleSiteService.completeSiteId(data);
-    },
+    }
     
     /**
      * Creates a new UserRoleSite row into DB. Assign user roles in a site. 
@@ -69,7 +69,7 @@ const UserRoleSiteService = {
     async create(data) {
         await UserRoleSiteService.completeUserIdRoleIdSiteId(data);
         return conf.global.models.UserRoleSite.create(data);
-    },
+    }
 
     /**
      * Gets a list of UserRoleSite.
@@ -78,7 +78,7 @@ const UserRoleSiteService = {
      */
     async getList(options) {
         return conf.global.models.UserRoleSite.findAll(options);
-    },
+    }
 
     /**
      * Creates a new UserRoleSite row into DB if not exists.
@@ -86,35 +86,33 @@ const UserRoleSiteService = {
      * @returns {Promise{UserRoleSite}}
      */
     async createIfNotExists(data, options) {
-        options = ru.merge(options, {attributes: ['userId', 'roleId', 'siteId'], where: {}, include: [], limit: 1});
+        options = {...options, attributes: ['userId', 'roleId', 'siteId'], where: {}, include: [], limit: 1};
 
         if (data.userId)
             options.where.userId = data.userId;
         else if (data.username)
-            options.include.push(ru.complete({model: conf.global.models.User, where: {username: data.username}}, sqlUtil.skipAssociationAttributes));
+            options.include.push(complete({model: conf.global.models.User, where: {username: data.username}}, skipAssociationAttributes));
         else
-            throw new sqlUtil.MissingPropertyError('UserRoleSite', 'user', 'userId');
+            throw new MissingPropertyError('UserRoleSite', 'user', 'userId');
 
         if (data.roleId)
             options.where.roleId = data.roleId;
         else if (data.role)
-            options.include.push(ru.complete({model: conf.global.models.Role, where: {name: data.role}}, sqlUtil.skipAssociationAttributes));
+            options.include.push(complete({model: conf.global.models.Role, where: {name: data.role}}, skipAssociationAttributes));
         else
-            throw new sqlUtil.MissingPropertyError('UserRoleSite', 'role', 'roleId');
+            throw new MissingPropertyError('UserRoleSite', 'role', 'roleId');
         
         if (data.siteId)
             options.where.siteId = data.siteId;
         else if (data.site)
-            options.include.push(ru.complete({model: conf.global.models.Site, where: {name: data.site}}, sqlUtil.skipAssociationAttributes));
+            options.include.push(complete({model: conf.global.models.Site, where: {name: data.site}}, skipAssociationAttributes));
         else
-            throw new sqlUtil.MissingPropertyError('UserRoleSite', 'site', 'siteId');
+            throw new MissingPropertyError('UserRoleSite', 'site', 'siteId');
 
         const rowList = await UserRoleSiteService.getList(options);
         if (rowList.length)
             return rowList[0];
 
         return UserRoleSiteService.create(data);
-    },
-};
-
-module.exports = UserRoleSiteService;
+    }
+}

@@ -1,18 +1,18 @@
-module.exports = (app, checkPermission) => {
-    const userController = require('../controllers/user');
-    const httpUtil = require('http-util');
+import {UserController} from '../controllers/user.js';
+import {methodNotAllowed, asyncHandler} from 'http-util';
 
-    app.head('/user', httpUtil.methodNotAllowed);
-    app.post('/user', checkPermission('user.create'), httpUtil.asyncHandler(userController.userPost));
-    app.get('/user', checkPermission('user.get'), httpUtil.asyncHandler(userController.userGet));
-    app.get('/user/:uuid', checkPermission('user.get'), httpUtil.asyncHandler(userController.userGet));
-    app.delete('/user', checkPermission('user.delete'), httpUtil.asyncHandler(userController.userDelete));
-    app.delete('/user/:uuid', checkPermission('user.get'), httpUtil.asyncHandler(userController.userDelete));
-    app.post('/user/enable', checkPermission('user.update'), httpUtil.asyncHandler(userController.userEnablePost));
-    app.post('/user/enable/:uuid', checkPermission('user.update'), httpUtil.asyncHandler(userController.userEnablePost));
-    app.post('/user/disable', checkPermission('user.update'), httpUtil.asyncHandler(userController.userDisablePost));
-    app.post('/user/disable/:uuid', checkPermission('user.update'), httpUtil.asyncHandler(userController.userDisablePost));
-    app.patch('/user', checkPermission('user.update'), httpUtil.asyncHandler(userController.userPatch));
-    app.patch('/user/:uuid', checkPermission('user.update'), httpUtil.asyncHandler(userController.userPatch));
-    app.all('/user', httpUtil.methodNotAllowed);
+export default (app, checkPermission) => {
+    app.head('/user', methodNotAllowed);
+    app.post('/user', checkPermission('user.create'), asyncHandler(UserController.post));
+    app.get('/user', checkPermission('user.get'), asyncHandler(UserController.get));
+    app.get('/user/:uuid', checkPermission('user.get'), asyncHandler(UserController.get));
+    app.delete('/user', checkPermission('user.delete'), asyncHandler(UserController.delete));
+    app.delete('/user/:uuid', checkPermission('user.get'), asyncHandler(UserController.delete));
+    app.post('/user/enable', checkPermission('user.update'), asyncHandler(UserController.enablePost));
+    app.post('/user/enable/:uuid', checkPermission('user.update'), asyncHandler(UserController.enablePost));
+    app.post('/user/disable', checkPermission('user.update'), asyncHandler(UserController.disablePost));
+    app.post('/user/disable/:uuid', checkPermission('user.update'), asyncHandler(UserController.disablePost));
+    app.patch('/user', checkPermission('user.update'), asyncHandler(UserController.patch));
+    app.patch('/user/:uuid', checkPermission('user.update'), asyncHandler(UserController.patch));
+    app.all('/user', methodNotAllowed);
 };

@@ -1,10 +1,10 @@
-const UserService = require('../services/user');
-const Identity = require('../services/identity');
-const Session = require('../services/session');
-const ru = require('rofa-util');
-const httpUtil = require('http-util');
+import {UserService} from '../services/user.js';
+import {IdentityService} from '../services/identity.js';
+import {SessionService} from '../services/session.js';
+import {_Error} from 'rofa-util';
+import {HttpError} from 'http-util';
 
-const LoginService = {
+export class LoginService {
     /**
      * Perform the login for username and password, in a given device.
      * @param {string} username 
@@ -18,25 +18,23 @@ const LoginService = {
      *  open: Date.now(),
      * }}
      */
-    async loginForUsernamePasswordAndDeviceId(username, password, deviceId, sessionIndex, locale) {
+    static async forUsernamePasswordAndDeviceId(username, password, deviceId, sessionIndex, locale) {
         if (!deviceId)
-            throw new ru._Error('There is no device to create session');
+            throw new _Error('There is no device to create session');
         
         const user = await UserService.getForUsername(username);
         if (!user)
-            throw new ru._Error('Error to get user to create session');
+            throw new _Error('Error to get user to create session');
 
         await UserService.checkEnabledUser(user, username);
-        if (!await Identity.checkLocalPasswordForUsername(username, password, locale))
-            throw new httpUtil.HttpError('Invalid login', 403);
+        if (!await IdentityService.checkLocalPasswordForUsername(username, password, locale))
+            throw new HttpError('Invalid login', 403);
 
-        return Session.create({
+        return SessionService.create({
             deviceId: deviceId,
             userId: user.id,
             index: sessionIndex,
             open: Date.now(),
         });
-    },
-};
-
-module.exports = LoginService;
+    }
+}

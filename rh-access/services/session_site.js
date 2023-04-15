@@ -1,9 +1,9 @@
-const SiteService = require('./site');
-const conf = require('../index');
-const sqlUtil = require('sql-util');
-const ru = require('rofa-util');
+import {SiteService} from './site.js';
+import {conf} from '../conf.js';
+import {MissingPropertyError} from 'sql-util';
+import {deepComplete} from 'rofa-util';
 
-const SessionSiteService = {
+export class SessionSiteService {
     /**
      * Complete the data object with the sessionId property if not exists. 
      * @param {{session: string, sessionId: integer, ...}} data 
@@ -12,12 +12,12 @@ const SessionSiteService = {
     async completeSessionId(data) {
         if (!data.sessionId)
             if (!data.session)
-                throw new sqlUtil.MissingPropertyError('SessionSite', 'session', 'sessionId');
+                throw new MissingPropertyError('SessionSite', 'session', 'sessionId');
             else
                 data.sessionId = await conf.global.services.session.getIdForName(data.session);
 
         return data;
-    },
+    }
 
     /**
      * Complete the data object with the siteId property if not exists. 
@@ -27,12 +27,12 @@ const SessionSiteService = {
     async completeSiteId(data) {
         if (!data.siteId)
             if (!data.site)
-                throw new sqlUtil.MissingPropertyError('SessionSite', 'site', 'siteId');
+                throw new MissingPropertyError('SessionSite', 'site', 'siteId');
             else
                 data.siteId = await SiteService.getIdForName(data.site, {foreign: {module: false}});
 
         return data;
-    },
+    }
 
     /**
      * Complete the data object with the sessionId, and siteId properties if not exists. 
@@ -42,7 +42,7 @@ const SessionSiteService = {
     async completeSessionIdAndSiteId(data) {
         await SessionSiteService.completeSessionId(data);
         await SessionSiteService.completeSiteId(data);
-    },
+    }
 
     /**
      * Creates a new SessionSite row into DB.
@@ -55,7 +55,7 @@ const SessionSiteService = {
     async create(data) {
         await SessionSiteService.completeSessionIdAndSiteId(data);
         return conf.global.models.SessionSite.create(data);
-    },
+    }
 
     /**
      * Creates a new SessionSite row into DB.
@@ -73,7 +73,7 @@ const SessionSiteService = {
         }
 
         return conf.global.models.SessionSite.update(data, options);
-    },
+    }
 
     /**
      * Gets a list of session sites. If not isEnabled filter provided for the site object returns only rows for the enabled sites.
@@ -81,7 +81,7 @@ const SessionSiteService = {
      * @returns {Promise{SessionSiteList}}
      */
     async getList(options) {
-        options = ru.deepComplete(options, {where: {isEnabled: true}});
+        options = deepComplete(options, {where: {isEnabled: true}});
         if (!options.includes) {
             options.include = [];
             options.include.push({
@@ -92,7 +92,7 @@ const SessionSiteService = {
         }
 
         return conf.global.models.SessionSite.findAll(options);
-    },
+    }
 
     /**
      * Updates a existent SessionSite row into DB, for the siteId property.
@@ -105,7 +105,7 @@ const SessionSiteService = {
     async updateSite(data) {
         await SessionSiteService.completeSessionIdAndSiteId(data);
         return conf.global.models.SessionSite.update({siteId: data.siteId}, {where: {sessionId: data.sessionId}});
-    },
+    }
 
     /**
      * Creates a new SessionSite row into DB or update the siteId property if exists.
@@ -123,7 +123,5 @@ const SessionSiteService = {
             return SessionSiteService.update(data, {where: {sessionId: data.sessionId}});
 
         return SessionSiteService.create(data);
-    },
-};
-
-module.exports = SessionSiteService;
+    }
+}

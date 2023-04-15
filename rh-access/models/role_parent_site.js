@@ -1,8 +1,8 @@
 'use strict';
 
-const conf = require('../index');
+import {conf} from '../conf.js';
 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
     class RoleParentSite extends sequelize.Sequelize.Model {
         static associate(models) {
             this.belongsTo(models.Role, {foreignKey: 'roleId',   as: 'Role'});

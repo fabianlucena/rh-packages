@@ -1,12 +1,12 @@
 'use strict';
 
-const conf = require('../index');
-const sqlUtil = require('sql-util');
+import {conf} from '../conf.js';
+import {addIfNotExistsByName} from 'sql-util';
 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
     class IdentityType extends sequelize.Sequelize.Model {
         static check() {
-            return sqlUtil.addIfNotExistsByName(
+            return addIfNotExistsByName(
                 IdentityType,
                 {
                     name: 'local',

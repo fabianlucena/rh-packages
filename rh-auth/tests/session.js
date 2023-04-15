@@ -1,5 +1,5 @@
-require('./login');
-const rt = require('rh-test');
+import './login.js';
+import {rt} from 'rh-test';
 
 describe('Session', () => {
     before(function () {

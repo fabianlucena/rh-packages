@@ -1,10 +1,10 @@
-const RoleService = require('../services/role');
-const PermissionService = require('../services/permission');
-const conf = require('../index');
-const sqlUtil = require('sql-util');
-const ru = require('rofa-util');
+import {RoleService} from './role.js';
+import {PermissionService} from './permission.js';
+import {conf} from '../conf.js';
+import {MissingPropertyError, skipAssociationAttributes} from 'sql-util';
+import {complete} from 'rofa-util';
 
-const RolePermissionService = {
+export class RolePermissionService {
     /**
      * Complete the data object with the roleId property if not exists. 
      * @param {{role: string, roleId: integer}} data 
@@ -13,12 +13,12 @@ const RolePermissionService = {
     async completeRoleId(data) {
         if (!data.roleId)
             if (!data.role)
-                throw new sqlUtil.MissingPropertyError('RolePermission', 'role', 'roleId');
+                throw new MissingPropertyError('RolePermission', 'role', 'roleId');
             else
                 data.roleId = await RoleService.getIdForName(data.role);
 
         return data;
-    },
+    }
 
     /**
      * Complete the data object with the permissionId property if not exists. 
@@ -28,12 +28,12 @@ const RolePermissionService = {
     async completePermissionId(data) {
         if (!data.permissionId)
             if (!data.permission)
-                throw new sqlUtil.MissingPropertyError('RolePermission', 'permission', 'permissionId');
+                throw new MissingPropertyError('RolePermission', 'permission', 'permissionId');
             else
                 data.permissionId = await PermissionService.getIdForName(data.permission);
 
         return data;
-    },
+    }
 
     /**
      * Creates a new RolePermission row into DB.
@@ -50,7 +50,7 @@ const RolePermissionService = {
         await RolePermissionService.completePermissionId(data);
 
         return conf.global.models.RolePermission.create(data);
-    },
+    }
 
     /**
      * Gets a list of poermissions per role.
@@ -59,7 +59,7 @@ const RolePermissionService = {
      */
     async getList(options) {
         return conf.global.models.RolePermission.findAll(options);
-    },
+    }
 
     /**
      * Creates a new RolePermission row into DB if not exists.
@@ -67,28 +67,26 @@ const RolePermissionService = {
      * @returns {Promise{Permission}}
      */
     async createIfNotExists(data, options) {
-        options = ru.merge(options, {attributes: ['roleId', 'permissionId'], where: {}, include: [], limit: 1});
+        options = {...options, attributes: ['roleId', 'permissionId'], where: {}, include: [], limit: 1};
 
         if (data.roleId)
             options.where.roleId = data.roleId;
         else if (data.role)
-            options.include.push(ru.complete({model: conf.global.models.Role, where: {name: data.role}}, sqlUtil.skipAssociationAttributes));
+            options.include.push(complete({model: conf.global.models.Role, where: {name: data.role}}, skipAssociationAttributes));
         else
-            throw new sqlUtil.MissingPropertyError('RolePermission', 'role', 'roleId');
+            throw new MissingPropertyError('RolePermission', 'role', 'roleId');
         
         if (data.permissionId)
             options.where.permissionId = data.permissionId;
         else if (data.permission)
-            options.include.push(ru.complete({model: conf.global.models.Permission, where: {name: data.permission}}, sqlUtil.skipAssociationAttributes));
+            options.include.push(complete({model: conf.global.models.Permission, where: {name: data.permission}}, skipAssociationAttributes));
         else
-            throw new sqlUtil.MissingPropertyError('RolePermission', 'permission', 'permissionId');
+            throw new MissingPropertyError('RolePermission', 'permission', 'permissionId');
 
         const rowList = await RolePermissionService.getList(options);
         if (rowList.length)
             return rowList[0];
 
         return RolePermissionService.create(data);
-    },
-};
-
-module.exports = RolePermissionService;
+    }
+}

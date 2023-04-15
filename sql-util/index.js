@@ -1,13 +1,14 @@
-const ru = require('rofa-util');
-const l = ru.locale;
+import {locale as l, setUpError, deepComplete, replace} from 'rofa-util';
+import fs from 'fs';
+import path from 'path';
 
-class NoRowsError extends Error {
+export class NoRowsError extends Error {
     static _message = l._f('There are no "%s" for "%s" in "%s"');
     static _params = [l._f('element'), l._f('selector'), l._f('model')];
 
     constructor(message) {
         super();
-        ru.setUpError(
+        setUpError(
             this,
             {
                 message
@@ -16,7 +17,7 @@ class NoRowsError extends Error {
     }
 }
 
-class ManyRowsError extends Error {
+export class ManyRowsError extends Error {
     static NoObjectValues = ['length'];
     static VisibleProperties = ['message', 'length'];
     static _message = l._f('There are many "%s" for "%s" in "%s"');
@@ -24,7 +25,7 @@ class ManyRowsError extends Error {
 
     constructor(message, length) {
         super();
-        ru.setUpError(
+        setUpError(
             this,
             {
                 message,
@@ -34,7 +35,7 @@ class ManyRowsError extends Error {
     }
 }
 
-class MissingPropertyError extends Error {
+export class MissingPropertyError extends Error {
     static NoObjectValues = ['length'];
     static VisibleProperties = ['objectName', 'properties'];
     static _zeroMessage = l._f('No properties for object "%s"');
@@ -44,7 +45,7 @@ class MissingPropertyError extends Error {
 
     constructor(objectName, ...properties) {
         super();
-        ru.setUpError(
+        setUpError(
             this,
             {
                 objectName,
@@ -60,237 +61,229 @@ class MissingPropertyError extends Error {
     }
 }
 
-const sqlUtil = {
-    NoRowsError: NoRowsError,
-    ManyRowsError: ManyRowsError,
-    MissingPropertyError: MissingPropertyError,
+export const skipAssociationAttributes = {attributes: []};
+export const skipThroughAssociationAttributes = {attributes: [], through: {attributes: []}};
 
-    skipAssociationAttributes: {attributes: []},
-    skipThroughAssociationAttributes: {attributes: [], through: {attributes: []}},
+export async function configureModelsAsync(modelsPath, sequelize) {
+    if (!sequelize)
+        return;
 
-    configureModels(modelsPath, sequelize) {
-        if (!sequelize)
-            return;
-
-        if (modelsPath) {
-            const fs = require('fs');
-            const path = require('path');
-            const models = {};
-                
+    if (modelsPath) {
+        const models = {};
+            
+        await Promise.all(
             fs
                 .readdirSync(modelsPath)
-                .filter(file => {
-                    return (file.indexOf('.') !== 0) && (file.slice(-3) === '.js');
-                })
-                .forEach(file => {
-                    const model = require(path.join(modelsPath, file))(sequelize, sequelize.Sequelize.DataTypes);
+                .filter(file => (file.indexOf('.') !== 0) && (file.slice(-3) === '.js'))
+                .map(async file => {
+                    const model = (await import('file://' + path.join(modelsPath, file))).default(sequelize, sequelize.Sequelize.DataTypes);
                     models[model.name] = model;
-                });
+                })
+        );
 
-            Object.keys(models).forEach(modelName => {
+        await Promise.all(
+            Object.keys(models).map(async modelName => {
                 if (models[modelName].associate) {
                     models[modelName].associate(sequelize.models);
                 }
-            });
-        }
-    },
+            })
+        );
+    }
+}
 
-    postConfigureModels(sequelize) {
-        if (!sequelize)
+export function postConfigureModels(sequelize) {
+    if (!sequelize)
+        return;
+
+    Object.keys(sequelize.models).forEach(modelName => {
+        if (sequelize.models[modelName].postAssociate) {
+            sequelize.models[modelName].postAssociate(sequelize.models);
+        }
+    });
+}
+
+export async function getSingle(rowList, options) {
+    if (rowList.length == 1)
+        return rowList[0];
+
+    if (!rowList.length) {
+        if (options?.skipNoRowsError)
             return;
-
-        Object.keys(sequelize.models).forEach(modelName => {
-            if (sequelize.models[modelName].postAssociate) {
-                sequelize.models[modelName].postAssociate(sequelize.models);
-            }
+        
+        throw new NoRowsError({
+            message: options?.noRowsError ?? options?.error,
+            _message: options?._noRowsError ?? options?._error,
+            params: options?.noRowsErrorParams ?? options?.params,
+            _params: options?._noRowsErrorParams ?? options?._params,
+            httpStatusCode: 404
         });
-    },
+    }
+    
+    if (options?.skipManyRowsError)
+        return rowList[0];
 
-    async getSingle(rowList, options) {
-        if (rowList.length == 1)
-            return rowList[0];
+    return new ManyRowsError({
+        message: options?.manyRowsError || options?.error,
+        _message: options?._manyRowsError || options?._error,
+        params: options?.manyRowsError ?? options?.params,
+        _params: options?._manyRowsError ?? options?._params,
+        length: rowList.length,
+    });
+}
 
-        if (!rowList.length) {
-            if (options?.skipNoRowsError)
-                return;
-            
-            throw new sqlUtil.NoRowsError({
-                message: options?.noRowsError ?? options?.error,
-                _message: options?._noRowsError ?? options?._error,
-                params: options?.noRowsErrorParams ?? options?.params,
-                _params: options?._noRowsErrorParams ?? options?._params,
-                httpStatusCode: 404
-            });
-        }
-        
-        if (options?.skipManyRowsError)
-            return rowList[0];
+/**
+ * Gets a row list for a given model. Search the specified properties for its values in the model and return the matched rows.
+ * @param {Sequelize.Model} model - model to query.
+ * @param {{name: value, ...}} data - data to search.
+ * @param {Options} options - options to pass to findAll method.
+ * @returns {Promise{rows}}
+ */
+export function getFor(model, data, options) {
+    return model.findAll({where: data, ...options});
+}
 
-        return new sqlUtil.ManyRowsError({
-            message: options?.manyRowsError || options?.error,
-            _message: options?._manyRowsError || options?._error,
-            params: options?.manyRowsError ?? options?.params,
-            _params: options?._manyRowsError ?? options?._params,
-            length: rowList.length,
-        });
-    },
+/**
+ * Gets a single row for a given model. @see getFor for detail.
+ * @param {Sequelize.Model} model - model to query.
+ * @param {{name: value, ...}} data - data to search.
+ * @param {Options} options - options to pass to findAll method.
+ * @returns {Promise{row}}
+ */
+export async function getSingleRowFor(model, data, options) {
+    options = deepComplete(options, {limit: 2});
+    const rowList = await getFor(model, data, options);
+    return getSingle(rowList, options);
+}
 
-    /**
-     * Gets a row list for a given model. Search the specified properties for its values in the model and return the matched rows.
-     * @param {Sequelize.Model} model - model to query.
-     * @param {{name: value, ...}} data - data to search.
-     * @param {Options} options - options to pass to findAll method.
-     * @returns {Promise{rows}}
-     */
-    getFor(model, data, options) {
-        return model.findAll(ru.deepComplete(options, {where: data}));
-    },
+/**
+ * Gets a given properties for a single row of a given model. @see getSingleRowFor for detail.
+ * @param {Sequelize.Model} model - model to query.
+ * @param {{name: value, ...}} data - data to search.
+ * @param {string} getProperty - property name to return.
+ * @param {Options} options - options to pass to findAll method.
+ * @returns {Promise{row}}
+ */
+export async function getSingleRowProperty(model, data, getProperty, options) {
+    options = deepComplete(options, {attributes: [getProperty]});
+    const row = await getSingleRowFor(model, data, options);
+    return row[getProperty];
+}
 
-    /**
-     * Gets a single row for a given model. @see sqlUtil.getFor for detail.
-     * @param {Sequelize.Model} model - model to query.
-     * @param {{name: value, ...}} data - data to search.
-     * @param {Options} options - options to pass to findAll method.
-     * @returns {Promise{row}}
-     */
-    async getSingleRowFor(model, data, options) {
-        options = ru.deepComplete(options, {limit: 2});
-        const rowList = await sqlUtil.getFor(model, data, options);
-        return sqlUtil.getSingle(rowList, options);
-    },
+/**
+ * Check for a row existence and if not exists add the row. @see getSingleRowProperty for detail.
+ * @param {Sequelize.Model} model - model to query.
+ * @param {{name: value, ...}} data - data to search.
+ * @param {string|[]string} propertyName - property name to check the existence. Can be a string for a single property name search or a properties names list.
+ * @param {Options} options - options to pass to findAll method.
+ * @returns {null}
+ */
+export async function addIfNotExistsSingle(model, data, propertyName, options) {
+    options = {attributes:[], ...options};
+    if (!(propertyName instanceof Array))
+        propertyName = [propertyName];
+    
+    const searchData = {};
+    await Promise.all(await propertyName.map(n => searchData[n] = data[n]));
+    if (!options.attributes.length)
+        options.attributes.push(propertyName[0]);
 
-    /**
-     * Gets a given properties for a single row of a given model. @see sqlUtil.getSingleRowFor for detail.
-     * @param {Sequelize.Model} model - model to query.
-     * @param {{name: value, ...}} data - data to search.
-     * @param {string} getProperty - property name to return.
-     * @param {Options} options - options to pass to findAll method.
-     * @returns {Promise{row}}
-     */
-    async getSingleRowProperty(model, data, getProperty, options) {
-        options = ru.deepComplete(options, {attributes: [getProperty]});
-        const row = await sqlUtil.getSingleRowFor(model, data, options);
-        return row[getProperty];
-    },
+    const rows = await getFor(model, searchData, options);
+    if (!rows.length)
+        await model.create(data);
+}
 
-    /**
-     * Check for a row existence and if not exists add the row. @see sqlUtil.getSingleRowProperty for detail.
-     * @param {Sequelize.Model} model - model to query.
-     * @param {{name: value, ...}} data - data to search.
-     * @param {string|[]string} propertyName - property name to check the existence. Can be a string for a single property name search or a properties names list.
-     * @param {Options} options - options to pass to findAll method.
-     * @returns {null}
-     */
-    async addIfNotExistsSingle(model, data, propertyName, options) {
-        options = ru.complete(options, {attributes:[]});
-        if (!(propertyName instanceof Array))
-            propertyName = [propertyName];
-        
-        const searchData = {};
-        await Promise.all(await propertyName.map(n => searchData[n] = data[n]));
-        if (!options.attributes.length)
-            options.attributes.push(propertyName[0]);
+export function addIfNotExists(model, propertyName, ...data) {
+    if (data.length) 
+        return addIfNotExistsSingle(model, data.shift(), propertyName)
+            .then(() => addIfNotExists(model, propertyName, ...data));
+    else
+        return new Promise(resolve => resolve());
+}
 
-        const rows = await sqlUtil.getFor(model, searchData, options);
-        if (!rows.length)
-            await model.create(data);
-    },
+export function addIfNotExistsByName(model, ...data) {
+    return addIfNotExists(model, 'name', ...data);
+}
 
-    addIfNotExists(model, propertyName, ...data) {
-        if (data.length) 
-            return sqlUtil.addIfNotExistsSingle(model, data.shift(), propertyName)
-                .then(() => sqlUtil.addIfNotExists(model, propertyName, ...data));
-        else
-            return new Promise(resolve => resolve());
-    },
+export function completeAssociationOptions(base, options) {
+    if (options.skipAssociationAttributes)
+        deepComplete(base, skipAssociationAttributes);
 
-    addIfNotExistsByName(model, ...data) {
-        return sqlUtil.addIfNotExists(model, 'name', ...data);
-    },
+    if (options.skipThroughAssociationAttributes)
+        deepComplete(base, skipThroughAssociationAttributes);
 
-    completeAssociationOptions(base, options) {
-        if (options.skipAssociationAttributes)
-            ru.deepComplete(base, sqlUtil.skipAssociationAttributes);
+    return base;
+}
 
-        if (options.skipThroughAssociationAttributes)
-            ru.deepComplete(base, sqlUtil.skipThroughAssociationAttributes);
+export async function checkDataForMissingProperties(data, objectName, ...properties) {
+    const missingProperties = properties.filter(property => !data[property]);
+    if (missingProperties?.length)
+        throw new MissingPropertyError(objectName, ...missingProperties);
+}
 
-        return base;
-    },
+export async function checkViewOptions(options) {
+    if (!options)
+        options = {};
 
-    async checkDataForMissingProperties(data, objectName, ...properties) {
-        const missingProperties = properties.filter(property => !data[property]);
-        if (missingProperties?.length)
-            throw new sqlUtil.MissingPropertyError(objectName, ...missingProperties);
-    },
-
-    async checkViewOptions(options) {
-        if (!options)
-            options = {};
-
-        if (options.view) {
-            if (options.include) {
-                for (const include in options.include) {
-                    if (!include.attributes)
-                        include.attributes = [];
-                }
+    if (options.view) {
+        if (options.include) {
+            for (const include in options.include) {
+                if (!include.attributes)
+                    include.attributes = [];
             }
         }
+    }
 
-        return options;
-    },
+    return options;
+}
 
-    /**
-     * Get the included (JOIN) from a sequelize query.
-     * @param {*} options - Original options
-     * @param {*} model - the model to get
-     * @param {*} as - [optional] if the model has an as property and the as values needs to check.
-     * @returns 
-     */
-    getIncludedModelOptions(options, model, as) {
-        if (options?.include) {
-            for (let i = 0, e = options.include.length; i < e; i++) {
-                const included = options.include[i];
-                if (included.model === model && (!as || as === included.as))
-                    return included;
-            }
+/**
+ * Get the included (JOIN) from a sequelize query.
+ * @param {*} options - Original options
+ * @param {*} model - the model to get
+ * @param {*} as - [optional] if the model has an as property and the as values needs to check.
+ * @returns 
+ */
+export function getIncludedModelOptions(options, model, as) {
+    if (options?.include) {
+        for (let i = 0, e = options.include.length; i < e; i++) {
+            const included = options.include[i];
+            if (included.model === model && (!as || as === included.as))
+                return included;
         }
-    },
+    }
+}
 
-    /**
-     * Completes the include (JOIN) of a sequelize query.
-     * @param {Options} options - Original options
-     * @param {string} name - name of the property in options in the options.foreign[name]  property
-     * @param {Options} includeOptions - options for include, this option must include the model property
-     * @return {Options}
-     */
-    completeIncludeOptions(options, name, includeOptions) {
-        if (options?.foreign && options?.foreign[name] === false)
-            return options;
-
-        let includedOptions;
-        if (options.include)
-            includedOptions = sqlUtil.getIncludedModelOptions(options, includeOptions.model);
-        else
-            options.include = [];
-
-        if (!includedOptions) {
-            includedOptions = includeOptions;
-            options.include.push(includedOptions);
-        } else
-            includedOptions = ru.deepComplete(includedOptions, includeOptions);
-
-        if (includeOptions.skipAssociationAttributes)
-            ru.deepComplete(includedOptions, sqlUtil.skipAssociationAttributes);
-        
-        if (includeOptions.skipThroughAssociationAttributes)
-            ru.deepComplete(includedOptions, sqlUtil.skipThroughAssociationAttributes);
-
-        if (options?.foreign)
-            ru.replace(includedOptions, options?.foreign[name]);
-
+/**
+ * Completes the include (JOIN) of a sequelize query.
+ * @param {Options} options - Original options
+ * @param {string} name - name of the property in options in the options.foreign[name]  property
+ * @param {Options} includeOptions - options for include, this option must include the model property
+ * @return {Options}
+ */
+export function completeIncludeOptions(options, name, includeOptions) {
+    if (options?.foreign && options?.foreign[name] === false)
         return options;
-    },
-};
 
-module.exports = sqlUtil;
+    let includedOptions;
+    if (options.include)
+        includedOptions = getIncludedModelOptions(options, includeOptions.model);
+    else
+        options.include = [];
+
+    if (!includedOptions) {
+        includedOptions = includeOptions;
+        options.include.push(includedOptions);
+    } else
+        includedOptions = deepComplete(includedOptions, includeOptions);
+
+    if (includeOptions.skipAssociationAttributes)
+        deepComplete(includedOptions, skipAssociationAttributes);
+    
+    if (includeOptions.skipThroughAssociationAttributes)
+        deepComplete(includedOptions, skipThroughAssociationAttributes);
+
+    if (options?.foreign)
+        replace(includedOptions, options?.foreign[name]);
+
+    return options;
+}

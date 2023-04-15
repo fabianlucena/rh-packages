@@ -1,7 +1,6 @@
-const LogoutService = require('../services/logout');
+import {LogoutService} from '../services/logout.js';
 
-module.exports = {
-
+export class LogoutController {
     /** 
      * @swagger
      * /api/logout:
@@ -29,7 +28,7 @@ module.exports = {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    async logoutGet(req, res) {
+    static async get(req, res) {
         if (!req.session)
             return res.status(403).send({error: await req.locale._('No session')});
 
@@ -39,6 +38,5 @@ module.exports = {
                 res.status(204).send();
             })
             .catch(error => res.status(500).send({error: error}));
-    },
-
-};
+    }
+}

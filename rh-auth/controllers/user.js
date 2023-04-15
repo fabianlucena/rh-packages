@@ -1,29 +1,28 @@
-const UserService = require('../services/user');
-const httpUtil = require('http-util');
-const ru = require('rofa-util');
+import {UserService} from '../services/user.js';
+import {getOptionsFromParamsAndODataAsync, _HttpError} from 'http-util';
+import {checkParameter, checkParameterUUID} from 'rofa-util';
 
-module.exports = {
-
-    /**
-     * @swagger
-     * definitions:
-     *  User:
-     *      type: object
-     *      properties:
-     *          username:
-     *              type: string
-     *              required: true
-     *              example: admin
-     *          displayName:
-     *              type: string
-     *              required: true
-     *              example: Admin
-     *          typeId:
-     *              type: integer
-     *          isEnabled:
-     *              type: boolean
-     */
-        
+/**
+ * @swagger
+ * definitions:
+ *  User:
+ *      type: object
+ *      properties:
+ *          username:
+ *              type: string
+ *              required: true
+ *              example: admin
+ *          displayName:
+ *              type: string
+ *              required: true
+ *              example: Admin
+ *          typeId:
+ *              type: integer
+ *          isEnabled:
+ *              type: boolean
+ */
+    
+export class UserController {
     /**
      * @swagger
      * /api/user:
@@ -59,11 +58,11 @@ module.exports = {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    async userPost(req, res) {
-        ru.checkParameter(req?.body, 'username', 'displayName');
+    static async post(req, res) {
+        checkParameter(req?.body, 'username', 'displayName');
         await UserService.create(req.body);
         res.status(204).send();
-    },
+    }
 
     /**
      * @swagger
@@ -117,14 +116,14 @@ module.exports = {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    async userGet(req, res) {
+    static async get(req, res) {
         const definitions = {uuid: 'uuid', username: 'string'};
         let options = {view: true, limit: 10, offset: 0};
 
-        options = await httpUtil.getOptionsFromParamsAndODataAsync(ru.merge(req.query, req.params), definitions, options);
+        options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
         const rows = await UserService.getList(options);
         res.status(200).send(rows);
-    },
+    }
 
     /**
      * @swagger
@@ -165,14 +164,14 @@ module.exports = {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    async userDelete(req, res) {
-        const uuid = await ru.checkParameterUUID(ru.merge(req.query, req.params), 'uuid');
+    static async delete(req, res) {
+        const uuid = await checkParameterUUID({...req.query, ...req.params}, 'uuid');
         const rowsDeleted = await UserService.deleteForUuid(uuid);
         if (!rowsDeleted)
-            throw new httpUtil._HttpError('User with UUID %s does not exists.', 403, uuid);
+            throw new _HttpError('User with UUID %s does not exists.', 403, uuid);
 
         res.sendStatus(204);
-    },
+    }
 
     /**
      * @swagger
@@ -213,14 +212,14 @@ module.exports = {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    async userEnablePost(req, res) {
-        const uuid = await ru.checkParameterUUID(ru.merge(req.query, req.params), 'uuid');
+    static async enablePost(req, res) {
+        const uuid = await checkParameterUUID({...req.query, ...req.params}, 'uuid');
         const rowsUpdated = await UserService.enableForUuid(uuid);
         if (!rowsUpdated)
-            throw new httpUtil._HttpError('User with UUID %s does not exists.', 403, uuid);
+            throw new _HttpError('User with UUID %s does not exists.', 403, uuid);
 
         res.sendStatus(204);
-    },
+    }
 
     /**
      * @swagger
@@ -261,14 +260,14 @@ module.exports = {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    async userDisablePost(req, res) {
-        const uuid = await ru.checkParameterUUID(ru.merge(req.query, req.params), 'uuid');
+    static async disablePost(req, res) {
+        const uuid = await checkParameterUUID({...req.query, ...req.params}, 'uuid');
         const rowsUpdated = await UserService.disableForUuid(uuid);
         if (!rowsUpdated)
-            throw new httpUtil._HttpError('User with UUID %s does not exists.', 403, uuid);
+            throw new _HttpError('User with UUID %s does not exists.', 403, uuid);
 
         res.sendStatus(204);
-    },
+    }
 
     /**
      * @swagger
@@ -307,12 +306,12 @@ module.exports = {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    async userPatch(req, res) {
-        const uuid = await ru.checkParameterUUID(ru.merge(req.body, req.params), 'uuid');
+    static async patch(req, res) {
+        const uuid = await checkParameterUUID({...req.body, ...req.params}, 'uuid');
         const rowsUpdated = await UserService.updateForUuid(req.body, uuid);
         if (!rowsUpdated)
-            throw new httpUtil._HttpError('User with UUID %s does not exists.', 403, uuid);
+            throw new _HttpError('User with UUID %s does not exists.', 403, uuid);
 
         res.sendStatus(204);
-    },
-};
+    }
+}

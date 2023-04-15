@@ -1,7 +1,7 @@
-const SiteService = require('../services/site');
-const SessionSiteService = require('../services/session_site');
-const httpUtil = require('http-util');
-const ru = require('rofa-util');
+import {SiteService} from '../services/site.js';
+import {SessionSiteService} from '../services/session_site.js';
+import {getOptionsFromParamsAndODataAsync} from 'http-util';
+import {checkParameter} from 'rofa-util';
 
 /**
  * @swagger
@@ -41,7 +41,7 @@ const ru = require('rofa-util');
  *              schema:
  *                  $ref: '#/definitions/Error'
  */
-function currentSiteGet(req, res) {
+export function currentSiteGet(req, res) {
     const siteId = req?.site?.id;
     if (!siteId)
         return res.status(204).send();
@@ -49,7 +49,7 @@ function currentSiteGet(req, res) {
     const definitions = {uuid: 'uuid', name: 'string'},
         options = {view: true, limit: 10, offset: 0};
 
-    httpUtil.getOptionsFromParamsAndODataAsync(req?.query, definitions, options)
+    getOptionsFromParamsAndODataAsync(req?.query, definitions, options)
         .then(options => SiteService.getForId(siteId, options))
         .then(element => res.status(200).send(element));
 }
@@ -74,8 +74,8 @@ function currentSiteGet(req, res) {
  *              schema:
  *                  $ref: '#/definitions/Error'
  */
-function switchSitePost(req, res) {
-    ru.checkParameter(req?.body, 'name')
+export function switchSitePost(req, res) {
+    checkParameter(req?.body, 'name')
         .then(siteName => SessionSiteService.createOrUpdate({
             sessionId: req?.session?.id,
             site: siteName,
@@ -103,16 +103,10 @@ function switchSitePost(req, res) {
  *              schema:
  *                  $ref: '#/definitions/Error'
  */
-async function siteGet(req, res) {
+export async function siteGet(req, res) {
     const definitions = {uuid: 'uuid', name: 'string'},
-        options = await httpUtil.getOptionsFromParamsAndODataAsync(req?.query, definitions, {view: true, limit: 10, offset: 0});
+        options = await getOptionsFromParamsAndODataAsync(req?.query, definitions, {view: true, limit: 10, offset: 0});
 
     const rows = await SiteService.getForUsername(req?.user?.username, options);
     res.status(200).send(rows);
 }
-
-module.exports = {
-    currentSiteGet,
-    switchSitePost,
-    siteGet,
-};

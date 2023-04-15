@@ -1,12 +1,12 @@
-const Session = require('../services/session');
+import {SessionService} from './session.js';
 
-const LogoutService = {
+export class LogoutService {
     /**
      * Close the given session and it is no longr valid.
      * @param {{id: number}} session 
      * @returns 
      */
-    logout: session => Session.closeForId(session.id),
-};
-
-module.exports = LogoutService;
+    static logout(session) {
+        return SessionService.closeForId(session.id);
+    }
+}

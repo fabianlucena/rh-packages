@@ -1,5 +1,6 @@
-const rt = require('rh-test');
-const chai = require('chai');
+import {rt} from 'rh-test';
+import chai from 'chai';
+
 const expect = chai.expect;
 
 const credentials = {

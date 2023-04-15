@@ -1,20 +1,9 @@
-const name = 'rhMenu';
+import {MenuItemService} from './services/menu_item.js';
+import {conf as localConf} from './conf.js';
 
-const conf = {
-    name: name,
-    title: 'Menu',
-    version: '0.1',
-    schema: 'menu',
-    routesPath: __dirname + '/routes',
-    modelsPath: __dirname + '/models',
-    servicesPath: __dirname + '/services',
-    apis: [__dirname + '/routes/*.js', __dirname + '/controllers/*.js'],
-    afterConfigAsync,
-};
+export const conf = localConf;
 
-async function afterConfigAsync(_, options) {
-    const MenuItemService = require('./services/menu_item');
-    
+conf.afterConfigAsync = async function(_, options) {
     for (const permissionName in options?.data?.permissions) {
         const data = options.data.permissions[permissionName];
         const menuData = data.menuItem;
@@ -32,6 +21,4 @@ async function afterConfigAsync(_, options) {
 
         await MenuItemService.createIfNotExists(menuData);
     }
-}
-
-module.exports = conf;
+};

@@ -1,8 +1,8 @@
-module.exports = (app, checkPermission) => {
-    const logoutController = require('../controllers/logout');
-    const httpUtil = require('http-util');
-    
-    app.head('/logout', httpUtil.methodNotAllowed);
-    app.get('/logout', checkPermission('logout'), logoutController.logoutGet);
-    app.all('/logout', httpUtil.methodNotAllowed);
+import {LogoutController} from '../controllers/logout.js';
+import {methodNotAllowed} from 'http-util';
+
+export default (app, checkPermission) => {
+    app.head('/logout', methodNotAllowed);
+    app.get('/logout', checkPermission('logout'), LogoutController.get);
+    app.all('/logout', methodNotAllowed);
 };

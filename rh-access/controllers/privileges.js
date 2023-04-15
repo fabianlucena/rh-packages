@@ -1,7 +1,7 @@
-const PrivilegesService = require('../services/privileges.js');
-const ru = require('rofa-util');
+import {PrivilegesService} from '../services/privileges.js';
+import {errorHandlerAsync} from 'rofa-util';
 
-function middleware() {
+export function middleware() {
     return (req, res, next) => {
         PrivilegesService.getJSONForUsernameAndSessionIdCached(req?.user.username, req?.session?.id)
             .then(privileges => {
@@ -15,7 +15,7 @@ function middleware() {
                 next();
             })
             .catch(err => {
-                ru.errorHandlerAsync(err);
+                errorHandlerAsync(err);
                 next();
             });
     };
@@ -59,7 +59,7 @@ function middleware() {
  *              schema:
  *                  $ref: '#/definitions/Error'
  */
-async function privilegesGet(req, res) {
+export async function privilegesGet(req, res) {
     const result = {
         sites: req?.sites,
     };
@@ -73,8 +73,3 @@ async function privilegesGet(req, res) {
 
     res.status(200).send(result);
 }
-
-module.exports = {
-    middleware,
-    privilegesGet,
-};

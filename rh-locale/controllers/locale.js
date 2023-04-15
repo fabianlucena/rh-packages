@@ -1,13 +1,8 @@
-const LocaleService = require('../services/locale');
+import {LocaleService} from '../services/locale.js';
 
-function middleware() {
+export function middleware() {
     return (req, res, next) => {
         req.locale = LocaleService;
         next();
     };
 }
-
-module.exports = {
-    middleware
-    ,
-};

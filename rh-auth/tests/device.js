@@ -1,6 +1,6 @@
-const rt = require('rh-test');
-const httpUtil = require('http-util');
-const chai = require('chai');
+import {rt} from 'rh-test';
+import {cookies as htCookies} from 'http-util';
+import chai from 'chai';
 
 describe('Device', () => {
     let cookies = {};
@@ -14,7 +14,7 @@ describe('Device', () => {
                 status: null,
                 haveCookies: 'device',
                 before: test => test.agent = rt.initAgent(),
-                after: res => cookies.device = httpUtil.cookies(res, 'device', 'value'), // after succesfull test, store the cookie
+                after: res => cookies.device = htCookies(res, 'device', 'value'), // after succesfull test, store the cookie
             },
             {
                 title: 'should not get a cookie device',

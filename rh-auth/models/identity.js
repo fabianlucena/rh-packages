@@ -1,10 +1,10 @@
 'use strict';
 
-const conf = require('../index');
-const httpUtil = require('http-util');
-const sqlUtil = require('sql-util');
+import {conf} from '../conf.js';
+import {execAsyncMethodListAsync} from 'http-util';
+import {getSingleRowProperty, addIfNotExists} from 'sql-util';
 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
     class Identity extends sequelize.Sequelize.Model {
         static associate(models) {
             this.belongsTo(models.User,         {foreignKey: 'userId', allowNull: false, onDelete: 'cascade'});
@@ -13,13 +13,13 @@ module.exports = (sequelize, DataTypes) => {
 
         static check(asyncMethodList) {
             let userId;
-            return httpUtil.execAsyncMethodListAsync(asyncMethodList, 'User')
-                .then(() => httpUtil.execAsyncMethodListAsync(asyncMethodList, 'IdentityType'))
-                .then(() => sqlUtil.getSingleRowProperty(sequelize.models.User, {username: 'admin'}, 'id'))
+            return execAsyncMethodListAsync(asyncMethodList, 'User')
+                .then(() => execAsyncMethodListAsync(asyncMethodList, 'IdentityType'))
+                .then(() => getSingleRowProperty(sequelize.models.User, {username: 'admin'}, 'id'))
                 .then(uId => userId = uId)
-                .then(() => sqlUtil.getSingleRowProperty(sequelize.models.IdentityType, {name: 'local'}, 'id'))
+                .then(() => getSingleRowProperty(sequelize.models.IdentityType, {name: 'local'}, 'id'))
                 .then(identityTypeId => {
-                    return sqlUtil.addIfNotExists(
+                    return addIfNotExists(
                         Identity,
                         ['userId', 'typeId'],
                         {
