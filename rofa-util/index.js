@@ -42,7 +42,7 @@ export function setUpError(error, options) {
     let arranged = {};
     for (const name in options) {
         const value = options[name];
-        if (name == 'message' || name == 'httpStatusCode' || error.constructor?.NoObjectValues?.includes(name)) {
+        if (name == 'message' || name == 'statusCode' || error.constructor?.NoObjectValues?.includes(name)) {
             if (typeof value === 'object' && !(value instanceof Array)) {
                 arranged = {...arranged, ...value};
                 continue;
@@ -93,7 +93,7 @@ export class MissingParameterError extends Error {
     static _zeroMessage = l._f('Mising parameters.');
     static _message = l._nf(0, 'Mising parameter: "%s".', 'Mising parameters: "%s".');
 
-    httpStatusCode = 400;
+    statusCode = 400;
     missingParameters = [];
     
     constructor(...missingParameters) {
@@ -177,8 +177,8 @@ export function validateUUID(value, paramName, options) {
     if (!options)
         options = {};
 
-    if (!options.httpStatusCode)
-        options.httpStatusCode = 500;
+    if (!options.statusCode)
+        options.statusCode = 500;
         
     if (!options.method)
         options.method = uuid.validate;
@@ -206,7 +206,7 @@ export function checkParameter(value, ...paramName) {
 
 export function checkParameterUUID(value, paramName) {
     value = checkParameter(value, paramName);
-    return validateUUID(value, paramName, {httpStatusCode: 400});
+    return validateUUID(value, paramName, {statusCode: 400});
 }
 
 export async function getTranslatedParamsAsync(params, all, locale) {
@@ -358,8 +358,8 @@ export async function getErrorDataAsync(error, locale) {
         const visibleProperties = error.constructor?.VisibleProperties ?? ['message', 'length', 'fileName', 'lineNumber', 'columnNumber', 'stack'];
         visibleProperties.forEach(n => data[n] = error[n]);
 
-        if (error.httpStatusCode)
-            data.httpStatusCode = error.httpStatusCode;
+        if (error.statusCode)
+            data.statusCode = error.statusCode;
 
         data.message = await getErrorMessageAsync(error, locale);
     } else

@@ -8,7 +8,7 @@ export const conf = {
     title: 'Modules',
     version: '0.1',
     schema: 'module',
-    routesPath: dirname + '/routes',
+    //routesPath: dirname + '/routes',
     modelsPath: dirname + '/models',
     servicesPath: dirname + '/services',
     apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],

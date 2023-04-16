@@ -4,13 +4,13 @@ import fs from 'fs';
 import path from 'path';
 
 export class HttpError extends Error {
-    constructor(message, httpStatusCode, ...params) {
+    constructor(message, statusCode, ...params) {
         super();
         setUpError(
             this,
             {
                 message,
-                httpStatusCode,
+                statusCode,
                 params
             }
         );
@@ -18,13 +18,13 @@ export class HttpError extends Error {
 }
 
 export class _HttpError extends Error {
-    constructor(message, httpStatusCode, ...params) {
+    constructor(message, statusCode, ...params) {
         super();
         setUpError(
             this,
             {
                 _message: message,
-                httpStatusCode,
+                statusCode,
                 params
             }
         );
@@ -37,7 +37,7 @@ export class NoPermissionError extends Error {
     static _zeroMessage = l._f('You do not have permission.');
     static _message = l._nf(0, 'You do not have permission: "%s"', 'You do not have any of permissions: "%s".');
 
-    httpStatusCode = 403;
+    statusCode = 403;
     permissions = [];
 
     constructor(permissions, options, ...params) {
@@ -45,9 +45,9 @@ export class NoPermissionError extends Error {
         setUpError(
             this,
             {
-                permissions: permissions,
-                options: options,
-                params: params
+                permissions,
+                options,
+                params
             }
         );
     }
@@ -60,29 +60,26 @@ export class NoPermissionError extends Error {
 }
 
 export class MethodNotAllowedError extends Error {
-    static NoObjectValues = ['methods'];
-    static VisibleProperties = ['message', 'methods'];
-    static _zeroMessage = l._f('Method not allowed.');
-    static _message = l._nf(0, 'Method "%s" not allowed.', 'Methods "%s" not allowed.');
+    static NoObjectValues = ['method'];
+    static VisibleProperties = ['message', 'method'];
+    static _message = l._f('Method "%s" not allowed.');
     static param = ['<unknown>'];
 
-    httpStatusCode = 405;
-    methods = [];
+    statusCode = 405;
+    method = '';
 
-    constructor(...methods) {
+    constructor(method) {
         super();
         setUpError(
             this,
             {
-                methods: methods
+                method
             }
         );
     }
 
-    _n() {return this.methods.length;}
-
     async getMessageParamsAsync(locale) {
-        return [await locale._or(...this.methods)];
+        return [this.method];
     }
 }
 
@@ -92,7 +89,7 @@ export class NoUUIDError extends Error {
     static _message = l._f('The "%s" parameter is not a valid UUID.');
     static param = ['<unknown>'];
 
-    httpStatusCode = 403;
+    statusCode = 403;
 
     constructor(paramName) {
         super();
@@ -158,6 +155,9 @@ export function configureRouter(routesPath, router, checkPermission, options) {
 
     if (!routesPath)
         return;
+
+    if (!fs.existsSync(routesPath))
+        throw new Error(`The routes path does not exists: ${routesPath}`);
         
     fs
         .readdirSync(routesPath)
@@ -183,7 +183,7 @@ export async function sendErrorAsync(req, res, error) {
     const data = await errorHandlerAsync(error, req.locale, req.showErrorInConsole);
     if (data.stack)
         delete data.stack;
-    res.status(data.httpStatusCode ?? 500).send(data);
+    res.status(data.statusCode ?? 500).send(data);
 }
 
 export function httpErrorHandlerAsync(req, res) {

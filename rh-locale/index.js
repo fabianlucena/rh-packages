@@ -11,8 +11,8 @@ export const conf = {
     version: '0.1',
     schema: 'locale',
     configure: configure,
-    routesPath: dirname + '/routes',
-    modelsPath: dirname + '/models',
+    //routesPath: dirname + '/routes',
+    //modelsPath: dirname + '/models',
     servicesPath: dirname + '/services',
     apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
 };

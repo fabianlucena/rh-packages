@@ -68,27 +68,31 @@ export async function configureModelsAsync(modelsPath, sequelize) {
     if (!sequelize)
         return;
 
-    if (modelsPath) {
-        const models = {};
-            
-        await Promise.all(
-            fs
-                .readdirSync(modelsPath)
-                .filter(file => (file.indexOf('.') !== 0) && (file.slice(-3) === '.js'))
-                .map(async file => {
-                    const model = (await import('file://' + path.join(modelsPath, file))).default(sequelize, sequelize.Sequelize.DataTypes);
-                    models[model.name] = model;
-                })
-        );
+    if (!modelsPath)
+        return;
+        
+    if (!fs.existsSync(modelsPath))
+        throw new Error(`The modules path does not exists: ${modelsPath}`);
 
-        await Promise.all(
-            Object.keys(models).map(async modelName => {
-                if (models[modelName].associate) {
-                    models[modelName].associate(sequelize.models);
-                }
+    const models = {};
+    
+    await Promise.all(
+        fs
+            .readdirSync(modelsPath)
+            .filter(file => (file.indexOf('.') !== 0) && (file.slice(-3) === '.js'))
+            .map(async file => {
+                const model = (await import('file://' + path.join(modelsPath, file))).default(sequelize, sequelize.Sequelize.DataTypes);
+                models[model.name] = model;
             })
-        );
-    }
+    );
+
+    await Promise.all(
+        Object.keys(models).map(async modelName => {
+            if (models[modelName].associate) {
+                models[modelName].associate(sequelize.models);
+            }
+        })
+    );
 }
 
 export function postConfigureModels(sequelize) {

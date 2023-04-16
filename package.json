@@ -18,7 +18,6 @@
   "dependencies": {
     "swagger-jsdoc": "^6.2.5",
     "swagger-ui-express": "^4.5.0",
-    "url": "^0.11.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

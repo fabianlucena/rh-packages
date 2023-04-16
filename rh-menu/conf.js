@@ -9,7 +9,7 @@ export const conf = {
     title: 'Menu',
     version: '0.1',
     schema: 'menu',
-    routesPath: dirname + '/routes',
+    //routesPath: dirname + '/routes',
     modelsPath: dirname + '/models',
     servicesPath: dirname + '/services',
     apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
