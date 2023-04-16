@@ -1,10 +1,8 @@
-//import {PrivilegesService} from '../services/privileges.js';
 import {httpErrorHandlerAsync} from 'http-util';
-import {errorHandlerAsync} from 'rofa-util';
 
 export class PrivilegesController
 {
-    static configureMiddleware() {
+    /*static configureMiddleware() {
         return (req, res, next) => {
             PrivilegesService.getJSONForUsernameAndSessionIdCached(req?.user.username, req?.session?.id)
                 .then(privileges => {
@@ -22,7 +20,7 @@ export class PrivilegesController
                     next();
                 });
         };
-    }
+    }*/
 
     /**
      * @swagger

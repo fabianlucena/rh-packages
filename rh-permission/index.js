@@ -1,17 +1,10 @@
-//import {RoleService} from './services/role.js';
 import {PermissionService} from './services/permission.js';
-//import {RolePermissionService} from './services/role_permission.js';
-//import {UserRoleSiteService} from './services/user_role_site.js';
-import {PrivilegesController} from './controllers/privileges.js';
 import {NoPermissionError} from 'http-util';
 import {conf as localConf} from './conf.js';
 
 export const conf = localConf;
 
 conf.configure = function(global) {
-    if (global.router)
-        global.router.use(PrivilegesController.configureMiddleware());
-
     global.checkPermissionHandler = getCheckPermissionHandler(global.checkPermissionHandler);
 };
 

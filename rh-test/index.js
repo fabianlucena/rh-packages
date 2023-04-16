@@ -820,9 +820,8 @@ export const rt = {
 
         if (!options.parameters) {
             options.credentials = {
-                ...options.credentials,
-                username: options.username,
-                password: options.password,
+                username: options.username ?? options.credentials?.username,
+                password: options.password ?? options.credentials?.password,
             };
 
             options.parameters = options.credentials;
