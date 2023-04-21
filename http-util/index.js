@@ -613,3 +613,18 @@ export function cookies(response, cookieName, cookieProperty) {
 
     return result;
 }
+
+export function corsMiddleware(...origins) {
+    return (req, res, next) => {
+        const requestOrigin = req.header('origin');
+        for (let i = 0, e = origins.length; i < e; i++) {
+            const origin = origins[i];
+            if (origin === requestOrigin) {
+                res.header('Access-Control-Allow-Origin', origin);
+                break;
+            }
+        }
+
+        next();
+    };
+}

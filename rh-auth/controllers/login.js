@@ -50,14 +50,23 @@ export class LoginController {
         checkParameter(req.query, '$form');
 
         res.status(200).send({
-            username: {
-                type: 'text',
-                label: await req.locale._('Username')
-            },
-            password: {
-                type: 'password',
-                label: await req.locale._('Password')
-            }
+            title: 'Login',
+            action: 'login',
+            method: 'post',
+            fields: [
+                {
+                    name: 'username',
+                    type: 'text',
+                    label: 'Username',
+                    placeholder: 'Username',
+                },
+                {
+                    name: 'password',
+                    type: 'password',
+                    label:'Password',
+                    placeholder:'Password',
+                }
+            ]
         });
     }
 
