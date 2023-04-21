@@ -32,7 +32,7 @@ export default (sequelize, DataTypes) => {
             allowNull: false,
             unique: true
         },
-        title: {
+        label: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true

@@ -27,7 +27,7 @@ export class MenuItemService {
                 await MenuItemService.create({
                     isEnabled: true,
                     name: data.parent,
-                    title: ucfirst(spacialize(data.parent)),
+                    label: ucfirst(spacialize(data.parent)),
                 });
 
                 parentMenuItem = await MenuItemService.getForName(data.parent, {skipNoRowsError: true});
@@ -60,7 +60,7 @@ export class MenuItemService {
      *  uuid: UUID,
      *  isEnabled: BOOLEAN,
      *  name: string
-     *  title: string
+     *  label: string
      *  service: string
      *  action: string
      * } data - data for the new MenuItem.
@@ -82,7 +82,7 @@ export class MenuItemService {
         options = deepComplete(options, {where: {isEnabled: true}});
         if (options.view) {
             if (!options.attributes)
-                options.attributes = ['uuid', 'name', 'title', 'action', 'service'];
+                options.attributes = ['uuid', 'name', 'label', 'action', 'service'];
             
             completeIncludeOptions(options, 'Parent', {model: conf.global.models.MenuItem, as: 'Parent', required: false, attributes: ['name'], where: {isEnabled: true}});
             checkViewOptions(options);

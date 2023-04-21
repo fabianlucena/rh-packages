@@ -8,7 +8,7 @@ import {conf} from '../conf.js';
  *      properties:
  *          name:
  *              type: string
- *          title:
+ *          label:
  *              type: integer
  *  Error:
  *      properties:

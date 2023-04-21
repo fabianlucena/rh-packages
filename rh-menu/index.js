@@ -13,8 +13,8 @@ conf.afterConfigAsync = async function(_, options) {
         if (!menuData.name)
             menuData.name = permissionName;
         
-        if (!menuData.title)
-            menuData.title = data.title;
+        if (!menuData.label)
+            menuData.label = data.label;
     
         if (!menuData.permissionId && !menuData.permission)
             menuData.permission = permissionName;
