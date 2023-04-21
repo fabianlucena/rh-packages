@@ -1,5 +1,6 @@
 import {RoleService} from './services/role.js';
 import {PermissionService} from './services/permission.js';
+import {PermissionTypeService} from './services/permission_type.js';
 import {RolePermissionService} from './services/role_permission.js';
 import {UserRoleSiteService} from './services/user_role_site.js';
 import {PrivilegesController} from './controllers/privileges.js';
@@ -53,6 +54,11 @@ async function afterConfigAsync(_, global) {
     for (const roleName in global?.data?.roles) {
         const data = global.data.roles[roleName];
         await RoleService.createIfNotExists({...data, name: roleName});
+    }
+
+    for (const permissionTypeName in global?.data?.permissionTypes) {
+        const data = global.data.permissionTypes[permissionTypeName];
+        await PermissionTypeService.createIfNotExists({...data, name: permissionTypeName});
     }
 
     for (const permissionName in global?.data?.permissions) {

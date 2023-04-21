@@ -7,7 +7,7 @@ export const conf = {
     name: 'rhModule',
     title: 'Modules',
     version: '0.1',
-    schema: 'system',
+    schema: 'syst',
     //routesPath: dirname + '/routes',
     modelsPath: dirname + '/models',
     servicesPath: dirname + '/services',

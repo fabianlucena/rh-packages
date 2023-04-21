@@ -1,21 +1,9 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {addIfNotExistsByName} from 'sql-util';
 
 export default (sequelize, DataTypes) => {
     class PermissionType extends sequelize.Sequelize.Model {
-        static check() {
-            return addIfNotExistsByName(
-                PermissionType,
-                {
-                    name:  'public',
-                    title: 'Public'
-                }, {
-                    name:  'private',
-                    title: 'Private'
-                });
-        }
     }
     PermissionType.init({
         id: {

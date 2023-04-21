@@ -62,15 +62,20 @@ export class PrivilegesService {
                 privileges.roles.push('admin');
         }
 
-        if (siteName)
+        if (siteName) {
             if (privileges.roles.includes('admin'))
                 privileges.permissions = await PermissionService.getAllNameForSiteName(siteName);
             else if (username)
                 privileges.permissions = await PermissionService.getAllNameForUsernameAndSiteName(username, siteName);
-
-
+        }
+        
         if (!privileges.permissions)
             privileges.permissions = [];
+
+        if (!username)
+            privileges.permissions = privileges.permissions.concat(await PermissionService.getAllNameForType('anonymous'));
+
+        privileges.permissions = privileges.permissions.concat(await PermissionService.getAllNameForType('public'));
 
         return privileges;
     }
@@ -82,20 +87,26 @@ export class PrivilegesService {
      * @returns {Promise{privileges}}
      */
     static async getJSONForUsernameAndSessionIdCached(username, sessionId) {
-        if (conf.privilegesCache && conf.privilegesCache[sessionId]) {
-            const provilegeData = conf.privilegesCache[sessionId];
-            provilegeData.lastUse = Date.now();
-            return provilegeData.privileges;
-        }
+        let site;
+        if (sessionId) {
+            if (conf.privilegesCache && conf.privilegesCache[sessionId]) {
+                const provilegeData = conf.privilegesCache[sessionId];
+                provilegeData.lastUse = Date.now();
+                return provilegeData.privileges;
+            }
 
-        const site = await conf.global.services.Site.getForSessionIdOrDefault(sessionId);
+            site = await conf.global.services.Site.getForSessionIdOrDefault(sessionId);
+        }
+        
         const privileges = await PrivilegesService.getForUsernameAndSiteName(username, site?.name);
         privileges.site = site?.toJSON();
 
-        conf.privilegesCache[sessionId] = {
-            privileges: privileges,
-            lastUse: Date.now(),
-        };
+        if (sessionId) {
+            conf.privilegesCache[sessionId] = {
+                privileges: privileges,
+                lastUse: Date.now(),
+            };
+        }
 
         return privileges;
     }

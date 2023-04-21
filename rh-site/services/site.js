@@ -1,8 +1,23 @@
 import {conf} from '../conf.js';
-import {checkDataForMissingProperties, completeIncludeOptions, getIncludedModelOptions, getSingle, completeAssociationOptions} from 'sql-util';
+import {MissingPropertyError, checkDataForMissingProperties, completeIncludeOptions, getIncludedModelOptions, getSingle, completeAssociationOptions} from 'sql-util';
 import {complete, deepComplete} from 'rofa-util';
 
 export class SiteService {
+    /**
+     * Complete the data object with the ownerModuleId property if not exists. 
+     * @param {{module: string, moduleId: integer, ...}} data 
+     * @returns {Promise{data}}
+     */
+    static async completeOwnerModuleId(data) {
+        if (!data.ownerModuleId)
+            if (!data.ownerModule)
+                throw new MissingPropertyError('Site', 'ownerModule', 'ownerModuleId');
+            else
+                data.ownerModuleId = await conf.global.services.Module.getIdForName(data.ownerModule);
+
+        return data;
+    }
+
     /**
      * Creates a new Site row into DB.
      * @param {{
@@ -15,6 +30,7 @@ export class SiteService {
      */
     static async create(data) {
         await checkDataForMissingProperties(data, 'Site', 'name', 'title');
+        await SiteService.completeOwnerModuleId(data);
         return conf.global.models.Site.create(data);
     }
 

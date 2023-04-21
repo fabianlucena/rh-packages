@@ -9,7 +9,7 @@ export const conf = {
     name,
     title: 'Sites',
     version: '0.1',
-    schema: 'system',
+    schema: 'syst',
     init: null,
     configure: null,
     //routesPath: dirname + '/routes',
@@ -19,7 +19,13 @@ export const conf = {
     afterConfigAsync: null,
     data: {
         sites: {
-            'system': {title: l._f('System')},
+            'system': {title: l._f('System'), ownerModule: name},
+        },
+
+        permissions: {
+            'current-site.switch': {title: l._f('Switch site'),      type: 'private', roles: 'user', ownerModule: name, menuItem: {service: 'site',  action: 'form'}},
+            'current-site.get':    {title: l._f('Get current site'), type: 'private', roles: 'user', ownerModule: name, menuItem: {service: 'site',  action: 'get'}},
+            'site.get':            {title: l._f('Get site(s)'),      type: 'private', roles: 'user', ownerModule: name, menuItem: {service: 'site',  action: 'form'}},
         },
     },
 };

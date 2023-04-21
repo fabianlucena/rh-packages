@@ -5,12 +5,8 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class Site extends sequelize.Sequelize.Model {
         static associate(models) {
+            this.belongsTo(models.Module, {foreignKey: 'ownerModuleId', allowNull: true});
             this.belongsToMany(models.Module,  {through: models.SiteModule,   foreignKey: 'siteId', otherKey: 'moduleId'});
-            this.belongsToMany(models.Session, {through: models.SessionSite,  foreignKey: 'siteId', otherKey: 'sessionId'});
-            this.belongsToMany(models.User,    {through: models.UserRoleSite, foreignKey: 'siteId', otherKey: 'userId'});
-            this.belongsToMany(models.Role,    {through: models.UserRoleSite, foreignKey: 'siteId', otherKey: 'roleId'});
-
-            models.User.belongsToMany(models.Site, {through: models.UserRoleSite, foreignKey: 'userId', otherKey: 'siteId'});
         }
     }
     Site.init({

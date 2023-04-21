@@ -2,20 +2,20 @@ import {PermissionTypeService} from './permission_type.js';
 import {RoleService} from './role.js';
 import {conf} from '../conf.js';
 import {MissingPropertyError, checkDataForMissingProperties, completeIncludeOptions, getSingle, completeAssociationOptions} from 'sql-util';
-import {complete, deepComplete} from 'rofa-util';
+import {deepComplete} from 'rofa-util';
 
 export class PermissionService {
     /**
-     * Complete the data object with the moduleId property if not exists. 
+     * Complete the data object with the ownerModuleId property if not exists. 
      * @param {{module: string, moduleId: integer, ...}} data 
      * @returns {Promise{data}}
      */
-    static async completeModuleId(data) {
-        if (!data.moduleId)
-            if (!data.module)
-                throw new MissingPropertyError('Module', 'module', 'moduleId');
+    static async completeOwnerModuleId(data) {
+        if (!data.ownerModuleId)
+            if (!data.ownerModule)
+                throw new MissingPropertyError('Permission', 'module', 'moduleId');
             else
-                data.moduleId = await conf.global.services.Module.getIdForName(data.module);
+                data.ownerModuleId = await conf.global.services.Module.getIdForName(data.ownerModule);
 
         return data;
     }
@@ -48,7 +48,7 @@ export class PermissionService {
     static async create(data) {
         await checkDataForMissingProperties(data, 'Permission', 'name', 'title');
         
-        await PermissionService.completeModuleId(data);
+        await PermissionService.completeOwnerModuleId(data);
         await PermissionService.completePermissionTypeId(data);
 
         return conf.global.models.Permission.create(data);
@@ -110,7 +110,7 @@ export class PermissionService {
      */
     static async getAllForUsernameAndSiteName(username, siteName, options) {
         const roleIdList = await RoleService.getAllIdForUsernameAndSiteName(username, siteName);
-        options = complete(options, {include: []});
+        options = {include: [], ...options};
         options.include.push(completeAssociationOptions({model: conf.global.models.Role, where: {id: roleIdList}}, options));
 
         return PermissionService.getList(options);
@@ -135,8 +135,8 @@ export class PermissionService {
      * @returns {Promise{Permission}}
      */
     static async getAllForSiteName(siteName, options) {
-        options = complete(options, {include: []});
-        options.include.push(completeAssociationOptions({model: conf.global.models.Role}, options));
+        options = {include: [], ...options};
+        options.include.push(completeAssociationOptions({model: conf.global.models.Site, where: {name: siteName}}, options));
 
         return PermissionService.getList(options);
     }
@@ -149,6 +149,30 @@ export class PermissionService {
      */
     static async getAllNameForSiteName(siteName, options) {
         const permissionList = await PermissionService.getAllForSiteName(siteName, {...options, attributes: ['name'], skipThroughAssociationAttributes: true});
+        return Promise.all(permissionList.map(permission => permission.name));
+    }
+
+    /**
+     * Gets a permission list for a given permission type.
+     * @param {string} permissionTypeName - permissionTypeName for the permission to get.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {Promise{Permission}}
+     */
+    static async getAllForType(permissionTypeName, options) {
+        options = {include: [], ...options};
+        options.include.push(completeAssociationOptions({model: conf.global.models.PermissionType, where: {name: permissionTypeName}}, options));
+
+        return PermissionService.getList(options);
+    }
+
+    /**
+     * Gets a permission name list for a given permission type.
+     * @param {string} permissionTypeName - permissionTypeName for the permission to get.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {Promise{[]string}}
+     */
+    static async getAllNameForType(permissionTypeName, options) {
+        const permissionList = await PermissionService.getAllForType(permissionTypeName, {...options, attributes: ['name'], skipAssociationAttributes: true});
         return Promise.all(permissionList.map(permission => permission.name));
     }
 }

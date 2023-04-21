@@ -5,8 +5,8 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class Permission extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.Module,         {foreignKey: 'moduleId'});
             this.belongsTo(models.PermissionType, {foreignKey: 'typeId'});
+            this.belongsTo(models.Module,         {foreignKey: 'ownerModuleId', allowNull: true});
         }
     }
     Permission.init({

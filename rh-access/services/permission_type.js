@@ -48,4 +48,19 @@ export class PermissionTypeService {
     static async getIdForName(name, options) {
         return (await PermissionTypeService.getForName(name, {...options, attributes: ['id']})).id;
     }
+
+    /**
+     * Creates a new Permission type row into DB if not exists.
+     * @param {data} data - data for the new Permission @see create.
+     * @returns {Promise{PermissionType}}
+     */
+    static createIfNotExists(data, options) {
+        return PermissionTypeService.getForName(data.name, {attributes: ['id'], skipNoRowsError: true, ...options})
+            .then(element => {
+                if (element)
+                    return element;
+
+                return PermissionTypeService.create(data);
+            });
+    }
 }

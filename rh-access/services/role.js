@@ -5,16 +5,16 @@ import {complete, deepComplete} from 'rofa-util';
 
 export class RoleService {
     /**
-     * Complete the data object with the moduleId property if not exists. 
+     * Complete the data object with the ownerModuleId property if not exists. 
      * @param {{module: string, moduleId: integer, ...}} data 
      * @returns {Promise{data}}
      */
-    static async completeModuleId(data) {
-        if (!data.moduleId)
-            if (!data.module)
-                throw new MissingPropertyError('Module', 'module', 'moduleId');
+    static async completeOwnerModuleId(data) {
+        if (!data.ownerModuleId)
+            if (!data.ownerModule)
+                throw new MissingPropertyError('Role', 'ownerModule', 'ownerModuleId');
             else
-                data.moduleId = await conf.global.services.Module.getIdForName(data.module);
+                data.ownerModuleId = await conf.global.services.Module.getIdForName(data.ownerModule);
 
         return data;
     }
@@ -30,7 +30,7 @@ export class RoleService {
      */
     static async create(data) {
         await checkDataForMissingProperties(data, 'Role', 'name', 'title');
-        await RoleService.completeModuleId(data);
+        await RoleService.completeOwnerModuleId(data);
         return conf.global.models.Role.create(data);
     }
 

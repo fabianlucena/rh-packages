@@ -51,6 +51,16 @@ export class MenuController {
         };
 
         MenuItemService.getList(options)
-            .then(rows => res.status(200).send(rows));
+            .then(rows => {
+                const mil = rows.map(mi => {
+                    mi = mi.toJSON();
+                    mi.parent = mi.Parent?.name;
+                    delete mi.Parent;
+
+                    return mi;
+                });
+
+                res.status(200).send(mil);
+            });
     }
 }
