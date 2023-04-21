@@ -3,7 +3,13 @@ import {checkViewOptions, getSingle} from 'sql-util';
 import {locale as l, complete, deepComplete, checkAsync} from 'rofa-util';
 import crypto from 'crypto';
 
-export class SessionClosedError extends Error {}
+export class SessionClosedError extends Error {
+    statusCode = 403;
+}
+
+export class NoSessionForAuthTokenError extends Error {
+    statusCode = 403;
+}
 
 complete(
     conf,
@@ -73,11 +79,11 @@ export class SessionService {
                 options.include = [
                     {
                         model: conf.global.models.User,
-                        attributes: ['uuid','username','displayName']
+                        attributes: ['uuid', 'username', 'displayName']
                     },
                     {
                         model: conf.global.models.Device,
-                        attributes: ['uuid','data']
+                        attributes: ['uuid', 'data']
                     }
                 ];
             }
@@ -132,8 +138,11 @@ export class SessionService {
             return new Promise(resolve => resolve(sessionData.session));
         }
 
-        return SessionService.getForAuthToken(authToken, {include: [{model: conf.global.models.User}]})
+        return SessionService.getForAuthToken(authToken, {skipNoRowsError: true, include: [{model: conf.global.models.User}]})
             .then(session => new Promise((resolve, reject) => {
+                if (!session)
+                    return reject(new NoSessionForAuthTokenError());
+                    
                 if (session.close)
                     return reject(new SessionClosedError());
 

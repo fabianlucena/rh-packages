@@ -1,6 +1,6 @@
 import {conf} from '../conf.js';
-import {MissingPropertyError, getSingle} from 'sql-util';
-import {deepComplete} from 'rofa-util';
+import {getSingle, completeIncludeOptions, checkViewOptions} from 'sql-util';
+import {deepComplete, spacialize, ucfirst} from 'rofa-util';
 
 export class MenuItemService {
     /**
@@ -9,13 +9,49 @@ export class MenuItemService {
      * @returns {Promise{data}}
      */
     static async completePermissionId(data) {
-        if (!data.permissionId)
-            if (!data.permission)
-                throw new MissingPropertyError('Permission', 'permission', 'permissionId');
-            else
-                data.permissionId = await conf.global.services.permission.getIdForName(data.permission);
+        if (!data.permissionId && data.permission)
+            data.permissionId = await conf.global.services.Permission.getIdForName(data.permission);
 
         return data;
+    }
+    
+    /**
+     * Complete the data object with the parentId property if not exists. 
+     * @param {{parent: string, parentId: integer, ...}} data 
+     * @returns {Promise{data}}
+     */
+    static async completeParentId(data) {
+        if (!data.parentId && data.parent) {
+            let parentMenuItem = await MenuItemService.getForName(data.parent, {skipNoRowsError: true});
+            if (!parentMenuItem) {
+                await MenuItemService.create({
+                    isEnabled: true,
+                    name: data.parent,
+                    title: ucfirst(spacialize(data.parent)),
+                });
+
+                parentMenuItem = await MenuItemService.getForName(data.parent, {skipNoRowsError: true});
+            }
+
+            if (parentMenuItem)
+                data.parentId = parentMenuItem.id;
+        }
+
+        return data;
+    }
+    
+    /**
+    * Gets a menu item ID for its name. For many coincidences and for no rows this method fails.
+    * @param {string} name - name for the menu item type to get.
+    * @param {Options} options - Options for the @ref getList method.
+    * @returns {Promise{Permission}}
+    */
+    static async getIdForName(name, options) {
+        const menuItem = await MenuItemService.getForName(name, {...options, attributes: ['id']});
+        if (!menuItem)
+            return null;
+
+        return menuItem.id;
     }
     
     /**
@@ -32,6 +68,8 @@ export class MenuItemService {
      */
     static async create(data) {
         await MenuItemService.completePermissionId(data);
+        await MenuItemService.completeParentId(data);
+        
         return conf.global.models.MenuItem.create(data);
     }
 
@@ -41,7 +79,15 @@ export class MenuItemService {
      * @returns {Promise{MenuItemList}}
      */
     static async getList(options) {
-        options = deepComplete(options, {where: {isEnabled: true}, include: []});
+        options = deepComplete(options, {where: {isEnabled: true}});
+        if (options.view) {
+            if (!options.attributes)
+                options.attributes = ['uuid', 'name', 'title', 'action', 'service'];
+            
+            completeIncludeOptions(options, 'Parent', {model: conf.global.models.MenuItem, as: 'Parent', required: false, attributes: ['name'], where: {isEnabled: true}});
+            checkViewOptions(options);
+        }
+
         return conf.global.models.MenuItem.findAll(options);
     }
 
@@ -66,6 +112,6 @@ export class MenuItemService {
         if (menuItem)
             return menuItem;
             
-        return conf.global.models.MenuItem.create(data);
+        return MenuItemService.create(data);
     }
 }

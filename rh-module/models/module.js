@@ -4,6 +4,9 @@ import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {
     class Module extends sequelize.Sequelize.Model {
+        static associate(models) {
+            if (models.Site) models.Site.belongsToMany(models.Module, {through: models.SiteModule, foreignKey: 'siteId', otherKey: 'moduleId'});
+        }
     }
     Module.init({
         id: {

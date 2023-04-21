@@ -3,6 +3,11 @@ import {cookies as htCookies} from 'http-util';
 import chai from 'chai';
 
 describe('Device', () => {
+    before(function () {
+        if (!rt.hasModule('rhAuth'))
+            this.skip();
+    });
+
     let cookies = {};
 
     rt.testEndPoint({

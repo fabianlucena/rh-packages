@@ -1,18 +1,22 @@
+import {credentials} from './auto_login.js';
 import {rt} from 'rh-test';
 import chai from 'chai';
 
 const expect = chai.expect;
 
-const credentials = {
-    username: 'admin',
-    password: '1234'
-};
-
 describe('Login', () => {
+    before(function () {
+        if (!rt.hasModule('rhAuth'))
+            this.skip();
+
+        rt.headers.Authorization = null;
+    });
+
     describe('General behavior', () => {
         rt.testEndPoint({
             url: '/login',
             notAllowedMethods: 'HEAD,PUT,DELETE,PATCH,OPTIONS',
+            headers: {Authorization: null},
             get: [
                 'noParametersError',
                 {
@@ -89,7 +93,7 @@ describe('Login', () => {
                 {
                     headers: localHeaders,
                     title: 'duplicate logout should return a HTTP error 403',
-                    status: 403,
+                    status: 401,
                     haveProperties: 'error',
                 },
                 {

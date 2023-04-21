@@ -3,19 +3,17 @@
 import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-    class Role extends sequelize.Sequelize.Model {
+    class Site extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.Module, {foreignKey: 'moduleId', allowNull: true});
+            this.belongsToMany(models.Module,  {through: models.SiteModule,   foreignKey: 'siteId', otherKey: 'moduleId'});
+            this.belongsToMany(models.Session, {through: models.SessionSite,  foreignKey: 'siteId', otherKey: 'sessionId'});
+            this.belongsToMany(models.User,    {through: models.UserRoleSite, foreignKey: 'siteId', otherKey: 'userId'});
+            this.belongsToMany(models.Role,    {through: models.UserRoleSite, foreignKey: 'siteId', otherKey: 'roleId'});
 
-            this.belongsToMany(models.User,        {through: models.UserRoleSite,   foreignKey: 'roleId', otherKey: 'userId'});
-            this.belongsToMany(models.Permission,  {through: models.RolePermission, foreignKey: 'roleId', otherKey: 'permissionId'});
-            this.belongsToMany(models.Site,        {through: models.UserRoleSite,   foreignKey: 'roleId', otherKey: 'siteId'});
-
-            models.User.      belongsToMany(models.Role, {through: models.UserRoleSite,   foreignKey: 'userId',       otherKey: 'roleId'});
-            models.Permission.belongsToMany(models.Role, {through: models.RolePermission, foreignKey: 'permissionId', otherKey: 'roleId'});
+            models.User.belongsToMany(models.Site, {through: models.UserRoleSite, foreignKey: 'userId', otherKey: 'siteId'});
         }
     }
-    Role.init({
+    Site.init({
         id: {
             type: DataTypes.BIGINT,
             autoIncrement: true,
@@ -48,5 +46,5 @@ export default (sequelize, DataTypes) => {
         freezeTableName: true,
         schema: conf.schema,
     });
-    return Role;
+    return Site;
 };

@@ -1,8 +1,11 @@
-import './login.js';
+import {credentials} from './auto_login.js';
 import {rt} from 'rh-test';
 
 describe('Session', () => {
     before(function () {
+        if (!rt.hasModule('rhAuth'))
+            this.skip();
+
         if (!rt.headers?.Authorization)
             this.skip();
     });
@@ -48,6 +51,8 @@ describe('Session', () => {
     });
 
     describe('Delete the current session', () => {
+        rt.autoLogin({credentials});
+
         rt.testEndPoint({
             url: '/session',
             send: [

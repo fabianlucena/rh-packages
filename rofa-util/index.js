@@ -393,6 +393,14 @@ export function camelize(string) {
     return tokenList[0] + tokenList.slice(1).map(token => token.substring(0, 1).toUpperCase() + token.substring(1)).join('');
 }
 
+export function spacialize(string) {
+    return tokens(string).join(' ');
+}
+
+export function ucfirst(string) {
+    return string.substring(0, 1).toUpperCase() + string.substring(1);
+}
+
 /**
  * Merge the objects source and destiny. The result is the merged object. But, if the replace option is defined the destiny object is updated.
  * @param {object} dst - destiny

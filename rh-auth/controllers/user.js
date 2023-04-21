@@ -1,5 +1,5 @@
 import {UserService} from '../services/user.js';
-import {getOptionsFromParamsAndODataAsync, _HttpError} from 'http-util';
+import {getOptionsFromParamsAndODataAsync, _HttpError, ConflictError} from 'http-util';
 import {checkParameter, checkParameterUUID} from 'rofa-util';
 
 /**
@@ -60,6 +60,9 @@ export class UserController {
      */
     static async post(req, res) {
         checkParameter(req?.body, 'username', 'displayName');
+        if (await UserService.getForUsername(req.body.username, {skipNoRowsError: true}))
+            throw new ConflictError();
+
         await UserService.create(req.body);
         res.status(204).send();
     }

@@ -5,9 +5,9 @@ export const credentials = {
     password: '1234'
 };
 
-describe('Login for Access module testing', () => {
+describe('Login for Auth module testing', () => {
     before(function () {
-        if (!rt.hasModule('rhAccess'))
+        if (!rt.hasModule('rhAuth'))
             this.skip();
     });
 

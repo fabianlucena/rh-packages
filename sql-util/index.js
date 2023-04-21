@@ -74,22 +74,22 @@ export async function configureModelsAsync(modelsPath, sequelize) {
     if (!fs.existsSync(modelsPath))
         throw new Error(`The modules path does not exists: ${modelsPath}`);
 
-    const models = {};
-    
     await Promise.all(
         fs
             .readdirSync(modelsPath)
             .filter(file => (file.indexOf('.') !== 0) && (file.slice(-3) === '.js'))
-            .map(async file => {
-                const model = (await import('file://' + path.join(modelsPath, file))).default(sequelize, sequelize.Sequelize.DataTypes);
-                models[model.name] = model;
-            })
+            .map(async file => (await import('file://' + path.join(modelsPath, file))).default(sequelize, sequelize.Sequelize.DataTypes))
     );
+}
 
+export async function posConfigureModelsAssociationsAsync(sequelize) {
+    if (!sequelize)
+        return;
+        
     await Promise.all(
-        Object.keys(models).map(async modelName => {
-            if (models[modelName].associate) {
-                models[modelName].associate(sequelize.models);
+        Object.keys(sequelize.models).map(async modelName => {
+            if (sequelize.models[modelName].associate) {
+                sequelize.models[modelName].associate(sequelize.models);
             }
         })
     );
@@ -119,7 +119,7 @@ export async function getSingle(rowList, options) {
             _message: options?._noRowsError ?? options?._error,
             params: options?.noRowsErrorParams ?? options?.params,
             _params: options?._noRowsErrorParams ?? options?._params,
-            httpStatusCode: 404
+            statusCode: 404
         });
     }
     
@@ -230,10 +230,12 @@ export async function checkViewOptions(options) {
 
     if (options.view) {
         if (options.include) {
-            for (const include in options.include) {
+            options.include = await options.include.map(include => {
                 if (!include.attributes)
                     include.attributes = [];
-            }
+
+                return include;
+            });
         }
     }
 

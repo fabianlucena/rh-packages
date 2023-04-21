@@ -1,5 +1,4 @@
 import {RoleService} from './role.js';
-import {SiteService} from './site.js';
 import {PermissionService} from './permission.js';
 import {conf} from '../conf.js';
 import {complete} from 'rofa-util';
@@ -41,31 +40,39 @@ export class PrivilegesService {
      * @param {string} siteName - siteName for the privileges to get.
      * @returns {Promise{{}}}
      */
-    async getForUsernameAndSiteName(username, siteName) {
-        const result = {
-            sites: await SiteService.getNameForUsername(username),
-        };
+    static async getForUsernameAndSiteName(username, siteName) {
+        const privileges = {};
 
-        if (siteName) {
-            result.site = siteName;
-            result.roles = await RoleService.getAllNameForUsernameAndSiteName(username, siteName);
-        }
+        if (username)
+            privileges.sites = await conf.global.services.Site.getNameForUsername(username);
+        else
+            privileges.sites = [];
 
-        if (!result.roles)
-            result.roles = [];
+        privileges.site = siteName ?? null;
 
-        if (!result.roles.includes('admin') && siteName != 'system') {
+        if (siteName && username)
+            privileges.roles = await RoleService.getAllNameForUsernameAndSiteName(username, siteName);
+        
+        if (!privileges.roles)
+            privileges.roles = [];
+
+        if (username && !privileges.roles.includes('admin') && siteName != 'system') {
             const systemRoles = await RoleService.getNameForUsernameAndSiteName(username, 'system');
             if (systemRoles.includes('admin'))
-                result.roles.push('admin');
+                privileges.roles.push('admin');
         }
 
-        if (result.roles.includes('admin'))
-            result.permissions = await PermissionService.getAllNameForSiteName(siteName);
-        else
-            result.permissions = await PermissionService.getAllNameForUsernameAndSiteName(username, siteName);
+        if (siteName)
+            if (privileges.roles.includes('admin'))
+                privileges.permissions = await PermissionService.getAllNameForSiteName(siteName);
+            else if (username)
+                privileges.permissions = await PermissionService.getAllNameForUsernameAndSiteName(username, siteName);
 
-        return result;
+
+        if (!privileges.permissions)
+            privileges.permissions = [];
+
+        return privileges;
     }
 
     /**
@@ -74,15 +81,14 @@ export class PrivilegesService {
      * @param {integer} sessionId - value for the ID to get the site.
      * @returns {Promise{privileges}}
      */
-    async getJSONForUsernameAndSessionIdCached(username, sessionId) {
+    static async getJSONForUsernameAndSessionIdCached(username, sessionId) {
         if (conf.privilegesCache && conf.privilegesCache[sessionId]) {
             const provilegeData = conf.privilegesCache[sessionId];
             provilegeData.lastUse = Date.now();
             return provilegeData.privileges;
         }
 
-        let site = await SiteService.getForSessionIdOrDefault(sessionId);
-
+        const site = await conf.global.services.Site.getForSessionIdOrDefault(sessionId);
         const privileges = await PrivilegesService.getForUsernameAndSiteName(username, site?.name);
         privileges.site = site?.toJSON();
 

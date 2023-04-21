@@ -1,4 +1,4 @@
-import {SessionService, SessionClosedError} from '../services/session.js';
+import {SessionService, SessionClosedError, NoSessionForAuthTokenError} from '../services/session.js';
 import {getOptionsFromParamsAndODataAsync, deleteHandlerAsync} from 'http-util';
 import {locale as l, checkAsync, getErrorMessageAsync, deepMerge, replace, checkParameterUUID} from 'rofa-util';
 
@@ -6,15 +6,19 @@ export class SessionController {
     static configureMiddleware() {
         return async (req, res, next) => {
             const authorization = req.header('Authorization');
-            if (!authorization)
-                return res.status(401).send({error: await req.locale._('HTTP error 401 unauthorized, no authorization header.')});
+            if (!authorization || authorization.length < 8 || !authorization.startsWith('Bearer ')) {
+                next();
+                return;
+            }
 
-            if (!authorization.startsWith('Bearer '))
-                return res.status(401).send({error: await req.locale._('HTTP error 401 unauthorized, authorization schema is no Bearer.')});
+            req.authToken = authorization.substring(7);
+            if (!req.authToken) {
+                next();
+                return;
+            }
 
-            const authToken = authorization.substring(7);
-            SessionService.getForAuthTokenCached(authToken)
-                .then(session => checkAsync(session?.deviceId == req?.device?.id && session, {_message: l._f('Invalid device'), httpStatusCode: 400}))
+            SessionService.getForAuthTokenCached(req.authToken)
+                .then(session => checkAsync(session?.deviceId == req?.device?.id && session, {_message: l._f('Invalid device'), statusCode: 400}))
                 .then(session => {
                     req.session = session.toJSON();
                     req.user = req.session.User;
@@ -22,7 +26,9 @@ export class SessionController {
                 })
                 .catch(async err => {
                     if (err instanceof SessionClosedError)
-                        res.status(403).send({error: await req.locale._('HTTP error 403 forbiden, session is closed.')});
+                        res.status(401).send({error: await req.locale._('HTTP error 403 forbiden, session is closed.')});
+                    else if (err instanceof NoSessionForAuthTokenError)
+                        res.status(401).send({error: await req.locale._('HTTP error 403 forbiden, authorization token error.')});
                     else {
                         let msg;
                         if (err instanceof Error)
@@ -31,9 +37,9 @@ export class SessionController {
                             msg = err;
 
                         if (msg)
-                            res.status(401).send({error: await req.locale._('HTTP error 401 unauthorized: %s', msg)});
+                            res.status(401).send({error: 'Unauthorized', message: await req.locale._('HTTP error 401 unauthorized: %s', msg)});
                         else
-                            res.status(401).send({error: await req.locale._('HTTP error 401 unauthorized')});
+                            res.status(401).send({error: 'Unauthorized', message: await req.locale._('HTTP error 401 unauthorized')});
                     }
                 });
         };

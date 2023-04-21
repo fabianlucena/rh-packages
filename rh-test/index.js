@@ -840,7 +840,7 @@ export const rt = {
         if (rt.headers?.Authorization)
             return;
             
-        options = {...options, after: res => rt.headers.Authorization = `Bearer ${res.body.authToken}`};
+        options = {headers: {Authorization: null}, after: res => rt.headers.Authorization = `Bearer ${res.body.authToken}`, ...options};
         if (!options.agent)
             rt.getAgent(options.app);
 
@@ -885,7 +885,7 @@ export const rt = {
      *      missingParameters: [                                // Test for missing parameters, @see rt.testEndPoint.
      *          ['username'],
      *          ['displayName'],
-     *          ['username','displayName'],
+     *          ['username', 'displayName'],
      *      ],
      *      id: 'uuid'                                                                      // name for the object id by default is uuid
      *      forbiddenDoubleCreation: true,                                                  // Test for forbiden double creation of the same object
@@ -940,8 +940,8 @@ export const rt = {
                     title: 'POST should not create the same object again',
                     method: 'post',
                     parameters: options.parameters,
-                    status: '!2xx,!4xx',
-                    haveProperties: 'error,message',
+                    status: '409,!2xx,!4xx',
+                    haveProperties: 'error,message'
                 });
             }
 

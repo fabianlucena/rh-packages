@@ -1,5 +1,5 @@
 import {conf} from '../conf.js';
-import {complete, deepComplete} from 'rofa-util';
+import {complete} from 'rofa-util';
 
 export class RoleParentSiteService {
     /**
@@ -7,8 +7,8 @@ export class RoleParentSiteService {
      * @param {Options} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{RoleList}}
      */
-    async getList(options) {
-        return conf.global.models.RoleParentSite.findAll(deepComplete(options));
+    static async getList(options) {
+        return conf.global.models.RoleParentSite.findAll(options);
     }
 
     /**
@@ -18,7 +18,7 @@ export class RoleParentSiteService {
      * @param {Options} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{RoleList}}
      */
-    getForRoleIdAndSiteId(roleId, siteId, options) {
+    static getForRoleIdAndSiteId(roleId, siteId, options) {
         return RoleParentSiteService.getList(complete(options, {where:{roleId: roleId, siteId: siteId}}));
     }
 }

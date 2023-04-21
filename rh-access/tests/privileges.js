@@ -3,19 +3,21 @@ import {rt} from 'rh-test';
 
 describe('Privileges', () => {
     before(function () {
-        if (!rt.headers?.Authorization)
-            this.skip('No authorization headers');
+        if (!rt.hasModule('rhAccess') || !rt.headers?.Authorization)
+            this.skip();
     });
 
-    rt.testEndPoint({
-        url: '/privileges',
-        notAllowedMethods: 'POST,PATCH,DELETE,OPTIONS,HEAD',
-        get: [
-            {
-                title: 'musth return the user\'s privileges',
-                status: 200,
-                haveProperties: ['sites', 'site', 'roles', 'permissions'],
-            },
-        ],
+    describe('General behavior', () => {
+        rt.testEndPoint({
+            url: '/privileges',
+            notAllowedMethods: 'POST,PUT,PATCH,DELETE,OPTIONS,HEAD',
+            get: [
+                {
+                    title: 'musth return the user\'s privileges',
+                    status: 200,
+                    haveProperties: ['sites', 'site', 'roles', 'permissions'],
+                },
+            ],
+        });
     });
 });

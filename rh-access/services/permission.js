@@ -10,12 +10,12 @@ export class PermissionService {
      * @param {{module: string, moduleId: integer, ...}} data 
      * @returns {Promise{data}}
      */
-    async completeModuleId(data) {
+    static async completeModuleId(data) {
         if (!data.moduleId)
             if (!data.module)
                 throw new MissingPropertyError('Module', 'module', 'moduleId');
             else
-                data.moduleId = await conf.global.services.module.getIdForName(data.module);
+                data.moduleId = await conf.global.services.Module.getIdForName(data.module);
 
         return data;
     }
@@ -25,7 +25,7 @@ export class PermissionService {
      * @param {{type: string, typeId: integer, ...}} data 
      * @returns {Promise{data}}
      */
-    async completePermissionTypeId(data) {
+    static async completePermissionTypeId(data) {
         if (data.typeId)
             return data;
             
@@ -45,7 +45,7 @@ export class PermissionService {
      *  - name: must be unique.
      * @returns {Promise{Permission}}
      */
-    async create(data) {
+    static async create(data) {
         await checkDataForMissingProperties(data, 'Permission', 'name', 'title');
         
         await PermissionService.completeModuleId(data);
@@ -59,7 +59,7 @@ export class PermissionService {
      * @param {Options} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{PermissionList}}
      */
-    async getList(options) {
+    static async getList(options) {
         options = deepComplete(options, {where: {isEnabled: true}, include: []});
         completeIncludeOptions(options, 'module', {model: conf.global.models.Module, attributes: [], where: {isEnabled: true}});
         return conf.global.models.Permission.findAll(options);
@@ -71,17 +71,17 @@ export class PermissionService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Permission}}
      */
-    async getForName(name, options) {
+    static async getForName(name, options) {
         const rowList = await PermissionService.getList(deepComplete(options, {where:{name: name}, limit: 2}));
         return getSingle(rowList, deepComplete(options, {params: ['permission', 'name', name, 'Permission']}));
     }
 
     /**
      * Creates a new Permission row into DB if not exists.
-     * @param {data} data - data for the new Permission @see PermissionService.create.
+     * @param {data} data - data for the new Permission @see create.
      * @returns {Promise{Permission}}
      */
-    createIfNotExists(data, options) {
+    static createIfNotExists(data, options) {
         return PermissionService.getForName(data.name, {attributes: ['id'], foreign:{module:{attributes:[]}}, skipNoRowsError: true, ...options})
             .then(element => {
                 if (element)
@@ -97,7 +97,7 @@ export class PermissionService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Permission}}
      */
-    async getIdForName(name, options) {
+    static async getIdForName(name, options) {
         return (await PermissionService.getForName(name, {...options, attributes: ['id']})).id;
     }
 
@@ -108,7 +108,7 @@ export class PermissionService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Permission}}
      */
-    async getAllForUsernameAndSiteName(username, siteName, options) {
+    static async getAllForUsernameAndSiteName(username, siteName, options) {
         const roleIdList = await RoleService.getAllIdForUsernameAndSiteName(username, siteName);
         options = complete(options, {include: []});
         options.include.push(completeAssociationOptions({model: conf.global.models.Role, where: {id: roleIdList}}, options));
@@ -123,7 +123,7 @@ export class PermissionService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{[]string}}
      */
-    async getAllNameForUsernameAndSiteName(username, siteName, options) {
+    static async getAllNameForUsernameAndSiteName(username, siteName, options) {
         const permissionList = await PermissionService.getAllForUsernameAndSiteName(username, siteName, {...options, attributes: ['name'], skipThroughAssociationAttributes: true});
         return Promise.all(permissionList.map(permission => permission.name));
     }
@@ -134,7 +134,7 @@ export class PermissionService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Permission}}
      */
-    async getAllForSiteName(siteName, options) {
+    static async getAllForSiteName(siteName, options) {
         options = complete(options, {include: []});
         options.include.push(completeAssociationOptions({model: conf.global.models.Role}, options));
 
@@ -147,7 +147,7 @@ export class PermissionService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{[]string}}
      */
-    async getAllNameForSiteName(siteName, options) {
+    static async getAllNameForSiteName(siteName, options) {
         const permissionList = await PermissionService.getAllForSiteName(siteName, {...options, attributes: ['name'], skipThroughAssociationAttributes: true});
         return Promise.all(permissionList.map(permission => permission.name));
     }

@@ -1,4 +1,4 @@
-import {locale as l, setUpError, errorHandlerAsync, camelize} from 'rofa-util';
+import {locale as l, setUpError, errorHandlerAsync} from 'rofa-util';
 import * as uuid from 'uuid';
 import fs from 'fs';
 import path from 'path';
@@ -25,6 +25,24 @@ export class _HttpError extends Error {
             {
                 _message: message,
                 statusCode,
+                params
+            }
+        );
+    }
+}
+
+export class UnauthorizedError extends Error {
+    static VisibleProperties = ['message'];
+
+    statusCode = 401;
+
+    constructor(_message, options, ...params) {
+        super();
+        setUpError(
+            this,
+            {
+                _message,
+                options,
                 params
             }
         );
@@ -78,6 +96,7 @@ export class MethodNotAllowedError extends Error {
         );
     }
 
+    // eslint-disable-next-line no-unused-vars
     async getMessageParamsAsync(locale) {
         return [this.method];
     }
@@ -93,12 +112,19 @@ export class NoUUIDError extends Error {
 
     constructor(paramName) {
         super();
-        setUpError(
-            this,
-            {
-                paramName: paramName
-            }
-        );
+        setUpError(this, {paramName});
+    }
+}
+
+export class ConflictError extends Error {
+    static VisibleProperties = ['message'];
+    static _message = l._f('Conflict.');
+
+    statusCode = 409;
+
+    constructor() {
+        super();
+        setUpError(this);
     }
 }
 
@@ -117,10 +143,13 @@ export async function httpUtilConfigureAsync(global, ...modules) {
         global = defaultGlobal;
 
     if (global.checkRoutePermission === undefined) {
+        if (global.checkPermissionHandler === undefined)
+            global.checkPermissionHandler = async () => {};
+
         global.checkRoutePermission = (...permission) => (req, res, next) => {
             global.checkPermissionHandler(req, ...permission)
                 .then(() => next())
-                .catch(httpErrorHandlerAsync(req, res));
+                .catch(e => next(e));
         };
     }
 
@@ -164,8 +193,8 @@ export function configureRouter(routesPath, router, checkPermission, options) {
         .filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js' && (!options?.exclude || !options.exclude.test(file)))
         .forEach(async file => {
             const fullFile = 'file://' + path.join(routesPath, file);
-            const configureRouter = (await import(fullFile)).default;
-            configureRouter(router, checkPermission);
+            const modulusRouter = (await import(fullFile)).default;
+            modulusRouter(router, checkPermission);
         });
 }
 
@@ -176,7 +205,18 @@ export function configureServices(services, servicesPath, options) {
     fs
         .readdirSync(servicesPath)
         .filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js' && (!options?.exclude || !options.exclude.test(file)))
-        .forEach(async file => services[camelize(file.substring(0, file.length - 3))] = (await import('file://' + path.join(servicesPath, file))));
+        .forEach(async file => {
+            const modules = await import('file://' + path.join(servicesPath, file));
+            for (let k in modules) {
+                let module = modules[k];
+                let name = k;
+                let l = name.length;
+                if (l > 7 && name.substring(l - 7) === 'Service')
+                    name = name.substring(0, l - 7);
+
+                services[name] = module;
+            }
+        });
 }
 
 export async function sendErrorAsync(req, res, error) {
@@ -401,6 +441,9 @@ export async function configureModulesAsync(global, modules) {
     for (let i = 0, e = modules.length; i < e; i++)
         modules[i] = await configureModuleAsync(global, modules[i]);
 
+    if (global.posConfigureModelsAssociationsAsync)
+        await global.posConfigureModelsAssociationsAsync(global.sequelize);
+    
     for (let i = 0, e = modules.length; i < e; i++)
         await installModuleAsync(global, modules[i]);
 }
@@ -480,7 +523,7 @@ export function configureSwagger(global) {
             const swaggerDocs = swaggerJSDoc({
                 swaggerDefinition: {
                     info: {
-                        title:'Bookkeeper API',
+                        title:'Rofa HTTP API',
                         version:'1.0.0',
                         descrition: 'System to use accontable accounts'
                     },

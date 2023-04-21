@@ -1,4 +1,3 @@
-import {SiteService} from './site.js';
 import {conf} from '../conf.js';
 import {MissingPropertyError} from 'sql-util';
 import {deepComplete} from 'rofa-util';
@@ -9,12 +8,12 @@ export class SessionSiteService {
      * @param {{session: string, sessionId: integer, ...}} data 
      * @returns {Promise{data}}
      */
-    async completeSessionId(data) {
+    static async completeSessionId(data) {
         if (!data.sessionId)
             if (!data.session)
                 throw new MissingPropertyError('SessionSite', 'session', 'sessionId');
             else
-                data.sessionId = await conf.global.services.session.getIdForName(data.session);
+                data.sessionId = await conf.global.services.Session.getIdForName(data.session);
 
         return data;
     }
@@ -24,12 +23,12 @@ export class SessionSiteService {
      * @param {{site: string, siteId: integer, ...}} data 
      * @returns {Promise{data}}
      */
-    async completeSiteId(data) {
+    static async completeSiteId(data) {
         if (!data.siteId)
             if (!data.site)
                 throw new MissingPropertyError('SessionSite', 'site', 'siteId');
             else
-                data.siteId = await SiteService.getIdForName(data.site, {foreign: {module: false}});
+                data.siteId = await conf.global.services.Site.getIdForName(data.site, {foreign: {module: false}});
 
         return data;
     }
@@ -39,7 +38,7 @@ export class SessionSiteService {
      * @param {{session: string, sessionId: integer, site: string, siteId: integer, ...}} data 
      * @returns {Promise{data}}
      */
-    async completeSessionIdAndSiteId(data) {
+    static async completeSessionIdAndSiteId(data) {
         await SessionSiteService.completeSessionId(data);
         await SessionSiteService.completeSiteId(data);
     }
@@ -52,7 +51,7 @@ export class SessionSiteService {
      * }} data - data for the new SessionSite.
      * @returns {Promise{SessionSite}}
      */
-    async create(data) {
+    static async create(data) {
         await SessionSiteService.completeSessionIdAndSiteId(data);
         return conf.global.models.SessionSite.create(data);
     }
@@ -65,7 +64,7 @@ export class SessionSiteService {
      * }} data - data for the new SessionSite.
      * @returns {Promise{SessionSite}}
      */
-    async update(data, options) {
+    static async update(data, options) {
         try {
             await SessionSiteService.completeSessionIdAndSiteId(data);
         } catch(err) {
@@ -80,7 +79,7 @@ export class SessionSiteService {
      * @param {Opions} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{SessionSiteList}}
      */
-    async getList(options) {
+    static async getList(options) {
         options = deepComplete(options, {where: {isEnabled: true}});
         if (!options.includes) {
             options.include = [];
@@ -102,7 +101,7 @@ export class SessionSiteService {
      * }} data - data for the new SessionSite.
      * @returns {Promise{SessionSite}}
      */
-    async updateSite(data) {
+    static async updateSite(data) {
         await SessionSiteService.completeSessionIdAndSiteId(data);
         return conf.global.models.SessionSite.update({siteId: data.siteId}, {where: {sessionId: data.sessionId}});
     }
@@ -115,7 +114,7 @@ export class SessionSiteService {
      * }} data - data for the new SessionSite.
      * @returns {Promise{SessionSite}}
      */
-    async createOrUpdate(data) {
+    static async createOrUpdate(data) {
         await SessionSiteService.completeSessionIdAndSiteId(data);
         
         const rowList = await conf.global.models.SessionSite.findAll({where: {sessionId: data.sessionId}});

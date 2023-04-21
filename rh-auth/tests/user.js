@@ -1,7 +1,12 @@
-import './login.js';
+import './auto_login.js';
 import {rt} from 'rh-test';
 
 describe('User', () => {
+    before(function () {
+        if (!rt.hasModule('rhAuth'))
+            this.skip();
+    });
+
     before(function () {
         if (!rt.headers?.Authorization)
             this.skip();
@@ -18,7 +23,7 @@ describe('User', () => {
         missingParameters: [
             ['username'],
             ['displayName'],
-            ['username','displayName'],
+            ['username', 'displayName'],
         ],
         forbiddenDoubleCreation: true,
         getProperties: ['uuid', 'isEnabled', 'username', 'displayName', 'UserType'],
@@ -55,6 +60,7 @@ describe('User', () => {
 
         rt.testLogin({
             agent: rt.createRequest(),
+            headers: {Authorization: null},
             username: 'test2',
             password: 'abc123',
         });
@@ -69,6 +75,7 @@ describe('User', () => {
 
         rt.testLogin({
             agent: rt.createRequest(),
+            headers: {Authorization: null},
             title: 'Try login with the disabled user',
             username: 'test2',
             password: 'abc123',
@@ -86,6 +93,7 @@ describe('User', () => {
 
         rt.testLogin({
             agent: rt.createRequest(),
+            headers: {Authorization: null},
             username: 'test2',
             password: 'abc123',
         });
@@ -100,6 +108,7 @@ describe('User', () => {
 
         rt.testLogin({
             agent: rt.createRequest(),
+            headers: {Authorization: null},
             title: 'Try login with the deleted user',
             username: 'test2',
             password: 'abc123',

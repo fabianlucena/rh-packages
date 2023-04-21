@@ -5,10 +5,10 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class SessionSite extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.Session, {foreignKey: 'sessionId', onDelete: 'cascade'});
+            this.belongsTo(models.Session, {foreignKey: 'sessionId'});
             this.belongsTo(models.Site,    {foreignKey: 'siteId'});
 
-            models.Session.belongsToMany(models.Site, {through: models.SessionSite, foreignKey: 'sessionId', otherKey: 'siteId'});
+            models.Session.belongsToMany(models.Site, {through: models.SessionSite, foreignKey: 'sessionId', otherKey: 'siteId', onDelete: 'cascade'});
         }
     }
     SessionSite.init({

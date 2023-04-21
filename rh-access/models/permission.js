@@ -7,8 +7,6 @@ export default (sequelize, DataTypes) => {
         static associate(models) {
             this.belongsTo(models.Module,         {foreignKey: 'moduleId'});
             this.belongsTo(models.PermissionType, {foreignKey: 'typeId'});
-            
-            this.belongsToMany(models.Role, {through: models.RolePermission, foreignKey: 'permissionId', otherKey: 'roleId'});
         }
     }
     Permission.init({

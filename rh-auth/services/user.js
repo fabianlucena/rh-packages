@@ -56,7 +56,7 @@ export class UserService {
                 options.include = [
                     { 
                         model: conf.global.models.UserType, 
-                        attributes: ['uuid','name','title']
+                        attributes: ['uuid', 'name', 'title']
                     }        
                 ];
             }
