@@ -22,10 +22,15 @@ export const conf = {
             'public':    {title: l._f('Public')},
             'private':   {title: l._f('Private')},
             'anonymous': {title: l._f('Anonymous')},
+            'global':    {title: l._f('Global')},
         },
 
         userRoleSites: {
             'user:admin,role:admin,site:system': {username: 'admin', role: 'admin', site: 'system'},
+        },
+
+        permissions: {
+            'privileges': {title: l._f('Privileges'), type: 'global', ownerModule: name, menuItem: {name: 'privileges', label: l._f('Privileges'),  parent: 'session-menu', service: 'privileges', action: 'form'}},
         },
     },
 };
