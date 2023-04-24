@@ -14,7 +14,7 @@ describe('User', () => {
 
     rt.testGeneralBehaviorEndPoint({
         url: '/user',
-        notAllowedMethods: 'PUT,OPTIONS,HEAD',
+        notAllowedMethods: 'PUT',
         parameters: {
             username: 'test1',
             displayName: 'Test 1',

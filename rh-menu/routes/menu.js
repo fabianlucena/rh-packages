@@ -1,8 +1,8 @@
 import {MenuController} from '../controllers/menu.js';
-import {methodNotAllowed} from 'http-util';
+import {corsSimplePreflight, methodNotAllowed} from 'http-util';
 
 export default (app) => {
-    app.head('/menu', methodNotAllowed);
+    app.options('/menu', corsSimplePreflight('GET'));
     app.get('/menu', MenuController.get);
     app.all('/menu', methodNotAllowed);
 };

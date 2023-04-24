@@ -15,13 +15,13 @@ describe('Login', () => {
     describe('General behavior', () => {
         rt.testEndPoint({
             url: '/login',
-            notAllowedMethods: 'HEAD,PUT,DELETE,PATCH,OPTIONS',
+            notAllowedMethods: 'PUT,DELETE,PATCH',
             headers: {Authorization: null},
             get: [
                 'noParametersError',
                 {
                     $form: true,
-                    haveProperties: ['username', 'password']
+                    haveProperties: ['action', 'fields']
                 },
             ],
         });
