@@ -1,4 +1,4 @@
-import {locale as l, setUpError, errorHandlerAsync} from 'rofa-util';
+import {locale as l, setUpError, errorHandlerAsync, deepComplete} from 'rofa-util';
 import * as uuid from 'uuid';
 import fs from 'fs';
 import path from 'path';
@@ -403,7 +403,7 @@ export async function configureModuleAsync(global, theModule) {
         await global.createSchema(theModule.schema);
 
     if (theModule.data)
-        global.data = {...global.data, ...theModule.data};
+        deepComplete(global.data, theModule.data);
 
     return theModule;
 }
@@ -412,9 +412,6 @@ export async function installModuleAsync(global, theModule) {
     theModule.global = global;
     if (theModule.routesPath)
         await configureRouter(theModule.routesPath, global.router, global.checkRoutePermission, theModule.routesPathOptions);
-
-    if (theModule.data)
-        global.data = {...global.data, ...theModule.data};
 
     if (theModule.init)
         await Promise.all(await theModule.init.map(async method => await method()));
