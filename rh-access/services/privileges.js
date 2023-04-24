@@ -74,6 +74,8 @@ export class PrivilegesService {
 
         if (!username)
             privileges.permissions = privileges.permissions.concat(await PermissionService.getAllNameForType('anonymous'));
+        else
+            privileges.permissions = privileges.permissions.concat(await PermissionService.getAllNameForType('global'));
 
         privileges.permissions = privileges.permissions.concat(await PermissionService.getAllNameForType('public'));
 
