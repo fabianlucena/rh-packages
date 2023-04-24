@@ -4,7 +4,7 @@ export class LogoutController {
     /** 
      * @swagger
      * /api/logout:
-     *  get:
+     *  post:
      *      tags:
      *          - Authorization
      *      summary: Logout
@@ -28,7 +28,7 @@ export class LogoutController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static async get(req, res) {
+    static async post(req, res) {
         if (!req.session)
             return res.status(401).send({error: await req.locale._('No session')});
 
