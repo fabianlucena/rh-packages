@@ -127,7 +127,7 @@ export class SessionService {
     }
 
     /**
-     * Get a session for a given authToken from the cache or from the DB. @see getForCookie method.
+     * Get a session for a given authToken from the cache or from the DB. @see getForAuthToken method.
      * @param {string} authToken - value for the authToken to get the session.
      * @returns {Promise{Device}}
      */

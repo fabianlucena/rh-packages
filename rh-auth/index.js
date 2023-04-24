@@ -1,7 +1,6 @@
 import {conf as localConf} from './conf.js';
 import './services/device.js';
 import './services/session.js';
-import {DeviceController} from './controllers/device.js';
 import {SessionController} from './controllers/session.js';
 import {UnauthorizedError, NoPermissionError} from 'http-util';
 import {locale as l} from 'rofa-util';
@@ -9,10 +8,8 @@ import {locale as l} from 'rofa-util';
 export const conf = localConf;
 
 conf.configure = function (global) {
-    if (global.router) {
-        global.router.use(DeviceController.configureMiddleware({cookieName: 'device'}));
+    if (global.router)
         global.router.use(SessionController.configureMiddleware());
-    }
 
     global.checkPermissionHandler = getCheckPermissionHandler(global.checkPermissionHandler);
 };

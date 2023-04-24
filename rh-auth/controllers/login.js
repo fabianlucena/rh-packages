@@ -53,6 +53,7 @@ export class LoginController {
             title: 'Login',
             action: 'login',
             method: 'post',
+            onSuccess: 'setBearerAuthorizationFromResponseProperty("authToken"); reloadMenu();',
             fields: [
                 {
                     name: 'username',
@@ -105,14 +106,15 @@ export class LoginController {
         checkParameter(req?.body, 'username', 'password');
         
         try {
-            const session = await LoginService.forUsernamePasswordAndDeviceId(req?.body?.username, req?.body?.password, req?.device?.id, req?.sessionIndex, req.locale);
+            const session = await LoginService.forUsernamePasswordDeviceTokenAndSessionIndex(req?.body?.username, req?.body?.password, req?.body?.deviceToken, req?.body?.sessionIndex, req.locale);
             req.session = session;
             res.header('Authorization', 'Bearer ' + session.authToken);
             res.status(201).send({
                 index: session.index,
                 authToken: session.authToken,
+                deviceToken: session.deviceToken,
             });
-        } catch (_) {
+        } catch (err) {
             throw new HttpError('Invalid login', 403);
         }
     }

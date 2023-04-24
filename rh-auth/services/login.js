@@ -1,4 +1,5 @@
 import {UserService} from '../services/user.js';
+import {DeviceService} from '../services/device.js';
 import {IdentityService} from '../services/identity.js';
 import {SessionService} from '../services/session.js';
 import {_Error} from 'rofa-util';
@@ -18,10 +19,7 @@ export class LoginService {
      *  open: Date.now(),
      * }}
      */
-    static async forUsernamePasswordAndDeviceId(username, password, deviceId, sessionIndex, locale) {
-        if (!deviceId)
-            throw new _Error('There is no device to create session');
-        
+    static async forUsernamePasswordDeviceTokenAndSessionIndex(username, password, deviceToken, sessionIndex, locale) {
         const user = await UserService.getForUsername(username);
         if (!user)
             throw new _Error('Error to get user to create session');
@@ -30,11 +28,25 @@ export class LoginService {
         if (!await IdentityService.checkLocalPasswordForUsername(username, password, locale))
             throw new HttpError('Invalid login', 403);
 
-        return SessionService.create({
-            deviceId: deviceId,
+        let device;
+        if (deviceToken)
+            device = await DeviceService.getForToken(deviceToken);
+        
+        if (!device)
+            device = await DeviceService.create({data: ''});
+
+        const session = await SessionService.create({
+            deviceId: device.id,
             userId: user.id,
             index: sessionIndex,
             open: Date.now(),
         });
+
+        return {
+            id: session.id,
+            index: session.index,
+            authToken: session.authToken,
+            deviceToken: device.token,
+        };
     }
 }

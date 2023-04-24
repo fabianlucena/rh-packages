@@ -18,7 +18,7 @@ export default (sequelize, DataTypes) => {
             defaultValue: DataTypes.UUIDV4,
             unique: true
         },
-        cookie: {
+        token: {
             type: DataTypes.STRING,
             allowNull: false,
         },

@@ -75,22 +75,4 @@ describe('Session', () => {
             ],
         });
     });
-
-    describe('Device cookie changing', () => {
-        rt.initAgent();
-        rt.autoLogin({
-            username: 'admin',
-            password: '1234'
-        });
-        rt.testEndPoint({
-            url: '/session',
-            title: 'should get a session list',
-        });
-        rt.testEndPoint({
-            url: '/session',
-            before: test => test.agent = rt.createAgent(), // Change the agent to change the cookie device
-            title: 'should get an error because the device is changed',
-            status: 401,
-        });
-    });
 });
