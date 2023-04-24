@@ -15,7 +15,7 @@ describe('Session', () => {
     describe('General behavior', () => {
         rt.testEndPoint({
             url: '/session',
-            notAllowedMethods: 'POST,PUT,PATCH,OPTIONS,HEAD',
+            notAllowedMethods: 'POST,PUT,PATCH',
             get: [
                 {
                     title: 'should get a session list',

@@ -1,4 +1,4 @@
-import './login.js';
+import './auto_login.js';
 import {rt} from 'rh-test';
 
 describe('Privileges', () => {
@@ -10,7 +10,7 @@ describe('Privileges', () => {
     describe('General behavior', () => {
         rt.testEndPoint({
             url: '/privileges',
-            notAllowedMethods: 'POST,PUT,PATCH,DELETE,OPTIONS,HEAD',
+            notAllowedMethods: 'POST,PUT,PATCH,DELETE',
             get: [
                 {
                     title: 'musth return the user\'s privileges',

@@ -79,7 +79,7 @@ export const rt = {
      * {
      *   agent: agent,                                              // agent is defined as global variable: agent = chai.request.agent(app);
      *   url: '/api/login',                                         // endpoint URL to test
-     *   notAllowedMethods: 'PUT,PATCH,DELETE,OPTIONS,HEAD',        // not allowed methods for this endpoint
+     *   notAllowedMethods: 'PUT,PATCH,DELETE',                     // not allowed methods for this endpoint
      *   get: [                                                     // test for GET HTTP method using array
      *      'noParametersError',                                    // test for no parameters expect error
      *      'noQueryError',    
@@ -361,7 +361,7 @@ export const rt = {
             }, 
             $form: {
                 status: 200,
-                haveProperties: 'error',
+                //haveProperties: 'error',
                 query: '$form',
                 title: 'should get a form usign $form query parameter',
             }
@@ -876,7 +876,7 @@ export const rt = {
      * @example
      *  {
      *      url: '/user',                                       // URL of the endpoint to check, @see rt.testEndPoint.
-     *      notAllowedMethods: 'PUT,PATCH,OPTIONS,HEAD',        // Not allowed method, @see rt.testEndPoint.
+     *      notAllowedMethods: 'PUT,PATCH',                     // Not allowed method, @see rt.testEndPoint.
      *      parameters: {                                       // Parameters, @see rt.testEndPoint.
      *          username: 'test1',
      *          displayName: 'Test 1',

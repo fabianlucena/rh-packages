@@ -1,16 +1,13 @@
-import './auto_login.js';
+import {credentials} from './auto_login.js';
 import {rt} from 'rh-test';
 
 describe('User', () => {
     before(function () {
-        if (!rt.hasModule('rhAuth'))
+        if (!rt.hasModule('rhAuth') || !rt.headers?.Authorization)
             this.skip();
     });
 
-    before(function () {
-        if (!rt.headers?.Authorization)
-            this.skip();
-    });
+    rt.autoLogin({credentials});
 
     rt.testGeneralBehaviorEndPoint({
         url: '/user',
