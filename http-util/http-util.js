@@ -614,17 +614,52 @@ export function cookies(response, cookieName, cookieProperty) {
     return result;
 }
 
-export function corsMiddleware(...origins) {
-    return (req, res, next) => {
-        const requestOrigin = req.header('origin');
-        for (let i = 0, e = origins.length; i < e; i++) {
-            const origin = origins[i];
-            if (origin === requestOrigin) {
-                res.header('Access-Control-Allow-Origin', origin);
-                break;
-            }
-        }
+function reduceToSingleArray(list, sanitizeMethod) {
+    if (typeof list === 'string')
+        list = list.split(',');
+    
+    if (!sanitizeMethod)
+        sanitizeMethod = s => s;
 
+    return list?.map(list => list.split(',').map(item => sanitizeMethod(item)).reduce((a, v) => a = [...a, ...v]));
+}
+
+function checkCors(req, res, requestName, acceptable, responseName, sanitizeMethod) {
+    if (!sanitizeMethod)
+        sanitizeMethod = s => s.trim();
+
+    const requestRaw = req.header(requestName);
+    if (requestRaw) {
+        const acceptableList = reduceToSingleArray(acceptable, sanitizeMethod);
+        if (acceptableList) {
+            const requestList = reduceToSingleArray(requestRaw);
+            const negotiated = [];
+            for(const value of requestList) {
+                if (acceptableList.includes(sanitizeMethod(value)))
+                    negotiated.push(value);
+            }
+
+            res.header(responseName, negotiated.join(', '));
+        }
+    }
+}
+
+export function corsMiddlewareOrigins(...origins) {
+    return (req, res, next) => {
+        checkCors(req, res, 'Origin', origins, 'Access-Control-Allow-Origin', s => s.trim().toLowerCase());
+        res.header('Access-Control-Allow-Credentials', 'true');
         next();
     };
+}
+
+export function corsPreflight(options) {
+    return (req, res) => {
+        checkCors(req, res, 'Access-Control-Request-Headers', options.headers, 'Access-Control-Allow-Headers', s => s.trim().toLowerCase());
+        checkCors(req, res, 'Access-Control-Request-Method', options.methods, 'Access-Control-Allow-Methods', s => s.trim().toUpperCase());
+        res.sendStatus(204);
+    };
+}
+
+export function corsSimplePreflight(methods) {
+    return corsPreflight({headers: 'Content-Type,Authorization', methods: methods});
 }
