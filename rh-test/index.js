@@ -389,6 +389,7 @@ export const rt = {
                 status: 204,
             },
         };
+        const newTests = [];
         for (const i in tests) {
             const test = tests[i];
             for (const helper in helpers) {
@@ -421,8 +422,58 @@ export const rt = {
                     if (test[k] === undefined)
                         test[k] = defaultMethodOptions[k];
 
-            tests[i] = test;
+            if (rt.cors?.prefligth !== undefined && test.corsPrefligth === undefined)
+                test.corsPrefligth = rt.cors?.prefligth;
+
+            if (test.corsPrefligth && test.method.toLowerCase() != 'options') {
+                let corsPrefligthTest;
+                if (typeof test.corsPrefligth === 'string')
+                    corsPrefligthTest = {title: test.corsPrefligth};
+                else if (typeof test.corsPrefligth === 'object')
+                    corsPrefligthTest = {...test.corsPrefligt};
+                else
+                    corsPrefligthTest = {};
+
+                corsPrefligthTest = {
+                    title: 'Pregfligth for ' + test.title,
+                    url: test.url,
+                    method: 'options',
+                    status: [204,200],
+                    headers: {
+                        'Access-Control-Request-Headers': 'Content-Type',
+                        'Access-Control-Request-Method': test.method.toUpperCase(),
+                    },
+                    haveHeaders: {
+                        'Access-Control-Allow-Headers': [/\bContent-Type\b/i],
+                    },
+                    ...corsPrefligthTest,
+                };
+
+                if (test.status === 405)
+                    corsPrefligthTest.noHaveHeaders = {'Access-Control-Allow-Methods': new RegExp(`\\b${test.method.toUpperCase()}\\b`, 'i')};
+                else
+                    corsPrefligthTest.haveHeaders['Access-Control-Allow-Methods'] = new RegExp(`\\b${test.method.toUpperCase()}\\b`, 'i');
+
+                if (test.headers?.Authorization) {
+                    corsPrefligthTest.headers['Access-Control-Request-Headers'] = 
+                        ((corsPrefligthTest.headers['Access-Control-Request-Headers'] ?? '')
+                        + ' Authorization').trim();
+
+                    corsPrefligthTest.haveHeaders['Access-Control-Allow-Headers'].push(/\bAuthorization\b/i);
+                }
+
+                if (rt.cors?.origin) {
+                    corsPrefligthTest.headers['Origin'] = rt.cors.origin;
+                    corsPrefligthTest.haveHeaders['Access-Control-Allow-Origin'] = new RegExp(`\\b${rt.cors.origin}\\b`);
+                }
+
+                delete test.corsPrefligth;
+                newTests.push(corsPrefligthTest);
+            }
+
+            newTests.push(test);
         }
+        tests = newTests;
 
         for (const i in tests)
             rt.testEndPointMethodSend(tests[i]);
@@ -571,6 +622,58 @@ export const rt = {
         }
 
         rt.checkStatus(res, options);
+
+        if (options.haveHeaders) {
+            let haveHeaders = options.haveHeaders;
+            if (typeof haveHeaders === 'string')
+                haveHeaders = {haveHeaders: true};
+            else if (haveHeaders instanceof Array) {
+                const newHaveHeaders = {};
+                haveHeaders.forEach(header => newHaveHeaders[header] = true);
+                haveHeaders = newHaveHeaders;
+            }
+
+            for (let header in haveHeaders) {
+                let values = haveHeaders[header];
+                if (!(values instanceof Array))
+                    values = [values];
+
+                values.forEach(value => {
+                    if (value === true)
+                        expect(res).to.have.header(header);
+                    else if (value === false)
+                        expect(res).to.not.have.header(header);
+                    else
+                        expect(res).to.have.header(header, value);
+                });
+            }
+        }
+
+        if (options.noHaveHeaders) {
+            let noHaveHeaders = options.noHaveHeaders;
+            if (typeof noHaveHeaders === 'string')
+                noHaveHeaders = {noHaveHeaders: true};
+            else if (noHaveHeaders instanceof Array) {
+                const newNoHaveHeaders = {};
+                noHaveHeaders.forEach(header => newNoHaveHeaders[header] = true);
+                noHaveHeaders = newNoHaveHeaders;
+            }
+
+            for (let header in noHaveHeaders) {
+                let values = noHaveHeaders[header];
+                if (!(values instanceof Array))
+                    values = [values];
+
+                values.forEach(value => {
+                    if (value === true)
+                        expect(res).to.not.have.header(header);
+                    else if (value === false)
+                        expect(res).to.have.header(header);
+                    else
+                        expect(res).to.not.have.header(header, value);
+                });
+            }
+        }
 
         if (options.haveCookies) {
             let haveCookies = options.haveCookies;
