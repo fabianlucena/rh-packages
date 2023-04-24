@@ -1,8 +1,8 @@
 import {PrivilegesController} from '../controllers/privileges.js';
-import {methodNotAllowed, asyncHandler} from 'http-util';
+import {methodNotAllowed, corsSimplePreflight, asyncHandler} from 'http-util';
 
 export default (app) => {
-    app.head('/privileges', methodNotAllowed);
+    app.options('/privileges', corsSimplePreflight('GET,HEAD'));
     app.get('/privileges', asyncHandler(PrivilegesController.privilegesGet));
     app.all('/privileges', methodNotAllowed);
 };
