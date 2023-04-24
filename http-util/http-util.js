@@ -647,7 +647,6 @@ function checkCors(req, res, requestName, acceptable, responseName, sanitizeMeth
 export function corsMiddlewareOrigins(...origins) {
     return (req, res, next) => {
         checkCors(req, res, 'Origin', origins, 'Access-Control-Allow-Origin', s => s.trim().toLowerCase());
-        res.header('Access-Control-Allow-Credentials', 'true');
         next();
     };
 }
