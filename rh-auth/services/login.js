@@ -29,8 +29,11 @@ export class LoginService {
             throw new HttpError('Invalid login', 403);
 
         let device;
-        if (deviceToken)
+        if (deviceToken) {
             device = await DeviceService.getForToken(deviceToken);
+            if (!device)
+                throw new HttpError('Invalid device', 400);                
+        }
         
         if (!device)
             device = await DeviceService.create({data: ''});

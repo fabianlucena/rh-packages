@@ -18,7 +18,6 @@ export class SessionController {
             }
 
             SessionService.getForAuthTokenCached(req.authToken)
-                .then(session => checkAsync(session?.deviceId == req?.device?.id && session, {_message: l._f('Invalid device'), statusCode: 400}))
                 .then(session => {
                     req.session = session.toJSON();
                     req.user = req.session.User;
