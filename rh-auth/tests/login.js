@@ -82,8 +82,8 @@ describe('Login', () => {
 
         rt.testEndPoint({
             url: '/logout',
-            notAllowedMethods: 'POST,PUT,PATCH,DELETE,OPTIONS,HEAD',
-            get: [
+            notAllowedMethods: 'GET,PUT,PATCH,DELETE,HEAD',
+            post: [
                 {
                     title: 'valid logout should return a HTTP error 204',
                     status: 204,
