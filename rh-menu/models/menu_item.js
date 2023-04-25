@@ -37,14 +37,26 @@ export default (sequelize, DataTypes) => {
             allowNull: false,
             unique: true
         },
+        action: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
         service: {
             type: DataTypes.STRING,
             allowNull: true,
         },
-        action: {
+        method: {
             type: DataTypes.STRING,
             allowNull: true,
-        }
+        },
+        params: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        onSuccess: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
     }, {
         sequelize,
         timestamps: true,

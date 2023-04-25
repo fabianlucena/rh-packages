@@ -82,7 +82,7 @@ export class MenuItemService {
         options = deepComplete(options, {where: {isEnabled: true}});
         if (options.view) {
             if (!options.attributes)
-                options.attributes = ['uuid', 'name', 'label', 'action', 'service'];
+                options.attributes = ['uuid', 'name', 'label', 'action', 'service', 'method', 'params', 'onSuccess'];
             
             completeIncludeOptions(options, 'Parent', {model: conf.global.models.MenuItem, as: 'Parent', required: false, attributes: ['name'], where: {isEnabled: true}});
             checkViewOptions(options);
