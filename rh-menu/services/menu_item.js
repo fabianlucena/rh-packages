@@ -69,7 +69,7 @@ export class MenuItemService {
     static async create(data) {
         await MenuItemService.completePermissionId(data);
         await MenuItemService.completeParentId(data);
-        
+    
         return conf.global.models.MenuItem.create(data);
     }
 
@@ -82,7 +82,7 @@ export class MenuItemService {
         options = deepComplete(options, {where: {isEnabled: true}});
         if (options.view) {
             if (!options.attributes)
-                options.attributes = ['uuid', 'name', 'label', 'action', 'service', 'method', 'params', 'onSuccess'];
+                options.attributes = ['uuid', 'name', 'jsonData', 'data'];
             
             completeIncludeOptions(options, 'Parent', {model: conf.global.models.MenuItem, as: 'Parent', required: false, attributes: ['name'], where: {isEnabled: true}});
             checkViewOptions(options);

@@ -30,7 +30,7 @@ export const conf = {
         },
 
         permissions: {
-            'privileges': {title: l._f('Privileges'), type: 'global', ownerModule: name, menuItem: {name: 'privileges', label: l._f('Privileges'),  parent: 'session-menu', action: 'form', service: 'privileges'}},
+            'privileges': {title: l._f('Privileges'), type: 'global', ownerModule: name, menuItem: {name: 'privileges', label: l._f('Privileges'), parent: 'session-menu', action: 'form', service: 'privileges'}},
         },
     },
 };

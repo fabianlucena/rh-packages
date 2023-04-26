@@ -32,30 +32,24 @@ export default (sequelize, DataTypes) => {
             allowNull: false,
             unique: true
         },
-        label: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true
-        },
-        action: {
+        jsonData: {
             type: DataTypes.STRING,
             allowNull: true,
         },
-        service: {
-            type: DataTypes.STRING,
-            allowNull: true,
-        },
-        method: {
-            type: DataTypes.STRING,
-            allowNull: true,
-        },
-        params: {
-            type: DataTypes.STRING,
-            allowNull: true,
-        },
-        onSuccess: {
-            type: DataTypes.STRING,
-            allowNull: true,
+        data: {
+            type: DataTypes.VIRTUAL,
+            get() {
+                const jsonData = this.getDataValue('jsonData');
+                if (!jsonData)
+                    return null;
+
+                return JSON.parse(jsonData);
+            },
+            set(data) {
+                const jsonData = JSON.stringify(data) ?? null;
+                
+                this.setDataValue('jsonData', jsonData);
+            }
         },
     }, {
         sequelize,

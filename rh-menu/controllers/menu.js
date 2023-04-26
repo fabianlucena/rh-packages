@@ -52,10 +52,19 @@ export class MenuController {
 
         MenuItemService.getList(options)
             .then(rows => {
-                const mil = rows.map(mi => {
-                    mi = mi.toJSON();
-                    mi.parent = mi.Parent?.name;
-                    delete mi.Parent;
+                const mil = rows.map(mir => {
+                    let mi = mir.toJSON();
+                    if (mi.Parent) {
+                        mi.parent = mi.Parent?.name;
+                        delete mi.Parent;
+                    }
+
+                    if(mi.jsonData) {
+                        if (mi.data)
+                            mi = {...mi, Parent: undefined, data: undefined, ...mi.data};
+
+                        delete mi.jsonData;
+                    }
 
                     return mi;
                 });

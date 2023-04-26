@@ -23,9 +23,9 @@ export const conf = {
         },
 
         permissions: {
-            'current-site.switch': {title: l._f('Switch site'),      type: 'global', ownerModule: name, menuItem: {action: 'form',   service: 'site'}},
-            'current-site.get':    {title: l._f('Get current site'), type: 'global', ownerModule: name, menuItem: {action: 'object', service: 'site', method: 'get'}},
-            'site.get':            {title: l._f('Get site(s)'),      type: 'global', ownerModule: name, menuItem: {action: 'form',   service: 'site'}},
+            'current-site.switch': {title: l._f('Switch site'),      type: 'global', ownerModule: name, menuItem: {parent:'session-menu', action: 'form',   service: 'site'}},
+            'current-site.get':    {title: l._f('Get current site'), type: 'global', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site', method: 'get'}},
+            'site.get':            {title: l._f('Get site(s)'),      type: 'global', ownerModule: name, menuItem: {parent:'session-menu', action: 'form',   service: 'site'}},
         },
     },
 };

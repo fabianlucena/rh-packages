@@ -5,20 +5,39 @@ export const conf = localConf;
 
 conf.afterConfigAsync = async function(_, options) {
     for (const permissionName in options?.data?.permissions) {
-        const data = options.data.permissions[permissionName];
-        const menuData = data.menuItem;
-        if (!menuData)
+        const permissionData = options.data.permissions[permissionName];
+        const menuItemData = permissionData.menuItem;
+        if (!menuItemData)
             continue;
 
-        if (!menuData.name)
-            menuData.name = permissionName;
-        
-        if (!menuData.label)
-            menuData.label = data.label ?? data.title;
-    
-        if (!menuData.permissionId && !menuData.permission)
-            menuData.permission = permissionName;
+        if (!menuItemData.data)
+            menuItemData.data = {};
 
-        await MenuItemService.createIfNotExists(menuData);
+        menuItemData.uuid ??= menuItemData.data.uuid;
+        menuItemData.isEnabled ??= menuItemData.data.isEnabled;
+        menuItemData.name ??= menuItemData.data.name;
+        menuItemData.parent ??= menuItemData.data.parent;
+
+        if (!menuItemData.name)
+            menuItemData.name = menuItemData.data.name ?? permissionName;
+
+        if (!menuItemData.permissionId && !menuItemData.permission)
+            menuItemData.permission = permissionName;
+            
+        menuItemData.data = {
+            label: (permissionData.label ?? permissionData.title), 
+            ...menuItemData, 
+            data: undefined, 
+            ...menuItemData.data, 
+            uuid: undefined, 
+            isEnabled: undefined, 
+            name: undefined, 
+            parent: undefined, 
+            parentId: undefined, 
+            permission: undefined, 
+            permissionId: undefined
+        };
+
+        await MenuItemService.createIfNotExists(menuItemData);
     }
 };
