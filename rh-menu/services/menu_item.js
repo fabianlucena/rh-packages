@@ -1,6 +1,6 @@
 import {conf} from '../conf.js';
 import {getSingle, completeIncludeOptions, checkViewOptions} from 'sql-util';
-import {deepComplete, spacialize, ucfirst} from 'rofa-util';
+import {deepComplete, spacialize, ucfirst} from 'rf-util';
 
 export class MenuItemService {
     /**

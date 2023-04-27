@@ -2,7 +2,7 @@ import {UserTypeService} from '../services/user_type.js';
 import {IdentityService} from '../services/identity.js';
 import {conf} from '../conf.js';
 import {getSingle} from 'sql-util';
-import {complete, deepComplete, _Error} from 'rofa-util';
+import {complete, deepComplete, _Error} from 'rf-util';
 
 export class UserService {
     /**

@@ -1,7 +1,7 @@
 import {RoleParentSiteService} from './role_parent_site.js';
 import {conf} from '../conf.js';
 import {MissingPropertyError, checkDataForMissingProperties, completeIncludeOptions, getSingle, completeAssociationOptions} from 'sql-util';
-import {complete, deepComplete} from 'rofa-util';
+import {complete, deepComplete} from 'rf-util';
 
 export class RoleService {
     /**

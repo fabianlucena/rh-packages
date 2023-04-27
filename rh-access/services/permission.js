@@ -2,7 +2,7 @@ import {PermissionTypeService} from './permission_type.js';
 import {RoleService} from './role.js';
 import {conf} from '../conf.js';
 import {MissingPropertyError, checkDataForMissingProperties, completeIncludeOptions, getSingle, completeAssociationOptions} from 'sql-util';
-import {deepComplete} from 'rofa-util';
+import {deepComplete} from 'rf-util';
 
 export class PermissionService {
     /**

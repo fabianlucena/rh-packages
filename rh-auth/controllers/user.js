@@ -1,6 +1,6 @@
 import {UserService} from '../services/user.js';
 import {getOptionsFromParamsAndODataAsync, _HttpError, ConflictError} from 'http-util';
-import {checkParameter, checkParameterUUID} from 'rofa-util';
+import {checkParameter, checkParameterUUID} from 'rf-util';
 
 /**
  * @swagger

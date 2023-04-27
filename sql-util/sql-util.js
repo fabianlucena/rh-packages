@@ -1,4 +1,4 @@
-import {locale as l, setUpError, deepComplete, replace} from 'rofa-util';
+import {l, setUpError, deepComplete, replace} from 'rf-util';
 import fs from 'fs';
 import path from 'path';
 

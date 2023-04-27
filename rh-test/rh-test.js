@@ -1,4 +1,4 @@
-import {deepMerge, complete} from 'rofa-util';
+import {deepMerge, complete} from 'rf-util';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 

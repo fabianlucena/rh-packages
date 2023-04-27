@@ -1,6 +1,6 @@
 import {conf} from '../conf.js';
 import {MissingPropertyError} from 'sql-util';
-import {deepComplete} from 'rofa-util';
+import {deepComplete} from 'rf-util';
 
 export class SessionSiteService {
     /**

@@ -1,7 +1,7 @@
 import {SiteService} from '../services/site.js';
 import {SessionSiteService} from '../services/session_site.js';
 import {getOptionsFromParamsAndODataAsync, httpErrorHandlerAsync} from 'http-util';
-import {checkParameter} from 'rofa-util';
+import {checkParameter} from 'rf-util';
 
 /**
  * @swagger

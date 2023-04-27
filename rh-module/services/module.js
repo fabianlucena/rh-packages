@@ -1,6 +1,6 @@
 import {conf} from '../conf.js';
 import {checkDataForMissingProperties, getSingle} from 'sql-util';
-import {deepComplete} from 'rofa-util';
+import {deepComplete} from 'rf-util';
 
 export class ModuleService {
     /**

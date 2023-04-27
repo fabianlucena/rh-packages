@@ -1,4 +1,4 @@
-import {locale as l} from 'rofa-util';
+import {l} from 'rf-util';
 import url from 'url';
 import path from 'path';
 

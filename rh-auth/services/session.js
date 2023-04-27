@@ -1,6 +1,6 @@
 import {conf} from '../conf.js';
 import {checkViewOptions, getSingle} from 'sql-util';
-import {locale as l, complete, deepComplete, checkAsync} from 'rofa-util';
+import {l, complete, deepComplete, checkAsync} from 'rf-util';
 import crypto from 'crypto';
 
 export class SessionClosedError extends Error {

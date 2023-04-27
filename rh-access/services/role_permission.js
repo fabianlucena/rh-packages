@@ -2,7 +2,7 @@ import {RoleService} from './role.js';
 import {PermissionService} from './permission.js';
 import {conf} from '../conf.js';
 import {MissingPropertyError, skipAssociationAttributes} from 'sql-util';
-import {complete} from 'rofa-util';
+import {complete} from 'rf-util';
 
 export class RolePermissionService {
     /**

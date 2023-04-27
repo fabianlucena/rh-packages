@@ -3,7 +3,7 @@ import './services/device.js';
 import './services/session.js';
 import {SessionController} from './controllers/session.js';
 import {UnauthorizedError, NoPermissionError} from 'http-util';
-import {locale as l} from 'rofa-util';
+import {l} from 'rf-util';
 
 export const conf = localConf;
 

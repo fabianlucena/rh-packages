@@ -1,6 +1,6 @@
 import {conf} from '../conf.js';
 import {MissingPropertyError, getSingle} from 'sql-util';
-import {complete, deepComplete} from 'rofa-util';
+import {complete, deepComplete} from 'rf-util';
 
 export class PermissionTypeService {
     /**

@@ -1,4 +1,4 @@
-import {locale as l, setUpError, errorHandlerAsync, deepComplete} from 'rofa-util';
+import {l, setUpError, errorHandlerAsync, deepComplete} from 'rf-util';
 import * as uuid from 'uuid';
 import fs from 'fs';
 import path from 'path';

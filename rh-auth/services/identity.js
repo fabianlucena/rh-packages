@@ -1,7 +1,7 @@
 import {IdentityTypeService} from '../services/identity_type.js';
 import {conf} from '../conf.js';
 import {MissingPropertyError, completeAssociationOptions, getSingle} from 'sql-util';
-import {complete, deepComplete} from 'rofa-util';
+import {complete, deepComplete} from 'rf-util';
 import crypto from 'crypto';
 
 export class IdentityService {

@@ -1,7 +1,7 @@
 import {RoleService} from './role.js';
 import {PermissionService} from './permission.js';
 import {conf} from '../conf.js';
-import {complete} from 'rofa-util';
+import {complete} from 'rf-util';
 
 complete(
     conf,

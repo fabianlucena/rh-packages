@@ -1,6 +1,6 @@
 import {LoginService} from '../services/login.js';
 import {HttpError} from 'http-util';
-import {checkParameter} from 'rofa-util';
+import {checkParameter} from 'rf-util';
 
 export class LoginController {
     /**

@@ -1,5 +1,5 @@
 import {PrivilegesService} from '../services/privileges.js';
-import {errorHandlerAsync} from 'rofa-util';
+import {errorHandlerAsync} from 'rf-util';
 
 /**
  * @swagger

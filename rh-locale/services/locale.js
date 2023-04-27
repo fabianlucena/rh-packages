@@ -25,13 +25,13 @@ export class LocaleService {
         if (list.length < 2)
             return list[0];
         
-        return list.slice(0, -1).join(', ') + ', or ' + list.pop();
+        return list.slice(0, -1).join(', ') + ', or ' + list[list.length - 1];
     }
 
     static async _and(...list) {
         if (list.length < 2)
             return list[0];
         
-        return list.slice(0, -1).join(', ') + ', and ' + list.pop();
+        return list.slice(0, -1).join(', ') + ', and ' + list[list.length - 1];
     }
 }

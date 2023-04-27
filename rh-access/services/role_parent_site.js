@@ -1,5 +1,5 @@
 import {conf} from '../conf.js';
-import {complete} from 'rofa-util';
+import {complete} from 'rf-util';
 
 export class RoleParentSiteService {
     /**

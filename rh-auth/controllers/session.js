@@ -1,6 +1,6 @@
 import {SessionService, SessionClosedError, NoSessionForAuthTokenError} from '../services/session.js';
 import {getOptionsFromParamsAndODataAsync, deleteHandlerAsync} from 'http-util';
-import {locale as l, checkAsync, getErrorMessageAsync, deepMerge, replace, checkParameterUUID} from 'rofa-util';
+import {getErrorMessageAsync, deepMerge, replace, checkParameterUUID} from 'rf-util';
 
 export class SessionController {
     static configureMiddleware() {
