@@ -1,6 +1,7 @@
 'use strict';
 
-import {l, getTranslatedParamsAsync} from './rf-util-locale.js';
+import {getTranslatedParamsAsync} from 'rf-locale';
+import {l} from 'rf-locale';
 import * as util from 'util';
 
 export function setUpError(error, options) {

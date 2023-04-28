@@ -1,4 +1,4 @@
-import {l} from 'rf-util';
+import {l} from 'rf-locale';
 import url from 'url';
 import path from 'path';
 

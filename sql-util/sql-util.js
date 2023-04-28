@@ -1,4 +1,5 @@
-import {l, setUpError, deepComplete, replace} from 'rf-util';
+import {setUpError, deepComplete, replace} from 'rf-util';
+import {l} from 'rf-locale';
 import fs from 'fs';
 import path from 'path';
 

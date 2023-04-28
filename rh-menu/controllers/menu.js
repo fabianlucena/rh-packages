@@ -51,8 +51,8 @@ export class MenuController {
         };
 
         MenuItemService.getList(options)
-            .then(rows => {
-                const mil = rows.map(mir => {
+            .then(async rows => {
+                const mil = await Promise.all(rows.map(async mir => {
                     let mi = mir.toJSON();
                     if (mi.Parent) {
                         mi.parent = mi.Parent?.name;
@@ -66,8 +66,12 @@ export class MenuController {
                         delete mi.jsonData;
                     }
 
+                    const l = req.l;
+                    if (mi.label)
+                        mi.label = await l._d('menu', mi.label);
+
                     return mi;
-                });
+                }));
 
                 res.status(200).send(mil);
             });

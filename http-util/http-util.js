@@ -1,4 +1,5 @@
-import {l, setUpError, errorHandlerAsync, deepComplete} from 'rf-util';
+import {setUpError, errorHandlerAsync, deepComplete} from 'rf-util';
+import {l} from 'rf-locale';
 import * as uuid from 'uuid';
 import fs from 'fs';
 import path from 'path';

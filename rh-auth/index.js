@@ -3,7 +3,7 @@ import './services/device.js';
 import './services/session.js';
 import {SessionController} from './controllers/session.js';
 import {UnauthorizedError, NoPermissionError} from 'http-util';
-import {l} from 'rf-util';
+import {l} from 'rf-locale';
 
 export const conf = localConf;
 
