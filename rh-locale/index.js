@@ -1,23 +1,23 @@
+'use strict';
+
 import {middleware} from './controllers/locale.js';
-import url from 'url';
-import path from 'path';
+import {conf as localConf} from './conf.js';
+import {LanguageService} from './services/language.js';
 
-const name = 'rhLocale';
-const dirname = path.dirname(url.fileURLToPath(import.meta.url));
+export const conf = localConf;
 
-export const conf = {
-    name: name,
-    title: 'Locale',
-    version: '0.1',
-    schema: 'locale',
-    configure: configure,
-    //routesPath: dirname + '/routes',
-    //modelsPath: dirname + '/models',
-    servicesPath: dirname + '/services',
-    apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
-};
+conf.configure = configure;
+conf.afterConfigAsync = afterConfigAsync;
 
 function configure(global) {
     if (global.router)
         global.router.use(middleware());
+}
+
+async function afterConfigAsync(_, global) {
+    const languages = global?.data?.languages;
+    for (const name in languages) {
+        const data = languages[name];
+        await LanguageService.createIfNotExists({...data, name});
+    }
 }
