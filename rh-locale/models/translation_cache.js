@@ -18,6 +18,11 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        isJson: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        },
         translation: {
             type: DataTypes.STRING,
             allowNull: false
