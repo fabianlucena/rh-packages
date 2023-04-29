@@ -1,6 +1,6 @@
 'use strict';
 
-import {l} from 'rf-locale';
+import {loc} from 'rf-locale';
 import url from 'url';
 import path from 'path';
 
@@ -21,7 +21,7 @@ export const conf = {
     afterConfigAsync: null,
     data: {
         languages: {
-            'en':    {title: l._f('English')},
+            'en':    {title: loc._f('English')},
         },
     },
 };

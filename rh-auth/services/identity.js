@@ -128,22 +128,22 @@ export class IdentityService {
      * @param {string} password - the plain password to check.
      * @returns {Promise{bool}}
      */
-    static checkLocalPasswordForUsername(username, password, locale) {
+    static checkLocalPasswordForUsername(username, password, loc) {
         return new Promise((resolve, reject) => {
             IdentityService.getLocalForUsername(username)
-                .then(identity => {
+                .then(async identity => {
                     if (!identity)
-                        return reject(locale._('User "%s" does not have local identity', username));
+                        return reject(await loc._('User "%s" does not have local identity', username));
 
                     if (!identity.isEnabled)
-                        return reject(locale._('User "%s" local entity is not enabled', username));
+                        return reject(await loc._('User "%s" local entity is not enabled', username));
                     
                     if (!identity.data)
-                        return reject(locale._('User "%s" does not have local identity data', username));
+                        return reject(await loc._('User "%s" does not have local identity data', username));
                     
                     const data = JSON.parse(identity.data);
                     if (!data || !data.password)
-                        return reject(locale._('User "%s" does not have local password', username));
+                        return reject(await loc._('User "%s" does not have local password', username));
 
                     const [salt, key] = data.password.split(':');
                     crypto.scrypt(password, salt, 64, (err, derivedKey) => {
@@ -153,8 +153,8 @@ export class IdentityService {
                         resolve(key == derivedKey.toString('hex'));
                     });
                 })
-                .catch(err => 
-                    reject(locale._('Can\'t get the identity for: "%s", %s', username, err))
+                .catch(async err => 
+                    reject(await loc._('Can\'t get the identity for: "%s", %s', username, err))
                 );
         });
     }

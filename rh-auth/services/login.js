@@ -19,13 +19,13 @@ export class LoginService {
      *  open: Date.now(),
      * }}
      */
-    static async forUsernamePasswordDeviceTokenAndSessionIndex(username, password, deviceToken, sessionIndex, locale) {
+    static async forUsernamePasswordDeviceTokenAndSessionIndex(username, password, deviceToken, sessionIndex, loc) {
         const user = await UserService.getForUsername(username);
         if (!user)
             throw new _Error('Error to get user to create session');
 
         await UserService.checkEnabledUser(user, username);
-        if (!await IdentityService.checkLocalPasswordForUsername(username, password, locale))
+        if (!await IdentityService.checkLocalPasswordForUsername(username, password, loc))
             throw new HttpError('Invalid login', 403);
 
         let device;

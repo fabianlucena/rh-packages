@@ -1,4 +1,4 @@
-import {l} from 'rf-locale';
+import {loc} from 'rf-locale';
 import url from 'url';
 import path from 'path';
 
@@ -19,10 +19,10 @@ export const conf = {
     afterConfigAsync: null,
     data: {
         permissionTypes: {
-            'public':    {title: l._f('Public')},
-            'private':   {title: l._f('Private')},
-            'anonymous': {title: l._f('Anonymous')},
-            'global':    {title: l._f('Global')},
+            'public':    {title: loc._f('Public')},
+            'private':   {title: loc._f('Private')},
+            'anonymous': {title: loc._f('Anonymous')},
+            'global':    {title: loc._f('Global')},
         },
 
         userRoleSites: {
@@ -30,7 +30,7 @@ export const conf = {
         },
 
         permissions: {
-            'privileges': {title: l._f('Privileges'), type: 'global', ownerModule: name, menuItem: {name: 'privileges', label: l._f('Privileges'), parent: 'session-menu', action: 'form', service: 'privileges'}},
+            'privileges': {title: loc._f('Privileges'), type: 'global', ownerModule: name, menuItem: {name: 'privileges', label: loc._f('Privileges'), parent: 'session-menu', action: 'form', service: 'privileges'}},
         },
     },
 };

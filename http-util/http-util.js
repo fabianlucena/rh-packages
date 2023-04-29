@@ -1,5 +1,5 @@
 import {setUpError, errorHandlerAsync, deepComplete} from 'rf-util';
-import {l} from 'rf-locale';
+import {loc} from 'rf-locale';
 import * as uuid from 'uuid';
 import fs from 'fs';
 import path from 'path';
@@ -53,8 +53,8 @@ export class UnauthorizedError extends Error {
 export class NoPermissionError extends Error {
     static NoObjectValues = ['permissions'];
     static VisibleProperties = ['message', 'permissions'];
-    static _zeroMessage = l._f('You do not have permission.');
-    static _message = l._nf(0, 'You do not have permission: "%s"', 'You do not have any of permissions: "%s".');
+    static _zeroMessage = loc._f('You do not have permission.');
+    static _message = loc._nf(0, 'You do not have permission: "%s"', 'You do not have any of permissions: "%s".');
 
     statusCode = 403;
     permissions = [];
@@ -73,15 +73,15 @@ export class NoPermissionError extends Error {
 
     _n() {return this.permissions.length;}
 
-    async getMessageParamsAsync(locale) {
-        return [await locale._or(...this.permissions)];
+    async getMessageParamsAsync(loc) {
+        return [await loc._or(...this.permissions)];
     }
 }
 
 export class MethodNotAllowedError extends Error {
     static NoObjectValues = ['method'];
     static VisibleProperties = ['message', 'method'];
-    static _message = l._f('Method "%s" not allowed.');
+    static _message = loc._f('Method "%s" not allowed.');
     static param = ['<unknown>'];
 
     statusCode = 405;
@@ -98,7 +98,7 @@ export class MethodNotAllowedError extends Error {
     }
 
     // eslint-disable-next-line no-unused-vars
-    async getMessageParamsAsync(locale) {
+    async getMessageParamsAsync(loc) {
         return [this.method];
     }
 }
@@ -106,7 +106,7 @@ export class MethodNotAllowedError extends Error {
 export class NoUUIDError extends Error {
     static NoObjectValues = ['paramName'];
     static VisibleProperties = ['message', 'paramName'];
-    static _message = l._f('The "%s" parameter is not a valid UUID.');
+    static _message = loc._f('The "%s" parameter is not a valid UUID.');
     static param = ['<unknown>'];
 
     statusCode = 403;
@@ -119,7 +119,7 @@ export class NoUUIDError extends Error {
 
 export class ConflictError extends Error {
     static VisibleProperties = ['message'];
-    static _message = l._f('Conflict.');
+    static _message = loc._f('Conflict.');
 
     statusCode = 409;
 
@@ -221,7 +221,7 @@ export function configureServices(services, servicesPath, options) {
 }
 
 export async function sendErrorAsync(req, res, error) {
-    const data = await errorHandlerAsync(error, req.locale, req.showErrorInConsole);
+    const data = await errorHandlerAsync(error, req.l, req.showErrorInConsole);
     if (data.stack)
         delete data.stack;
     res.status(data.statusCode ?? 500).send(data);
@@ -258,16 +258,16 @@ export async function getOptionsFromODataAsync(params, options) {
         if (params.$top) {
             const limit = parseInt(params.$top);
             if (isNaN(limit))
-                throw new _HttpError(l._fp('Error to convert $top = "%s" parameter value to a integer number.', params.$top));
+                throw new _HttpError(loc._fp('Error to convert $top = "%s" parameter value to a integer number.', params.$top));
 
             if (limit > maxRowsInResult)
-                throw new _HttpError(l._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', maxRowsInResult));
+                throw new _HttpError(loc._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', maxRowsInResult));
     
             if (limit > options.maxLimit)
-                throw new _HttpError(l._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', options.maxLimit));
+                throw new _HttpError(loc._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', options.maxLimit));
     
             if (limit < 0)
-                throw new _HttpError(l._fp('The $top parameter cannot be negative.'), 400);
+                throw new _HttpError(loc._fp('The $top parameter cannot be negative.'), 400);
 
             options.limit = limit;
         }
@@ -278,10 +278,10 @@ export async function getOptionsFromODataAsync(params, options) {
         if (params.$skip) {
             const offset = parseInt(params.$skip);
             if (isNaN(offset))
-                throw new _HttpError(l._fp('Error to convert $skip = "%s" parameter value to a integer number.', params.$skip));
+                throw new _HttpError(loc._fp('Error to convert $skip = "%s" parameter value to a integer number.', params.$skip));
 
             if (offset < 0)
-                throw new _HttpError(l._f('The $skip param cannot be negative.'), 400);
+                throw new _HttpError(loc._f('The $skip param cannot be negative.'), 400);
             
             options.offset = offset;
         }
@@ -326,9 +326,9 @@ export async function getOptionsFromParamsAndODataAsync(params, definitions, opt
 
 export async function deleteHandlerAsync(req, res, rowCount) {
     if (!rowCount)
-        res.status(200).send({msg: await req.locale._('Nothing to delete.')});
+        res.status(200).send({msg: await req.loc._('Nothing to delete.')});
     else if (rowCount != 1)
-        res.status(200).send({msg: await req.locale._('%s rows deleted.', rowCount)});
+        res.status(200).send({msg: await req.loc._('%s rows deleted.', rowCount)});
     else
         res.sendStatus(204);
 }

@@ -68,7 +68,7 @@ export class MenuController {
 
                     const l = req.l;
                     if (mi.label)
-                        mi.label = await l._d('menu', mi.label);
+                        mi.label = await loc._d('menu', mi.label);
 
                     return mi;
                 }));

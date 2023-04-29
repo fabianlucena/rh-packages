@@ -30,7 +30,7 @@ export class LogoutController {
      */
     static async post(req, res) {
         if (!req.session)
-            return res.status(401).send({error: await req.locale._('No session')});
+            return res.status(401).send({error: await req.loc._('No session')});
 
         LogoutService.logout(req.session)
             .then(() => {

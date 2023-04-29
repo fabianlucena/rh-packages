@@ -1,4 +1,5 @@
 import {LoginService} from '../services/login.js';
+import {loc} from 'rf-local';
 import {HttpError} from 'http-util';
 import {checkParameter} from 'rf-util';
 
@@ -49,8 +50,10 @@ export class LoginController {
     static async getForm(req, res) {
         checkParameter(req.query, '$form');
 
+        let _loc = req.loc ?? loc;
+
         res.status(200).send({
-            title: 'Login',
+            title: _loc._('Login'),
             action: 'login',
             method: 'post',
             onSuccess: 'setBearerAuthorizationFromResponseProperty("authToken"); reloadMenu();',
@@ -58,14 +61,14 @@ export class LoginController {
                 {
                     name: 'username',
                     type: 'text',
-                    label: 'Username',
-                    placeholder: 'Username',
+                    label: _loc._('Username'),
+                    placeholder: _loc._('Username'),
                 },
                 {
                     name: 'password',
                     type: 'password',
-                    label:'Password',
-                    placeholder:'Password',
+                    label: _loc._('Password'),
+                    placeholder: _loc._('Password'),
                 }
             ]
         });
@@ -104,9 +107,11 @@ export class LoginController {
      */
     static async post(req, res) {
         checkParameter(req?.body, 'username', 'password');
+
+        let _loc = req.loc ?? loc;
         
         try {
-            const session = await LoginService.forUsernamePasswordDeviceTokenAndSessionIndex(req?.body?.username, req?.body?.password, req?.body?.deviceToken, req?.body?.sessionIndex, req.locale);
+            const session = await LoginService.forUsernamePasswordDeviceTokenAndSessionIndex(req?.body?.username, req?.body?.password, req?.body?.deviceToken, req?.body?.sessionIndex, req.l);
             req.session = session;
             res.header('Authorization', 'Bearer ' + session.authToken);
             res.status(201).send({
@@ -115,7 +120,7 @@ export class LoginController {
                 deviceToken: session.deviceToken,
             });
         } catch (err) {
-            throw new HttpError('Invalid login', 403);
+            throw new _HttpError(_loc._f('Invalid login'), 403);
         }
     }
 }

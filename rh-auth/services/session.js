@@ -1,7 +1,7 @@
 import {conf} from '../conf.js';
 import {checkViewOptions, getSingle} from 'sql-util';
 import {complete, deepComplete, checkAsync} from 'rf-util';
-import {l} from 'rf-locale';
+import {loc} from 'rf-locale';
 import crypto from 'crypto';
 
 export class SessionClosedError extends Error {
@@ -162,7 +162,7 @@ export class SessionService {
      * @returns {Promise{Session}}
      */
     static closeForId(id) {
-        return checkAsync(id, {_message: l._f('There is no id for session')})
+        return checkAsync(id, {_message: loc._f('There is no id for session')})
             .then(() => SessionService.getForId(id))
             .then(session => {
                 const authToken = session.authToken;
@@ -185,7 +185,7 @@ export class SessionService {
      * @returns {Promise{Result}}
      */
     static async deleteForUuid(uuid) {
-        const session = await SessionService.getForUUID(uuid, {_noRowsError: l._f('Row for UUID %s does not exist', uuid)});
+        const session = await SessionService.getForUUID(uuid, {_noRowsError: loc._f('Row for UUID %s does not exist', uuid)});
         if (session) {
             if (conf.sessionCache[session.authToken])
                 delete conf.sessionCache[session.authToken];

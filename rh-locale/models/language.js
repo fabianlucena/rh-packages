@@ -40,6 +40,10 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
+        plurals: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
     }, {
         sequelize,
         timestamps: true,

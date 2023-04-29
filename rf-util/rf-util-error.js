@@ -1,7 +1,7 @@
 'use strict';
 
 import {getTranslatedParamsAsync} from 'rf-locale';
-import {l} from 'rf-locale';
+import {loc} from 'rf-locale';
 import * as util from 'util';
 
 export function setUpError(error, options) {
@@ -56,8 +56,8 @@ export class CheckError extends Error {
 export class MissingParameterError extends Error {
     static NoObjectValues = ['missingParameters'];
     static VisibleProperties = ['message', 'missingParameters'];
-    static _zeroMessage = l._f('Mising parameters.');
-    static _message = l._nf(0, 'Mising parameter: "%s".', 'Mising parameters: "%s".');
+    static _zeroMessage = loc._f('Mising parameters.');
+    static _message = loc._nf(0, 'Mising parameter: "%s".', 'Mising parameters: "%s".');
 
     statusCode = 400;
     missingParameters = [];
@@ -74,15 +74,15 @@ export class MissingParameterError extends Error {
 
     _n() {return this.missingParameters.length;}
 
-    async getMessageParamsAsync(locale) {
-        return [await locale._and(...this.missingParameters)];
+    async getMessageParamsAsync(loc) {
+        return [await loc._and(...this.missingParameters)];
     }
 }
 
 export class MergeTypeError extends Error {
     static NoObjectValues = ['dstType', 'srcType'];
     static VisibleProperties = ['message'];
-    static _message = l._f('Cannot merge into "%s" a "%s".');
+    static _message = loc._f('Cannot merge into "%s" a "%s".');
 
     constructor(dstType, srcType) {
         super();
@@ -95,33 +95,33 @@ export class MergeTypeError extends Error {
         );
     }
 
-    async getMessageParamAsync(locale) {  // eslint-disable-line no-unused-vars
+    async getMessageParamAsync(loc) {  // eslint-disable-line no-unused-vars
         return [this.dstType, this.srcType];
     }
 }
 
-export async function getErrorMessageParamsAsync(error, locale) {
+export async function getErrorMessageParamsAsync(error, loc) {
     if (error.getMessageParamsAsync)
-        return await error.getMessageParamsAsync(locale) || [];
+        return await error.getMessageParamsAsync(loc) || [];
 
     let _params = error._params;
     if (!_params) {
         let params = error.params;
         if (params)
-            return await getTranslatedParamsAsync(params, false, locale);
+            return await getTranslatedParamsAsync(params, false, loc);
 
         _params = error.constructor._params;
         if (!_params)
             return error.constructor.params || [];
     }
 
-    return await getTranslatedParamsAsync(_params, true, locale);
+    return await getTranslatedParamsAsync(_params, true, loc);
 }
 
-export async function getErrorMessageAsync(error, locale) {
+export async function getErrorMessageAsync(error, loc) {
     let message;
     if (error.getMessageAsync) {
-        message = await error.getMessageAsync(locale);
+        message = await error.getMessageAsync(loc);
         if (message)
             return message;
     }
@@ -141,10 +141,10 @@ export async function getErrorMessageAsync(error, locale) {
 
             let params;
             if (error.message instanceof Array) {
-                params = await getTranslatedParamsAsync(message.slice(1), false, locale);
+                params = await getTranslatedParamsAsync(message.slice(1), false, loc);
                 message = message[0];
             } else
-                params = await getErrorMessageParamsAsync(error, locale);
+                params = await getErrorMessageParamsAsync(error, loc);
 
             return util.format(message, params);
         }
@@ -158,12 +158,12 @@ export async function getErrorMessageAsync(error, locale) {
             _message = _message[0];
 
             if (_params)
-                params = await getTranslatedParamsAsync(_params, true, locale);
+                params = await getTranslatedParamsAsync(_params, true, loc);
         }
         else
-            params = await getErrorMessageParamsAsync(error, locale);
+            params = await getErrorMessageParamsAsync(error, loc);
 
-        return locale._(_message, ...params);
+        return loc._(_message, ...params);
     }
     
     // For singular/plural messages
@@ -185,20 +185,20 @@ export async function getErrorMessageAsync(error, locale) {
 
         if (_message) {
             if (_message instanceof Array) {
-                params = await getTranslatedParamsAsync(_message.slice(1), false, locale);
+                params = await getTranslatedParamsAsync(_message.slice(1), false, loc);
                 _message = message[0];
             } else
-                params = await getErrorMessageParamsAsync(error, locale);
+                params = await getErrorMessageParamsAsync(error, loc);
 
-            return locale._(_message, params);
+            return loc._(_message, params);
         }
 
         if (message) {
             if (message instanceof Array) {
-                params = await getTranslatedParamsAsync(message.slice(1), false, locale);
+                params = await getTranslatedParamsAsync(message.slice(1), false, loc);
                 message = message[0];
             } else
-                params = await getErrorMessageParamsAsync(error, locale);
+                params = await getErrorMessageParamsAsync(error, loc);
 
             return util.format(message, params);
         }
@@ -212,16 +212,16 @@ export async function getErrorMessageAsync(error, locale) {
         params;
 
     if (_params && _params.length > 0)
-        params = await getTranslatedParamsAsync(_params, true, locale);
+        params = await getTranslatedParamsAsync(_params, true, loc);
     else if (error.getMessageParamsAsync)
-        params = await error.getMessageParamsAsync(locale) || [];
+        params = await error.getMessageParamsAsync(loc) || [];
     else
-        params = await getErrorMessageParamsAsync(error, locale);
+        params = await getErrorMessageParamsAsync(error, loc);
 
-    return locale._n(_n, _singular, _plural, ...params);
+    return loc._n(_n, _singular, _plural, ...params);
 }
 
-export async function getErrorDataAsync(error, locale) {
+export async function getErrorDataAsync(error, loc) {
     let data = {};
     if (error instanceof Error) {
         data.name = error.constructor.name;
@@ -234,7 +234,7 @@ export async function getErrorDataAsync(error, locale) {
         if (error.statusCode)
             data.statusCode = error.statusCode;
 
-        data.message = await getErrorMessageAsync(error, locale);
+        data.message = await getErrorMessageAsync(error, loc);
     } else
         data.message = error;
 
@@ -244,8 +244,8 @@ export async function getErrorDataAsync(error, locale) {
     return data;
 }
 
-export async function errorHandlerAsync(error, locale, showInConsole) {
-    const data = await getErrorDataAsync(error, locale ?? l);
+export async function errorHandlerAsync(error, loc, showInConsole) {
+    const data = await getErrorDataAsync(error, loc ?? loc);
     const logTitle = data.name? data.name + ': ': '';
 
     if (showInConsole || showInConsole === undefined) {

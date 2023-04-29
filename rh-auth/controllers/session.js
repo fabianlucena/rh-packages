@@ -25,20 +25,20 @@ export class SessionController {
                 })
                 .catch(async err => {
                     if (err instanceof SessionClosedError)
-                        res.status(401).send({error: await req.locale._('HTTP error 403 forbiden, session is closed.')});
+                        res.status(401).send({error: await req.loc._('HTTP error 403 forbiden, session is closed.')});
                     else if (err instanceof NoSessionForAuthTokenError)
-                        res.status(401).send({error: await req.locale._('HTTP error 403 forbiden, authorization token error.')});
+                        res.status(401).send({error: await req.loc._('HTTP error 403 forbiden, authorization token error.')});
                     else {
                         let msg;
                         if (err instanceof Error)
-                            msg = await getErrorMessageAsync(err, req.locale);
+                            msg = await getErrorMessageAsync(err, req.l);
                         else
                             msg = err;
 
                         if (msg)
-                            res.status(401).send({error: 'Unauthorized', message: await req.locale._('HTTP error 401 unauthorized: %s', msg)});
+                            res.status(401).send({error: 'Unauthorized', message: await req.loc._('HTTP error 401 unauthorized: %s', msg)});
                         else
-                            res.status(401).send({error: 'Unauthorized', message: await req.locale._('HTTP error 401 unauthorized')});
+                            res.status(401).send({error: 'Unauthorized', message: await req.loc._('HTTP error 401 unauthorized')});
                     }
                 });
         };

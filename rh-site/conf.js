@@ -1,4 +1,4 @@
-import {l} from 'rf-locale';
+import {loc} from 'rf-locale';
 import url from 'url';
 import path from 'path';
 
@@ -19,13 +19,13 @@ export const conf = {
     afterConfigAsync: null,
     data: {
         sites: {
-            'system': {title: l._f('System'), ownerModule: name},
+            'system': {title: loc._f('System'), ownerModule: name},
         },
 
         permissions: {
-            'current-site.switch': {title: l._f('Switch site'),      type: 'global', ownerModule: name, menuItem: {parent:'session-menu', action: 'form',   service: 'site'}},
-            'current-site.get':    {title: l._f('Get current site'), type: 'global', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site', method: 'get'}},
-            'site.get':            {title: l._f('Get site(s)'),      type: 'global', ownerModule: name, menuItem: {parent:'session-menu', action: 'form',   service: 'site'}},
+            'current-site.switch': {title: loc._f('Switch site'),      type: 'global', ownerModule: name, menuItem: {parent:'session-menu', action: 'form',   service: 'site'}},
+            'current-site.get':    {title: loc._f('Get current site'), type: 'global', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site', method: 'get'}},
+            'site.get':            {title: loc._f('Get site(s)'),      type: 'global', ownerModule: name, menuItem: {parent:'session-menu', action: 'form',   service: 'site'}},
         },
     },
 };

@@ -1,4 +1,5 @@
 import {PrivilegesService} from '../services/privileges.js';
+import {loc} from 'rf-locale';
 import {errorHandlerAsync} from 'rf-util';
 
 /**
@@ -70,7 +71,7 @@ export class PrivilegesController {
         result.permissions = req?.permissions;
 
         if (!req?.site?.name)
-            result.warning = await req.locale._('No current site selected');
+            result.warning = await (req.loc ?? loc)._('No current site selected');
 
         res.status(200).send(result);
     }

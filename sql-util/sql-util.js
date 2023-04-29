@@ -1,11 +1,11 @@
 import {setUpError, deepComplete, replace} from 'rf-util';
-import {l} from 'rf-locale';
+import {loc} from 'rf-locale';
 import fs from 'fs';
 import path from 'path';
 
 export class NoRowsError extends Error {
-    static _message = l._f('There are no "%s" for "%s" in "%s"');
-    static _params = [l._f('element'), l._f('selector'), l._f('model')];
+    static _message = loc._f('There are no "%s" for "%s" in "%s"');
+    static _params = [loc._f('element'), loc._f('selector'), loc._f('model')];
 
     constructor(message) {
         super();
@@ -21,8 +21,8 @@ export class NoRowsError extends Error {
 export class ManyRowsError extends Error {
     static NoObjectValues = ['length'];
     static VisibleProperties = ['message', 'length'];
-    static _message = l._f('There are many "%s" for "%s" in "%s"');
-    static _params = [l._f('element'), l._f('selector'), l._f('model')];
+    static _message = loc._f('There are many "%s" for "%s" in "%s"');
+    static _params = [loc._f('element'), loc._f('selector'), loc._f('model')];
 
     constructor(message, length) {
         super();
@@ -39,8 +39,8 @@ export class ManyRowsError extends Error {
 export class MissingPropertyError extends Error {
     static NoObjectValues = ['length'];
     static VisibleProperties = ['objectName', 'properties'];
-    static _zeroMessage = l._f('No properties for object "%s"');
-    static _message = l._nf(0, 'Missing property "%s" for  object "%s"', 'Missing properties "%s" for object "%s"');
+    static _zeroMessage = loc._f('No properties for object "%s"');
+    static _message = loc._nf(0, 'Missing property "%s" for  object "%s"', 'Missing properties "%s" for object "%s"');
 
     properties = [];
 
@@ -57,8 +57,8 @@ export class MissingPropertyError extends Error {
 
     _n() {return this.properties.length;}
 
-    async getMessageParamsAsync(locale) {
-        return [await locale._and(...this.properties), this.objectName];
+    async getMessageParamsAsync(loc) {
+        return [await loc._and(...this.properties), this.objectName];
     }
 }
 
