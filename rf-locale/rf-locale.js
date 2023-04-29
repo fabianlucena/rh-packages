@@ -64,20 +64,20 @@ export class Locale {
     }
 }
 
-export const l = new Locale();
+export const loc = new Locale();
 
-export async function getTranslatedParamsAsync(params, all, locale) {
+export async function getTranslatedParamsAsync(params, all, loc) {
     if (all) {
         return Promise.all(await params.map(async param => {
             if (param instanceof Array)
-                return await locale._(...param);
+                return await loc._(...param);
             else
-                return await locale._(param);
+                return await loc._(param);
         }));
     } else {
         return Promise.all(await params.map(async param => {
             if (param instanceof Array)
-                return await locale._(...param);
+                return await loc._(...param);
             else
                 return param;
         }));
