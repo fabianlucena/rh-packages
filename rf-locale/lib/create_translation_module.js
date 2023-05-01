@@ -12,7 +12,7 @@ const packageTemplate = `{
   "type": "module",
   "scripts": {
     "test": "echo \\"Error: no test specified\\" && exit 1",
-    "update": "gt --update-translations-file ../{srcPackageName}/**/*.js **/*.js --translations-filename {translationsFilename}",
+    "update": "gt --update-translations-file ../{srcPackageName}/**/*.js **/*.js --translations-filename {translationsFilename} --language {language}",
     "validate": "gt --validate-translations-file --translations-filename {translationsFilename}",
     "show": "gt --show-translations-file --translations-filename {translationsFilename}"
   },
@@ -24,8 +24,11 @@ const packageTemplate = `{
 const confTemplate = `'use strict';
 
 import {loc, loadJson} from 'rf-locale';
+import url from 'url';
+import path from 'path';
 
 const name = '{packageName}';
+const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export const conf = {
     name,
@@ -38,11 +41,12 @@ export const conf = {
                 title: loc._f('{languageTitle}'),
                 description: loc._f('{languageDescription}'),
                 paremt: '{parent}',
+                pluralsCount: {pluralCount},
                 plurals: '{plural}'
             },
         },
 
-        translations: () => loadJson('{translationsFilename}'),
+        translations: () => loadJson(dirname + '{translationsFilename}'),
     },
 };`;
 
@@ -52,7 +56,7 @@ export async function createTranslationModule(options) {
     while (!language) {
         language = await simplePrompt('Please enter the language code to create the module translation for (code ISO 639-1 or IETF recomended)');
         if (!language)
-            console.log('Language code is mandatory, try again.')
+            console.log('Language code is mandatory, try again.');
     }
 
     const dir = './' + srcPackageName + '-' + language;
@@ -60,7 +64,7 @@ export async function createTranslationModule(options) {
         if (!options.overwrite) {
             const proceed = await simplePrompt(`The directory "${dir}" is not empty. Do you ant to proceed anyway? the files will be rewriten [y|N]`);
             if (!proceed || proceed[0].toUpperCase() != 'Y') {
-                console.error(`The directory "${dir}" is not empty.`)
+                console.error(`The directory "${dir}" is not empty.`);
                 process.exit();
             }
         }
@@ -77,7 +81,7 @@ export async function createTranslationModule(options) {
     while (!languageTitle) {
         languageTitle = await simplePrompt('Enter the language title in English');
         if (!languageTitle)
-            console.log('Language title is mandatory, try again.')
+            console.log('Language title is mandatory, try again.');
     }
 
     const packageDescription = `Translation to ${languageTitle} for package ${srcPackageName}.`;
@@ -85,9 +89,9 @@ export async function createTranslationModule(options) {
     const defaultLangDescription = `${languageTitle} language.`;
     let languageDescription = await simplePrompt(`Enter the language description in English (or empty for use: "${defaultLangDescription}")`);
     if (!languageDescription)
-    languageDescription = defaultLangDescription;
+        languageDescription = defaultLangDescription;
 
-    const parent = await simplePrompt(`Enter the parent language for this specification or leave empty for no parent`);
+    const parent = await simplePrompt('Enter the parent language for this specification or leave empty for no parent');
 
     let pluralsCount = await simplePrompt('How many forms have the plural forms (most languages use 3: no items, singular, and plural)? leave empty for 3');
     if (pluralsCount === '')
@@ -95,7 +99,7 @@ export async function createTranslationModule(options) {
 
     let plural = await simplePrompt('Please enter plurals form or leave empty to use general form "n => (n < 2)? n: 2"');
     if (!plural)
-        plural = 'n => (n < 2)? n: 2'
+        plural = 'n => (n < 2)? n: 2';
         
     fs.writeFileSync(
         dir + '/package.json',

@@ -8,6 +8,12 @@ export async function updateTranslationsFile(options) {
     if (!sources || !sources.length)
         return;
 
+    const language = options?.language;
+    if (!language) {
+        console.error(`Language param is mandatory.`);
+        process.exit();
+    }
+
     let translations = await loadJson(options.translationsFilename, {emptyIfNotExists: true});
     
     if (!translations)
@@ -64,6 +70,7 @@ export async function updateTranslationsFile(options) {
                 domain = undefined;
                 
             translations[source] = {
+                language: language,
                 domain: domain,
                 ref: data.ref ?? existent?.ref,
                 translation: data.translation ?? existent?.translation ?? null

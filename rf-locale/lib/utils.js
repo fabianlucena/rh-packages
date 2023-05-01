@@ -26,7 +26,7 @@ export function isEnquoted(text, quotes) {
 }
 
 export function stripQuotes(text, quotes) {
-    if (!isEnquoted(text))
+    if (!isEnquoted(text, quotes))
         return;
 
     return text.substring(1, text.length - 1);
@@ -40,7 +40,7 @@ export function loadJson(fileName, options) {
             if (options.emptyIfNotExists)
                 resolve({});
             else
-                reject(new Error('File does not exist'));
+                reject(new Error(`File ${fileName} does not exist`));
             
             return;
         }

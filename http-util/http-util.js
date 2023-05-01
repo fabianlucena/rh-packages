@@ -403,8 +403,18 @@ export async function configureModuleAsync(global, theModule) {
     if (theModule.schema && global.createSchema)
         await global.createSchema(theModule.schema);
 
-    if (theModule.data)
-        deepComplete(global.data, theModule.data);
+    if (theModule.data) {
+        const moduleData = {};
+        for (let type in theModule.data) {
+            let data = theModule.data[type];
+            if (typeof data === 'function')
+                data = await data();
+
+            moduleData[type] = data;
+        }
+
+        deepComplete(global.data, moduleData);
+    }
 
     return theModule;
 }

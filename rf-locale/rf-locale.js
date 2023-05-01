@@ -1,9 +1,8 @@
 'use strict';
 
-import {loadJson} from './utils.js';
 import * as util from 'util';
 
-export loadJson;
+export {loadJson} from './lib/utils.js';
 
 export class Locale {
     constructor(options) {
@@ -22,7 +21,7 @@ export class Locale {
     }
 
     _f(text, ...params) {
-        if (params)
+        if (params && params.length)
             return [text, ...params];
 
         return text;
