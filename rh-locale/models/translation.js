@@ -42,10 +42,6 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
-        ref: {
-            type: DataTypes.STRING,
-            allowNull: true
-        },
     }, {
         sequelize,
         timestamps: true,

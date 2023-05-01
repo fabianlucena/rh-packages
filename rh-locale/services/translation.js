@@ -18,7 +18,7 @@ export class TranslationService {
             if (!data.source)
                 throw new MissingPropertyError('Translation', 'source', 'sourceId');
             else
-                data.sourceId = await conf.global.services.Source.getIdOrCreateForText(data.source, {data: data.isJson});
+                data.sourceId = await conf.global.services.Source.getIdOrCreateForText(data.source, {data: {isJson: data.isJson, ref: data.ref}});
 
         return data;
     }
@@ -95,13 +95,17 @@ export class TranslationService {
         if (!language)
             return text;
         
+        text = text.trim();
         let translation = await conf.global.models.TranslationCache.findOne({where: {language, domain, source: text}});
         if (translation)
             return translation.translation;
             
         translation = await this.getBestMatchForLanguageTextAndDomains(language, text, domain);
-        if (translation)
-            await conf.global.models.TranslationCache.create({language, domain, source: text, translation});
+        if (translation) {
+            const source = await SourceService.getForText(text);
+
+            await conf.global.models.TranslationCache.create({language, domain, source: text, translation, ref: source.ref});
+        }
         
         return translation;
     }
