@@ -30,18 +30,18 @@ export class LanguageService {
 
     /**
      * Gets a language for its name. For many coincidences and for no rows this method fails.
-     * @param {string} name - name for the domain to get.
+     * @param {string} name - name for the language to get.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Language}}
      */
     static getForName(name, options) {
-        return this.getList(deepComplete(options, {where:{name: name}, limit: 2}))
-            .then(rowList => getSingle(rowList, deepComplete(options, {params: ['language', 'name', name, 'domain']})));
+        return this.getList(deepComplete(options, {where:{name}, limit: 2}))
+            .then(rowList => getSingle(rowList, deepComplete(options, {params: ['language', 'name', name, 'language']})));
     }
     
     /**
     * Gets a Language ID for its name. For many coincidences and for no rows this method fails.
-    * @param {string} name - name for the domain to get.
+    * @param {string} name - name for the language to get.
     * @param {Options} options - Options for the @ref getList method.
     * @returns {Promise{ID}}
     */

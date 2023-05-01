@@ -45,7 +45,7 @@ export class SourceService {
     * @returns {Promise{ID}}
     */
     static async getIdForText(text, options) {
-        return (await this.getForText(text, {...options, attributes: ['id']})).id;
+        return (await this.getForText(text, {...options, attributes: ['id']}))?.id;
     }
 
     /**
@@ -70,6 +70,6 @@ export class SourceService {
     * @returns {Promise{ID}}
     */
     static async getIdOrCreateForText(text, options) {
-        return (await this.createIfNotExists({text}, {...options, attributes: ['id']})).id;
+        return (await this.createIfNotExists({text, isJson: options?.data?.isJson}, {...options, attributes: ['id']})).id;
     }
 }
