@@ -1,0 +1,82 @@
+{
+    "Spanish": {
+        "ref": "rh-auth-es.js [15,41]",
+        "translation": "Español"
+    },
+    "Spanish language.": {
+        "ref": "rh-auth-es.js [16,57]",
+        "translation": "Idioma español."
+    },
+    "HTTP error 401 unauthorized, no authorization header.": {
+        "ref": "..\\rh-auth\\index.js [22,108]",
+        "translation": "Error HTTP 401 no autorizado, no hay cabecera de autorización."
+    },
+    "HTTP error 401 unauthorized, authorization schema is no Bearer.": {
+        "ref": "..\\rh-auth\\index.js [25,118]",
+        "translation": "Error HTTP 401 no autorizado, el esquema de autorización no es Bearer."
+    },
+    "There is no id for session": {
+        "ref": "..\\rh-auth\\services\\session.js [165,78]",
+        "translation": "No hay id para la sesión."
+    },
+    "Row for UUID %s does not exist": {
+        "ref": "..\\rh-auth\\services\\session.js [188,124]",
+        "translation": "La fila UUID %s no existe."
+    },
+    "User \"%s\" does not have local identity": {
+        "ref": "..\\rh-auth\\services\\identity.js [136,102]",
+        "translation": "El usuario \"%s\" no tiene identidad local."
+    },
+    "User \"%s\" local entity is not enabled": {
+        "ref": "..\\rh-auth\\services\\identity.js [139,101]",
+        "translation": "La identidad local del usuario \"%s\" no está habilitada."
+    },
+    "User \"%s\" does not have local identity data": {
+        "ref": "..\\rh-auth\\services\\identity.js [142,107]",
+        "translation": "El usuario \"%s\" no tiene datos de identidad local."
+    },
+    "User \"%s\" does not have local password": {
+        "ref": "..\\rh-auth\\services\\identity.js [146,102]",
+        "translation": "El usuario \"%s\" no tiene contraseña local."
+    },
+    "Can\\'t get the identity for: \"%s\", %s": {
+        "ref": "..\\rh-auth\\services\\identity.js [157,95]",
+        "translation": "No se pude obtener la identidad para: \"%s\", %s"
+    },
+    "HTTP error 403 forbiden, session is closed.": {
+        "ref": "..\\rh-auth\\controllers\\session.js [28,116]",
+        "translation": "Error HTTP 403 prohibido, la sesión está cerrada."
+    },
+    "HTTP error 403 forbiden, authorization token error.": {
+        "ref": "..\\rh-auth\\controllers\\session.js [30,124]",
+        "translation": "Error HTTP 403 prohibido, error el token de autorización."
+    },
+    "HTTP error 401 unauthorized: %s": {
+        "ref": "..\\rh-auth\\controllers\\session.js [39,138]",
+        "translation": "Error HTTP 401 no autorizado: %s"
+    },
+    "HTTP error 401 unauthorized": {
+        "ref": "..\\rh-auth\\controllers\\session.js [41,129]",
+        "translation": "Error HTTP 401 no autorizado"
+    },
+    "No session": {
+        "ref": "..\\rh-auth\\controllers\\logout.js [33,78]",
+        "translation": "No hay sesión"
+    },
+    "Login": {
+        "ref": "..\\rh-auth\\controllers\\login.js [55,34]",
+        "translation": "Ingresar"
+    },
+    "Username": {
+        "ref": "..\\rh-auth\\controllers\\login.js [64,51]",
+        "translation": "Nombre de usuario"
+    },
+    "Password": {
+        "ref": "..\\rh-auth\\controllers\\login.js [70,51]",
+        "translation": "Contraseña"
+    },
+    "Invalid login": {
+        "ref": "..\\rh-auth\\controllers\\login.js [120,61]",
+        "translation": "Ingreso inválido"
+    }
+}
