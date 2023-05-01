@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "update": "gt --update-translations-file ../rh-auth/**/*.js **/*.js --translations-filename ./translations_es.json",
+    "update": "gt --update-translations-file ../rh-auth/**/*.js **/*.js --translations-filename ./translations_es.json --language es",
     "validate": "gt --validate-translations-file --translations-filename ./translations_es.json",
     "show": "gt --show-translations-file --translations-filename ./translations_es.json"
   },

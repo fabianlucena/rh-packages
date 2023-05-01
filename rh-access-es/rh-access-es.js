@@ -1,8 +1,11 @@
 'use strict';
 
 import {loc, loadJson} from 'rf-locale';
+import url from 'url';
+import path from 'path';
 
 const name = 'rh-access-es';
+const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export const conf = {
     name,
@@ -15,10 +18,11 @@ export const conf = {
                 title: loc._f('Spanish'),
                 description: loc._f('Spanish language.'),
                 paremt: '',
+                pluralsCount: 3,
                 plurals: 'n => (n < 2)? n: 2'
             },
         },
 
-        translations: () => loadJson('./translations_es.json'),
+        translations: () => loadJson(dirname + '/translations_es.json'),
     },
 };

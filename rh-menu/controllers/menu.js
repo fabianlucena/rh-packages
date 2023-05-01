@@ -66,7 +66,7 @@ export class MenuController {
                         delete mi.jsonData;
                     }
 
-                    const l = req.l;
+                    const loc = req.loc;
                     if (mi.label)
                         mi.label = await loc._d('menu', mi.label);
 

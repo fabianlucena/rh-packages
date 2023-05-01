@@ -1,7 +1,7 @@
 'use strict';
 
 import {LoginService} from '../services/login.js';
-import {HttpError} from 'http-util';
+import {_HttpError} from 'http-util';
 import {checkParameter} from 'rf-util';
 
 export class LoginController {
@@ -54,7 +54,7 @@ export class LoginController {
         let loc = req.loc;
 
         res.status(200).send({
-            title: loc._('Login'),
+            title: await loc._('Login'),
             action: 'login',
             method: 'post',
             onSuccess: 'setBearerAuthorizationFromResponseProperty("authToken"); reloadMenu();',
@@ -62,14 +62,14 @@ export class LoginController {
                 {
                     name: 'username',
                     type: 'text',
-                    label: loc._('Username'),
-                    placeholder: loc._('Username'),
+                    label: await loc._('Username'),
+                    placeholder: await loc._('Username'),
                 },
                 {
                     name: 'password',
                     type: 'password',
-                    label: loc._('Password'),
-                    placeholder: loc._('Password'),
+                    label: await loc._('Password'),
+                    placeholder: await loc._('Password'),
                 }
             ]
         });
