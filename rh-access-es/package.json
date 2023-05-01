@@ -1,0 +1,16 @@
+{
+  "name": "rh-access-es",
+  "version": "1.0.0",
+  "description": "Translation to Spanish for package rh-access.",
+  "main": "rh-access-es.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "update": "gt --update-translations-file ../rh-access/**/*.js **/*.js --translations-filename ./translations_es.json",
+    "validate": "gt --validate-translations-file --translations-filename ./translations_es.json",
+    "show": "gt --show-translations-file --translations-filename ./translations_es.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

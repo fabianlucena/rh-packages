@@ -1,0 +1,14 @@
+{
+    "No current site selected": {
+        "ref": "..\\rh-access\\controllers\\privileges.js [74,82]",
+        "translation": "No hay sitio actual seleccionado."
+    },
+    "Spanish": {
+        "ref": "rh-access-es.js [15,41]",
+        "translation": "Español"
+    },
+    "Spanish language.": {
+        "ref": "rh-access-es.js [16,57]",
+        "translation": "Idioma español."
+    }
+}
