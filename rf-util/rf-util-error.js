@@ -1,7 +1,6 @@
 'use strict';
 
-import {getTranslatedParamsAsync} from 'rf-locale';
-import {loc} from 'rf-locale';
+import {loc, getTranslatedParamsAsync} from 'rf-locale';
 import * as util from 'util';
 
 export function setUpError(error, options) {
@@ -163,7 +162,7 @@ export async function getErrorMessageAsync(error, loc) {
         else
             params = await getErrorMessageParamsAsync(error, loc);
 
-        return loc._(_message, ...params);
+        return await loc._(_message, ...params);
     }
     
     // For singular/plural messages
@@ -190,7 +189,7 @@ export async function getErrorMessageAsync(error, loc) {
             } else
                 params = await getErrorMessageParamsAsync(error, loc);
 
-            return loc._(_message, params);
+            return await loc._(_message, params);
         }
 
         if (message) {
@@ -245,7 +244,7 @@ export async function getErrorDataAsync(error, loc) {
 }
 
 export async function errorHandlerAsync(error, loc, showInConsole) {
-    const data = await getErrorDataAsync(error, loc ?? loc);
+    const data = await getErrorDataAsync(error, loc);
     const logTitle = data.name? data.name + ': ': '';
 
     if (showInConsole || showInConsole === undefined) {

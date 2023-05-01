@@ -114,6 +114,8 @@ export function merge(dst, src, options) {
                 if (isSrcObject)
                     if (src[p] instanceof Array)
                         v = merge([], src[p], deepOptions);
+                    else if (src[p] === null)
+                        v = null;
                     else
                         v = merge({}, src[p], deepOptions);
                 else
