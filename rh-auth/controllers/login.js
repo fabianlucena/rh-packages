@@ -1,5 +1,6 @@
+'use strict';
+
 import {LoginService} from '../services/login.js';
-import {loc} from 'rf-local';
 import {HttpError} from 'http-util';
 import {checkParameter} from 'rf-util';
 
@@ -50,10 +51,10 @@ export class LoginController {
     static async getForm(req, res) {
         checkParameter(req.query, '$form');
 
-        let _loc = req.loc ?? loc;
+        let loc = req.loc;
 
         res.status(200).send({
-            title: _loc._('Login'),
+            title: loc._('Login'),
             action: 'login',
             method: 'post',
             onSuccess: 'setBearerAuthorizationFromResponseProperty("authToken"); reloadMenu();',
@@ -61,14 +62,14 @@ export class LoginController {
                 {
                     name: 'username',
                     type: 'text',
-                    label: _loc._('Username'),
-                    placeholder: _loc._('Username'),
+                    label: loc._('Username'),
+                    placeholder: loc._('Username'),
                 },
                 {
                     name: 'password',
                     type: 'password',
-                    label: _loc._('Password'),
-                    placeholder: _loc._('Password'),
+                    label: loc._('Password'),
+                    placeholder: loc._('Password'),
                 }
             ]
         });
@@ -108,8 +109,6 @@ export class LoginController {
     static async post(req, res) {
         checkParameter(req?.body, 'username', 'password');
 
-        let _loc = req.loc ?? loc;
-        
         try {
             const session = await LoginService.forUsernamePasswordDeviceTokenAndSessionIndex(req?.body?.username, req?.body?.password, req?.body?.deviceToken, req?.body?.sessionIndex, req.l);
             req.session = session;
@@ -120,7 +119,7 @@ export class LoginController {
                 deviceToken: session.deviceToken,
             });
         } catch (err) {
-            throw new _HttpError(_loc._f('Invalid login'), 403);
+            throw new _HttpError(req.loc._f('Invalid login'), 403);
         }
     }
 }
