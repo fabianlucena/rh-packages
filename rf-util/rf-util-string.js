@@ -1,18 +1,34 @@
 'use strict';
 
-export function tokens(string) {
-    return string.split(/[ _-]/);
+export function tokens(text) {
+    return text.split(/[ _-]/);
 }
 
-export function camelize(string) {
-    const tokenList = tokens(string);
+export function camelize(text) {
+    const tokenList = tokens(text);
     return tokenList[0] + tokenList.slice(1).map(token => token.substring(0, 1).toUpperCase() + token.substring(1)).join('');
 }
 
-export function spacialize(string) {
-    return tokens(string).join(' ');
+export function spacialize(text) {
+    return tokens(text).join(' ');
 }
 
-export function ucfirst(string) {
-    return string.substring(0, 1).toUpperCase() + string.substring(1);
+export function ucfirst(text) {
+    return text.substring(0, 1).toUpperCase() + text.substring(1);
+}
+
+export function isEnquoted(text, quotes) {
+    if (!quotes)
+        quotes = ['"', '\'', '`'];
+
+    return (text.length > 1)
+        && text[0] === text[text.length - 1]
+        && quotes.includes(text[0]);
+}
+
+export function stripQuotes(text, quotes) {
+    if (!isEnquoted(text))
+        return;
+
+    return text.substring(1, text.length - 1);
 }
