@@ -169,8 +169,7 @@ export class RoleService {
         let allRoleIdList = await newRoleList.map(role => role.id);
         let newRoleIdList = allRoleIdList;
             
-        while(newRoleList.length)
-        {
+        while(newRoleList.length) {
             parentOptions.where.roleId = {[Op.in]: newRoleIdList};
             parentOptions.where.parentId = {[Op.notIn]: allRoleIdList};
 
@@ -179,7 +178,7 @@ export class RoleService {
                 break;
 
             newRoleIdList = await newRoleList.map(roleParent => roleParent.parentId);
-            allRoleIdList = allRoleIdList.concat(newRoleIdList);
+            allRoleIdList = [...allRoleIdList, ...newRoleIdList];
         }
 
         return allRoleIdList;

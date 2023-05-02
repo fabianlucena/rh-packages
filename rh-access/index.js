@@ -1,4 +1,5 @@
 import {RoleService} from './services/role.js';
+import {RoleParentSiteService} from './services/role_parent_site.js';
 import {PermissionService} from './services/permission.js';
 import {PermissionTypeService} from './services/permission_type.js';
 import {RolePermissionService} from './services/role_permission.js';
@@ -51,9 +52,12 @@ async function checkPermissionForUsernameAndSiteName(privileges, ...requiredPerm
 }
 
 async function afterConfigAsync(_, global) {
-    for (const roleName in global?.data?.roles) {
-        const data = global.data.roles[roleName];
-        await RoleService.createIfNotExists({...data, name: roleName});
+    const roles = global?.data?.roles;
+    if (roles) {
+        for (const roleName in roles) {
+            const data = roles[roleName];
+            await RoleService.createIfNotExists({...data, name: roleName});
+        }
     }
 
     for (const permissionTypeName in global?.data?.permissionTypes) {
@@ -74,8 +78,13 @@ async function afterConfigAsync(_, global) {
         }
     }
 
-    for (const userRoleSiteName in global?.data?.userRoleSites) {
-        const userRoleSite = global.data.userRoleSites[userRoleSiteName];
+    for (const userRoleSiteName in global?.data?.usersRolesSites) {
+        const userRoleSite = global.data.usersRolesSites[userRoleSiteName];
         await UserRoleSiteService.createIfNotExists(userRoleSite);
+    }
+
+    for (const roleParentSiteName in global?.data?.rolesParentsSites) {
+        const roleParentSite = global.data.rolesParentsSites[roleParentSiteName];
+        await RoleParentSiteService.createIfNotExists(roleParentSite);
     }
 }

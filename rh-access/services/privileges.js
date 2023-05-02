@@ -50,26 +50,24 @@ export class PrivilegesService {
 
         privileges.site = siteName ?? null;
 
-        if (siteName && username)
-            privileges.roles = await RoleService.getAllNameForUsernameAndSiteName(username, siteName);
+        if (username) {
+            if (siteName)
+                privileges.roles = await RoleService.getAllNameForUsernameAndSiteName(username, siteName);
         
-        if (!privileges.roles)
-            privileges.roles = [];
+            if (!privileges.roles)
+                privileges.roles = [];
 
-        if (username && !privileges.roles.includes('admin') && siteName != 'system') {
-            const systemRoles = await RoleService.getNameForUsernameAndSiteName(username, 'system');
-            if (systemRoles.includes('admin'))
-                privileges.roles.push('admin');
+            if (siteName != 'system') {
+                const systemRoles = await RoleService.getAllNameForUsernameAndSiteName(username, 'system');
+                privileges.roles = [...privileges.roles, ...systemRoles];
+                if (!privileges.roles.includes('admin'))
+                    privileges.roles.push('admin');
+            }
         }
 
-        if (siteName) {
-            if (privileges.roles.includes('admin'))
-                privileges.permissions = await PermissionService.getAllNameForSiteName(siteName);
-            else if (username)
-                privileges.permissions = await PermissionService.getAllNameForUsernameAndSiteName(username, siteName);
-        }
-        
-        if (!privileges.permissions)
+        if (privileges.roles)
+            privileges.permissions = await PermissionService.getNamesForRolesName(privileges.roles);
+        else
             privileges.permissions = [];
 
         if (!username)

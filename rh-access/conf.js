@@ -25,12 +25,12 @@ export const conf = {
             'global':    {title: loc._f('Global')},
         },
 
-        userRoleSites: {
+        usersRolesSites: {
             'user:admin,role:admin,site:system': {username: 'admin', role: 'admin', site: 'system'},
         },
 
         permissions: {
-            'privileges': {title: loc._f('Privileges'), type: 'global', ownerModule: name, menuItem: {name: 'privileges', label: loc._f('Privileges'), parent: 'session-menu', action: 'form', service: 'privileges'}},
+            'privileges': {title: loc._f('Privileges'), type: 'global', ownerModule: name, menuItem: {name: 'privileges', label: loc._f('Privileges'), parent: 'session-menu', action: 'object', service: 'privileges'}},
         },
     },
 };

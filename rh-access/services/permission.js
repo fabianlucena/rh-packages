@@ -1,5 +1,4 @@
 import {PermissionTypeService} from './permission_type.js';
-import {RoleService} from './role.js';
 import {conf} from '../conf.js';
 import {MissingPropertyError, checkDataForMissingProperties, completeIncludeOptions, getSingle, completeAssociationOptions} from 'sql-util';
 import {deepComplete} from 'rf-util';
@@ -102,53 +101,26 @@ export class PermissionService {
     }
 
     /**
-     * Gets a permission list for a given username and site name.
-     * @param {string} username - username for the permission to get.
-     * @param {string} siteName - siteName for the permission to get.
+     * Gets a permission list for a given roles names list.
+     * @param {Array[string]} rolesName - list of roles name.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Permission}}
      */
-    static async getAllForUsernameAndSiteName(username, siteName, options) {
-        const roleIdList = await RoleService.getAllIdForUsernameAndSiteName(username, siteName);
+    static async getForRolesName(rolesName, options) {
         options = {include: [], ...options};
-        options.include.push(completeAssociationOptions({model: conf.global.models.Role, where: {id: roleIdList}}, options));
+        options.include.push(completeAssociationOptions({model: conf.global.models.Role, where: {name: rolesName}}, options));
 
         return PermissionService.getList(options);
     }
 
     /**
-     * Gets a permission name list for a given username and site name.
-     * @param {string} username - username for the permission to get.
-     * @param {string} siteName - siteName for the permission to get.
+     * Gets a permission name list for a given roles names list.
+     * @param {Array[string]} rolesName - list of roles name.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{[]string}}
      */
-    static async getAllNameForUsernameAndSiteName(username, siteName, options) {
-        const permissionList = await PermissionService.getAllForUsernameAndSiteName(username, siteName, {...options, attributes: ['name'], skipThroughAssociationAttributes: true});
-        return Promise.all(permissionList.map(permission => permission.name));
-    }
-
-    /**
-     * Gets a permission list for a given site name.
-     * @param {string} siteName - siteName for the permission to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Permission}}
-     */
-    static async getAllForSiteName(siteName, options) {
-        options = {include: [], ...options};
-        options.include.push(completeAssociationOptions({model: conf.global.models.Site, where: {name: siteName}}, options));
-
-        return PermissionService.getList(options);
-    }
-
-    /**
-     * Gets a permission name list for a given site name.
-     * @param {string} siteName - siteName for the permission to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{[]string}}
-     */
-    static async getAllNameForSiteName(siteName, options) {
-        const permissionList = await PermissionService.getAllForSiteName(siteName, {...options, attributes: ['name'], skipThroughAssociationAttributes: true});
+    static async getNamesForRolesName(rolesName, options) {
+        const permissionList = await PermissionService.getForRolesName(rolesName, {...options, attributes: ['name'], skipThroughAssociationAttributes: true});
         return Promise.all(permissionList.map(permission => permission.name));
     }
 
