@@ -122,6 +122,8 @@ export class UserController {
     static async get(req, res) {
         if ('$grid' in req.query)
             return UserController.getGrid(req, res);
+        else if ('$form' in req.query)
+            return UserController.getForm(req, res);
             
         const definitions = {uuid: 'uuid', username: 'string'};
         let options = {view: true, limit: 10, offset: 0};
@@ -166,6 +168,37 @@ export class UserController {
                     name: 'enabled',
                     type: 'bool',
                     label: await loc._('Enabled'),
+                }
+            ]
+        });
+    }
+
+    static async getForm(req, res) {
+        checkParameter(req.query, '$form');
+
+        let loc = req.loc;
+        res.status(200).send({
+            title: await loc._('Users'),
+            action: 'user',
+            fields: [
+                {
+                    name: 'displayName',
+                    type: 'text',
+                    label: await loc._('Display name'),
+                    placeholder: await loc._('Display name'),
+                },
+                {
+                    name: 'username',
+                    type: 'text',
+                    label: await loc._('Username'),
+                    placeholder: await loc._('Username'),
+                    readonly: true,
+                },
+                {
+                    name: 'enabled',
+                    type: 'checkbox',
+                    label: await loc._('Enabled'),
+                    placeholder: await loc._('Enabled'),
                 }
             ]
         });
