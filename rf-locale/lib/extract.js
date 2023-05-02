@@ -127,9 +127,11 @@ export function extractSourcesFromCode(code, options) {
         case '`': {
             const closer = options.closer;
             const extract = options.extract;
+            const skipCommentDelimiters = options.skipCommentDelimiters;
 
             options.index++;
-            options = extractSourcesFromCode(code, {...options, closer: char, extract: false});
+            options = extractSourcesFromCode(code, {...options, closer: char, extract: false, skipCommentDelimiters: true});
+            options.skipCommentDelimiters = skipCommentDelimiters;
             options.extract = extract;
             options.closer = closer;
             options.index++;
@@ -138,6 +140,9 @@ export function extractSourcesFromCode(code, options) {
         }
 
         case '/': {
+            if (options.skipCommentDelimiters)
+                break;
+
             options.index++;
             if (options.index >= options.end)
                 continue;
@@ -168,6 +173,7 @@ export function extractSourcesFromCode(code, options) {
         }
 
         if (options.extract) {
+            // console.log(code.substring(options.index, options.index + 160).replace(/\r/g, '\\r').replace(/\n/g, '\\n'));     
             for (let patternName in options.patterns) {
                 const patternRegExp = new RegExp('^(' + patternName + '\\s*)\\(');
                 const match = patternRegExp.exec(code.substring(options.index));
