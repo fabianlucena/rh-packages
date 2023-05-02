@@ -1,6 +1,6 @@
 'use strict';
 
-import {middleware} from './controllers/locale.js';
+import {LocaleController} from './controllers/locale.js';
 import {conf as localConf} from './conf.js';
 import {LanguageService} from './services/language.js';
 import {TranslationService} from './services/translation.js';
@@ -12,7 +12,7 @@ conf.afterConfigAsync = afterConfigAsync;
 
 function configure(global) {
     if (global.router)
-        global.router.use(middleware());
+        global.router.use(LocaleController.middleware());
 }
 
 async function afterConfigAsync(_, global) {
