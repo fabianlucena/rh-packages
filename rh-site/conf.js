@@ -25,9 +25,9 @@ export const conf = {
         },
 
         permissions: {
-            'current-site.switch': {title: loc._f('Switch site'),      type: 'global', ownerModule: name, menuItem: {parent:'session-menu', action: 'form',   service: 'site'}},
+            'current-site.switch': {title: loc._f('Switch site'),      type: 'global', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site'}},
             'current-site.get':    {title: loc._f('Get current site'), type: 'global', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site', method: 'get'}},
-            'site.get':            {title: loc._f('Get site(s)'),      type: 'global', ownerModule: name, menuItem: {parent:'session-menu', action: 'form',   service: 'site'}},
+            'site.get':            {title: loc._f('Get site(s)'),      type: 'global', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site'}},
         },
     },
 };
