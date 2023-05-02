@@ -101,37 +101,37 @@
     },
     "System administrator": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [21,66]",
+        "ref": "..\\rh-auth\\conf.js [20,66]",
         "translation": "Administrador del sistema."
     },
     "User manager": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [22,58]",
+        "ref": "..\\rh-auth\\conf.js [21,58]",
         "translation": "Administrador de usuarios"
     },
     "User": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [23,50]",
+        "ref": "..\\rh-auth\\conf.js [22,50]",
         "translation": "Usuario"
     },
     "Logout": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [34,190]",
+        "ref": "..\\rh-auth\\conf.js [33,190]",
         "translation": "Salir"
     },
     "Get user(s)": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [35,60]",
+        "ref": "..\\rh-auth\\conf.js [34,60]",
         "translation": "Obtener usuario(s)"
     },
     "Users": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [35,189]",
+        "ref": "..\\rh-auth\\controllers\\user.js [148,40]",
         "translation": "Usuarios"
     },
     "Create user": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [36,60]",
+        "ref": "..\\rh-auth\\conf.js [35,60]",
         "translation": "Crear usuario"
     },
     "Delete user": {
@@ -163,5 +163,30 @@
         "language": "es",
         "ref": "..\\rh-auth\\conf.js [40,195]",
         "translation": "Mis sesiones"
+    },
+    "Edit user": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [36,58]",
+        "translation": "Modificar usuario"
+    },
+    "Display name": {
+        "language": "es",
+        "ref": "..\\rh-auth\\controllers\\user.js [158,55]",
+        "translation": "Nombre mostrado"
+    },
+    "Enabled": {
+        "language": "es",
+        "ref": "..\\rh-auth\\controllers\\user.js [168,50]",
+        "translation": "Habilitado"
+    },
+    "Enable": {
+        "language": "es",
+        "ref": "..\\rh-auth\\controllers\\user.js [144,25]",
+        "translation": "Habilitar"
+    },
+    "Disable": {
+        "language": "es",
+        "ref": "..\\rh-auth\\controllers\\user.js [145,26]",
+        "translation": "Deshabilitar"
     }
 }
