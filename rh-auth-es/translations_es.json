@@ -81,22 +81,87 @@
     },
     "Login": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\login.js [57,34]",
+        "ref": "..\\rh-auth\\controllers\\login.js [57,40]",
         "translation": "Ingresar"
     },
     "Username": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\login.js [66,51]",
+        "ref": "..\\rh-auth\\controllers\\login.js [66,57]",
         "translation": "Nombre de usuario"
     },
     "Password": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\login.js [72,51]",
+        "ref": "..\\rh-auth\\controllers\\login.js [72,57]",
         "translation": "Contraseña"
     },
     "Invalid login": {
         "language": "es",
         "ref": "..\\rh-auth\\controllers\\login.js [122,61]",
         "translation": "Ingreso inválido"
+    },
+    "System administrator": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [21,66]",
+        "translation": "Administrador del sistema."
+    },
+    "User manager": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [22,58]",
+        "translation": "Administrador de usuarios"
+    },
+    "User": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [23,50]",
+        "translation": "Usuario"
+    },
+    "Logout": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [34,190]",
+        "translation": "Salir"
+    },
+    "Get user(s)": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [35,60]",
+        "translation": "Obtener usuario(s)"
+    },
+    "Users": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [35,189]",
+        "translation": "Usuarios"
+    },
+    "Create user": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [36,60]",
+        "translation": "Crear usuario"
+    },
+    "Delete user": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [37,60]",
+        "translation": "Eliminar usuario"
+    },
+    "Get session(s)": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [38,63]",
+        "translation": "Obtener sesion(es)"
+    },
+    "Sessions": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [38,192]",
+        "translation": "Sesiones"
+    },
+    "Delete session": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [39,63]",
+        "translation": "Eliminar sesiones"
+    },
+    "Get own sessions only": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [40,70]",
+        "translation": "Obtener únicamente la sesión propia"
+    },
+    "My sessions": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [40,195]",
+        "translation": "Mis sesiones"
     }
 }
