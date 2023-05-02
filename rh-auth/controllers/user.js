@@ -120,12 +120,55 @@ export class UserController {
      *                  $ref: '#/definitions/Error'
      */
     static async get(req, res) {
+        if ('$grid' in req.query)
+            return UserController.getGrid(req, res);
+            
         const definitions = {uuid: 'uuid', username: 'string'};
         let options = {view: true, limit: 10, offset: 0};
 
         options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
         const rows = await UserService.getList(options);
         res.status(200).send(rows);
+    }
+
+    static async getGrid(req, res) {
+        checkParameter(req.query, '$grid');
+
+        const acctions = [];
+        if (req.permissions.includes('user.create')) acctions.push('create');
+        if (req.permissions.includes('user.delete')) acctions.push('delete');
+        if (req.permissions.includes('user.edit'))   acctions.push('edit', 'enable', 'disable');
+        
+        let loc = req.loc;
+
+        loc._f('Enable');
+        loc._f('Disable');
+
+        res.status(200).send({
+            title: await loc._('Users'),
+            load: {
+                service: 'user',
+                method: 'get',
+            },
+            actions: acctions,
+            columns: [
+                {
+                    name: 'displayName',
+                    type: 'text',
+                    label: await loc._('Display name'),
+                },
+                {
+                    name: 'username',
+                    type: 'text',
+                    label: await loc._('Username'),
+                },
+                {
+                    name: 'enabled',
+                    type: 'bool',
+                    label: await loc._('Enabled'),
+                }
+            ]
+        });
     }
 
     /**

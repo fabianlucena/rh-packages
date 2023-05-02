@@ -33,6 +33,7 @@ export const conf = {
             'logout':         {title: loc._f('Logout'),                type: 'global',                          ownerModule: name, menuItem: {name: 'logout',         label: loc._f('Logout'),      parent: 'session-menu', action: 'apiCall', service: 'logout', method: 'post', onSuccess: 'clearBearerAuthorization(); reloadMenu();'}},
             'user.get':       {title: loc._f('Get user(s)'),           type: 'private',   roles: 'userManager', ownerModule: name, menuItem: {name: 'user.get',       label: loc._f('Users'),                               action: 'grid',    service: 'user'}},
             'user.create':    {title: loc._f('Create user'),           type: 'private',   roles: 'userManager', ownerModule: name,},
+            'user.edit':      {title: loc._f('Edit user'),             type: 'private',   roles: 'userManager', ownerModule: name,},
             'user.delete':    {title: loc._f('Delete user'),           type: 'private',   roles: 'userManager', ownerModule: name,},
             'session.get':    {title: loc._f('Get session(s)'),        type: 'private',   roles: 'userManager', ownerModule: name, menuItem: {name: 'session.get',    label: loc._f('Sessions'),                            action: 'grid',    service: 'session'}},
             'session.delete': {title: loc._f('Delete session'),        type: 'private',   roles: 'userManager', ownerModule: name,},
