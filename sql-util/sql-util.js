@@ -76,7 +76,7 @@ export async function configureModelsAsync(modelsPath, sequelize) {
         throw new Error(`The modules path does not exists: ${modelsPath}`);
 
     await Promise.all(
-        fs
+        await fs
             .readdirSync(modelsPath)
             .filter(file => (file.indexOf('.') !== 0) && (file.slice(-3) === '.js'))
             .map(async file => (await import('file://' + path.join(modelsPath, file))).default(sequelize, sequelize.Sequelize.DataTypes))
@@ -88,7 +88,7 @@ export async function posConfigureModelsAssociationsAsync(sequelize) {
         return;
         
     await Promise.all(
-        Object.keys(sequelize.models).map(async modelName => {
+        await Object.keys(sequelize.models).map(async modelName => {
             if (sequelize.models[modelName].associate) {
                 sequelize.models[modelName].associate(sequelize.models);
             }
@@ -172,41 +172,6 @@ export async function getSingleRowProperty(model, data, getProperty, options) {
     options = deepComplete(options, {attributes: [getProperty]});
     const row = await getSingleRowFor(model, data, options);
     return row[getProperty];
-}
-
-/**
- * Check for a row existence and if not exists add the row. @see getSingleRowProperty for detail.
- * @param {Sequelize.Model} model - model to query.
- * @param {{name: value, ...}} data - data to search.
- * @param {string|[]string} propertyName - property name to check the existence. Can be a string for a single property name search or a properties names list.
- * @param {Options} options - options to pass to findAll method.
- * @returns {null}
- */
-export async function addIfNotExistsSingle(model, data, propertyName, options) {
-    options = {attributes:[], ...options};
-    if (!(propertyName instanceof Array))
-        propertyName = [propertyName];
-    
-    const searchData = {};
-    await Promise.all(await propertyName.map(n => searchData[n] = data[n]));
-    if (!options.attributes.length)
-        options.attributes.push(propertyName[0]);
-
-    const rows = await getFor(model, searchData, options);
-    if (!rows.length)
-        await model.create(data);
-}
-
-export function addIfNotExists(model, propertyName, ...data) {
-    if (data.length) 
-        return addIfNotExistsSingle(model, data.shift(), propertyName)
-            .then(() => addIfNotExists(model, propertyName, ...data));
-    else
-        return new Promise(resolve => resolve());
-}
-
-export function addIfNotExistsByName(model, ...data) {
-    return addIfNotExists(model, 'name', ...data);
 }
 
 export function completeAssociationOptions(base, options) {
