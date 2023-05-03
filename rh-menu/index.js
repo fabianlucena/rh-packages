@@ -1,31 +1,27 @@
 import {MenuItemService} from './services/menu_item.js';
 import {conf as localConf} from './conf.js';
+import {runSequentially} from 'rf-util';
 
 export const conf = localConf;
 
-conf.afterConfigAsync = async function(_, options) {
-    for (const permissionName in options?.data?.permissions) {
-        const permissionData = options.data.permissions[permissionName];
-        const menuItemData = permissionData.menuItem;
+conf.afterConfigAsync = async function(_, global) {
+    await runSequentially(global?.data?.permissions, async permission => {
+        const menuItemData = permission.menuItem;
         if (!menuItemData)
-            continue;
+            return;
 
         if (!menuItemData.data)
             menuItemData.data = {};
 
+        menuItemData.name ??= menuItemData.data.name ?? permission.name;
         menuItemData.uuid ??= menuItemData.data.uuid;
         menuItemData.isEnabled ??= menuItemData.data.isEnabled;
         menuItemData.name ??= menuItemData.data.name;
         menuItemData.parent ??= menuItemData.data.parent;
-
-        if (!menuItemData.name)
-            menuItemData.name = menuItemData.data.name ?? permissionName;
-
-        if (!menuItemData.permissionId && !menuItemData.permission)
-            menuItemData.permission = permissionName;
+        menuItemData.permission ??= permission.name;
             
         menuItemData.data = {
-            label: (permissionData.label ?? permissionData.title), 
+            label: (permission.label ?? permission.title), 
             ...menuItemData, 
             data: undefined, 
             ...menuItemData.data, 
@@ -39,5 +35,5 @@ conf.afterConfigAsync = async function(_, options) {
         };
 
         await MenuItemService.createIfNotExists(menuItemData);
-    }
+    });
 };

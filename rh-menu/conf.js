@@ -5,7 +5,7 @@ const name = 'rhMenu';
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export const conf = {
-    name: name,
+    name,
     title: 'Menu',
     version: '0.1',
     schema: 'menu',

@@ -98,7 +98,7 @@ export class MenuItemService {
      * @returns {Promise{MenuItem}}
      */
     static async getForName(name, options) {
-        const rowList = await MenuItemService.getList(deepComplete(options, {where: {name: name}, limit: 2}));
+        const rowList = await MenuItemService.getList(deepComplete(options, {where: {name}, limit: 2}));
         return getSingle(rowList, options);
     }
 
