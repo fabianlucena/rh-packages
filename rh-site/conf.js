@@ -20,14 +20,14 @@ export const conf = {
     apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
     afterConfigAsync: null,
     data: {
-        sites: {
-            'system': {title: loc._f('System'), ownerModule: name},
-        },
+        sites: [
+            {name: 'system', title: loc._f('System'), ownerModule: name},
+        ],
 
-        permissions: {
-            'current-site.switch': {title: loc._f('Switch site'),      type: 'global', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site'}},
-            'current-site.get':    {title: loc._f('Get current site'), type: 'global', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site', method: 'get'}},
-            'site.get':            {title: loc._f('Get site(s)'),      type: 'global', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site'}},
-        },
+        permissions: [
+            {name: 'current-site.switch', title: loc._f('Switch site'),      roles: 'everybody', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site'}},
+            {name: 'current-site.get',    title: loc._f('Get current site'), roles: 'everybody', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site', method: 'get'}},
+            {name: 'site.get',            title: loc._f('Get site(s)'),      roles: 'everybody', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site'}},
+        ],
     },
 };

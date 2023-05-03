@@ -79,7 +79,7 @@ export class SiteService {
      * @returns {Promise{Site}}
      */
     static async getForName(name, options) {
-        const rowList = await SiteService.getList(deepComplete(options, {where:{name: name}, limit: 2}));
+        const rowList = await SiteService.getList(deepComplete(options, {where:{name}, limit: 2}));
         return getSingle(rowList, deepComplete(options, {params: ['site', ['name = %s', name], 'Site']}));
     }
 
@@ -141,7 +141,7 @@ export class SiteService {
      */
     static getForUsername(username, options) {
         options = complete(options, {include: []});       
-        options.include.push(completeAssociationOptions({model: conf.global.models.User, where: {username: username}}, options));
+        options.include.push(completeAssociationOptions({model: conf.global.models.User, where: {username}}, options));
 
         return SiteService.getList(options);
     }
