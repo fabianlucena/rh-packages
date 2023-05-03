@@ -1,7 +1,7 @@
-import {PermissionTypeService} from './permission_type.js';
+import {RolePermissionService} from './role_permission.js';
 import {conf} from '../conf.js';
 import {MissingPropertyError, checkDataForMissingProperties, completeIncludeOptions, getSingle, completeAssociationOptions} from 'sql-util';
-import {deepComplete} from 'rf-util';
+import {deepComplete, runSequentially} from 'rf-util';
 
 export class PermissionService {
     /**
@@ -20,25 +20,6 @@ export class PermissionService {
     }
 
     /**
-     * Complete the data object with the typeId property if not exists. 
-     * @param {{type: string, typeId: integer, ...}} data 
-     * @returns {Promise{data}}
-     */
-    static async completePermissionTypeId(data) {
-        if (data.typeId)
-            return data;
-            
-        if (!data.type)
-            throw new MissingPropertyError('Permission', 'type');
-
-        data.typeId = await PermissionTypeService.getIdForName(data.type);
-        if (!data.typeId)
-            throw new MissingPropertyError('Permission', 'typeId');
-
-        return data;
-    }
-
-    /**
      * Creates a new Permission row into DB.
      * @param {{name: string, title: string}} data - data for the new Permission.
      *  - name: must be unique.
@@ -48,7 +29,6 @@ export class PermissionService {
         await checkDataForMissingProperties(data, 'Permission', 'name', 'title');
         
         await PermissionService.completeOwnerModuleId(data);
-        await PermissionService.completePermissionTypeId(data);
 
         return conf.global.models.Permission.create(data);
     }
@@ -66,12 +46,12 @@ export class PermissionService {
 
     /**
      * Gets a permission for its name. For many coincidences and for no rows this method fails.
-     * @param {string} name - name for the permission type to get.
+     * @param {string} name - name for the permission to get.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Permission}}
      */
     static async getForName(name, options) {
-        const rowList = await PermissionService.getList(deepComplete(options, {where:{name: name}, limit: 2}));
+        const rowList = await PermissionService.getList(deepComplete(options, {where:{name}, limit: 2}));
         return getSingle(rowList, deepComplete(options, {params: ['permission', 'name', name, 'Permission']}));
     }
 
@@ -82,17 +62,23 @@ export class PermissionService {
      */
     static createIfNotExists(data, options) {
         return PermissionService.getForName(data.name, {attributes: ['id'], foreign:{module:{attributes:[]}}, skipNoRowsError: true, ...options})
-            .then(element => {
-                if (element)
-                    return element;
+            .then(async permission => {
+                if (!permission)
+                    permission = await PermissionService.create(data);
 
-                return PermissionService.create(data);
+                if (data.roles) {
+                    const roles = data.roles instanceof Array?
+                        data.roles:
+                        data.roles.split(',');
+        
+                    await runSequentially(roles, async roleName => await RolePermissionService.createIfNotExists({role: roleName, permission: data.name}));
+                }
             });
     }
 
     /**
      * Gets a permission ID for its name. For many coincidences and for no rows this method fails.
-     * @param {string} name - name for the permission type to get.
+     * @param {string} name - name for the permission to get.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Permission}}
      */
@@ -121,30 +107,6 @@ export class PermissionService {
      */
     static async getNamesForRolesName(rolesName, options) {
         const permissionList = await PermissionService.getForRolesName(rolesName, {...options, attributes: ['name'], skipThroughAssociationAttributes: true});
-        return Promise.all(permissionList.map(permission => permission.name));
-    }
-
-    /**
-     * Gets a permission list for a given permission type.
-     * @param {string} permissionTypeName - permissionTypeName for the permission to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Permission}}
-     */
-    static async getAllForType(permissionTypeName, options) {
-        options = {include: [], ...options};
-        options.include.push(completeAssociationOptions({model: conf.global.models.PermissionType, where: {name: permissionTypeName}}, options));
-
-        return PermissionService.getList(options);
-    }
-
-    /**
-     * Gets a permission name list for a given permission type.
-     * @param {string} permissionTypeName - permissionTypeName for the permission to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{[]string}}
-     */
-    static async getAllNameForType(permissionTypeName, options) {
-        const permissionList = await PermissionService.getAllForType(permissionTypeName, {...options, attributes: ['name'], skipAssociationAttributes: true});
         return Promise.all(permissionList.map(permission => permission.name));
     }
 }

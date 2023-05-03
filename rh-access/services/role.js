@@ -62,18 +62,18 @@ export class RoleService {
 
     /**
      * Gets a role for its name. For many coincidences and for no rows this method fails.
-     * @param {string} name - name for the role type to get.
+     * @param {string} name - name for the role to get.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Role}}
      */
     static async getForName(name, options) {
-        const rowList = await RoleService.getList(deepComplete(options, {where:{name: name}, limit: 2}));
+        const rowList = await RoleService.getList(deepComplete(options, {where:{name}, limit: 2}));
         return getSingle(rowList, deepComplete(options, {params: ['roles', ['name = %s', name], 'Role']}));
     }
 
     /**
      * Gets a role ID for its name. For many coincidences and for no rows this method fails.
-     * @param {string} name - name for the role type to get.
+     * @param {string} name - name for the role to get.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Permission}}
      */
@@ -89,12 +89,12 @@ export class RoleService {
      * @returns {Promise{RoleList}}
      */
     static async getForUsernameAndSiteName(username, siteName, options) {
-        await checkDataForMissingProperties({username: username, siteName: siteName}, 'Role', 'username', 'siteName');
+        await checkDataForMissingProperties({username, siteName}, 'Role', 'username', 'siteName');
         
         options = complete(options, {include: []});
         options.include.push(
-            completeAssociationOptions({model: conf.global.models.User, where: {username: username}}, options),
-            completeAssociationOptions({model: conf.global.models.Site, where: {name:     siteName}}, options),
+            completeAssociationOptions({model: conf.global.models.User, where: {username}}, options),
+            completeAssociationOptions({model: conf.global.models.Site, where: {name: siteName}}, options),
         );
 
         return conf.global.models.Role.findAll(options);
@@ -119,7 +119,7 @@ export class RoleService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{RoleList}}
      */
-    static async getAllIdForUsernameAndSiteName(username, siteName, options) {
+    static async getAllIdsForUsernameAndSiteName(username, siteName, options) {
         const site = await conf.global.services.Site.getForName(siteName);
         if (!site || !site.isEnabled)
             return;
@@ -192,7 +192,7 @@ export class RoleService {
      * @returns {Promise{RoleList}}
      */
     static async getAllForUsernameAndSiteName(username, siteName, options) {
-        const roleIdList = await RoleService.getAllIdForUsernameAndSiteName(username, siteName);
+        const roleIdList = await RoleService.getAllIdsForUsernameAndSiteName(username, siteName);
         return RoleService.getList(complete(options, {where:{id:roleIdList}}));
     }
 
@@ -203,7 +203,7 @@ export class RoleService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{[]string}}
      */
-    static async getAllNameForUsernameAndSiteName(username, siteName, options) {
+    static async getAllNamesForUsernameAndSiteName(username, siteName, options) {
         const roleList = await RoleService.getAllForUsernameAndSiteName(username, siteName, {...options, attributes: ['name'], skipThroughAssociationAttributes: true});
         return Promise.all(await roleList.map(role => role.name));
     }

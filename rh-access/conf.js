@@ -18,19 +18,12 @@ export const conf = {
     apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
     afterConfigAsync: null,
     data: {
-        permissionTypes: {
-            'public':    {title: loc._f('Public')},
-            'private':   {title: loc._f('Private')},
-            'anonymous': {title: loc._f('Anonymous')},
-            'global':    {title: loc._f('Global')},
-        },
+        usersRolesSites: [
+            {username: 'admin', role: 'admin', site: 'system'},
+        ],
 
-        usersRolesSites: {
-            'user:admin,role:admin,site:system': {username: 'admin', role: 'admin', site: 'system'},
-        },
-
-        permissions: {
-            'privileges': {title: loc._f('Privileges'), type: 'global', ownerModule: name, menuItem: {name: 'privileges', label: loc._f('Privileges'), parent: 'session-menu', action: 'object', service: 'privileges'}},
-        },
+        permissions: [
+            {name: 'privileges', title: loc._f('Privileges'), roles: 'everybody', ownerModule: name, menuItem: {name: 'privileges', label: loc._f('Privileges'), parent: 'session-menu', action: 'object', service: 'privileges'}},
+        ],
     },
 };

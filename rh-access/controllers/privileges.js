@@ -29,6 +29,7 @@ export class PrivilegesController {
                         req.sites = privileges.sites;
                         req.site = privileges.site;
                         req.roles = privileges.roles;
+                        req.groups = privileges.groups;
                         req.permissions = privileges.permissions;
                     }
                         
@@ -68,6 +69,7 @@ export class PrivilegesController {
 
         result.site = req?.site?.name ?? null;
         result.roles = req?.roles;
+        result.groups = req?.groups;
         result.permissions = req?.permissions;
 
         if (!req?.site?.name)

@@ -1,3 +1,4 @@
+import {GroupService} from './group.js';
 import {RoleService} from './role.js';
 import {PermissionService} from './permission.js';
 import {conf} from '../conf.js';
@@ -50,33 +51,21 @@ export class PrivilegesService {
 
         privileges.site = siteName ?? null;
 
+        privileges.roles = ['everybody'];
+
         if (username) {
             if (siteName)
-                privileges.roles = await RoleService.getAllNameForUsernameAndSiteName(username, siteName);
+                privileges.roles = [...privileges.roles, ...await RoleService.getAllNamesForUsernameAndSiteName(username, siteName)];
         
-            if (!privileges.roles)
-                privileges.roles = [];
+            if (siteName != 'system')
+                privileges.roles = [...privileges.roles, ...await RoleService.getAllNamesForUsernameAndSiteName(username, 'system')];
+        } else
+            privileges.roles.push('anonymous');
 
-            if (siteName != 'system') {
-                const systemRoles = await RoleService.getAllNameForUsernameAndSiteName(username, 'system');
-                privileges.roles = [...privileges.roles, ...systemRoles];
-                if (!privileges.roles.includes('admin'))
-                    privileges.roles.push('admin');
-            }
-        }
+        privileges.permissions = await PermissionService.getNamesForRolesName(privileges.roles);
 
-        if (privileges.roles)
-            privileges.permissions = await PermissionService.getNamesForRolesName(privileges.roles);
-        else
-            privileges.permissions = [];
-
-        if (!username)
-            privileges.permissions = privileges.permissions.concat(await PermissionService.getAllNameForType('anonymous'));
-        else
-            privileges.permissions = privileges.permissions.concat(await PermissionService.getAllNameForType('global'));
-
-        privileges.permissions = privileges.permissions.concat(await PermissionService.getAllNameForType('public'));
-
+        privileges.groups = await GroupService.getAllNamesForUsername(username);
+        
         return privileges;
     }
 
