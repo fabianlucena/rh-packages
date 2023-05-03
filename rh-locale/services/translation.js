@@ -122,7 +122,7 @@ export class TranslationService {
             
             let useNoDomain = true;
             await Promise.all(
-                domains.map(
+                await domains.map(
                     async domain => {
                         if (domain)
                             domainsId.push(await DomainService.getIdOrCreateForName(domain.trim()));
