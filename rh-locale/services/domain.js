@@ -38,7 +38,7 @@ export class DomainService {
      * @returns {Promise{Domain}}
      */
     static getForName(name, options) {
-        return this.getList(deepComplete(options, {where:{name: name}, limit: 2}))
+        return this.getList(deepComplete(options, {where:{name}, limit: 2}))
             .then(rowList => getSingle(rowList, deepComplete(options, {params: ['domain', 'name', name, 'Domain']})));
     }
     
