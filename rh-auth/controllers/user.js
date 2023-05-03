@@ -136,10 +136,12 @@ export class UserController {
     static async getGrid(req, res) {
         checkParameter(req.query, '$grid');
 
-        const acctions = ['paginate', 'search'];
-        if (req.permissions.includes('user.create')) acctions.push('create');
-        if (req.permissions.includes('user.delete')) acctions.push('delete');
-        if (req.permissions.includes('user.edit'))   acctions.push('edit', 'enable', 'disable');
+        const actions = [];
+        if (req.permissions.includes('user.create')) actions.push('create');
+        if (req.permissions.includes('user.delete')) actions.push('delete');
+        if (req.permissions.includes('user.edit'))   actions.push('edit', 'enable', 'disable');
+
+        actions.push('search', 'paginate');
         
         let loc = req.loc;
 
@@ -152,7 +154,7 @@ export class UserController {
                 service: 'user',
                 method: 'get',
             },
-            actions: acctions,
+            actions: actions,
             columns: [
                 {
                     name: 'displayName',
