@@ -1,18 +1,26 @@
+import {UserService} from './services/user.js';
+import {UserTypeService} from './services/user_type.js';
+import {IdentityService} from './services/identity.js';
+import {IdentityTypeService} from './services/identity_type.js';
 import {conf as localConf} from './conf.js';
 import './services/device.js';
 import './services/session.js';
 import {SessionController} from './controllers/session.js';
-import {UnauthorizedError, NoPermissionError} from 'http-util';
 import {loc} from 'rf-locale';
+import {UnauthorizedError, NoPermissionError} from 'http-util';
+import {runSequentially} from 'rf-util';
 
 export const conf = localConf;
 
-conf.configure = function (global) {
+conf.configure = configure;
+conf.afterConfigAsync = afterConfigAsync;
+
+function configure (global) {
     if (global.router)
         global.router.use(SessionController.configureMiddleware());
 
     global.checkPermissionHandler = getCheckPermissionHandler(global.checkPermissionHandler);
-};
+}
 
 function getCheckPermissionHandler(chain) {
     return async (req, ...requiredPermissions) => {
@@ -30,4 +38,12 @@ function getCheckPermissionHandler(chain) {
 
         throw new NoPermissionError({permissions: requiredPermissions});
     };
+}
+
+async function afterConfigAsync(_, global) {
+    const data = global?.data;
+    await runSequentially(data?.userTypes,     async data => await UserTypeService.    createIfNotExists(data));
+    await runSequentially(data?.users,         async data => await UserService.        createIfNotExists(data));
+    await runSequentially(data?.identityTypes, async data => await IdentityTypeService.createIfNotExists(data));
+    await runSequentially(data?.identities,    async data => await IdentityService.    createIfNotExists(data));
 }

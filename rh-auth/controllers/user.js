@@ -136,7 +136,7 @@ export class UserController {
     static async getGrid(req, res) {
         checkParameter(req.query, '$grid');
 
-        const acctions = [];
+        const acctions = ['paginate', 'search'];
         if (req.permissions.includes('user.create')) acctions.push('create');
         if (req.permissions.includes('user.delete')) acctions.push('delete');
         if (req.permissions.includes('user.edit'))   acctions.push('edit', 'enable', 'disable');

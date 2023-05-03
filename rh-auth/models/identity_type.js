@@ -1,19 +1,9 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {addIfNotExistsByName} from 'sql-util';
 
 export default (sequelize, DataTypes) => {
     class IdentityType extends sequelize.Sequelize.Model {
-        static check() {
-            return addIfNotExistsByName(
-                IdentityType,
-                {
-                    name: 'local',
-                    title: 'Local'
-                }
-            );
-        }
     }
 
     IdentityType.init({

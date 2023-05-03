@@ -31,7 +31,7 @@ export class SessionController {
                     else {
                         let msg;
                         if (err instanceof Error)
-                            msg = await getErrorMessageAsync(err, req.l);
+                            msg = await getErrorMessageAsync(err, req.loc);
                         else
                             msg = err;
 

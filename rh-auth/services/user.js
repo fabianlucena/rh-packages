@@ -29,6 +29,9 @@ export class UserService {
      * @returns {Promise{UserType}}
      */
     static async create(data) {
+        if (data.type)
+            data.type = 'user';
+
         data = await UserService.completeTypeId(data);
         const user = await conf.global.models.User.create(data);
         if (data.password)
@@ -83,7 +86,7 @@ export class UserService {
      * @returns {Promise{User}}
      */
     static getForUsername(username, options) {
-        return UserService.getList(deepComplete(options, {where: {username: username}, limit: 2}))
+        return UserService.getList(deepComplete(options, {where: {username}, limit: 2}))
             .then(rowList => getSingle(rowList, complete(options, {params: ['user', ['username = %s', username], 'User']})));
     }
 
@@ -146,5 +149,20 @@ export class UserService {
      */
     static async disableForUuid(uuid) {
         return await UserService.updateForUuid({isEnabled: false}, uuid);
+    }
+    
+    /**
+     * Creates a new User row into DB if not exists.
+     * @param {data} data - data for the new Role @see create.
+     * @returns {Promise{Role}}
+     */
+    static createIfNotExists(data, options) {
+        return UserService.getForUsername(data.username, {attributes: ['id'], foreign: {module: {attributes:[]}}, skipNoRowsError: true, ...options})
+            .then(row => {
+                if (row)
+                    return row;
+
+                return UserService.create(data);
+            });
     }
 }

@@ -1,21 +1,12 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {addIfNotExistsByName} from 'sql-util';
 
 export default (sequelize, DataTypes) => {
     class UserType extends sequelize.Sequelize.Model {
-        static check() {
-            return addIfNotExistsByName(
-                UserType,
-                {
-                    name: 'user',
-                    title: 'User'
-                },
-                {
-                    name: 'group',
-                    title: 'Group'
-                });
+        static associate(models) {
+            if (models.Module)
+                this.belongsTo(models.Module, {foreignKey: 'ownerModuleId', allowNull: true});
         }
     }
     UserType.init({

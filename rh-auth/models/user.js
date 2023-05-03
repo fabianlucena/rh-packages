@@ -1,27 +1,13 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {execAsyncMethodListAsync} from 'http-util';
-import {getSingleRowProperty, addIfNotExists} from 'sql-util';
 
 export default (sequelize, DataTypes) => {
     class User extends sequelize.Sequelize.Model {
         static associate(models) {
             this.belongsTo(models.UserType, {foreignKey: 'typeId'});
-        }
-
-        static async check(asyncMethodList) {
-            await execAsyncMethodListAsync(asyncMethodList, 'UserType');
-            const userTypeId = await getSingleRowProperty(sequelize.models.UserType, {name: 'user'}, 'id');
-            await addIfNotExists(
-                User,
-                'username',
-                {
-                    typeId:       userTypeId,
-                    isEnabled:    1,
-                    username:     'admin',
-                    displayName:  'Admin'
-                });
+            if (models.Module)
+                this.belongsTo(models.Module, {foreignKey: 'ownerModuleId', allowNull: true});
         }
     }
     User.init({

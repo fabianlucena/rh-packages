@@ -29,7 +29,22 @@ export class UserTypeService {
      * @returns {Promise{UserType}}
      */
     static getForName(name, options) {
-        return this.getList(deepComplete(options, {where:{name: name}, limit: 2}))
+        return this.getList(deepComplete(options, {where:{name}, limit: 2}))
             .then(rowList => getSingle(rowList, deepComplete(options, {params: ['user type', 'name', name, 'UserType']})));
+    }
+    
+    /**
+     * Creates a new user type row into DB if not exists.
+     * @param {data} data - data for the new user type @see create.
+     * @returns {Promise{UserTYpe}}
+     */
+    static createIfNotExists(data, options) {
+        return UserTypeService.getForName(data.name, {attributes: ['id'], skipNoRowsError: true, ...options})
+            .then(row => {
+                if (row)
+                    return row;
+
+                return UserTypeService.create(data);
+            });
     }
 }

@@ -110,7 +110,7 @@ export class LoginController {
         checkParameter(req?.body, 'username', 'password');
 
         try {
-            const session = await LoginService.forUsernamePasswordDeviceTokenAndSessionIndex(req?.body?.username, req?.body?.password, req?.body?.deviceToken, req?.body?.sessionIndex, req.l);
+            const session = await LoginService.forUsernamePasswordDeviceTokenAndSessionIndex(req?.body?.username, req?.body?.password, req?.body?.deviceToken, req?.body?.sessionIndex, req.loc);
             req.session = session;
             res.header('Authorization', 'Bearer ' + session.authToken);
             res.status(201).send({

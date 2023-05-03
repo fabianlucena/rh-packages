@@ -35,7 +35,34 @@ export class IdentityTypeService {
      * @returns {Promise{IdentityType}}
      */
     static getForName(name, options) {
-        return this.getList(deepComplete(options, {where:{name: name}, limit: 2}))
+        return this.getList(deepComplete(options, {where:{name}, limit: 2}))
             .then(rowList => getSingle(rowList, deepComplete(options, {params: ['identity type', 'name', name, 'IdentityType']})));
+    }
+
+    /**
+     * Gets a identity type ID for its name. For many coincidences and for no rows this method fails.
+     * @param {string} name - name for the identity type to get.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {ID}
+     */
+    static async getIdForName(name, options) {
+        const rowList = await this.getList(deepComplete(options, {where:{name}, limit: 2}));
+        const row = await getSingle(rowList, deepComplete(options, {params: ['identity type', 'name', name, 'IdentityType']}));
+        return row.id;
+    }
+    
+    /**
+     * Creates a new identity type row into DB if not exists.
+     * @param {data} data - data for the new identity type @see create.
+     * @returns {Promise{IdentityType}}
+     */
+    static createIfNotExists(data, options) {
+        return IdentityTypeService.getForName(data.name, {attributes: ['id'], skipNoRowsError: true, ...options})
+            .then(row => {
+                if (row)
+                    return row;
+
+                return IdentityTypeService.create(data);
+            });
     }
 }

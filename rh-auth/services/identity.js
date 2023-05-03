@@ -1,6 +1,7 @@
 import {IdentityTypeService} from '../services/identity_type.js';
+import {UserService} from '../services/user.js';
 import {conf} from '../conf.js';
-import {MissingPropertyError, completeAssociationOptions, getSingle} from 'sql-util';
+import {checkDataForMissingProperties, MissingPropertyError, completeAssociationOptions, getSingle} from 'sql-util';
 import {complete, deepComplete} from 'rf-util';
 import crypto from 'crypto';
 
@@ -49,20 +50,23 @@ export class IdentityService {
      * @param {{typeId: integer, type: string}} data - data to pass to create method.
      * @returns {Promise{data}}
      */
-    static completeTypeId(data) {
-        return new Promise((resolve, reject) => {
-            if (data.typeId)
-                return resolve(data);
+    static async completeTypeId(data) {
+        if (!data.typeId && data.type)
+            data.typeId = await IdentityTypeService.getIdForName(data.type);
 
-            if (!data.type)
-                return reject(new MissingPropertyError('Identity', 'type'));
+        return data;
+    }
 
-            return IdentityTypeService.getForName(data.type)
-                .then(it => {
-                    data.typeId = it.id;
-                    resolve(data);
-                });
-        });
+    /**
+     * Completes, if not exists, the userId property of the data object with the ID of the user taken from the user property,
+     * @param {{userId: integer, user: string}}
+     * @returns {Promise{data}}
+     */
+    static async completeUserId(data) {
+        if (!data.userId && data.username)
+            data.userId = await UserService.getIdForUsername(data.username);
+
+        return data;
     }
 
     /**
@@ -70,10 +74,14 @@ export class IdentityService {
      * @param {{isEnabled: boolean, data: JSON, userId: integer, typeId: integer, password: string, type: string}} data - data to pass to create method.
      * @returns {Promise{data}}
      */
-    static create(data) {
-        return IdentityService.completeDataFromHashPassword(data)
-            .then(data => IdentityService.completeTypeId(data))
-            .then(data => conf.global.models.Identity.create(data));
+    static async create(data) {
+        await IdentityService.completeUserId(data);
+        await IdentityService.completeTypeId(data);
+        await IdentityService.completeDataFromHashPassword(data);
+
+        checkDataForMissingProperties(data, 'Identity', 'type', 'typeId', 'username', 'userId');
+
+        return conf.global.models.Identity.create(data);
     }
 
     /**
@@ -105,8 +113,8 @@ export class IdentityService {
      */
     static async getForUsernameTypeName(username, typeName, options) {
         options = complete(options, {include: [], limit: 2});
-        options.include.push(completeAssociationOptions({model: conf.global.models.IdentityType, where: {name:     typeName}, required: true}, options));
-        options.include.push(completeAssociationOptions({model: conf.global.models.User,         where: {username: username}, required: true}, options));
+        options.include.push(completeAssociationOptions({model: conf.global.models.IdentityType, where: {name: typeName}, required: true}, options));
+        options.include.push(completeAssociationOptions({model: conf.global.models.User,         where: {username},       required: true}, options));
 
         const rowList = await IdentityService.getList(options);
         return getSingle(rowList, options);
@@ -157,5 +165,20 @@ export class IdentityService {
                     reject(await loc._('Can\'t get the identity for: "%s", %s', username, err))
                 );
         });
+    }
+    
+    /**
+     * Creates a new identity row into DB if not exists.
+     * @param {data} data - data for the new identity @see create.
+     * @returns {Promise{Identity}}
+     */
+    static createIfNotExists(data, options) {
+        return IdentityService.getForUsernameTypeName(data.username, data.type, {attributes: ['id'], skipNoRowsError: true, ...options})
+            .then(row => {
+                if (row)
+                    return row;
+
+                return IdentityService.create(data);
+            });
     }
 }
