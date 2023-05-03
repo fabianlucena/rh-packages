@@ -47,7 +47,7 @@ export class ModuleService {
      * @returns {Promise{Module}}
      */
     static async getForName(name, options) {
-        const rowList = await ModuleService.getList(deepComplete(options, {where:{name: name}, limit: 2}));
+        const rowList = await ModuleService.getList(deepComplete(options, {where:{name}, limit: 2}));
         return getSingle(rowList, deepComplete(options, {params: ['module', ['name = %s', name], 'Module']}));
     }
     
