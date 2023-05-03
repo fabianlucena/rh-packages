@@ -53,9 +53,9 @@ async function checkPermissionForUsernameAndSiteName(privileges, ...requiredPerm
 
 async function afterConfigAsync(_, global) {
     const data = global?.data;
-    await runSequentially(data?.roles,            async data => await RoleService.          createIfNotExists(data));
-    await runSequentially(data?.permissions,      async data => await PermissionService.    createIfNotExists(data));
-    await runSequentially(data?.usersRolesSites,  async data => await UserRoleSiteService.  createIfNotExists(data));
-    await runSequentially(data?.roleParentsSites, async data => await RoleParentSiteService.createIfNotExists(data));
-    await runSequentially(data?.userGroups,       async data => await UserGroupService.     createIfNotExists(data));
+    await runSequentially(data?.roles,             async data => await RoleService.          createIfNotExists(data));
+    await runSequentially(data?.permissions,       async data => await PermissionService.    createIfNotExists(data));
+    await runSequentially(data?.usersRolesSites,   async data => await UserRoleSiteService.  createIfNotExists(data));
+    await runSequentially(data?.rolesParentsSites, async data => await RoleParentSiteService.createIfNotExists(data));
+    await runSequentially(data?.userGroups,        async data => await UserGroupService.     createIfNotExists(data));
 }
