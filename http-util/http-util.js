@@ -1,5 +1,6 @@
 import {setUpError, errorHandlerAsync, deepComplete} from 'rf-util';
 import {loc} from 'rf-locale';
+import {runSequentially} from 'rf-util';
 import * as uuid from 'uuid';
 import fs from 'fs';
 import path from 'path';
@@ -221,7 +222,7 @@ export function configureServices(services, servicesPath, options) {
 }
 
 export async function sendErrorAsync(req, res, error) {
-    const data = await errorHandlerAsync(error, req.l, req.showErrorInConsole);
+    const data = await errorHandlerAsync(error, req.loc, req.showErrorInConsole);
     if (data.stack)
         delete data.stack;
     res.status(data.statusCode ?? 500).send(data);
@@ -425,7 +426,7 @@ export async function installModuleAsync(global, theModule) {
         await configureRouter(theModule.routesPath, global.router, global.checkRoutePermission, theModule.routesPathOptions);
 
     if (theModule.init)
-        await Promise.all(await theModule.init.map(async method => await method()));
+        await runSequentially(theModule.init, async method => await method());
 
     if (theModule.afterConfigAsync) {
         const afterConfigAsync = (theModule.afterConfigAsync instanceof Array)?
