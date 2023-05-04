@@ -43,7 +43,7 @@ export const conf = {
                 title: loc._f('{languageTitle}'),
                 description: loc._f('{languageDescription}'),
                 paremt: '{parent}',
-                pluralsCount: {pluralCount},
+                pluralsCount: {pluralsCount},
                 plurals: '{plural}'
             },
         },
@@ -77,7 +77,7 @@ export async function createTranslationModule(options) {
     const packageFilename = packageName + '.js';
     const packageTitle = pascalize(srcPackageName) + '-' + language;
 
-    const translationsFilename = options.translationsFilename ?? (options.translationsPath ?? './') + `translations_${language}.json`;
+    const translationsFilename = options.translationsFilename ?? (options.translationsPath ?? '/') + `translations_${language}.json`;
 
     let languageTitle = options.languageTitle;
     while (!languageTitle) {

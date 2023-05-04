@@ -19,11 +19,11 @@ export const conf = {
                 title: loc._f('Spanish'),
                 description: loc._f('Spanish language.'),
                 paremt: '',
-                pluralsCount: {pluralCount},
+                pluralsCount: 3,
                 plurals: 'n => (n < 2)? n: 2'
             },
         },
 
-        translations: () => loadJson(dirname + './translations_es.json'),
+        translations: () => loadJson(dirname + '/translations_es.json'),
     },
 };
