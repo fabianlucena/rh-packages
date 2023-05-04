@@ -1,0 +1,67 @@
+{
+    "Create": {
+        "language": "es",
+        "ref": "..\\rh-locale\\text.js [5,17]",
+        "translation": "Crear"
+    },
+    "Search": {
+        "language": "es",
+        "ref": "..\\rh-locale\\text.js [6,17]",
+        "translation": "Buscar"
+    },
+    "First": {
+        "language": "es",
+        "ref": "..\\rh-locale\\text.js [7,16]",
+        "translation": "Primero"
+    },
+    "Next": {
+        "language": "es",
+        "ref": "..\\rh-locale\\text.js [8,15]",
+        "translation": "Siguiente"
+    },
+    "Prior": {
+        "language": "es",
+        "ref": "..\\rh-locale\\text.js [9,16]",
+        "translation": "Anterior"
+    },
+    "Last": {
+        "language": "es",
+        "ref": "..\\rh-locale\\text.js [10,15]",
+        "translation": "Último"
+    },
+    "Delete": {
+        "language": "es",
+        "ref": "..\\rh-locale\\text.js [11,17]",
+        "translation": "Eliminar"
+    },
+    "Edit": {
+        "language": "es",
+        "ref": "..\\rh-locale\\text.js [12,15]",
+        "translation": "Modificar"
+    },
+    "Enable": {
+        "language": "es",
+        "ref": "..\\rh-locale\\text.js [13,17]",
+        "translation": "Habilitar"
+    },
+    "Disable": {
+        "language": "es",
+        "ref": "..\\rh-locale\\text.js [14,18]",
+        "translation": "Deshabilitar"
+    },
+    "English": {
+        "language": "es",
+        "ref": "..\\rh-locale\\conf.js [24,47]",
+        "translation": "Inglés"
+    },
+    "Spanish": {
+        "language": "es",
+        "ref": "rh-locale-es.js [19,41]",
+        "translation": "Español"
+    },
+    "Spanish language.": {
+        "language": "es",
+        "ref": "rh-locale-es.js [20,57]",
+        "translation": "Idioma español."
+    }
+}
