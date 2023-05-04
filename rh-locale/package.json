@@ -4,6 +4,9 @@
   "description": "",
   "main": "rh-locale.js",
   "type": "module",
+  "bin": {
+    "rh-locale": "./bin/rh-locale.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

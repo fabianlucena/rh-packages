@@ -1,22 +1,22 @@
 {
     "Spanish": {
         "language": "es",
-        "ref": "rh-auth-es.js [18,41]",
+        "ref": "rh-auth-es.js [19,41]",
         "translation": "Español"
     },
     "Spanish language.": {
         "language": "es",
-        "ref": "rh-auth-es.js [19,57]",
+        "ref": "rh-auth-es.js [20,57]",
         "translation": "Idioma español."
     },
     "HTTP error 401 unauthorized, no authorization header.": {
         "language": "es",
-        "ref": "..\\rh-auth\\index.js [22,108]",
+        "ref": "..\\rh-auth\\index.js [30,108]",
         "translation": "Error HTTP 401 no autorizado, no hay cabecera de autorización."
     },
     "HTTP error 401 unauthorized, authorization schema is no Bearer.": {
         "language": "es",
-        "ref": "..\\rh-auth\\index.js [25,118]",
+        "ref": "..\\rh-auth\\index.js [33,118]",
         "translation": "Error HTTP 401 no autorizado, el esquema de autorización no es Bearer."
     },
     "There is no id for session": {
@@ -31,27 +31,27 @@
     },
     "User \"%s\" does not have local identity": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\identity.js [136,102]",
+        "ref": "..\\rh-auth\\services\\identity.js [144,102]",
         "translation": "El usuario \"%s\" no tiene identidad local."
     },
     "User \"%s\" local entity is not enabled": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\identity.js [139,101]",
+        "ref": "..\\rh-auth\\services\\identity.js [147,101]",
         "translation": "La identidad local del usuario \"%s\" no está habilitada."
     },
     "User \"%s\" does not have local identity data": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\identity.js [142,107]",
+        "ref": "..\\rh-auth\\services\\identity.js [150,107]",
         "translation": "El usuario \"%s\" no tiene datos de identidad local."
     },
     "User \"%s\" does not have local password": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\identity.js [146,102]",
+        "ref": "..\\rh-auth\\services\\identity.js [154,102]",
         "translation": "El usuario \"%s\" no tiene contraseña local."
     },
     "Can\\'t get the identity for: \"%s\", %s": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\identity.js [157,95]",
+        "ref": "..\\rh-auth\\services\\identity.js [165,95]",
         "translation": "No se pude obtener la identidad para: \"%s\", %s"
     },
     "HTTP error 403 forbiden, session is closed.": {
@@ -101,92 +101,107 @@
     },
     "System administrator": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [20,66]",
+        "ref": "..\\rh-auth\\conf.js [40,72]",
         "translation": "Administrador del sistema."
     },
     "User manager": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [21,58]",
+        "ref": "..\\rh-auth\\conf.js [41,64]",
         "translation": "Administrador de usuarios"
     },
     "User": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [22,50]",
+        "ref": "..\\rh-auth\\conf.js [39,56]",
         "translation": "Usuario"
     },
     "Logout": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [33,190]",
+        "ref": "..\\rh-auth\\conf.js [50,177]",
         "translation": "Salir"
     },
     "Get user(s)": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [34,60]",
+        "ref": "..\\rh-auth\\conf.js [51,66]",
         "translation": "Obtener usuario(s)"
     },
     "Users": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\user.js [148,40]",
+        "ref": "..\\rh-auth\\controllers\\user.js [180,40]",
         "translation": "Usuarios"
     },
     "Create user": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [35,60]",
+        "ref": "..\\rh-auth\\conf.js [52,66]",
         "translation": "Crear usuario"
     },
     "Delete user": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [37,60]",
+        "ref": "..\\rh-auth\\conf.js [54,66]",
         "translation": "Eliminar usuario"
     },
     "Get session(s)": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [38,63]",
+        "ref": "..\\rh-auth\\conf.js [55,69]",
         "translation": "Obtener sesion(es)"
     },
     "Sessions": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [38,192]",
+        "ref": "..\\rh-auth\\conf.js [55,179]",
         "translation": "Sesiones"
     },
     "Delete session": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [39,63]",
+        "ref": "..\\rh-auth\\conf.js [56,69]",
         "translation": "Eliminar sesiones"
     },
     "Get own sessions only": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [40,70]",
+        "ref": "..\\rh-auth\\conf.js [57,76]",
         "translation": "Obtener únicamente la sesión propia"
     },
     "My sessions": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [40,195]",
+        "ref": "..\\rh-auth\\conf.js [57,182]",
         "translation": "Mis sesiones"
     },
     "Edit user": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [36,58]",
+        "ref": "..\\rh-auth\\conf.js [53,64]",
         "translation": "Modificar usuario"
     },
     "Display name": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\user.js [158,55]",
+        "ref": "..\\rh-auth\\controllers\\user.js [187,61]",
         "translation": "Nombre mostrado"
     },
     "Enabled": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\user.js [168,50]",
+        "ref": "..\\rh-auth\\controllers\\user.js [200,56]",
         "translation": "Habilitado"
     },
-    "Enable": {
+    "Group": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\user.js [144,25]",
-        "translation": "Habilitar"
+        "ref": "..\\rh-auth\\conf.js [21,51]",
+        "translation": null
     },
-    "Disable": {
+    "Administrator": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\user.js [145,26]",
-        "translation": "Deshabilitar"
+        "ref": "..\\rh-auth\\conf.js [25,69]",
+        "translation": null
+    },
+    "Local": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [29,51]",
+        "translation": null
+    },
+    "Everybody": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [37,61]",
+        "translation": null
+    },
+    "Anonymous": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [38,61]",
+        "translation": null
     }
 }

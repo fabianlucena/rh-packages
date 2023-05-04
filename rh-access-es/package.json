@@ -6,9 +6,10 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "update": "gt --update-translations-file ../rh-access/**/*.js **/*.js --translations-filename ./translations_es.json --language es",
-    "validate": "gt --validate-translations-file --translations-filename ./translations_es.json",
-    "show": "gt --show-translations-file --translations-filename ./translations_es.json"
+    "update": "rf-locale --update-translations-file ../rh-access/**/*.js **/*.js --translations-filename ./translations_es.json --language es",
+    "extract": "rf-locale --extract-translations-file ../rh-access/**/*.js **/*.js --translations-filename ./translations_es.json --language es",
+    "validate": "rf-locale --validate-translations-file --translations-filename ./translations_es.json",
+    "show": "rf-locale --show-translations-file --translations-filename ./translations_es.json"
   },
   "keywords": [],
   "author": "",

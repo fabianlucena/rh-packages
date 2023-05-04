@@ -145,9 +145,6 @@ export class UserController {
         
         let loc = req.loc;
 
-        loc._f('Enable');
-        loc._f('Disable');
-
         res.status(200).send({
             title: await loc._('Users'),
             load: {

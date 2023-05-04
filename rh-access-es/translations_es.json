@@ -1,42 +1,22 @@
 {
     "No current site selected": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\privileges.js [74,82]",
+        "ref": "..\\rh-access\\controllers\\privileges.js [76,82]",
         "translation": "No hay sitio actual seleccionado."
     },
     "Spanish": {
         "language": "es",
-        "ref": "rh-access-es.js [18,41]",
+        "ref": "rh-access-es.js [19,41]",
         "translation": "Español"
     },
     "Spanish language.": {
         "language": "es",
-        "ref": "rh-access-es.js [19,57]",
+        "ref": "rh-access-es.js [20,57]",
         "translation": "Idioma español."
-    },
-    "Public": {
-        "language": "es",
-        "ref": "..\\rh-access\\conf.js [22,50]",
-        "translation": "Público"
-    },
-    "Private": {
-        "language": "es",
-        "ref": "..\\rh-access\\conf.js [23,51]",
-        "translation": "Privado"
-    },
-    "Anonymous": {
-        "language": "es",
-        "ref": "..\\rh-access\\conf.js [24,53]",
-        "translation": "Anónimo"
-    },
-    "Global": {
-        "language": "es",
-        "ref": "..\\rh-access\\conf.js [25,50]",
-        "translation": "Global"
     },
     "Privileges": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [33,150]",
+        "ref": "..\\rh-access\\conf.js [26,160]",
         "translation": "Privilegios"
     }
 }
