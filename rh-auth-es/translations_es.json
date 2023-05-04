@@ -182,26 +182,26 @@
     "Group": {
         "language": "es",
         "ref": "..\\rh-auth\\conf.js [21,51]",
-        "translation": null
+        "translation": "Grupo"
     },
     "Administrator": {
         "language": "es",
         "ref": "..\\rh-auth\\conf.js [25,69]",
-        "translation": null
+        "translation": "Administrador"
     },
     "Local": {
         "language": "es",
         "ref": "..\\rh-auth\\conf.js [29,51]",
-        "translation": null
+        "translation": "Local"
     },
     "Everybody": {
         "language": "es",
         "ref": "..\\rh-auth\\conf.js [37,61]",
-        "translation": null
+        "translation": "Todos"
     },
     "Anonymous": {
         "language": "es",
         "ref": "..\\rh-auth\\conf.js [38,61]",
-        "translation": null
+        "translation": "Anónimo"
     }
 }
