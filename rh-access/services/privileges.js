@@ -54,6 +54,8 @@ export class PrivilegesService {
         privileges.roles = ['everybody'];
 
         if (username) {
+            privileges.roles.push('user');
+            
             if (siteName)
                 privileges.roles = [...privileges.roles, ...await RoleService.getAllNamesForUsernameAndSiteName(username, siteName)];
         
