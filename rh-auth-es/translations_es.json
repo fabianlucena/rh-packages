@@ -21,12 +21,12 @@
     },
     "There is no id for session": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\session.js [165,78]",
+        "ref": "..\\rh-auth\\services\\session.js [168,78]",
         "translation": "No hay id para la sesión."
     },
     "Row for UUID %s does not exist": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\session.js [188,124]",
+        "ref": "..\\rh-auth\\services\\session.js [191,124]",
         "translation": "La fila UUID %s no existe."
     },
     "User \"%s\" does not have local identity": {
@@ -96,7 +96,7 @@
     },
     "Invalid login": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\login.js [122,61]",
+        "ref": "..\\rh-auth\\controllers\\login.js [148,61]",
         "translation": "Ingreso inválido"
     },
     "System administrator": {

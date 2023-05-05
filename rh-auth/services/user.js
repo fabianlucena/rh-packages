@@ -26,7 +26,7 @@ export class UserService {
      * Creates a new user row into DB. If no typeId provided or type, 'user' type is used. If a password is provided also a local @ref Identity is created.
      * @param {{isEnabled: boolean, username: string, displayName: string, typeId: integer, type: string}} data - data for the new User.
      *  - username: must be unique.
-     * @returns {Promise{UserType}}
+     * @returns {Promise{User}}
      */
     static async create(data) {
         if (data.type)
