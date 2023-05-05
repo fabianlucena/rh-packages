@@ -18,6 +18,12 @@ export const conf = {
     apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
     afterConfigAsync: null,
     data: {
+        shareTypes: [
+            {name: 'owner',  title: loc._f('Owner')},
+            {name: 'editor', title: loc._f('Editor')},
+            {name: 'viewer', title: loc._f('Viewer')},
+        ],
+
         usersRolesSites: [
             {username: 'admin', role: 'admin', site: 'system'},
         ],

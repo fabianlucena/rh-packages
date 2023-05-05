@@ -16,7 +16,22 @@
     },
     "Privileges": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [26,160]",
+        "ref": "..\\rh-access\\conf.js [32,160]",
         "translation": "Privilegios"
+    },
+    "Owner": {
+        "language": "es",
+        "ref": "..\\rh-access\\conf.js [22,52]",
+        "translation": "Propietario"
+    },
+    "Editor": {
+        "language": "es",
+        "ref": "..\\rh-access\\conf.js [23,53]",
+        "translation": "Editor"
+    },
+    "Viewer": {
+        "language": "es",
+        "ref": "..\\rh-access\\conf.js [24,53]",
+        "translation": "Visor"
     }
 }

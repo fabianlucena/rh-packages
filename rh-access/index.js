@@ -3,6 +3,7 @@ import {RoleParentSiteService} from './services/role_parent_site.js';
 import {PermissionService} from './services/permission.js';
 import {UserRoleSiteService} from './services/user_role_site.js';
 import {UserGroupService} from './services/user_group.js';
+import {ShareTypeService} from './services/share_type.js';
 import {PrivilegesController} from './controllers/privileges.js';
 import {NoPermissionError} from 'http-util';
 import {runSequentially} from 'rf-util';
@@ -58,4 +59,5 @@ async function afterConfigAsync(_, global) {
     await runSequentially(data?.usersRolesSites,   async data => await UserRoleSiteService.  createIfNotExists(data));
     await runSequentially(data?.rolesParentsSites, async data => await RoleParentSiteService.createIfNotExists(data));
     await runSequentially(data?.userGroups,        async data => await UserGroupService.     createIfNotExists(data));
+    await runSequentially(data?.shareTypes,        async data => await ShareTypeService.     createIfNotExists(data));
 }

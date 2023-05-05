@@ -1,6 +1,6 @@
 import {RoleParentSiteService} from './role_parent_site.js';
 import {conf} from '../conf.js';
-import {MissingPropertyError, checkDataForMissingProperties, completeIncludeOptions, getSingle, completeAssociationOptions} from 'sql-util';
+import {checkDataForMissingProperties, completeIncludeOptions, getSingle, completeAssociationOptions} from 'sql-util';
 import {complete, deepComplete} from 'rf-util';
 
 export class RoleService {
@@ -10,11 +10,8 @@ export class RoleService {
      * @returns {Promise{data}}
      */
     static async completeOwnerModuleId(data) {
-        if (!data.ownerModuleId)
-            if (!data.ownerModule)
-                throw new MissingPropertyError('Role', 'ownerModule', 'ownerModuleId');
-            else
-                data.ownerModuleId = await conf.global.services.Module.getIdForName(data.ownerModule);
+        if (!data.ownerModuleId && data.ownerModule)
+            data.ownerModuleId = await conf.global.services.Module.getIdForName(data.ownerModule);
 
         return data;
     }
