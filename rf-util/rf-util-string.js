@@ -27,7 +27,7 @@ export function isEnquoted(text, quotes) {
 }
 
 export function stripQuotes(text, quotes) {
-    if (!isEnquoted(text))
+    if (!isEnquoted(text, quotes))
         return;
 
     return text.substring(1, text.length - 1);
