@@ -12,10 +12,10 @@ const packageTemplate = `{
   "type": "module",
   "scripts": {
     "test": "echo \\"Error: no test specified\\" && exit 1",
-    "update": "rf-locale --update-translations-file ../{srcPackageName}/**/*.js **/*.js --translations-filename {translationsFilename} --language {language}",
-    "extract": "rf-locale --extract-translations-file ../{srcPackageName}/**/*.js **/*.js --translations-filename {translationsFilename} --language {language}",
-    "validate": "rf-locale --validate-translations-file --translations-filename {translationsFilename}",
-    "show": "rf-locale --show-translations-file --translations-filename {translationsFilename}"
+    "update": "rf-locale --update-translations-file ../{srcPackageName}/**/*.js **/*.js --translations-filename ./{translationsFilename} --language {language}",
+    "extract": "rf-locale --extract-translations-file ../{srcPackageName}/**/*.js **/*.js --translations-filename ./{translationsFilename} --language {language}",
+    "validate": "rf-locale --validate-translations-file --translations-filename ./{translationsFilename}",
+    "show": "rf-locale --show-translations-file --translations-filename ./{translationsFilename}"
   },
   "keywords": [],
   "author": "",
@@ -36,7 +36,7 @@ export const conf = {
     name,
     title: '{packageTitle}',
     version: '0.1',
-    translationsFilename: '{translationsFilename}',
+    translationsFilename: './{translationsFilename}',
     data: {
         languages: {
             '{language}': {
@@ -48,7 +48,7 @@ export const conf = {
             },
         },
 
-        translations: () => loadJson(dirname + '{translationsFilename}'),
+        translations: () => loadJson(dirname + '/{translationsFilename}'),
     },
 };`;
 
@@ -77,7 +77,7 @@ export async function createTranslationModule(options) {
     const packageFilename = packageName + '.js';
     const packageTitle = pascalize(srcPackageName) + '-' + language;
 
-    const translationsFilename = options.translationsFilename ?? (options.translationsPath ?? '/') + `translations_${language}.json`;
+    const translationsFilename = options.translationsFilename ?? (options.translationsPath ?? '') + `translations_${language}.json`;
 
     let languageTitle = options.languageTitle;
     while (!languageTitle) {
