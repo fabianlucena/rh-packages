@@ -59,8 +59,8 @@ export class SessionService {
         if (!data.authToken)
             data.authToken = crypto.randomBytes(64).toString('hex');
 
-        if (!data.autologinToken)
-            data.autologinToken = crypto.randomBytes(64).toString('hex');
+        if (!data.autoLoginToken)
+            data.autoLoginToken = crypto.randomBytes(64).toString('hex');
         
         return conf.global.models.Session.create(data);
     }
@@ -198,13 +198,13 @@ export class SessionService {
     }
 
     /**
-     * Gets a session for its autologinToken. For many coincidences and for no rows this method fails.
-     * @param {string} autologinToken - autologin token for the session to get.
+     * Gets a session for its autoLoginToken. For many coincidences and for no rows this method fails.
+     * @param {string} autoLoginToken - auto login token for the session to get.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Session}}
      */
-    static getForAutoLoginToken(autologinToken, options) {
-        return SessionService.getList(deepComplete(options, {where: {autologinToken}, limit: 2}))
-            .then(rowList => getSingle(rowList, complete(options, {params: ['session', ['autologinToken = %s', autologinToken], 'Session']})));
+    static getForAutoLoginToken(autoLoginToken, options) {
+        return SessionService.getList(deepComplete(options, {where: {autoLoginToken}, limit: 2}))
+            .then(rowList => getSingle(rowList, complete(options, {params: ['session', ['autoLoginToken = %s', autoLoginToken], 'Session']})));
     }
 }

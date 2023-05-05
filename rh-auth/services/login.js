@@ -50,7 +50,7 @@ export class LoginService {
             index: session.index,
             authToken: session.authToken,
             deviceToken: device.token,
-            autologinToken: session.autologinToken,
+            autoLoginToken: session.autoLoginToken,
         };
     }
 
@@ -67,8 +67,8 @@ export class LoginService {
     *  open: Date.now(),
     * }}
     */
-    static async forAutoLoginTokenAndSessionIndex(autologinToken, deviceToken, sessionIndex) {
-        const oldSession = await SessionService.getForAutoLoginToken(autologinToken);
+    static async forAutoLoginTokenAndSessionIndex(autoLoginToken, deviceToken, sessionIndex) {
+        const oldSession = await SessionService.getForAutoLoginToken(autoLoginToken);
         if (!oldSession)
             throw new _Error('Error to get old session to create session');
 
@@ -96,7 +96,7 @@ export class LoginService {
             index: session.index,
             authToken: session.authToken,
             deviceToken: device.token,
-            autologinToken: session.autologinToken,
+            autoLoginToken: session.autoLoginToken,
         };
     }
 
