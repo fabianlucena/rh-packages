@@ -1,0 +1,395 @@
+import {ProjectService} from '../services/project.js';
+import {getOptionsFromParamsAndODataAsync, _HttpError, ConflictError} from 'http-util';
+import {checkParameter, checkParameterUUID} from 'rf-util';
+
+/**
+ * @swagger
+ * definitions:
+ *  Project:
+ *      type: object
+ *      properties:
+ *          name:
+ *              type: string
+ *              required: true
+ *              example: admin
+ *          title:
+ *              type: string
+ *              required: true
+ *              example: Admin
+ *          typeId:
+ *              type: integer
+ *          isEnabled:
+ *              type: boolean
+ */
+    
+export class ProjectController {
+    /**
+     * @swagger
+     * /api/project:
+     *  post:
+     *      tags:
+     *          - Project
+     *      summary: Create an project
+     *      description: Add a new project to the database
+     *      security:
+     *          - bearerAuth: []
+     *      produces:
+     *          - application/json
+     *      parameters:
+     *          -  name: body
+     *             in: body
+     *             schema:
+     *                $ref: '#/definitions/Project'
+     *      responses:
+     *          '200':
+     *              description: Success
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '400':
+     *              description: Missing parameters
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '401':
+     *              description: Unauthorized
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '403':
+     *              description: Forbidden
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     */
+    static async post(req, res) {
+        checkParameter(req?.body, 'name', 'title');
+        if (await ProjectService.getForName(req.body.name, {skipNoRowsError: true}))
+            throw new ConflictError();
+
+        await ProjectService.create(req.body);
+        res.status(204).send();
+    }
+
+    /**
+     * @swagger
+     * /api/project:
+     *  get:
+     *      tags:
+     *          - Project
+     *      summary: Get project or an project list
+     *      description: If the UUID or name params is provided this endpoint returns a single project otherwise returns a list of projects
+     *      security:
+     *          -   bearerAuth: []
+     *      produces:
+     *          -   application/json
+     *      parameters:
+     *          -   name: uuid
+     *              in: query
+     *              type: string
+     *              format: UUID
+     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+     *          -   name: name
+     *              in: query
+     *              type: string
+     *              example: admin
+     *          -   name: limit
+     *              in: query
+     *              type: int
+     *          -   name: offset
+     *              in: query
+     *              type: int
+     *      responses:
+     *          '200':
+     *              description: Success
+     *              schema:
+     *                  $ref: '#/definitions/Project'
+     *          '204':
+     *              description: Success no project
+     *          '400':
+     *              description: Missing parameters or parameters error
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '401':
+     *              description: Unauthorized
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '403':
+     *              description: Forbidden
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '500':
+     *              description: Internal server error
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     */
+    static async get(req, res) {
+        if ('$grid' in req.query)
+            return ProjectController.getGrid(req, res);
+        else if ('$form' in req.query)
+            return ProjectController.getForm(req, res);
+            
+        const definitions = {uuid: 'uuid', name: 'string'};
+        let options = {view: true, limit: 10, offset: 0};
+
+        options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
+        const rows = await ProjectService.getList(options);
+        res.status(200).send({rows});
+    }
+
+    static async getGrid(req, res) {
+        checkParameter(req.query, '$grid');
+
+        const actions = [];
+        if (req.permissions.includes('project.create')) actions.push('create');
+        if (req.permissions.includes('project.delete')) actions.push('delete');
+        if (req.permissions.includes('project.edit'))   actions.push('edit', 'enable', 'disable');
+
+        actions.push('search', 'paginate');
+        
+        let loc = req.loc;
+
+        res.status(200).send({
+            title: await loc._('Projects'),
+            load: {
+                service: 'project',
+                method: 'get',
+            },
+            actions: actions,
+            columns: [
+                {
+                    name: 'title',
+                    type: 'text',
+                    label: await loc._('Title'),
+                },
+                {
+                    name: 'name',
+                    type: 'text',
+                    label: await loc._('Name'),
+                },
+                {
+                    name: 'isEnabled',
+                    type: 'bool',
+                    label: await loc._('Enabled'),
+                }
+            ]
+        });
+    }
+
+    static async getForm(req, res) {
+        checkParameter(req.query, '$form');
+
+        let loc = req.loc;
+        res.status(200).send({
+            title: await loc._('Projects'),
+            action: 'project',
+            fields: [
+                {
+                    name: 'title',
+                    type: 'text',
+                    label: await loc._('Title'),
+                    placeholder: await loc._('Title'),
+                },
+                {
+                    name: 'name',
+                    type: 'text',
+                    label: await loc._('Name'),
+                    placeholder: await loc._('Name'),
+                    readonly: true,
+                },
+                {
+                    name: 'enabled',
+                    type: 'checkbox',
+                    label: await loc._('Enabled'),
+                    placeholder: await loc._('Enabled'),
+                }
+            ]
+        });
+    }
+
+    /**
+     * @swagger
+     * /api/project:
+     *  delete:
+     *      tags:
+     *          - Project
+     *      summary: Delete an project
+     *      description: Delete an project from its UUID
+     *      security:
+     *          -   bearerAuth: []
+     *      produces:
+     *          -   application/json
+     *      parameters:
+     *          -   name: uuid
+     *              in: query
+     *              type: string
+     *              format: UUID
+     *              required: true
+     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+     *      responses:
+     *          '204':
+     *              description: Success
+     *          '400':
+     *              description: Missing parameters or parameters error
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '401':
+     *              description: Unauthorized
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '403':
+     *              description: Forbidden
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '500':
+     *              description: Internal server error
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     */
+    static async delete(req, res) {
+        const uuid = await checkParameterUUID({...req.query, ...req.params}, 'uuid');
+        const rowsDeleted = await ProjectService.deleteForUuid(uuid);
+        if (!rowsDeleted)
+            throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);
+
+        res.sendStatus(204);
+    }
+
+    /**
+     * @swagger
+     * /api/project/enable:
+     *  post:
+     *      tags:
+     *          - Project
+     *      summary: Enable an project
+     *      description: Enable an project from its UUID
+     *      security:
+     *          -   bearerAuth: []
+     *      produces:
+     *          -   application/json
+     *      parameters:
+     *          -   name: uuid
+     *              in: query
+     *              type: string
+     *              format: UUID
+     *              required: true
+     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+     *      responses:
+     *          '204':
+     *              description: Success
+     *          '400':
+     *              description: Missing parameters or parameters error
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '401':
+     *              description: Unauthorized
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '403':
+     *              description: Forbidden
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '500':
+     *              description: Internal server error
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     */
+    static async enablePost(req, res) {
+        const uuid = await checkParameterUUID({...req.query, ...req.params}, 'uuid');
+        const rowsUpdated = await ProjectService.enableForUuid(uuid);
+        if (!rowsUpdated)
+            throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);
+
+        res.sendStatus(204);
+    }
+
+    /**
+     * @swagger
+     * /api/project/disable:
+     *  post:
+     *      tags:
+     *          - Project
+     *      summary: Disable an project
+     *      description: Disable an project from its UUID
+     *      security:
+     *          -   bearerAuth: []
+     *      produces:
+     *          -   application/json
+     *      parameters:
+     *          -   name: uuid
+     *              in: query
+     *              type: string
+     *              format: UUID
+     *              required: true
+     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+     *      responses:
+     *          '204':
+     *              description: Success
+     *          '400':
+     *              description: Missing parameters or parameters error
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '401':
+     *              description: Unauthorized
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '403':
+     *              description: Forbidden
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '500':
+     *              description: Internal server error
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     */
+    static async disablePost(req, res) {
+        const uuid = await checkParameterUUID({...req.query, ...req.params}, 'uuid');
+        const rowsUpdated = await ProjectService.disableForUuid(uuid);
+        if (!rowsUpdated)
+            throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);
+
+        res.sendStatus(204);
+    }
+
+    /**
+     * @swagger
+     * /api/project/disable:
+     *  patch:
+     *      tags:
+     *          - Project
+     *      summary: Disable an project
+     *      description: Disable an project from its UUID
+     *      security:
+     *          -   bearerAuth: []
+     *      produces:
+     *          -   application/json
+     *      parameters:
+     *          -  name: body
+     *             in: body
+     *             schema:
+     *                $ref: '#/definitions/Project'
+     *      responses:
+     *          '204':
+     *              description: Success
+     *          '400':
+     *              description: Missing parameters or parameters error
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '401':
+     *              description: Unauthorized
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '403':
+     *              description: Forbidden
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '500':
+     *              description: Internal server error
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     */
+    static async patch(req, res) {
+        const uuid = await checkParameterUUID({...req.body, ...req.params}, 'uuid');
+        const rowsUpdated = await ProjectService.updateForUuid(req.body, uuid);
+        if (!rowsUpdated)
+            throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);
+
+        res.sendStatus(204);
+    }
+}
