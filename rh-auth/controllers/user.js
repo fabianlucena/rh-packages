@@ -130,7 +130,7 @@ export class UserController {
 
         options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
         const rows = await UserService.getList(options);
-        res.status(200).send(rows);
+        res.status(200).send({rows});
     }
 
     static async getGrid(req, res) {
@@ -164,7 +164,7 @@ export class UserController {
                     label: await loc._('Username'),
                 },
                 {
-                    name: 'enabled',
+                    name: 'isEnabled',
                     type: 'bool',
                     label: await loc._('Enabled'),
                 }
