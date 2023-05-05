@@ -20,7 +20,7 @@ complete(
                     delete conf.privilegesCache[authToken];
                 } else {
                     list.push({
-                        authToken: authToken,
+                        authToken,
                         lastUse: conf.privilegesCache[authToken].lastUse,
                     });
                 }

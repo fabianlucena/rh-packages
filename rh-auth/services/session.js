@@ -28,7 +28,7 @@ complete(
                     delete conf.sessionCache[authToken];
                 } else {
                     list.push({
-                        authToken: authToken,
+                        authToken,
                         lastUse: conf.sessionCache[authToken].lastUse,
                     });
                 }
@@ -58,6 +58,9 @@ export class SessionService {
     static create(data) {
         if (!data.authToken)
             data.authToken = crypto.randomBytes(64).toString('hex');
+
+        if (!data.autologinToken)
+            data.autologinToken = crypto.randomBytes(64).toString('hex');
         
         return conf.global.models.Session.create(data);
     }
@@ -118,12 +121,12 @@ export class SessionService {
 
     /**
      * Gets a session for its authToken. For many coincidences and for no rows this method fails.
-     * @param {string} authToken - Auth yoken for the session to get.
+     * @param {string} authToken - Auth token for the session to get.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Session}}
      */
     static getForAuthToken(authToken, options) {
-        return SessionService.getList(deepComplete(options, {where: {authToken: authToken}, limit: 2}))
+        return SessionService.getList(deepComplete(options, {where: {authToken}, limit: 2}))
             .then(rowList => getSingle(rowList, complete(options, {params: ['session', ['authToken = %s', authToken], 'Session']})));
     }
 
@@ -192,5 +195,16 @@ export class SessionService {
 
             return conf.global.models.Session.destroy({where:{uuid: uuid}});
         }
+    }
+
+    /**
+     * Gets a session for its autologinToken. For many coincidences and for no rows this method fails.
+     * @param {string} autologinToken - autologin token for the session to get.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {Promise{Session}}
+     */
+    static getForAutoLoginToken(autologinToken, options) {
+        return SessionService.getList(deepComplete(options, {where: {autologinToken}, limit: 2}))
+            .then(rowList => getSingle(rowList, complete(options, {params: ['session', ['autologinToken = %s', autologinToken], 'Session']})));
     }
 }

@@ -37,7 +37,11 @@ export default (sequelize, DataTypes) => {
         close: {
             type: DataTypes.DATE(6),
             allowNull: true,
-        }
+        },
+        autoLoginToken: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
     }, {
         sequelize,
         timestamps: true,

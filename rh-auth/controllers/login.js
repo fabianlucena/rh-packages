@@ -107,16 +107,42 @@ export class LoginController {
      *                  $ref: '#/definitions/Error'
      */
     static async post(req, res) {
-        checkParameter(req?.body, 'username', 'password');
+        if (req?.body?.autoLoginToken)
+            checkParameter(req?.body, 'autoLoginToken', 'deviceToken');
+        else
+            checkParameter(req?.body, 'username', 'password');
 
         try {
-            const session = await LoginService.forUsernamePasswordDeviceTokenAndSessionIndex(req?.body?.username, req?.body?.password, req?.body?.deviceToken, req?.body?.sessionIndex, req.loc);
+            let session;
+            if (req.body.autoLoginToken)
+                session = await LoginService.forAutoLoginTokenAndSessionIndex(req.body.autoLoginToken, req.body.deviceToken, req.body?.sessionIndex, req.loc);
+            else
+                session = await LoginService.forUsernamePasswordDeviceTokenAndSessionIndex(req.body.username, req.body.password, req.body.deviceToken, req.body.sessionIndex, req.loc);
+
+            const now = new Date();
+            const expires30  = new Date();
+            const expires365 = new Date();
+            expires30. setDate(now.getDate() + 30);
+            expires365.setDate(now.getDate() + 365);
+
             req.session = session;
             res.header('Authorization', 'Bearer ' + session.authToken);
+            res.cookie('deviceToken',  session.deviceToken,  {expire: expires365, path: '/'});
+            res.cookie('autoLoginToken', session.autoLoginToken, {expire: expires30});
             res.status(201).send({
                 index: session.index,
                 authToken: session.authToken,
-                deviceToken: session.deviceToken,
+                setCookies: {
+                    deviceToken: {
+                        value: session.deviceToken,
+                        expires: expires365.toISOString(),
+                        path: '/',
+                    },
+                    autoLoginToken: {
+                        value: session.autoLoginToken,
+                        expires: expires30.toISOString(),
+                    },
+                },
             });
         } catch (err) {
             throw new _HttpError(req.loc._f('Invalid login'), 403);
