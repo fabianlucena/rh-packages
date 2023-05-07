@@ -2,6 +2,7 @@
 
 import {loc} from 'rf-locale';
 
+loc._f('Actions');
 loc._f('Add');
 loc._f('Create');
 loc._f('Delete');
