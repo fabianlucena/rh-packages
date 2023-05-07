@@ -5,7 +5,7 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class Share extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.ObjectName, {foreignKey: 'ObjectNameId',  allowNull: false, onDelete: 'cascade'});
+            this.belongsTo(models.ObjectName, {foreignKey: 'objectNameId',  allowNull: false, onDelete: 'cascade'});
             this.belongsTo(models.User,       {foreignKey: 'userId',        allowNull: false, onDelete: 'cascade'});
             this.belongsTo(models.ShareType,  {foreignKey: 'typeId',        allowNull: false});
             this.belongsTo(models.Module,     {foreignKey: 'ownerModuleId', allowNull: true});

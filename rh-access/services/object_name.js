@@ -67,7 +67,7 @@ export class ObjectNameService {
         return ObjectNameService.getForName(data.name, {attributes: ['id'], skipNoRowsError: true, ...options})
             .then(row => {
                 if (row)
-                    return row;
+                    return row.id;
 
                 ObjectNameService.create(data)
                     .then(row => row.id);

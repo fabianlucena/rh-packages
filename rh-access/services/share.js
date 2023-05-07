@@ -1,5 +1,6 @@
 import {conf} from '../conf.js';
 import {complete} from 'rf-util';
+import {checkDataForMissingProperties} from 'sql-util';
 
 export class ShareService {
     /**
@@ -9,7 +10,7 @@ export class ShareService {
      */
     static async completeObjectNameId(data) {
         if (!data.objectNameId && data.objectName)
-            data.objectNameId = await conf.global.services.ObjectName.getIdForNameCreateIfNotExists(data.objectName);
+            data.objectNameId = await conf.global.services.ObjectName.getIdForNameCreateIfNotExists({name: data.objectName});
 
         return data;
     }
@@ -62,7 +63,7 @@ export class ShareService {
         await ShareService.completeTypeId(data);
         await ShareService.completeOwnerModuleId(data);
 
-        await ShareService.checkDataForMissingProperties(data, 'Share', 'objectNameId', 'objectId', 'userId', 'typeId');
+        await checkDataForMissingProperties(data, 'Share', 'objectNameId', 'objectId', 'userId', 'typeId');
 
         return conf.global.models.Share.create(data);
     }
@@ -87,7 +88,7 @@ export class ShareService {
         await ShareService.completeTypeId(data);
         await ShareService.completeOwnerModuleId(data);
 
-        await ShareService.checkDataForMissingProperties(data, 'Share', 'objectNameId', 'objectId', 'userId', 'typeId');
+        await checkDataForMissingProperties(data, 'Share', 'objectNameId', 'objectId', 'userId', 'typeId');
 
         return ShareService.getList({where: {objectNameId: data.objectNameId, objectId: data.objectId, userId: data.userId, typeId: data.typeId}}, {attributes: ['id'], skipNoRowsError: true, ...options})
             .then(row => {
