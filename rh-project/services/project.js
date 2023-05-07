@@ -16,7 +16,7 @@ export class ProjectService {
         const project = await conf.global.models.Project.create(data);
 
         if (data.owner || data.ownerId)
-            conf.global.services.Share.create({objectType: 'Project', objectTypeId: project.id, userId: data.ownerId, user: data.owner, type: 'owner'});
+            conf.global.services.Share.create({objectName: 'Project', objectId: project.id, userId: data.ownerId, user: data.owner, type: 'owner'});
 
         return project;
     }

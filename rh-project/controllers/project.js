@@ -63,7 +63,14 @@ export class ProjectController {
         if (await ProjectService.getForName(req.body.name, {skipNoRowsError: true}))
             throw new ConflictError();
 
-        await ProjectService.create(req.body);
+        const data = {...req.body};
+        if (!data.owner && !data.ownerId) {
+            data.ownerId = req.user.id;
+            if (!data.ownerId)
+                throw new _HttpError(req.loc._f('The project data does not have a owner.'));
+        }
+
+        await ProjectService.create(data);
         res.status(204).send();
     }
 
