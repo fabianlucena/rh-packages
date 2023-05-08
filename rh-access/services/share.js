@@ -98,4 +98,9 @@ export class ShareService {
                 return ShareService.create(data);
             });
     }
+
+    static async deleteForObjectNameAndId(objectName, objectId) {
+        const objectNameId = await conf.global.services.ObjectName.getIdForName(objectName);
+        return conf.global.models.Share.destroy({where:{objectNameId, objectId}});
+    }
 }
