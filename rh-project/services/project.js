@@ -1,6 +1,7 @@
 import {conf} from '../conf.js';
 import {getSingle, addSimpleEnabledFilter} from 'sql-util';
 import {complete, deepComplete, _Error} from 'rf-util';
+import {Op} from 'sequelize';
 
 export class ProjectService {
     /**
@@ -32,6 +33,16 @@ export class ProjectService {
         if (options.view) {
             if (!options.attributes)
                 options.attributes = ['uuid', 'isEnabled', 'name', 'title'];
+        }
+
+        if (options.q) {
+            const q = `%${options.q}%`;
+            options.where = {
+                [Op.or]: [
+                    {name:  {[Op.like]: q}},
+                    {title: {[Op.like]: q}},
+                ]
+            }
         }
 
         return conf.global.models.Project.findAll(options);

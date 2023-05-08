@@ -256,6 +256,10 @@ export async function getOptionsFromODataAsync(params, options) {
                 .forEach(column => options.attributes.push(column.trim()));
         }
 
+        if (params.$q) {
+            options.q = params.$q;
+        }
+
         if (params.$top) {
             const limit = parseInt(params.$top);
             if (isNaN(limit))
