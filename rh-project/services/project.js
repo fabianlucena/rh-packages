@@ -1,5 +1,5 @@
 import {conf} from '../conf.js';
-import {getSingle} from 'sql-util';
+import {getSingle, addSimpleEnabledFilter} from 'sql-util';
 import {complete, deepComplete, _Error} from 'rf-util';
 
 export class ProjectService {
@@ -22,19 +22,29 @@ export class ProjectService {
     }
 
     /**
-     * Gets a list of projects. If not isEnabled filter provided returns only the enabled projects.
+     * Gets a list of projects.
      * @param {Options} options - options for the @see sequelize.findAll method.
      *  - view: show visible peoperties.
      * @returns {Promise{ProjectList}]
      */
     static async getList(options) {
-        options = deepComplete(options, {where: {isEnabled: true}});
+        options = deepComplete(options);
         if (options.view) {
             if (!options.attributes)
                 options.attributes = ['uuid', 'isEnabled', 'name', 'title'];
         }
 
-        return await conf.global.models.Project.findAll(options);
+        return conf.global.models.Project.findAll(options);
+    }
+
+    /**
+     * Gets a list of enabled projects.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {Promise{ProjectList}]
+     */
+    static async getEnabledList(options) {
+        return ProjectService.getList(addSimpleEnabledFilter(options, true));
     }
 
     /**

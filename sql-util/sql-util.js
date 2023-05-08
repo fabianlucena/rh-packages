@@ -259,3 +259,16 @@ export function completeIncludeOptions(options, name, includeOptions) {
 
     return options;
 }
+
+export function addSimpleEnabledFilter(options) {
+    if (!options)
+        options = {};
+
+    if (!options.where)
+        options.where = {};
+            
+    if (!options.where.isEnabled)
+        options.where.isEnabled = true;
+
+    return options;
+}

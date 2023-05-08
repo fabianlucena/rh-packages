@@ -198,13 +198,17 @@ export class ProjectController {
                     type: 'text',
                     label: await loc._('Name'),
                     placeholder: await loc._('Name'),
-                    readonly: true,
+                    readonly: {
+                        create: true,
+                        defaultValue: false,
+                    }
                 },
                 {
-                    name: 'enabled',
+                    name: 'isEnabled',
                     type: 'checkbox',
                     label: await loc._('Enabled'),
                     placeholder: await loc._('Enabled'),
+                    defaultValue: true,
                 }
             ]
         });
