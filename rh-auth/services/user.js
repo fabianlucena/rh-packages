@@ -74,7 +74,7 @@ export class UserService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{User}}
      */
-    static getForUUID(uuid, options) {
+    static getForUuid(uuid, options) {
         return UserService.getList(deepComplete(options, {where: {uuid: uuid}, limit: 2}))
             .then(rowList => getSingle(rowList, complete(options, {params: ['user', ['UUID = %s', uuid], 'User']})));
     }

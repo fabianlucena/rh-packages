@@ -114,7 +114,7 @@ export class SessionService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Session}}
      */
-    static getForUUID(uuid, options) {
+    static getForUuid(uuid, options) {
         return SessionService.getList(deepComplete(options, {where: {uuid: uuid}, limit: 2}))
             .then(rowList => getSingle(rowList, complete(options, {params: ['session', ['UUID = %s', uuid], 'Session']})));
     }
@@ -188,7 +188,7 @@ export class SessionService {
      * @returns {Promise{Result}}
      */
     static async deleteForUuid(uuid) {
-        const session = await SessionService.getForUUID(uuid, {_noRowsError: loc._f('Row for UUID %s does not exist', uuid)});
+        const session = await SessionService.getForUuid(uuid, {_noRowsError: loc._f('Row for UUID %s does not exist', uuid)});
         if (session) {
             if (conf.sessionCache[session.authToken])
                 delete conf.sessionCache[session.authToken];

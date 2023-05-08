@@ -243,7 +243,7 @@ export class UserController {
      *                  $ref: '#/definitions/Error'
      */
     static async delete(req, res) {
-        const uuid = await checkParameterUUID({...req.query, ...req.params}, 'uuid');
+        const uuid = await checkParameterUUID({...req.query, ...req.params, ...req.body}, 'uuid');
         const rowsDeleted = await UserService.deleteForUuid(uuid);
         if (!rowsDeleted)
             throw new _HttpError('User with UUID %s does not exists.', 403, uuid);
@@ -291,7 +291,7 @@ export class UserController {
      *                  $ref: '#/definitions/Error'
      */
     static async enablePost(req, res) {
-        const uuid = await checkParameterUUID({...req.query, ...req.params}, 'uuid');
+        const uuid = await checkParameterUUID({...req.query, ...req.params, ...req.body}, 'uuid');
         const rowsUpdated = await UserService.enableForUuid(uuid);
         if (!rowsUpdated)
             throw new _HttpError('User with UUID %s does not exists.', 403, uuid);
@@ -339,7 +339,7 @@ export class UserController {
      *                  $ref: '#/definitions/Error'
      */
     static async disablePost(req, res) {
-        const uuid = await checkParameterUUID({...req.query, ...req.params}, 'uuid');
+        const uuid = await checkParameterUUID({...req.query, ...req.params, ...req.body}, 'uuid');
         const rowsUpdated = await UserService.disableForUuid(uuid);
         if (!rowsUpdated)
             throw new _HttpError('User with UUID %s does not exists.', 403, uuid);
