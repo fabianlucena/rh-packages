@@ -1,7 +1,7 @@
 import {UserTypeService} from '../services/user_type.js';
 import {IdentityService} from '../services/identity.js';
 import {conf} from '../conf.js';
-import {getSingle} from 'sql-util';
+import {getSingle, addEnabledFilter, addEnabledOnerModuleFilter} from 'sql-util';
 import {complete, deepComplete, _Error} from 'rf-util';
 
 export class UserService {
@@ -44,7 +44,7 @@ export class UserService {
     }
 
     /**
-     * Gets a list of users. If not isEnabled filter provided returns only the enabled users.
+     * Gets a list of users.
      * @param {Options} options - options for the @see sequelize.findAll method.
      *  - view: show visible peoperties.
      * @returns {Promise{UserList}]
@@ -65,7 +65,35 @@ export class UserService {
             }
         }
 
-        return await conf.global.models.User.findAll(options);
+        if (options.q) {
+            const q = `%${options.q}%`;
+            const Op = conf.global.Sequelize.Op;
+            options.where = {
+                [Op.or]: [
+                    {username:    {[Op.like]: q}},
+                    {displayName: {[Op.like]: q}},
+                ],
+            };
+        }
+
+        if (options.withCount)
+            return conf.global.models.User.findAndCountAll(options);
+        else
+            return conf.global.models.User.findAll(options);
+    }
+
+    /**
+     * Gets a list of enabled users.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {Promise{ProjectList}]
+     */
+    static async getEnabledList(options) {
+        options = addEnabledFilter(options);
+        if (conf.global.models.Module)
+            options = addEnabledOnerModuleFilter(options);
+            
+        return UserService.getList(options);
     }
 
     /**

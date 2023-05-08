@@ -2,6 +2,7 @@ import {setUpError, deepComplete, replace} from 'rf-util';
 import {loc} from 'rf-locale';
 import fs from 'fs';
 import path from 'path';
+import {Op} from 'sequelize';
 
 export class NoRowsError extends Error {
     static _message = loc._f('There are no "%s" for "%s" in "%s"');
@@ -260,15 +261,39 @@ export function completeIncludeOptions(options, name, includeOptions) {
     return options;
 }
 
-export function addSimpleEnabledFilter(options) {
+export function addEnabledFilter(options) {
     if (!options)
         options = {};
 
     if (!options.where)
         options.where = {};
             
-    if (!options.where.isEnabled)
-        options.where.isEnabled = true;
+    if (!options.where.isEnabled === undefined)
+        options.where.isEnabled = options.isEnabled ?? true;
+
+    return options;
+}
+
+export function addEnabledOnerModuleFilter(options) {
+    options = completeIncludeOptions(
+        options,
+        'ownerModule',
+        {
+            where: {
+                [Op.or]: [
+                    {ownerModuleId: {[Op.eq]: null}},
+                    {isEnabled: {[Op.eq]: options?.isEnabled ?? true}},
+                ],
+            }
+        }
+    );
+    
+    return options;
+}
+
+export function addEnabledWithOnerModuleFilter(options) {
+    options = addEnabledFilter(options);
+    options = addEnabledOnerModuleFilter(options);
 
     return options;
 }

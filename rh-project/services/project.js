@@ -1,7 +1,6 @@
 import {conf} from '../conf.js';
-import {getSingle, addSimpleEnabledFilter} from 'sql-util';
+import {getSingle, addEnabledFilter} from 'sql-util';
 import {complete, deepComplete, _Error} from 'rf-util';
-import {Op} from 'sequelize';
 
 export class ProjectService {
     /**
@@ -37,6 +36,7 @@ export class ProjectService {
 
         if (options.q) {
             const q = `%${options.q}%`;
+            const Op = conf.global.Sequelize.Op;
             options.where = {
                 [Op.or]: [
                     {name:  {[Op.like]: q}},
@@ -58,7 +58,7 @@ export class ProjectService {
      * @returns {Promise{ProjectList}]
      */
     static async getEnabledList(options) {
-        return ProjectService.getList(addSimpleEnabledFilter(options, true));
+        return ProjectService.getList(addEnabledFilter(options, true));
     }
 
     /**
