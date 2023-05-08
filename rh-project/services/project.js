@@ -16,7 +16,7 @@ export class ProjectService {
         const project = await conf.global.models.Project.create(data);
 
         if (data.owner || data.ownerId)
-            conf.global.services.Share.create({objectName: 'Project', objectId: project.id, userId: data.ownerId, user: data.owner, type: 'owner'});
+            await conf.global.services.Share.create({objectName: 'Project', objectId: project.id, userId: data.ownerId, user: data.owner, type: 'owner'});
 
         return project;
     }
@@ -38,18 +38,28 @@ export class ProjectService {
     }
 
     /**
-     * Gets an project for its UUID. For many coincidences and for no rows this method fails.
+     * Gets a project for its UUID. For many coincidences and for no rows this method fails.
      * @param {string} uuid - UUID for the project to get.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Project}}
      */
-    static getForUUID(uuid, options) {
+    static getForUuid(uuid, options) {
         return ProjectService.getList(deepComplete(options, {where: {uuid: uuid}, limit: 2}))
             .then(rowList => getSingle(rowList, complete(options, {params: ['project', ['UUID = %s', uuid], 'Project']})));
     }
 
     /**
-     * Gets an project for its name. For many coincidences and for no rows this method fails.
+     * Gets a project ID for its UUID. For many coincidences and for no rows this method fails.
+     * @param {string} uuid - UUID for the project to get.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {ID}
+     */
+    static async getIdForUuid(uuid, options) {
+        return (await ProjectService.getForUuid(uuid, deepComplete(options, {attributes: ['id']}))).id;
+    }
+
+    /**
+     * Gets a project for its name. For many coincidences and for no rows this method fails.
      * @param {string} name - name for the project to get.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Project}}
@@ -60,10 +70,10 @@ export class ProjectService {
     }
 
     /**
-     * Gets an project for its name. For many coincidences and for no rows this method fails.
+     * Gets a project ID for its name. For many coincidences and for no rows this method fails.
      * @param {string} name - name for the project to get.
      * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Project}}
+     * @returns {ID}
      */
     static async getIdForName(name, options) {
         return (await ProjectService.getForName(name, deepComplete(options, {attributes: ['id']}))).id;
@@ -84,16 +94,19 @@ export class ProjectService {
     }
 
     /**
-     * Deletes an project for a given UUID.
+     * Deletes a project for a given UUID.
      * @param {string} uuid - UUID for the project o delete.
      * @returns {Promise{Result}} deleted rows count.
      */
     static async deleteForUuid(uuid) {
-        return await conf.global.models.Project.destroy({where:{uuid: uuid}});
+        const id = await ProjectService.getIdForUuid(uuid);
+        await conf.global.services.Share.deleteForObjectNameAndId('Project', id);
+
+        return conf.global.models.Project.destroy({where:{id}});
     }
 
     /**
-     * Updates an project.
+     * Updates a project.
      * @param {object} data - Data to update.
      * @param {object} uuid - UUID of the uer to update.
      * @returns {Promise{Result}} updated rows count.
@@ -103,7 +116,7 @@ export class ProjectService {
     }
 
     /**
-     * Enables an project for a given UUID.
+     * Enables a project for a given UUID.
      * @param {string} uuid - UUID for the project o enable.
      * @returns {Promise{Result}} enabled rows count.
      */
@@ -112,7 +125,7 @@ export class ProjectService {
     }
 
     /**
-     * Disables an project for a given UUID.
+     * Disables a project for a given UUID.
      * @param {string} uuid - UUID for the project o disable.
      * @returns {Promise{Result}} disabled rows count.
      */

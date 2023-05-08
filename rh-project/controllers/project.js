@@ -29,7 +29,7 @@ export class ProjectController {
      *  post:
      *      tags:
      *          - Project
-     *      summary: Create an project
+     *      summary: Create a project
      *      description: Add a new project to the database
      *      security:
      *          - bearerAuth: []
@@ -80,7 +80,7 @@ export class ProjectController {
      *  get:
      *      tags:
      *          - Project
-     *      summary: Get project or an project list
+     *      summary: Get project or a project list
      *      description: If the UUID or name params is provided this endpoint returns a single project otherwise returns a list of projects
      *      security:
      *          -   bearerAuth: []
@@ -216,8 +216,8 @@ export class ProjectController {
      *  delete:
      *      tags:
      *          - Project
-     *      summary: Delete an project
-     *      description: Delete an project from its UUID
+     *      summary: Delete a project
+     *      description: Delete a project from its UUID
      *      security:
      *          -   bearerAuth: []
      *      produces:
@@ -250,7 +250,7 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async delete(req, res) {
-        const uuid = await checkParameterUUID({...req.query, ...req.params}, 'uuid');
+        const uuid = await checkParameterUUID({...req.query, ...req.params, ...req.body}, 'uuid');
         const rowsDeleted = await ProjectService.deleteForUuid(uuid);
         if (!rowsDeleted)
             throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);
@@ -264,8 +264,8 @@ export class ProjectController {
      *  post:
      *      tags:
      *          - Project
-     *      summary: Enable an project
-     *      description: Enable an project from its UUID
+     *      summary: Enable a project
+     *      description: Enable a project from its UUID
      *      security:
      *          -   bearerAuth: []
      *      produces:
@@ -298,7 +298,7 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async enablePost(req, res) {
-        const uuid = await checkParameterUUID({...req.query, ...req.params}, 'uuid');
+        const uuid = await checkParameterUUID({...req.query, ...req.params, ...req.body}, 'uuid');
         const rowsUpdated = await ProjectService.enableForUuid(uuid);
         if (!rowsUpdated)
             throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);
@@ -312,8 +312,8 @@ export class ProjectController {
      *  post:
      *      tags:
      *          - Project
-     *      summary: Disable an project
-     *      description: Disable an project from its UUID
+     *      summary: Disable a project
+     *      description: Disable a project from its UUID
      *      security:
      *          -   bearerAuth: []
      *      produces:
@@ -346,7 +346,7 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async disablePost(req, res) {
-        const uuid = await checkParameterUUID({...req.query, ...req.params}, 'uuid');
+        const uuid = await checkParameterUUID({...req.query, ...req.params, ...req.body}, 'uuid');
         const rowsUpdated = await ProjectService.disableForUuid(uuid);
         if (!rowsUpdated)
             throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);
@@ -360,8 +360,8 @@ export class ProjectController {
      *  patch:
      *      tags:
      *          - Project
-     *      summary: Disable an project
-     *      description: Disable an project from its UUID
+     *      summary: Disable a project
+     *      description: Disable a project from its UUID
      *      security:
      *          -   bearerAuth: []
      *      produces:
