@@ -1,6 +1,6 @@
 import {RoleService} from './role.js';
 import {conf} from '../conf.js';
-import {MissingPropertyError, skipAssociationAttributes} from 'sql-util';
+import {addEnabledOnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes} from 'sql-util';
 import {complete} from 'rf-util';
 
 export class UserRoleSiteService {
@@ -10,11 +10,8 @@ export class UserRoleSiteService {
      * @returns {Promise{data}}
      */
     static async completeUserId(data) {
-        if (!data.userId)
-            if (!data.username)
-                throw new MissingPropertyError('UserRoleSite', 'username', 'userId');
-            else
-                data.userId = await conf.global.services.User.getIdForUsername(data.username);
+        if (!data.userId && data.username)
+            data.userId = await conf.global.services.User.getIdForUsername(data.username);
 
         return data;
     }
@@ -25,11 +22,8 @@ export class UserRoleSiteService {
      * @returns {Promise{data}}
      */
     static async completeRoleId(data) {
-        if (!data.roleId)
-            if (!data.role)
-                throw new MissingPropertyError('UserRoleSite', 'role', 'roleId');
-            else
-                data.roleId = await RoleService.getIdForName(data.role);
+        if (!data.roleId && data.role)
+            data.roleId = await RoleService.getIdForName(data.role);
 
         return data;
     }
@@ -40,11 +34,8 @@ export class UserRoleSiteService {
      * @returns {Promise{data}}
      */
     static async completeSiteId(data) {
-        if (!data.siteId)
-            if (!data.site)
-                throw new MissingPropertyError('UserRoleSite', 'site', 'siteId');
-            else
-                data.siteId = await conf.global.services.Site.getIdForName(data.site, {foreign:{module: false}});
+        if (!data.siteId && data.site)
+            data.siteId = await conf.global.services.Site.getIdForName(data.site, {foreign:{module: false}});
 
         return data;
     }
@@ -67,6 +58,9 @@ export class UserRoleSiteService {
      */
     static async create(data) {
         await UserRoleSiteService.completeUserIdRoleIdSiteId(data);
+
+        await checkDataForMissingProperties(data, 'UserRoleSite', 'userId', 'roleId', 'siteId');
+
         return conf.global.models.UserRoleSite.create(data);
     }
 
@@ -76,6 +70,9 @@ export class UserRoleSiteService {
      * @returns {Promise{MenuItemList}}
      */
     static async getList(options) {
+        if (options.isEnabled !== undefined)
+            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+
         return conf.global.models.UserRoleSite.findAll(options);
     }
 

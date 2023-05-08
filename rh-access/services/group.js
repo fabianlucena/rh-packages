@@ -1,6 +1,6 @@
 import {UserGroupService} from './user_group.js';
 import {conf} from '../conf.js';
-import {checkDataForMissingProperties, completeIncludeOptions, getSingle, completeAssociationOptions} from 'sql-util';
+import {addEnabledFilter, addEnabledOnerModuleFilter, checkDataForMissingProperties, getSingle, completeAssociationOptions} from 'sql-util';
 import {complete, deepComplete} from 'rf-util';
 
 export class GroupService {
@@ -47,14 +47,31 @@ export class GroupService {
     }
 
     /**
-     * Gets a list of groups. If not isEnabled filter provided returns only the enabled groups.
+     * Gets a list of groups.
      * @param {Opions} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{GroupList}}
      */
     static async getList(options) {
-        options = deepComplete(options, {where: {isEnabled: true}});
-        completeIncludeOptions(options, 'module', {model: conf.global.models.Module, where: {isEnabled: true}, skipAssociationAttributes: true});
-        return conf.global.models.User.findAll(options);
+        if (options.q) {
+            const q = `%${options.q}%`;
+            const Op = conf.global.Sequelize.Op;
+            options.where = {
+                [Op.or]: [
+                    {username:    {[Op.like]: q}},
+                    {displayName: {[Op.like]: q}},
+                ],
+            };
+        }
+
+        if (options.isEnabled !== undefined) {
+            options = addEnabledFilter(options);
+            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+        }
+
+        if (options.withCount)
+            return conf.global.models.User.findAndCountAll(options);
+        else
+            return conf.global.models.User.findAll(options);
     }
 
     /**

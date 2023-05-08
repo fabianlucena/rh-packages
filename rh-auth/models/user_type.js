@@ -6,7 +6,7 @@ export default (sequelize, DataTypes) => {
     class UserType extends sequelize.Sequelize.Model {
         static associate(models) {
             if (models.Module)
-                this.belongsTo(models.Module, {foreignKey: 'ownerModuleId', allowNull: true});
+                this.belongsTo(models.Module, {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
         }
     }
     UserType.init({
@@ -21,6 +21,11 @@ export default (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: DataTypes.UUIDV4,
             unique: true
+        },
+        isEnabled: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true
         },
         name: {
             type: DataTypes.STRING,

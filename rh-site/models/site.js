@@ -5,8 +5,8 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class Site extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.Module, {foreignKey: 'ownerModuleId', allowNull: true});
-            this.belongsToMany(models.Module,  {through: models.SiteModule,   foreignKey: 'siteId', otherKey: 'moduleId'});
+            this.belongsTo(models.Module, {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
+            this.belongsToMany(models.Module, {through: models.SiteModule, foreignKey: 'siteId', otherKey: 'moduleId'});
         }
     }
     Site.init({

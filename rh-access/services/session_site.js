@@ -1,5 +1,5 @@
 import {conf} from '../conf.js';
-import {MissingPropertyError} from 'sql-util';
+import {checkDataForMissingProperties} from 'sql-util';
 import {deepComplete} from 'rf-util';
 
 export class SessionSiteService {
@@ -9,11 +9,8 @@ export class SessionSiteService {
      * @returns {Promise{data}}
      */
     static async completeSessionId(data) {
-        if (!data.sessionId)
-            if (!data.session)
-                throw new MissingPropertyError('SessionSite', 'session', 'sessionId');
-            else
-                data.sessionId = await conf.global.services.Session.getIdForName(data.session);
+        if (!data.sessionId && data.session)
+            data.sessionId = await conf.global.services.Session.getIdForName(data.session);
 
         return data;
     }
@@ -24,11 +21,8 @@ export class SessionSiteService {
      * @returns {Promise{data}}
      */
     static async completeSiteId(data) {
-        if (!data.siteId)
-            if (!data.site)
-                throw new MissingPropertyError('SessionSite', 'site', 'siteId');
-            else
-                data.siteId = await conf.global.services.Site.getIdForName(data.site, {foreign: {module: false}});
+        if (!data.siteId && data.site)
+            data.siteId = await conf.global.services.Site.getIdForName(data.site, {foreign: {module: false}});
 
         return data;
     }
@@ -53,6 +47,9 @@ export class SessionSiteService {
      */
     static async create(data) {
         await SessionSiteService.completeSessionIdAndSiteId(data);
+
+        await checkDataForMissingProperties(data, 'SessionSite', 'sessionId', 'siteId');
+
         return conf.global.models.SessionSite.create(data);
     }
 

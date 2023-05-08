@@ -1,7 +1,7 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {MissingPropertyError, getSingle} from 'sql-util';
+import {checkDataForMissingProperties, getSingle} from 'sql-util';
 import {complete, deepComplete} from 'rf-util';
 
 export class DomainService {
@@ -13,11 +13,7 @@ export class DomainService {
      * @returns {Promise{Domain}}
      */
     static async create(data) {
-        if (!data.name)
-            throw new MissingPropertyError('Domain', 'name');
-
-        if (!data.title)
-            throw new MissingPropertyError('Domain', 'title');
+        await checkDataForMissingProperties(data, 'Domain', 'name', 'title');
 
         return conf.global.models.Domain.create(data);
     }

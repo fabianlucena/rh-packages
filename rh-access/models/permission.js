@@ -5,7 +5,7 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class Permission extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.Module, {foreignKey: 'ownerModuleId', allowNull: true});
+            this.belongsTo(models.Module, {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
         }
     }
     Permission.init({

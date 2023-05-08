@@ -1,6 +1,6 @@
 import {RolePermissionService} from './role_permission.js';
 import {conf} from '../conf.js';
-import {MissingPropertyError, checkDataForMissingProperties, completeIncludeOptions, getSingle, completeAssociationOptions} from 'sql-util';
+import {addEnabledFilter, addEnabledOnerModuleFilter, checkDataForMissingProperties, getSingle, completeAssociationOptions} from 'sql-util';
 import {deepComplete, runSequentially} from 'rf-util';
 
 export class PermissionService {
@@ -10,11 +10,8 @@ export class PermissionService {
      * @returns {Promise{data}}
      */
     static async completeOwnerModuleId(data) {
-        if (!data.ownerModuleId)
-            if (!data.ownerModule)
-                throw new MissingPropertyError('Permission', 'module', 'moduleId');
-            else
-                data.ownerModuleId = await conf.global.services.Module.getIdForName(data.ownerModule);
+        if (!data.ownerModuleId && data.ownerModule)
+            data.ownerModuleId = await conf.global.services.Module.getIdForName(data.ownerModule);
 
         return data;
     }
@@ -26,9 +23,9 @@ export class PermissionService {
      * @returns {Promise{Permission}}
      */
     static async create(data) {
-        await checkDataForMissingProperties(data, 'Permission', 'name', 'title');
-        
         await PermissionService.completeOwnerModuleId(data);
+
+        await checkDataForMissingProperties(data, 'Permission', 'name', 'title');
 
         return conf.global.models.Permission.create(data);
     }
@@ -39,9 +36,26 @@ export class PermissionService {
      * @returns {Promise{PermissionList}}
      */
     static async getList(options) {
-        options = deepComplete(options, {where: {isEnabled: true}, include: []});
-        completeIncludeOptions(options, 'module', {model: conf.global.models.Module, attributes: [], where: {isEnabled: true}});
-        return conf.global.models.Permission.findAll(options);
+        if (options.q) {
+            const q = `%${options.q}%`;
+            const Op = conf.global.Sequelize.Op;
+            options.where = {
+                [Op.or]: [
+                    {username:    {[Op.like]: q}},
+                    {displayName: {[Op.like]: q}},
+                ],
+            };
+        }
+
+        if (options.isEnabled !== undefined) {
+            options = addEnabledFilter(options);
+            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+        }
+
+        if (options.withCount)
+            return conf.global.models.Permission.findAndCountAll(options);
+        else
+            return conf.global.models.Permission.findAll(options);
     }
 
     /**

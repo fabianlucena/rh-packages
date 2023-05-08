@@ -1,6 +1,5 @@
 import {conf} from '../conf.js';
-import {complete} from 'rf-util';
-import {checkDataForMissingProperties} from 'sql-util';
+import {addEnabledFilter, addEnabledOnerModuleFilter, checkDataForMissingProperties} from 'sql-util';
 
 export class ShareService {
     /**
@@ -74,7 +73,15 @@ export class ShareService {
      * @returns {Promise{ShareList}}
      */
     static getList(options) {
-        return conf.global.models.Share.findAll(complete(options, {}));
+        if (options.isEnabled !== undefined) {
+            options = addEnabledFilter(options);
+            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+        }
+
+        if (options.withCount)
+            return conf.global.models.Share.findAndCountAll(options);
+        else
+            return conf.global.models.Share.findAll(options);
     }
 
     /**

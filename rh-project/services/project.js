@@ -10,9 +10,6 @@ export class ProjectService {
      * @returns {Promise{Project}}
      */
     static async create(data) {
-        if (data.type)
-            data.type = 'project';
-
         const project = await conf.global.models.Project.create(data);
 
         if (data.owner || data.ownerId)
@@ -45,20 +42,13 @@ export class ProjectService {
             };
         }
 
+        if (options.isEnabled !== undefined)
+            options = addEnabledFilter(options);
+
         if (options.withCount)
             return conf.global.models.Project.findAndCountAll(options);
         else
             return conf.global.models.Project.findAll(options);
-    }
-
-    /**
-     * Gets a list of enabled projects.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {Promise{ProjectList}]
-     */
-    static async getEnabledList(options) {
-        return ProjectService.getList(addEnabledFilter(options, true));
     }
 
     /**

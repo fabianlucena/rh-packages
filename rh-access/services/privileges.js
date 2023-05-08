@@ -45,7 +45,7 @@ export class PrivilegesService {
         const privileges = {};
 
         if (username)
-            privileges.sites = await conf.global.services.Site.getNameForUsername(username);
+            privileges.sites = await conf.global.services.Site.getNameForUsername(username, {isEnabled: true});
         else
             privileges.sites = [];
 
@@ -57,16 +57,16 @@ export class PrivilegesService {
             privileges.roles.push('user');
             
             if (siteName)
-                privileges.roles = [...privileges.roles, ...await RoleService.getAllNamesForUsernameAndSiteName(username, siteName)];
+                privileges.roles = [...privileges.roles, ...await RoleService.getAllNamesForUsernameAndSiteName(username, siteName, {isEnabled: true})];
         
             if (siteName != 'system')
-                privileges.roles = [...privileges.roles, ...await RoleService.getAllNamesForUsernameAndSiteName(username, 'system')];
+                privileges.roles = [...privileges.roles, ...await RoleService.getAllNamesForUsernameAndSiteName(username, 'system', {isEnabled: true})];
         } else
             privileges.roles.push('anonymous');
 
-        privileges.permissions = await PermissionService.getNamesForRolesName(privileges.roles);
+        privileges.permissions = await PermissionService.getNamesForRolesName(privileges.roles, {isEnabled: true});
 
-        privileges.groups = await GroupService.getAllNamesForUsername(username);
+        privileges.groups = await GroupService.getAllNamesForUsername(username, {isEnabled: true});
         
         return privileges;
     }

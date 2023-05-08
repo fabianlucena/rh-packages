@@ -5,7 +5,7 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class UserGroup extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.Module, {foreignKey: 'ownerModuleId', allowNull: true});
+            this.belongsTo(models.Module, {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
             this.belongsTo(models.User,   {foreignKey: 'userId',  as: 'User'});
             this.belongsTo(models.User,   {foreignKey: 'groupId', as: 'Group'});
         }

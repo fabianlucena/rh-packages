@@ -1,7 +1,7 @@
 import {RoleService} from './role.js';
 import {PermissionService} from './permission.js';
 import {conf} from '../conf.js';
-import {MissingPropertyError, skipAssociationAttributes} from 'sql-util';
+import {addEnabledOnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes} from 'sql-util';
 import {complete} from 'rf-util';
 
 export class RolePermissionService {
@@ -11,11 +11,8 @@ export class RolePermissionService {
      * @returns {Promise{data}}
      */
     static async completeRoleId(data) {
-        if (!data.roleId)
-            if (!data.role)
-                throw new MissingPropertyError('RolePermission', 'role', 'roleId');
-            else
-                data.roleId = await RoleService.getIdForName(data.role);
+        if (!data.roleId && data.role)
+            data.roleId = await RoleService.getIdForName(data.role);
 
         return data;
     }
@@ -26,11 +23,8 @@ export class RolePermissionService {
      * @returns {Promise{data}}
      */
     static async completePermissionId(data) {
-        if (!data.permissionId)
-            if (!data.permission)
-                throw new MissingPropertyError('RolePermission', 'permission', 'permissionId');
-            else
-                data.permissionId = await PermissionService.getIdForName(data.permission);
+        if (!data.permissionId && data.permission)
+            data.permissionId = await PermissionService.getIdForName(data.permission);
 
         return data;
     }
@@ -49,6 +43,8 @@ export class RolePermissionService {
         await RolePermissionService.completeRoleId(data);
         await RolePermissionService.completePermissionId(data);
 
+        await checkDataForMissingProperties(data, 'Permission', 'roleId', 'permissionId');
+
         return conf.global.models.RolePermission.create(data);
     }
 
@@ -58,6 +54,9 @@ export class RolePermissionService {
      * @returns {Promise{RolePermissionList}}
      */
     static async getList(options) {
+        if (options.isEnabled !== undefined)
+            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+        
         return conf.global.models.RolePermission.findAll(options);
     }
 

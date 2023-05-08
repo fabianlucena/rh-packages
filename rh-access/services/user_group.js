@@ -1,5 +1,5 @@
 import {conf} from '../conf.js';
-import {checkDataForMissingProperties} from 'sql-util';
+import {addEnabledOnerModuleFilter, checkDataForMissingProperties} from 'sql-util';
 import {complete} from 'rf-util';
 
 export class UserGroupService {
@@ -65,7 +65,13 @@ export class UserGroupService {
      * @returns {Promise{GroupList}}
      */
     static async getList(options) {
-        return conf.global.models.UserGroup.findAll(options);
+        if (options.isEnabled !== undefined)
+            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+
+        if (options.withCount)
+            return conf.global.models.UserGroup.findAndCountAll(options);
+        else
+            return conf.global.models.UserGroup.findAll(options);
     }
 
     /**

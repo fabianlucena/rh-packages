@@ -4,7 +4,7 @@ import {conf} from '../conf.js';
 import {SourceService} from './source.js';
 import {LanguageService} from './language.js';
 import {DomainService} from './domain.js';
-import {MissingPropertyError, getSingle} from 'sql-util';
+import {checkDataForMissingProperties, getSingle} from 'sql-util';
 import {deepComplete} from 'rf-util';
 
 export class TranslationService {
@@ -14,11 +14,8 @@ export class TranslationService {
      * @returns {Promise{data}}
      */
     static async completeSourceId(data) {
-        if (!data.sourceId)
-            if (!data.source)
-                throw new MissingPropertyError('Translation', 'source', 'sourceId');
-            else
-                data.sourceId = await conf.global.services.Source.getIdOrCreateForText(data.source, {data: {isJson: data.isJson, ref: data.ref}});
+        if (!data.sourceId && data.source)
+            data.sourceId = await conf.global.services.Source.getIdOrCreateForText(data.source, {data: {isJson: data.isJson, ref: data.ref}});
 
         return data;
     }
@@ -29,11 +26,8 @@ export class TranslationService {
      * @returns {Promise{data}}
      */
     static async completeLanguageId(data) {
-        if (!data.languageId)
-            if (!data.language)
-                throw new MissingPropertyError('Translation', 'language', 'languageId');
-            else
-                data.languageId = await conf.global.services.Language.getIdForName(data.language);
+        if (!data.languageId && data.language)
+            data.languageId = await conf.global.services.Language.getIdForName(data.language);
 
         return data;
     }
@@ -44,11 +38,8 @@ export class TranslationService {
      * @returns {Promise{data}}
      */
     static async completeDomainId(data) {
-        if (!data.domainId)
-            if (!data.domain)
-                data.domainId = null;
-            else
-                data.domainId = await conf.global.services.Domain.getIdForName(data.domain);
+        if (!data.domainId && data.domain)
+            data.domainId = (await conf.global.services.Domain.getIdForName(data.domain)) ?? null;
 
         return data;
     }
@@ -65,11 +56,7 @@ export class TranslationService {
         await this.completeLanguageId(data);
         await this.completeDomainId(data);
 
-        if (!data.sourceId)
-            throw new MissingPropertyError('Translation', 'sourceId');
-
-        if (!data.languageId)
-            throw new MissingPropertyError('Translation', 'languageId');
+        await checkDataForMissingProperties(data, 'Translation', 'sourceId', 'languageId');
 
         return conf.global.models.Translation.create(data);
     }
@@ -87,6 +74,9 @@ export class TranslationService {
         delete options.where.source;
         delete options.where.language;
         delete options.where.domain;
+
+        if (options.where.domainId === undefined && Object.prototype.hasOwnProperty.call(options.where, 'domainId'))
+            options.where.domainId = null;
 
         return conf.global.models.Translation.findAll(options);
     }

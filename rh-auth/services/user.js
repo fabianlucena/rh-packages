@@ -76,24 +76,16 @@ export class UserService {
             };
         }
 
+        if (options.isEnabled !== undefined) {
+            options = addEnabledFilter(options);
+            if (conf.global.models.Module)
+                options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+        }
+
         if (options.withCount)
             return conf.global.models.User.findAndCountAll(options);
         else
             return conf.global.models.User.findAll(options);
-    }
-
-    /**
-     * Gets a list of enabled users.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {Promise{ProjectList}]
-     */
-    static async getEnabledList(options) {
-        options = addEnabledFilter(options);
-        if (conf.global.models.Module)
-            options = addEnabledOnerModuleFilter(options);
-            
-        return UserService.getList(options);
     }
 
     /**

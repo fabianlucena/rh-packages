@@ -5,7 +5,7 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class Role extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.Module,         {foreignKey: 'ownerModuleId', allowNull: true});
+            this.belongsTo(models.Module,         {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
 
             this.belongsToMany(models.User,        {through: models.UserRoleSite,   foreignKey: 'roleId', otherKey: 'userId'});
             this.belongsToMany(models.Permission,  {through: models.RolePermission, foreignKey: 'roleId', otherKey: 'permissionId'});

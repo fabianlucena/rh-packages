@@ -8,7 +8,7 @@ export default (sequelize, DataTypes) => {
             this.belongsTo(models.ObjectName, {foreignKey: 'objectNameId',  allowNull: false, onDelete: 'cascade'});
             this.belongsTo(models.User,       {foreignKey: 'userId',        allowNull: false, onDelete: 'cascade'});
             this.belongsTo(models.ShareType,  {foreignKey: 'typeId',        allowNull: false});
-            this.belongsTo(models.Module,     {foreignKey: 'ownerModuleId', allowNull: true});
+            this.belongsTo(models.Module,     {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
         }
     }
     Share.init({

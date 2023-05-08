@@ -1,5 +1,5 @@
 import {conf} from '../conf.js';
-import {MissingPropertyError, getSingle} from 'sql-util';
+import {checkDataForMissingProperties, getSingle} from 'sql-util';
 import {complete, deepComplete} from 'rf-util';
 
 export class IdentityTypeService {
@@ -10,11 +10,7 @@ export class IdentityTypeService {
      * @returns {Promise{IdentityType}}
      */
     static async create(data) {
-        if (!data.name)
-            throw new MissingPropertyError('IdentityType', 'name');
-
-        if (!data.title)
-            throw new MissingPropertyError('IdentityType', 'title');
+        await checkDataForMissingProperties(data, 'IdentityType', 'name', 'title');
 
         return conf.global.models.IdentityType.create(data);
     }

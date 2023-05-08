@@ -1,6 +1,6 @@
 import {conf} from '../conf.js';
-import {getSingle} from 'sql-util';
-import {complete, deepComplete} from 'rf-util';
+import {addEnabledFilter, addEnabledOnerModuleFilter, getSingle} from 'sql-util';
+import {deepComplete} from 'rf-util';
 
 export class UserTypeService {
     /**
@@ -19,7 +19,27 @@ export class UserTypeService {
      * @returns {Promise{UserTypeList}]
      */
     static getList(options) {
-        return conf.global.models.UserType.findAll(complete(options, {}));
+        if (options.q) {
+            const q = `%${options.q}%`;
+            const Op = conf.global.Sequelize.Op;
+            options.where = {
+                [Op.or]: [
+                    {username:    {[Op.like]: q}},
+                    {displayName: {[Op.like]: q}},
+                ],
+            };
+        }
+
+        if (options.isEnabled !== undefined) {
+            options = addEnabledFilter(options);
+            if (conf.global.models.Module)
+                options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+        }
+
+        if (options.withCount)
+            return conf.global.models.UserType.findAndCountAll(options);
+        else
+            return conf.global.models.UserType.findAll(options);
     }
 
     /**

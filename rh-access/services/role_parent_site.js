@@ -1,6 +1,6 @@
 import {RoleService} from './role.js';
 import {conf} from '../conf.js';
-import {checkDataForMissingProperties} from 'sql-util';
+import {addEnabledOnerModuleFilter, checkDataForMissingProperties} from 'sql-util';
 import {complete} from 'rf-util';
 
 export class RoleParentSiteService {
@@ -81,7 +81,13 @@ export class RoleParentSiteService {
      * @returns {Promise{RoleList}}
      */
     static async getList(options) {
-        return conf.global.models.RoleParentSite.findAll(options);
+        if (options.isEnabled !== undefined)
+            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+
+        if (options.withCount)
+            return conf.global.models.RoleParentSite.findAndCountAll(options);
+        else
+            return conf.global.models.RoleParentSite.findAll(options);
     }
 
     /**

@@ -1,5 +1,5 @@
 import {conf} from '../conf.js';
-import {MissingPropertyError, getSingle} from 'sql-util';
+import {checkDataForMissingProperties, getSingle} from 'sql-util';
 import {complete, deepComplete} from 'rf-util';
 
 export class ShareTypeService {
@@ -10,11 +10,7 @@ export class ShareTypeService {
      * @returns {Promise{ShareType}}
      */
     static async create(data) {
-        if (!data.name)
-            throw new MissingPropertyError('ShareType', 'name');
-
-        if (!data.title)
-            throw new MissingPropertyError('ShareType', 'title');
+        await checkDataForMissingProperties(data, 'ShareType', 'name', 'title');
 
         return conf.global.models.ShareType.create(data);
     }

@@ -239,7 +239,7 @@ export function completeIncludeOptions(options, name, includeOptions) {
 
     let includedOptions;
     if (options.include)
-        includedOptions = getIncludedModelOptions(options, includeOptions.model);
+        includedOptions = getIncludedModelOptions(options, includeOptions.model, includeOptions.as);
     else
         options.include = [];
 
@@ -268,32 +268,35 @@ export function addEnabledFilter(options) {
     if (!options.where)
         options.where = {};
             
-    if (!options.where.isEnabled === undefined)
-        options.where.isEnabled = options.isEnabled ?? true;
+    options.where.isEnabled = options.isEnabled ?? true;
 
     return options;
 }
 
-export function addEnabledOnerModuleFilter(options) {
+export function addEnabledOnerModuleFilter(options, ownerModule, ownerModuleAlias) {
     options = completeIncludeOptions(
         options,
-        'ownerModule',
+        'ownerModuleId',
         {
+            model: ownerModule,
+            as: ownerModuleAlias ?? 'OwnerModule',
             where: {
                 [Op.or]: [
-                    {ownerModuleId: {[Op.eq]: null}},
+                    {id: {[Op.eq]: null}},
                     {isEnabled: {[Op.eq]: options?.isEnabled ?? true}},
                 ],
-            }
+            },
+            required: false,
+            skipAssociationAttributes: true,
         }
     );
     
     return options;
 }
 
-export function addEnabledWithOnerModuleFilter(options) {
+export function addEnabledWithOnerModuleFilter(options, ownerModule) {
     options = addEnabledFilter(options);
-    options = addEnabledOnerModuleFilter(options);
+    options = addEnabledOnerModuleFilter(options, ownerModule);
 
     return options;
 }

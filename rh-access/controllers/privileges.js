@@ -62,7 +62,7 @@ export class PrivilegesController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static async privilegesGet(req, res) {
+    static async get(req, res) {
         const result = {
             sites: req?.sites,
         };
@@ -75,6 +75,6 @@ export class PrivilegesController {
         if (!req?.site?.name)
             result.warning = await (req.loc ?? loc)._('No current site selected');
 
-        res.status(200).send(result);
+        res.status(200).send({count: 1, rows: result});
     }
 }

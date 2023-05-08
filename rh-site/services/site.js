@@ -1,5 +1,12 @@
 import {conf} from '../conf.js';
-import {MissingPropertyError, checkDataForMissingProperties, completeIncludeOptions, getIncludedModelOptions, getSingle, completeAssociationOptions} from 'sql-util';
+import {
+    addEnabledFilter,
+    addEnabledOnerModuleFilter, 
+    checkDataForMissingProperties,
+    getIncludedModelOptions,
+    getSingle,
+    completeAssociationOptions
+} from 'sql-util';
 import {complete, deepComplete} from 'rf-util';
 
 export class SiteService {
@@ -9,11 +16,8 @@ export class SiteService {
      * @returns {Promise{data}}
      */
     static async completeOwnerModuleId(data) {
-        if (!data.ownerModuleId)
-            if (!data.ownerModule)
-                throw new MissingPropertyError('Site', 'ownerModule', 'ownerModuleId');
-            else
-                data.ownerModuleId = await conf.global.services.Module.getIdForName(data.ownerModule);
+        if (!data.ownerModuleId && data.ownerModule)
+            data.ownerModuleId = await conf.global.services.Module.getIdForName(data.ownerModule);
 
         return data;
     }
@@ -29,8 +33,9 @@ export class SiteService {
      * @returns {Promise{Site}}
      */
     static async create(data) {
-        await checkDataForMissingProperties(data, 'Site', 'name', 'title');
         await SiteService.completeOwnerModuleId(data);
+        await checkDataForMissingProperties(data, 'Site', 'name', 'title', 'ownerModuleId');
+
         return conf.global.models.Site.create(data);
     }
 
@@ -50,13 +55,11 @@ export class SiteService {
     }
 
     /**
-     * Gets a list of sites. If not isEnabled filter provided returns only the enabled sites.
+     * Gets a list of sites.
      * @param {Opions} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{SiteList}}
      */
     static getList(options) {
-        options = deepComplete(options, {where: {isEnabled: true}});
-        completeIncludeOptions(options, 'module', {model: conf.global.models.Module, where: {isEnabled: true}, required: false, skipThroughAssociationAttributes: true});
         if (options.view) {
             if (!options.attributes)
                 options.attributes = ['uuid', 'name', 'title'];
@@ -69,7 +72,26 @@ export class SiteService {
             }
         }
 
-        return conf.global.models.Site.findAll(options);
+        if (options.q) {
+            const q = `%${options.q}%`;
+            const Op = conf.global.Sequelize.Op;
+            options.where = {
+                [Op.or]: [
+                    {name:  {[Op.like]: q}},
+                    {title: {[Op.like]: q}},
+                ],
+            };
+        }
+
+        if (options.isEnabled !== undefined) {
+            options = addEnabledFilter(options);
+            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+        }
+
+        if (options.withCount)
+            return conf.global.models.Site.findAndCountAll(options);
+        else
+            return conf.global.models.Site.findAll(options);
     }
 
     /**
@@ -140,7 +162,7 @@ export class SiteService {
      * @returns {Promise{[]Site]}}
      */
     static getForUsername(username, options) {
-        options = complete(options, {include: []});       
+        options.include ??= [];       
         options.include.push(completeAssociationOptions({model: conf.global.models.User, where: {username}}, options));
 
         return SiteService.getList(options);

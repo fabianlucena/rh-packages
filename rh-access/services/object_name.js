@@ -63,14 +63,11 @@ export class ObjectNameService {
             });
     }
 
-    static getIdForNameCreateIfNotExists(data, options) {
-        return ObjectNameService.getForName(data.name, {attributes: ['id'], skipNoRowsError: true, ...options})
-            .then(row => {
-                if (row)
-                    return row.id;
+    static async getIdForNameCreateIfNotExists(data, options) {
+        let row = await ObjectNameService.getForName(data.name, {attributes: ['id'], skipNoRowsError: true, ...options});
+        if (!row)
+            row = await ObjectNameService.create(data);
 
-                ObjectNameService.create(data)
-                    .then(row => row.id);
-            });
+        return row.id;
     }
 }

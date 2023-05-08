@@ -1,6 +1,6 @@
 import {RoleParentSiteService} from './role_parent_site.js';
 import {conf} from '../conf.js';
-import {checkDataForMissingProperties, completeIncludeOptions, getSingle, completeAssociationOptions} from 'sql-util';
+import {addEnabledFilter, addEnabledOnerModuleFilter, checkDataForMissingProperties, getSingle, completeAssociationOptions} from 'sql-util';
 import {complete, deepComplete} from 'rf-util';
 
 export class RoleService {
@@ -52,9 +52,26 @@ export class RoleService {
      * @returns {Promise{RoleList}}
      */
     static async getList(options) {
-        options = deepComplete(options, {where: {isEnabled: true}});
-        completeIncludeOptions(options, 'module', {model: conf.global.models.Module, where: {isEnabled: true}, skipAssociationAttributes: true});
-        return conf.global.models.Role.findAll(options);
+        if (options.q) {
+            const q = `%${options.q}%`;
+            const Op = conf.global.Sequelize.Op;
+            options.where = {
+                [Op.or]: [
+                    {username:    {[Op.like]: q}},
+                    {displayName: {[Op.like]: q}},
+                ],
+            };
+        }
+
+        if (options.isEnabled !== undefined) {
+            options = addEnabledFilter(options);
+            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+        }
+
+        if (options.withCount)
+            return conf.global.models.Role.findAndCountAll(options);
+        else
+            return conf.global.models.Role.findAll(options);
     }
 
     /**
@@ -133,6 +150,7 @@ export class RoleService {
                     include: [
                         {
                             model: conf.global.models.Module,
+                            as: 'OwnerModule',
                             attributes: [],
                             where: {
                                 isEnabled: true,
@@ -148,6 +166,7 @@ export class RoleService {
                     include: [
                         {
                             model: conf.global.models.Module,
+                            as: 'OwnerModule',
                             attributes: [],
                             where: {
                                 isEnabled: true,
@@ -189,7 +208,7 @@ export class RoleService {
      * @returns {Promise{RoleList}}
      */
     static async getAllForUsernameAndSiteName(username, siteName, options) {
-        const roleIdList = await RoleService.getAllIdsForUsernameAndSiteName(username, siteName);
+        const roleIdList = await RoleService.getAllIdsForUsernameAndSiteName(username, siteName, options);
         return RoleService.getList(complete(options, {where:{id:roleIdList}}));
     }
 

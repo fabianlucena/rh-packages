@@ -8,7 +8,7 @@ export default (sequelize, DataTypes) => {
             this.belongsTo(models.User,   {foreignKey: 'userId'});
             this.belongsTo(models.Role,   {foreignKey: 'roleId'});
             this.belongsTo(models.Site,   {foreignKey: 'siteId'});
-            this.belongsTo(models.Module, {foreignKey: 'ownerModuleId', allowNull: true});
+            this.belongsTo(models.Module, {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
 
             models.Site.belongsToMany(models.User, {through: models.UserRoleSite, foreignKey: 'siteId', otherKey: 'userId'});
             models.Site.belongsToMany(models.Role, {through: models.UserRoleSite, foreignKey: 'siteId', otherKey: 'roleId'});
