@@ -41,11 +41,14 @@ export class ProjectService {
                 [Op.or]: [
                     {name:  {[Op.like]: q}},
                     {title: {[Op.like]: q}},
-                ]
-            }
+                ],
+            };
         }
 
-        return conf.global.models.Project.findAll(options);
+        if (options.withCount)
+            return conf.global.models.Project.findAndCountAll(options);
+        else
+            return conf.global.models.Project.findAll(options);
     }
 
     /**
@@ -65,7 +68,7 @@ export class ProjectService {
      * @returns {Promise{Project}}
      */
     static getForUuid(uuid, options) {
-        return ProjectService.getList(deepComplete(options, {where: {uuid: uuid}, limit: 2}))
+        return ProjectService.getList(deepComplete(options, {where: {uuid}, limit: 2}))
             .then(rowList => getSingle(rowList, complete(options, {params: ['project', ['UUID = %s', uuid], 'Project']})));
     }
 
@@ -133,7 +136,7 @@ export class ProjectService {
      * @returns {Promise{Result}} updated rows count.
      */
     static async updateForUuid(data, uuid) {
-        return await conf.global.models.Project.update(data, {where:{uuid: uuid}});
+        return await conf.global.models.Project.update(data, {where:{uuid}});
     }
 
     /**

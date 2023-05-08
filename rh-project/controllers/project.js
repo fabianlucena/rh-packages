@@ -136,8 +136,10 @@ export class ProjectController {
         let options = {view: true, limit: 10, offset: 0};
 
         options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
-        const rows = await ProjectService.getList(options);
-        res.status(200).send({rows});
+        options.withCount = true;
+        const result = await ProjectService.getList(options);
+
+        res.status(200).send(result);
     }
 
     static async getGrid(req, res) {
