@@ -32,7 +32,7 @@ export class ObjectNameService {
      * @returns {Promise{ObjectName}}
      */
     static getForName(name, options) {
-        return this.getList(deepComplete(options, {where:{name}, limit: 2}))
+        return ObjectNameService.getList(deepComplete(options, {where:{name}, limit: 2}))
             .then(rowList => getSingle(rowList, deepComplete(options, {params: ['object name', 'name', name, 'ObjectName']})));
     }
 
@@ -43,7 +43,7 @@ export class ObjectNameService {
      * @returns {ID}
      */
     static async getIdForName(name, options) {
-        const rowList = await this.getList(deepComplete(options, {where:{name}, limit: 2}));
+        const rowList = await ObjectNameService.getList(deepComplete(options, {where:{name}, limit: 2}));
         const row = await getSingle(rowList, deepComplete(options, {params: ['object name', 'name', name, 'ObjectName']}));
         return row.id;
     }
