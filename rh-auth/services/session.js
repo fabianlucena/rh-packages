@@ -104,7 +104,7 @@ export class SessionService {
      * @returns {Promise{Session}}
      */
     static getForId(id, options) {
-        return SessionService.getList(deepComplete(options, {where: {id: id}, limit: 2}))
+        return SessionService.getList(deepComplete(options, {where: {id}, limit: 2}))
             .then(rowList => getSingle(rowList, complete(options, {params: ['session', ['id = %s', id], 'Session']})));
     }
 
@@ -115,7 +115,7 @@ export class SessionService {
      * @returns {Promise{Session}}
      */
     static getForUuid(uuid, options) {
-        return SessionService.getList(deepComplete(options, {where: {uuid: uuid}, limit: 2}))
+        return SessionService.getList(deepComplete(options, {where: {uuid}, limit: 2}))
             .then(rowList => getSingle(rowList, complete(options, {params: ['session', ['UUID = %s', uuid], 'Session']})));
     }
 
@@ -172,13 +172,10 @@ export class SessionService {
                 if (conf.sessionCache[authToken])
                     delete conf.sessionCache[authToken];
 
-                return conf.global.models.Session.update({
-                    close: Date.now(),
-                }, {
-                    where: {
-                        id: id,
-                    }
-                });
+                return conf.global.models.Session.update(
+                    {close: Date.now()},
+                    {where: {id}}
+                );
             });
     }
 
@@ -193,7 +190,7 @@ export class SessionService {
             if (conf.sessionCache[session.authToken])
                 delete conf.sessionCache[session.authToken];
 
-            return conf.global.models.Session.destroy({where:{uuid: uuid}});
+            return conf.global.models.Session.destroy({where:{uuid}});
         }
     }
 

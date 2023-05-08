@@ -82,6 +82,9 @@ export class LoginService {
         if (oldSession.deviceId != device.id)
             throw new _Error('The device is not the same');
 
+        const user = await UserService.get(oldSession.userId);
+        await UserService.checkEnabledUser(user, user.username);
+
         await SessionService.closeForId(oldSession.id);
 
         const session = await SessionService.create({
@@ -99,6 +102,4 @@ export class LoginService {
             autoLoginToken: session.autoLoginToken,
         };
     }
-
-    
 }

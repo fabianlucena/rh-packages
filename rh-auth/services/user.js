@@ -69,13 +69,24 @@ export class UserService {
     }
 
     /**
+     * Gets an user for its ID. For many coincidences and for no rows this method fails.
+     * @param {string} id - ID for the user to get.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {Promise{User}}
+     */
+    static get(id, options) {
+        return UserService.getList(deepComplete(options, {where: {id}, limit: 2}))
+            .then(rowList => getSingle(rowList, complete(options, {params: ['user', ['ID = %s', id], 'User']})));
+    }
+
+    /**
      * Gets an user for its UUID. For many coincidences and for no rows this method fails.
      * @param {string} uuid - UUID for the user to get.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{User}}
      */
     static getForUuid(uuid, options) {
-        return UserService.getList(deepComplete(options, {where: {uuid: uuid}, limit: 2}))
+        return UserService.getList(deepComplete(options, {where: {uuid}, limit: 2}))
             .then(rowList => getSingle(rowList, complete(options, {params: ['user', ['UUID = %s', uuid], 'User']})));
     }
 
@@ -120,7 +131,7 @@ export class UserService {
      * @returns {Promise{Result}} deleted rows count.
      */
     static async deleteForUuid(uuid) {
-        return await conf.global.models.User.destroy({where:{uuid: uuid}});
+        return await conf.global.models.User.destroy({where:{uuid}});
     }
 
     /**
@@ -130,7 +141,7 @@ export class UserService {
      * @returns {Promise{Result}} updated rows count.
      */
     static async updateForUuid(data, uuid) {
-        return await conf.global.models.User.update(data, {where:{uuid: uuid}});
+        return await conf.global.models.User.update(data, {where:{uuid}});
     }
 
     /**
