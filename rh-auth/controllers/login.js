@@ -137,10 +137,12 @@ export class LoginController {
                         value: session.deviceToken,
                         expires: expires365.toISOString(),
                         path: '/',
+                        sameSite: 'strict',
                     },
                     autoLoginToken: {
                         value: session.autoLoginToken,
                         expires: expires30.toISOString(),
+                        sameSite: 'strict',
                     },
                 },
             });

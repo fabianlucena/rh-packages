@@ -193,7 +193,7 @@ export class UserController {
                     type: 'text',
                     label: await loc._('Username'),
                     placeholder: await loc._('Username'),
-                    readonly: : {
+                    readonly: {
                         create: false,
                         defaultValue: true,
                     },

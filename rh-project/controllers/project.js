@@ -147,8 +147,15 @@ export class ProjectController {
 
         const actions = [];
         if (req.permissions.includes('project.create')) actions.push('create');
+        if (req.permissions.includes('project.edit'))
+            actions.push(
+                {
+                    name: 'enableDisable',
+                    dataPropertyName: 'isEnabled',
+                },
+                'edit'
+            );
         if (req.permissions.includes('project.delete')) actions.push('delete');
-        if (req.permissions.includes('project.edit'))   actions.push('edit', 'enable', 'disable');
 
         actions.push('search', 'paginate');
         
@@ -172,11 +179,6 @@ export class ProjectController {
                     type: 'text',
                     label: await loc._('Name'),
                 },
-                {
-                    name: 'isEnabled',
-                    type: 'bool',
-                    label: await loc._('Enabled'),
-                }
             ]
         });
     }
