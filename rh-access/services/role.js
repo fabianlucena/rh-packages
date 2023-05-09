@@ -138,6 +138,7 @@ export class RoleService {
         if (!site || !site.isEnabled)
             return;
 
+        const isEnabled = options?.isEnabled ?? true;
         const Op = conf.global.Sequelize.Op;
         const parentOptions = {
             ...options,
@@ -153,11 +154,14 @@ export class RoleService {
                             as: 'OwnerModule',
                             attributes: [],
                             where: {
-                                isEnabled: true,
-                            }
+                                [Op.or]: [
+                                    {id: {[Op.eq]: null}},
+                                    {isEnabled: {[Op.eq]: isEnabled}},
+                                ],
+                            },
                         }
                     ],
-                    where: {},
+                    where: {isEnabled},
                 },
                 {
                     model: conf.global.models.Role,
@@ -169,11 +173,14 @@ export class RoleService {
                             as: 'OwnerModule',
                             attributes: [],
                             where: {
-                                isEnabled: true,
-                            }
+                                [Op.or]: [
+                                    {id: {[Op.eq]: null}},
+                                    {isEnabled: {[Op.eq]: isEnabled}},
+                                ],
+                            },
                         }
                     ],
-                    where: {},
+                    where: {isEnabled},
                 },
             ],
             where: {

@@ -104,37 +104,28 @@ export class GroupService {
     static async getParentsForUsername(username, options) {
         await checkDataForMissingProperties({username}, 'Group', 'username');
         
+        const isEnabled = options?.isEnabled ?? true;
+        const Op = conf.global.Sequelize.Op;
         options = complete(options, {include: []});
         options.include = [
-            /*{
-                model: conf.global.models.User,
-                as: 'User',
-                attributes: [],
-                /*include: [
-                    {
-                        model: conf.global.models.Module,
-                        attributes: [],
-                        where: {
-                            isEnabled: true,
-                        }
-                    }
-                ], * /
-                where: {username},
-            }, */
             {
                 model: conf.global.models.User,
                 as: 'Group',
                 attributes: [],
-                /*include: [
+                include: [
                     {
                         model: conf.global.models.Module,
+                        as: 'OwnerModule',
                         attributes: [],
                         where: {
-                            isEnabled: true,
-                        }
+                            [Op.or]: [
+                                {id: {[Op.eq]: null}},
+                                {isEnabled: {[Op.eq]: isEnabled}},
+                            ],
+                        },
                     }
-                ],*/
-                where: {isEnabled: true},
+                ],
+                where: {isEnabled},
             },
         ];
 
@@ -146,13 +137,6 @@ export class GroupService {
                 where: {username}
             }, options),
         );
-
-        /*options.include.push(
-            completeAssociationOptions({
-                model: conf.global.models.User,
-                as: 'Group'
-            }, options),
-        );*/
 
         return conf.global.models.UserGroup.findAll(options);
     }
@@ -175,6 +159,7 @@ export class GroupService {
      * @returns {Promise{GroupList}}
      */
     static async getAllIdsForUsername(username, options) {
+        const isEnabled = options?.isEnabled ?? true;
         const Op = conf.global.Sequelize.Op;
         const parentOptions = {
             ...options,
@@ -187,13 +172,17 @@ export class GroupService {
                     include: [
                         {
                             model: conf.global.models.Module,
+                            as: 'OwnerModule',
                             attributes: [],
                             where: {
-                                isEnabled: true,
-                            }
+                                [Op.or]: [
+                                    {id: {[Op.eq]: null}},
+                                    {isEnabled: {[Op.eq]: isEnabled}},
+                                ],
+                            },
                         }
                     ],
-                    where: {},
+                    where: {isEnabled},
                 },
                 {
                     model: conf.global.models.User,
@@ -202,13 +191,17 @@ export class GroupService {
                     include: [
                         {
                             model: conf.global.models.Module,
+                            as: 'OwnerModule',
                             attributes: [],
                             where: {
-                                isEnabled: true,
-                            }
+                                [Op.or]: [
+                                    {id: {[Op.eq]: null}},
+                                    {isEnabled: {[Op.eq]: isEnabled}},
+                                ],
+                            },
                         }
                     ],
-                    where: {},
+                    where: {isEnabled},
                 },
             ]
         };

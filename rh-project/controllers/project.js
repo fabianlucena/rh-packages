@@ -210,7 +210,7 @@ export class ProjectController {
                     type: 'checkbox',
                     label: await loc._('Enabled'),
                     placeholder: await loc._('Enabled'),
-                    defaultValue: true,
+                    value: true,
                 }
             ]
         });
