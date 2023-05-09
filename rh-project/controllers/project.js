@@ -201,9 +201,9 @@ export class ProjectController {
                     label: await loc._('Name'),
                     placeholder: await loc._('Name'),
                     readonly: {
-                        create: true,
-                        defaultValue: false,
-                    }
+                        create: false,
+                        defaultValue: true,
+                    },
                 },
                 {
                     name: 'isEnabled',
@@ -211,8 +211,8 @@ export class ProjectController {
                     label: await loc._('Enabled'),
                     placeholder: await loc._('Enabled'),
                     value: true,
-                }
-            ]
+                },
+            ],
         });
     }
 
@@ -362,12 +362,12 @@ export class ProjectController {
 
     /**
      * @swagger
-     * /api/project/disable:
+     * /api/project:
      *  patch:
      *      tags:
      *          - Project
-     *      summary: Disable a project
-     *      description: Disable a project from its UUID
+     *      summary: Update a project
+     *      description: Update a project from its UUID
      *      security:
      *          -   bearerAuth: []
      *      produces:

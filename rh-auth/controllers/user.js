@@ -193,15 +193,18 @@ export class UserController {
                     type: 'text',
                     label: await loc._('Username'),
                     placeholder: await loc._('Username'),
-                    readonly: true,
+                    readonly: : {
+                        create: false,
+                        defaultValue: true,
+                    },
                 },
                 {
                     name: 'enabled',
                     type: 'checkbox',
                     label: await loc._('Enabled'),
                     placeholder: await loc._('Enabled'),
-                }
-            ]
+                },
+            ],
         });
     }
 
@@ -351,12 +354,12 @@ export class UserController {
 
     /**
      * @swagger
-     * /api/user/disable:
+     * /api/user:
      *  patch:
      *      tags:
      *          - User
-     *      summary: Disable an user
-     *      description: Disable an user from its UUID
+     *      summary: Update an user
+     *      description: Update an user from its UUID
      *      security:
      *          -   bearerAuth: []
      *      produces:
