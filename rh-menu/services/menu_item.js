@@ -1,5 +1,5 @@
 import {conf} from '../conf.js';
-import {getSingle, completeIncludeOptions, checkViewOptions} from 'sql-util';
+import {getSingle, completeIncludeOptions, addEnabledFilter, checkViewOptions} from 'sql-util';
 import {deepComplete, spacialize, ucfirst} from 'rf-util';
 
 export class MenuItemService {
@@ -74,12 +74,15 @@ export class MenuItemService {
     }
 
     /**
-     * Gets a list of menuItem. If not isEnabled filter provided returns only the enabled menuItem.
-     * @param {Opions} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{MenuItemList}}
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
      */
-    static async getList(options) {
-        options = deepComplete(options, {where: {isEnabled: true}});
+    static async getListOptions(options) {
+        if (options.isEnabled !== undefined)
+            options = addEnabledFilter(options);
+
         if (options.view) {
             if (!options.attributes)
                 options.attributes = ['uuid', 'name', 'jsonData', 'data'];
@@ -88,7 +91,16 @@ export class MenuItemService {
             checkViewOptions(options);
         }
 
-        return conf.global.models.MenuItem.findAll(options);
+        return options;
+    }
+
+    /**
+     * Gets a list of menuItem.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
+     * @returns {Promise{MenuItemList}}
+     */
+    static async getList(options) {
+        return conf.global.models.MenuItem.findAll(await MenuItemService.getListOptions(options));
     }
 
     /**
