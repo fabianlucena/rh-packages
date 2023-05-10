@@ -19,13 +19,15 @@ export class ProjectService {
     }
 
     /**
-     * Gets a list of projects.
+     * Gets the options for use in the getList and getListAndCount methods.
      * @param {Options} options - options for the @see sequelize.findAll method.
      *  - view: show visible peoperties.
-     * @returns {Promise{ProjectList}]
+     * @returns {options}
      */
-    static async getList(options) {
-        options = deepComplete(options);
+    static async getListOptions(options) {
+        if (!options)
+            options = {};
+
         if (options.view) {
             if (!options.attributes)
                 options.attributes = ['uuid', 'isEnabled', 'name', 'title'];
@@ -45,10 +47,27 @@ export class ProjectService {
         if (options.isEnabled !== undefined)
             options = addEnabledFilter(options);
 
-        if (options.withCount)
-            return conf.global.models.Project.findAndCountAll(options);
-        else
-            return conf.global.models.Project.findAll(options);
+        return options;
+    }
+
+    /**
+     * Gets a list of projects.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {Promise{ProjectList}}
+     */
+    static async getList(options) {
+        return conf.global.models.Project.findAll(await ProjectService.getListOptions(options));
+    }
+
+    /**
+     * Gets a list of projects and the rows count.
+     * @param {Options} options - options for the @see sequelize.findAndCountAll method.
+     *  - view: show visible peoperties.
+     * @returns {Promise{ProjectList, count}}
+     */
+    static async getListAndCount(options) {
+        return conf.global.models.Project.findAndCountAll(await ProjectService.getListOptions(options));
     }
 
     /**

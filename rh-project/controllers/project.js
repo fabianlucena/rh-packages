@@ -136,8 +136,7 @@ export class ProjectController {
         let options = {view: true, limit: 10, offset: 0};
 
         options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
-        options.withCount = true;
-        const result = await ProjectService.getList(options);
+        const result = await ProjectService.getListAndCount(options);
 
         res.status(200).send(result);
     }
@@ -147,14 +146,7 @@ export class ProjectController {
 
         const actions = [];
         if (req.permissions.includes('project.create')) actions.push('create');
-        if (req.permissions.includes('project.edit'))
-            actions.push(
-                {
-                    name: 'enableDisable',
-                    dataPropertyName: 'isEnabled',
-                },
-                'edit'
-            );
+        if (req.permissions.includes('project.edit'))   actions.push('enableDisable','edit');
         if (req.permissions.includes('project.delete')) actions.push('delete');
 
         actions.push('search', 'paginate');
