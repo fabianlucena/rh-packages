@@ -35,7 +35,7 @@ export class ObjectNameService {
      * @returns {Promise{ObjectNameList}}
      */
     static async getList(options) {
-        return conf.global.models.ObjectName.findAll(ObjectNameService.getListOptions(options));
+        return conf.global.models.ObjectName.findAll(await ObjectNameService.getListOptions(options));
     }
 
     /**

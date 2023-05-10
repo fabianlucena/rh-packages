@@ -14,4 +14,4 @@ loc._f('Last');
 loc._f('Next');
 loc._f('Prior');
 loc._f('Search');
-loc._f('Total pages %s\nTotal rows founded %s\nShowing rows from %s to %s');
+loc._f('Total pages %s\nTotal rows founded %s\nShowing %s rows from %s to %s');
