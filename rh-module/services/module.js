@@ -1,5 +1,5 @@
 import {conf} from '../conf.js';
-import {checkDataForMissingProperties, getSingle} from 'sql-util';
+import {checkDataForMissingProperties, addEnabledFilter, getSingle} from 'sql-util';
 import {deepComplete} from 'rf-util';
 
 export class ModuleService {
@@ -31,13 +31,25 @@ export class ModuleService {
     }
 
     /**
-     * Gets a list of modules. If not isEnabled filter provided returns only the enabled modules.
-     * @param {Opions} options - options for the @ref sequelize.findAll method.
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
+     */
+    static async getListOptions(options) {
+        if (options.isEnabled !== undefined)
+            options = addEnabledFilter(options);
+
+        return options;
+    }
+
+    /**
+     * Gets a list of modules.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{ModuleList}}
      */
     static async getList(options) {
-        options = deepComplete(options, {where: {isEnabled: true}});
-        return conf.global.models.Module.findAll(options);
+        return conf.global.models.Module.findAll(await ModuleService.getListOptions(options));
     }
 
     /**
