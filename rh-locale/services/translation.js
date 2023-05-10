@@ -60,13 +60,14 @@ export class TranslationService {
 
         return conf.global.models.Translation.create(data);
     }
-    
+
     /**
-     * Gets a list of translations.
-     * @param {Options} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{LanguageList}}
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
      */
-    static async getList(options) {
+    static async getListOptions(options) {
         await this.completeSourceId(options.where);
         await this.completeLanguageId(options.where);
         await this.completeDomainId(options.where);
@@ -78,7 +79,16 @@ export class TranslationService {
         if (options.where.domainId === undefined && Object.prototype.hasOwnProperty.call(options.where, 'domainId'))
             options.where.domainId = null;
 
-        return conf.global.models.Translation.findAll(options);
+        return options;
+    }
+    
+    /**
+     * Gets a list of translations.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
+     * @returns {Promise{LanguageList}}
+     */
+    static async getList(options) {
+        return conf.global.models.Translation.findAll(await TranslationService.getListOptions(options));
     }
 
     static async _gt(language, text, domain) {

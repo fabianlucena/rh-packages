@@ -73,5 +73,10 @@
         "language": "es",
         "ref": "..\\rh-locale\\texts.js [5,18]",
         "translation": "Acciones"
+    },
+    "Total pages %s\\nTotal rows founded %s\\nShowing rows from %s to %s": {
+        "language": "es",
+        "ref": "..\\rh-locale\\texts.js [17,76]",
+        "translation": "Páginas en total %s\\nFilas en total encontradas %s\\nMostrando las filas desde %s al %s"
     }
 }

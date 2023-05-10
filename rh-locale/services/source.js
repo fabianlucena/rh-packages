@@ -2,7 +2,7 @@
 
 import {conf} from '../conf.js';
 import {MissingPropertyError, getSingle} from 'sql-util';
-import {complete, deepComplete} from 'rf-util';
+import {deepComplete} from 'rf-util';
 
 export class SourceService {
     /**
@@ -19,12 +19,25 @@ export class SourceService {
     }
 
     /**
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
+     */
+    static async getListOptions(options) {
+        if (!options)
+            options = {};
+
+        return options;
+    }
+
+    /**
      * Gets a list of sources.
      * @param {Options} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{SourceList}}
      */
-    static getList(options) {
-        return conf.global.models.Source.findAll(complete(options, {}));
+    static async getList(options) {
+        return conf.global.models.Source.findAll(await SourceService.getListOptions(options));
     }
 
     /**
