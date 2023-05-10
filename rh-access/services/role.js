@@ -47,11 +47,12 @@ export class RoleService {
     }
 
     /**
-     * Gets a list of roles. If not isEnabled filter provided returns only the enabled roles.
-     * @param {Opions} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{RoleList}}
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
      */
-    static async getList(options) {
+    static async getListOptions(options) {
         if (options.q) {
             const q = `%${options.q}%`;
             const Op = conf.global.Sequelize.Op;
@@ -68,10 +69,25 @@ export class RoleService {
             options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
         }
 
-        if (options.withCount)
-            return conf.global.models.Role.findAndCountAll(options);
-        else
-            return conf.global.models.Role.findAll(options);
+        return options;
+    }
+
+    /**
+     * Gets a list of roles.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
+     * @returns {Promise{RoleList}}
+     */
+    static async getList(options) {
+        return conf.global.models.Role.findAll(await RoleService.getListOptions(options));
+    }
+    
+    /**
+     * Gets a list of roles ant the rows count.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
+     * @returns {Promise{RoleList, count}}
+     */
+    static async getListAndCount(options) {
+        return conf.global.models.Role.findAndCountAll(await RoleService.getListOptions(options));
     }
 
     /**

@@ -1,6 +1,6 @@
 import {conf} from '../conf.js';
 import {MissingPropertyError, getSingle} from 'sql-util';
-import {complete, deepComplete} from 'rf-util';
+import {deepComplete} from 'rf-util';
 
 export class ObjectNameService {
     /**
@@ -17,12 +17,25 @@ export class ObjectNameService {
     }
 
     /**
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
+     */
+    static async getListOptions(options) {
+        if (!options)
+            options = {};
+
+        return options;
+    }
+
+    /**
      * Gets a list of object names.
      * @param {Options} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{ObjectNameList}}
      */
-    static getList(options) {
-        return conf.global.models.ObjectName.findAll(complete(options, {}));
+    static async getList(options) {
+        return conf.global.models.ObjectName.findAll(ObjectNameService.getListOptions(options));
     }
 
     /**

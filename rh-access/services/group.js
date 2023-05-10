@@ -47,11 +47,12 @@ export class GroupService {
     }
 
     /**
-     * Gets a list of groups.
-     * @param {Opions} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{GroupList}}
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
      */
-    static async getList(options) {
+    static async getListOptions(options) {
         if (options.q) {
             const q = `%${options.q}%`;
             const Op = conf.global.Sequelize.Op;
@@ -68,10 +69,25 @@ export class GroupService {
             options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
         }
 
-        if (options.withCount)
-            return conf.global.models.User.findAndCountAll(options);
-        else
-            return conf.global.models.User.findAll(options);
+        return options;
+    }
+
+    /**
+     * Gets a list of groups.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
+     * @returns {Promise{GroupList}}
+     */
+    static async getList(options) {
+        return conf.global.models.User.findAll(await GroupService.getListOptions(options));
+    }
+
+    /**
+     * Gets a list of groups and the rows count.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
+     * @returns {Promise{GroupList, count}}
+     */
+    static async getListAndCount(options) {
+        return conf.global.models.User.findAndCountAll(await GroupService.getListOptions(options));
     }
 
     /**

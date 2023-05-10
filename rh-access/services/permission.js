@@ -31,11 +31,12 @@ export class PermissionService {
     }
 
     /**
-     * Gets a list of permission. If not isEnabled filter provided returns only the enabled permissions.
-     * @param {Options} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{PermissionList}}
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
      */
-    static async getList(options) {
+    static async getListOptions(options) {
         if (options.q) {
             const q = `%${options.q}%`;
             const Op = conf.global.Sequelize.Op;
@@ -52,10 +53,25 @@ export class PermissionService {
             options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
         }
 
-        if (options.withCount)
-            return conf.global.models.Permission.findAndCountAll(options);
-        else
-            return conf.global.models.Permission.findAll(options);
+        return options;
+    }
+
+    /**
+     * Gets a list of permission.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
+     * @returns {Promise{PermissionList}}
+     */
+    static async getList(options) {
+        return conf.global.models.Permission.findAll(await PermissionService.getListOptions(options));
+    }
+
+    /**
+     * Gets a list of permission ant the rows count.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
+     * @returns {Promise{PermissionList, count}}
+     */
+    static async getListAndCount(options) {
+        return conf.global.models.Permission.findAndCountAll(await PermissionService.getListOptions(options));
     }
 
     /**

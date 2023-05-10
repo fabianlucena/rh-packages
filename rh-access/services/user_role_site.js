@@ -65,15 +65,25 @@ export class UserRoleSiteService {
     }
 
     /**
-     * Gets a list of UserRoleSite.
-     * @param {Opions} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{MenuItemList}}
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
      */
-    static async getList(options) {
+    static async getListOptions(options) {
         if (options.isEnabled !== undefined)
             options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
 
-        return conf.global.models.UserRoleSite.findAll(options);
+        return options;
+    }
+
+    /**
+     * Gets a list of UserRoleSite.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
+     * @returns {Promise{MenuItemList}}
+     */
+    static async getList(options) {
+        return conf.global.models.UserRoleSite.findAll(await UserRoleSiteService.getListOptions(options));
     }
 
     /**

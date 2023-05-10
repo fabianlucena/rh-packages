@@ -68,20 +68,36 @@ export class ShareService {
     }
 
     /**
-     * Gets a list of shares.
-     * @param {Options} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{ShareList}}
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
      */
-    static getList(options) {
+    static async getListOptions(options) {
         if (options.isEnabled !== undefined) {
             options = addEnabledFilter(options);
             options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
         }
 
-        if (options.withCount)
-            return conf.global.models.Share.findAndCountAll(options);
-        else
-            return conf.global.models.Share.findAll(options);
+        return options;
+    }
+
+    /**
+     * Gets a list of shares.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
+     * @returns {Promise{ShareList}}
+     */
+    static async getList(options) {
+        return conf.global.models.Share.findAll(await ShareService.getListOptions(options));
+    }
+
+    /**
+     * Gets a list of shares ant the rows count.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
+     * @returns {Promise{ShareList, count}}
+     */
+    static async getListAndCount(options) {
+        return conf.global.models.Share.findAndCountAll(await ShareService.getListOptions(options));
     }
 
     /**

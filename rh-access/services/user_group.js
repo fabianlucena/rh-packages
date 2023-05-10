@@ -60,18 +60,34 @@ export class UserGroupService {
     }
 
     /**
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
+     */
+    static async getListOptions(options) {
+        if (options.isEnabled !== undefined)
+            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+
+        return options;
+    }
+
+    /**
      * Gets a list of user groups.
      * @param {Options} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{GroupList}}
      */
     static async getList(options) {
-        if (options.isEnabled !== undefined)
-            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+        return conf.global.models.UserGroup.findAll(await UserGroupService.getListOptions(options));
+    }
 
-        if (options.withCount)
-            return conf.global.models.UserGroup.findAndCountAll(options);
-        else
-            return conf.global.models.UserGroup.findAll(options);
+    /**
+     * Gets a list of user groups and the rows count.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
+     * @returns {Promise{GroupList, count}}
+     */
+    static async getListAndCount(options) {
+        return conf.global.models.UserGroup.findAndCountAll(await UserGroupService.getListOptions(options));
     }
 
     /**

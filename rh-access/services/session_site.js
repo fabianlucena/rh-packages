@@ -1,6 +1,5 @@
 import {conf} from '../conf.js';
-import {checkDataForMissingProperties} from 'sql-util';
-import {deepComplete} from 'rf-util';
+import {checkDataForMissingProperties, addEnabledFilter} from 'sql-util';
 
 export class SessionSiteService {
     /**
@@ -72,12 +71,15 @@ export class SessionSiteService {
     }
 
     /**
-     * Gets a list of session sites. If not isEnabled filter provided for the site object returns only rows for the enabled sites.
-     * @param {Opions} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{SessionSiteList}}
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
      */
-    static async getList(options) {
-        options = deepComplete(options, {where: {isEnabled: true}});
+    static async getListOptions(options) {
+        if (options.isEnabled !== undefined)
+            options = addEnabledFilter(options);
+
         if (!options.includes) {
             options.include = [];
             options.include.push({
@@ -87,7 +89,16 @@ export class SessionSiteService {
             });
         }
 
-        return conf.global.models.SessionSite.findAll(options);
+        return options;
+    }
+
+    /**
+     * Gets a list of session sites.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
+     * @returns {Promise{SessionSiteList}}
+     */
+    static async getList(options) {
+        return conf.global.models.SessionSite.findAll(await SessionSiteService.getListOptions(options));
     }
 
     /**

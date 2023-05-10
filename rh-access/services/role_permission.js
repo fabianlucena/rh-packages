@@ -49,15 +49,25 @@ export class RolePermissionService {
     }
 
     /**
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
+     */
+    static async getListOptions(options) {
+        if (options.isEnabled !== undefined)
+            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+
+        return options;
+    }
+
+    /**
      * Gets a list of poermissions per role.
      * @param {Options} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{RolePermissionList}}
      */
     static async getList(options) {
-        if (options.isEnabled !== undefined)
-            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
-        
-        return conf.global.models.RolePermission.findAll(options);
+        return conf.global.models.RolePermission.findAll(await RolePermissionService.getListOptions(options));
     }
 
     /**
