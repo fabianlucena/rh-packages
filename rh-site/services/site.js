@@ -55,11 +55,12 @@ export class SiteService {
     }
 
     /**
-     * Gets a list of sites.
-     * @param {Opions} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{SiteList}}
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
      */
-    static getList(options) {
+    static async getListOptions(options) {
         if (options.view) {
             if (!options.attributes)
                 options.attributes = ['uuid', 'name', 'title'];
@@ -88,10 +89,25 @@ export class SiteService {
             options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
         }
 
-        if (options.withCount)
-            return conf.global.models.Site.findAndCountAll(options);
-        else
-            return conf.global.models.Site.findAll(options);
+        return options;
+    }
+
+    /**
+     * Gets a list of sites.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
+     * @returns {Promise{SiteList}}
+     */
+    static async getList(options) {
+        return conf.global.models.Site.findAll(await SiteService.getListOptions(options));
+    }
+
+    /**
+     * Gets a list of sites and the rows count.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
+     * @returns {Promise{SiteList, count}}
+     */
+    static async getListAndCount(options) {
+        return conf.global.models.Site.findAndCountAll(await SiteService.getListOptions(options));
     }
 
     /**
