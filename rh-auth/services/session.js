@@ -66,12 +66,12 @@ export class SessionService {
     }
 
     /**
-     * Gets a list of sessions.
+     * Gets the options for use in the getList and getListAndCount methods.
      * @param {Options} options - options for the @see sequelize.findAll method.
      *  - view: show visible peoperties.
-     * @returns {Promise{SessionList}]
+     * @returns {options}
      */
-    static getList(options) {
+    static async getListOptions(options) {
         if (!options)
             options = {};
 
@@ -93,8 +93,19 @@ export class SessionService {
             }
         }
 
-        return checkViewOptions(options)
-            .then(options => conf.global.models.Session.findAll(options));
+        options = await checkViewOptions(options);
+
+        return options;
+    }
+
+    /**
+     * Gets a list of sessions.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {Promise{SessionList}]
+     */
+    static async getList(options) {
+        return conf.global.models.Session.findAll(await SessionService.getListOptions(options));
     }
 
     /**

@@ -14,11 +14,12 @@ export class UserTypeService {
     }
 
     /**
-     * Gets a list of users types.
-     * @param {Options} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{UserTypeList}]
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
      */
-    static getList(options) {
+    static async getListOptions(options) {
         if (options.q) {
             const q = `%${options.q}%`;
             const Op = conf.global.Sequelize.Op;
@@ -36,10 +37,25 @@ export class UserTypeService {
                 options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
         }
 
-        if (options.withCount)
-            return conf.global.models.UserType.findAndCountAll(options);
-        else
-            return conf.global.models.UserType.findAll(options);
+        return options;
+    }
+
+    /**
+     * Gets a list of users types.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
+     * @returns {Promise{UserTypeList}}
+     */
+    static async getList(options) {
+        return conf.global.models.UserType.findAll(await UserTypeService.getListOptions(options));
+    }
+
+    /**
+     * Gets a list of users types ant the rows count.
+     * @param {Options} options - options for the @ref sequelize.findAll method.
+     * @returns {Promise{UserTypeList, count}}
+     */
+    static async getListAndCount(options) {
+        return conf.global.models.UserType.findAndCountAll(await UserTypeService.getListOptions(options));
     }
 
     /**

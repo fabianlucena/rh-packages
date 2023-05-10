@@ -1,6 +1,6 @@
 import {conf} from '../conf.js';
 import {checkDataForMissingProperties, getSingle} from 'sql-util';
-import {complete, deepComplete} from 'rf-util';
+import {deepComplete} from 'rf-util';
 
 export class IdentityTypeService {
     /**
@@ -16,12 +16,25 @@ export class IdentityTypeService {
     }
 
     /**
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
+     */
+    static async getListOptions(options) {
+        if (!options)
+            options = {};
+
+        return options;
+    }
+
+    /**
      * Gets a list of identities types.
      * @param {Options} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{IdentityTypeList}}
      */
-    static getList(options) {
-        return conf.global.models.IdentityType.findAll(complete(options, {}));
+    static async getList(options) {
+        return conf.global.models.IdentityType.findAll(await IdentityTypeService.getListOptions(options));
     }
 
     /**

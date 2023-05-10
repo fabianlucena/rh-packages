@@ -1,8 +1,8 @@
 import {IdentityTypeService} from '../services/identity_type.js';
 import {UserService} from '../services/user.js';
 import {conf} from '../conf.js';
-import {checkDataForMissingProperties, MissingPropertyError, completeAssociationOptions, getSingle} from 'sql-util';
-import {complete, deepComplete} from 'rf-util';
+import {checkDataForMissingProperties, MissingPropertyError, completeAssociationOptions, addEnabledFilter, getSingle} from 'sql-util';
+import {complete} from 'rf-util';
 import crypto from 'crypto';
 
 export class IdentityService {
@@ -96,12 +96,25 @@ export class IdentityService {
     }
 
     /**
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
+     */
+    static async getListOptions(options) {
+        if (options.isEnabled !== undefined)
+            options = addEnabledFilter(options);
+
+        return options;
+    }
+
+    /**
      * Gets a list of identities. If not isEnabled filter provided returns only the enabled identities.
      * @param {Options} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{DeviceList}]
      */
-    static getList(options) {
-        return conf.global.models.Identity.findAll(deepComplete(options, {where: {isEnabled: true}}));
+    static async getList(options) {
+        return conf.global.models.Identity.findAll(await IdentityService.getListOptions(options));
     }
     
     /**

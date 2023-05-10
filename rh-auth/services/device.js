@@ -48,14 +48,27 @@ export class DeviceService {
 
         return conf.global.models.Device.create(data);
     }
+    
+    /**
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {options}
+     */
+    static async getListOptions(options) {
+        if (!options)
+            options = {};
+
+        return options;
+    }
 
     /**
      * Gets a list of devices.
      * @param {Options} options - options for the @see sequelize.findAll method.
      * @returns {Promise{DeviceList}]
      */
-    static getList(options) {
-        return conf.global.models.Device.findAll(complete(options, {}));
+    static async getList(options) {
+        return conf.global.models.Device.findAll(await DeviceService.getListOptions(options));
     }
 
     /**
