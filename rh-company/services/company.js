@@ -57,7 +57,7 @@ export class CompanyService {
      * @returns {Promise{CompanyList}}
      */
     static async getList(options) {
-        return conf.global.models.Company.findAll(await CompanieService.getListOptions(options));
+        return conf.global.models.Company.findAll(await CompanyService.getListOptions(options));
     }
 
     /**

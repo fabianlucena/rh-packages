@@ -12,7 +12,7 @@
     "Companies": {
         "language": "es",
         "ref": "..\\rh-company\\controllers\\company.js [183,44]",
-        "translation": "empresas"
+        "translation": "Empresas"
     },
     "Create companies": {
         "language": "es",
