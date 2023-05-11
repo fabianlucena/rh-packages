@@ -1,5 +1,6 @@
 import {MenuItemService} from '../services/menu_item.js';
 import {conf} from '../conf.js';
+import {runSequentially} from 'rf-util';
 
 /**
  * @swagger
@@ -52,7 +53,8 @@ export class MenuController {
 
         MenuItemService.getList(options)
             .then(async rows => {
-                const mil = await Promise.all(rows.map(async mir => {
+                const loc = req.loc;
+                const mil = await runSequentially(rows, async mir => {
                     let mi = mir.toJSON();
                     if (mi.Parent) {
                         mi.parent = mi.Parent?.name;
@@ -66,12 +68,11 @@ export class MenuController {
                         delete mi.jsonData;
                     }
 
-                    const loc = req.loc;
                     if (mi.label)
                         mi.label = await loc._d('menu', mi.label);
 
                     return mi;
-                }));
+                });
 
                 res.status(200).send(mil);
             });

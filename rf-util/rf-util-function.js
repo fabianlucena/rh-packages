@@ -4,6 +4,14 @@ export async function runSequentially(arr, func) {
     if (!arr)
         return;
 
-    for(let i in arr)
-        await func(arr[i]);
+    let result;
+    if (arr instanceof Array)
+        result = [];
+    else
+        result = {};
+
+    for(let key in arr)
+        result[key] = await func(arr[key], key);
+
+    return result;
 }
