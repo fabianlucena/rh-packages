@@ -1,0 +1,62 @@
+{
+    "Company manager": {
+        "language": "es",
+        "ref": "..\\rh-company\\conf.js [22,70]",
+        "translation": "Administrador de empresas"
+    },
+    "Get companies": {
+        "language": "es",
+        "ref": "..\\rh-company\\conf.js [30,68]",
+        "translation": "Obtener empresas"
+    },
+    "Companies": {
+        "language": "es",
+        "ref": "..\\rh-company\\controllers\\company.js [183,44]",
+        "translation": "empresas"
+    },
+    "Create companies": {
+        "language": "es",
+        "ref": "..\\rh-company\\conf.js [31,71]",
+        "translation": "Crear empresas"
+    },
+    "Edit companies": {
+        "language": "es",
+        "ref": "..\\rh-company\\conf.js [32,69]",
+        "translation": "Modificar empresas"
+    },
+    "Delete companies": {
+        "language": "es",
+        "ref": "..\\rh-company\\conf.js [33,71]",
+        "translation": "Eliminar empresas"
+    },
+    "Title": {
+        "language": "es",
+        "ref": "..\\rh-company\\controllers\\company.js [190,54]",
+        "translation": "Título"
+    },
+    "Name": {
+        "language": "es",
+        "ref": "..\\rh-company\\controllers\\company.js [196,53]",
+        "translation": "Nombre"
+    },
+    "Enabled": {
+        "language": "es",
+        "ref": "..\\rh-company\\controllers\\company.js [206,56]",
+        "translation": "Habilitado"
+    },
+    "Spanish": {
+        "language": "es",
+        "ref": "rh-company-es.js [19,41]",
+        "translation": "Español"
+    },
+    "Spanish language.": {
+        "language": "es",
+        "ref": "rh-company-es.js [20,57]",
+        "translation": "Idioma español."
+    },
+    "The company data does not have a owner.": {
+        "language": "es",
+        "ref": "..\\rh-company\\controllers\\company.js [70,91]",
+        "translation": "La empresa no tiene un propietario."
+    }
+}
