@@ -1,6 +1,6 @@
 import {SessionService, SessionClosedError, NoSessionForAuthTokenError} from '../services/session.js';
 import {getOptionsFromParamsAndODataAsync, deleteHandlerAsync} from 'http-util';
-import {getErrorMessageAsync, deepMerge, replace, checkParameterUUID} from 'rf-util';
+import {getErrorMessageAsync, checkParameter, checkParameterUUID} from 'rf-util';
 
 export class SessionController {
     static configureMiddleware() {
@@ -117,15 +117,56 @@ export class SessionController {
      *                  $ref: '#/definitions/Error'
      */
     static async get(req, res) {
+        if ('$grid' in req.query)
+            return SessionController.getGrid(req, res);
+        else if ('$form' in req.query)
+            return SessionController.getForm(req, res);
+            
         const definitions = {uuid: 'uuid', open: 'date', close: 'date', authToken: 'string', index: 'int'};
+        let options = {view: true, limit: 10, offset: 0};
 
-        getOptionsFromParamsAndODataAsync(req?.query, definitions)
-            .then(options => new Promise(resolve => req.checkPermission('session.get')
-                .then(() => resolve(options))
-                .catch(() => resolve(deepMerge(options, {where: {id: req.session.id}}))))
-            )
-            .then(options => SessionService.getList(replace(options, {view: true})))
-            .then(rows => res.status(200).send(rows));
+        options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
+        try {
+            await req.checkPermission('session.get');
+        } catch(_) {
+            options.where = {...options.where, id: req.session.id};
+        }
+
+        const result = await SessionService.getListAndCount(options);
+
+        res.status(200).send(result);
+    }
+
+    static async getGrid(req, res) {
+        checkParameter(req.query, '$grid');
+
+        const actions = [];
+        if (req.permissions.includes('session.delete')) actions.push('delete');
+
+        actions.push('search', 'paginate');
+        
+        let loc = req.loc;
+
+        res.status(200).send({
+            title: await loc._('Sessions'),
+            load: {
+                service: 'session',
+                method: 'get',
+            },
+            actions: actions,
+            columns: [
+                {
+                    name: 'open',
+                    type: 'text',
+                    label: await loc._('Open'),
+                },
+                {
+                    name: 'close',
+                    type: 'text',
+                    label: await loc._('Close'),
+                },
+            ]
+        });
     }
 
     /**

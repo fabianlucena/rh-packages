@@ -109,6 +109,16 @@ export class SessionService {
     }
 
     /**
+     * Gets a list of sessions ant its rows count.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - view: show visible peoperties.
+     * @returns {Promise{SessionList}]
+     */
+    static async getListAndCount(options) {
+        return conf.global.models.Session.findAndCountAll(await SessionService.getListOptions(options));
+    }
+
+    /**
      * Gets a session for its name. For many coincidences and for no rows this method fails.
      * @param {string} name - name for the session to get.
      * @param {Options} options - Options for the @ref getList method.

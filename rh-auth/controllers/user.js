@@ -168,7 +168,7 @@ export class UserController {
                     name: 'isEnabled',
                     type: 'bool',
                     label: await loc._('Enabled'),
-                }
+                },
             ]
         });
     }
