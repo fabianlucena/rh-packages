@@ -90,20 +90,20 @@ export class PermissionService {
      * @param {data} data - data for the new Permission @see create.
      * @returns {Promise{Permission}}
      */
-    static createIfNotExists(data, options) {
-        return PermissionService.getForName(data.name, {attributes: ['id'], foreign:{module:{attributes:[]}}, skipNoRowsError: true, ...options})
-            .then(async permission => {
-                if (!permission)
-                    permission = await PermissionService.create(data);
+    static async createIfNotExists(data, options) {
+        let permission = await PermissionService.getForName(data.name, {attributes: ['id'], foreign:{module:{attributes:[]}}, skipNoRowsError: true, ...options});
+        if (!permission)
+            permission = await PermissionService.create(data);
 
-                if (data.roles) {
-                    const roles = data.roles instanceof Array?
-                        data.roles:
-                        data.roles.split(',');
-        
-                    await runSequentially(roles, async roleName => await RolePermissionService.createIfNotExists({role: roleName, permission: data.name}));
-                }
-            });
+        if (data.roles) {
+            const roles = data.roles instanceof Array?
+                data.roles:
+                data.roles.split(',');
+
+            await runSequentially(roles, async roleName => await RolePermissionService.createIfNotExists({role: roleName, permission: data.name}));
+        }
+
+        return permission;
     }
 
     /**

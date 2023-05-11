@@ -31,7 +31,6 @@ function getCheckPermissionHandler(chain) {
 
         throw new NoPermissionError({permissions: requiredPermissions});
     };
-
 }
 
 async function checkPermissionForUsernameAndSiteName(privileges, ...requiredPermissions) {
