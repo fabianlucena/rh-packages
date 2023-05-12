@@ -1,5 +1,5 @@
 import {conf} from '../conf.js';
-import {getSingle, addEnabledFilter} from 'sql-util';
+import {getSingle, addEnabledFilter, includeCollaborators} from 'sql-util';
 import {complete, deepComplete, _Error} from 'rf-util';
 
 export class CompanyService {
@@ -10,12 +10,26 @@ export class CompanyService {
      * @returns {Promise{Company}}
      */
     static async create(data) {
-        const company = await conf.global.models.Company.create(data);
+        try {
+            return await conf.global.sequelize.transaction(async t => {
+                const company = await conf.global.models.Company.create(data, { transaction: t });
+                if (data.owner || data.ownerId)
+                    await conf.global.services.Share.create(
+                        {
+                            objectName: 'Company',
+                            objectId: company.id,
+                            userId: data.ownerId,
+                            user: data.owner,
+                            type: 'owner'
+                        },
+                        { transaction: t }
+                    );
 
-        if (data.owner || data.ownerId)
-            await conf.global.services.Share.create({objectName: 'Company', objectId: company.id, userId: data.ownerId, user: data.owner, type: 'owner'});
-
-        return company;
+                return company;
+            });
+        } catch (error) {
+            return null;
+        }
     }
 
     /**
@@ -31,6 +45,11 @@ export class CompanyService {
         if (options.view) {
             if (!options.attributes)
                 options.attributes = ['uuid', 'isEnabled', 'name', 'title'];
+        }
+
+        if (options.includeOwner) {
+            includeCollaborators(options, 'Company', conf.global.models, 'owner');
+            delete options.includeOwner;
         }
 
         if (options.q) {

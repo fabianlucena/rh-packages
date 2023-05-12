@@ -4,6 +4,9 @@ import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {
     class Company extends sequelize.Sequelize.Model {
+        static postAssociate(models) {
+            this.hasMany(models.Share, {as: 'Collaborators', foreignKey: 'objectId'});
+        }
     }
     Company.init({
         id: {
@@ -32,7 +35,12 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true
-        }
+        },
+        isTranslatable: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        },
     }, {
         sequelize,
         timestamps: true,

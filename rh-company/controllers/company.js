@@ -133,10 +133,18 @@ export class CompanyController {
             return CompanyController.getForm(req, res);
             
         const definitions = {uuid: 'uuid', name: 'string'};
-        let options = {view: true, limit: 10, offset: 0};
+        let options = {view: true, limit: 10, offset: 0, includeOwner: true};
 
         options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
         const result = await CompanyService.getListAndCount(options);
+
+        result.rows = result.rows.map(row => {
+            row = row.toJSON();
+            return {
+                ...row,
+                ownerDisplayName: row.Collaborators[0].User?.displayName ?? null
+            };
+        });
 
         res.status(200).send(result);
     }
@@ -170,6 +178,11 @@ export class CompanyController {
                     name: 'name',
                     type: 'text',
                     label: await loc._('Name'),
+                },
+                {
+                    name: 'ownerDisplayName',
+                    type: 'text',
+                    label: await loc._('Owner'),
                 },
             ]
         });
