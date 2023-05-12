@@ -29,7 +29,7 @@ export const conf = {
         ],
 
         permissions: [
-            {name: 'privileges', title: loc._f('Privileges'), roles: 'everybody', ownerModule: name, menuItem: {name: 'privileges', label: loc._f('Privileges'), parent: 'session-menu', action: 'object', service: 'privileges'}},
+            {name: 'privileges', title: loc._f('Privileges'), isTranslatable: true, roles: 'everybody', ownerModule: name, menuItem: {parent: 'session-menu', action: 'object', service: 'privileges'}},
         ],
     },
 };

@@ -5,34 +5,38 @@ import {runSequentially} from 'rf-util';
 export const conf = localConf;
 
 conf.afterConfigAsync = async function(_, global) {
-    await runSequentially(global?.data?.permissions, async permission => {
-        const menuItemData = permission.menuItem;
+    await runSequentially(global?.data?.permissions, async permissionData => {
+        const menuItemData = permissionData.menuItem;
         if (!menuItemData)
             return;
 
         if (!menuItemData.data)
             menuItemData.data = {};
 
-        menuItemData.name ??= menuItemData.data.name ?? permission.name;
+        menuItemData.name ??= menuItemData.data.name ?? permissionData.name;
         menuItemData.uuid ??= menuItemData.data.uuid;
         menuItemData.isEnabled ??= menuItemData.data.isEnabled;
         menuItemData.name ??= menuItemData.data.name;
         menuItemData.parent ??= menuItemData.data.parent;
-        menuItemData.permission ??= permission.name;
-            
-        menuItemData.data = {
-            label: (permission.label ?? permission.title), 
+        menuItemData.permission ??= permissionData.name;
+        menuItemData.isTranslatable ??= permissionData.isTranslatable;
+        menuItemData.data.label ??= menuItemData.label;
+
+        if (!menuItemData.data.label) {
+            const label = permissionData.label ?? permissionData.title;
+            if (label) {
+                menuItemData.data.label = label;
+                menuItemData.isTranslatable ??= permissionData.isTranslatable;
+            }
+        }
+         
+        // eslint-disable-next-line no-unused-vars
+        let {uuid, isEnabled, name, parent, parentId, permission, permissionId, isTranslatable, data, ...resData} = {
             ...menuItemData, 
-            data: undefined, 
             ...menuItemData.data, 
-            uuid: undefined, 
-            isEnabled: undefined, 
-            name: undefined, 
-            parent: undefined, 
-            parentId: undefined, 
-            permission: undefined, 
-            permissionId: undefined
         };
+
+        menuItemData.data = resData;
 
         await MenuItemService.createIfNotExists(menuItemData);
     });

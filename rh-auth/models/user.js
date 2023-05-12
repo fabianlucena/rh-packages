@@ -37,7 +37,12 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true
-        }
+        },
+        isTranslatable: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        },
     }, {
         sequelize,
         timestamps: true,

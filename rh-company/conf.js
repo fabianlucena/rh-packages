@@ -19,7 +19,7 @@ export const conf = {
     afterConfigAsync: null,
     data: {
         roles: [
-            {name: 'companyManager', title: loc._f('Company manager'), ownerModule: name},
+            {name: 'companyManager', title: loc._f('Company manager'), isTranslatable: true, ownerModule: name},
         ],
 
         rolesParentsSites: [
@@ -27,10 +27,10 @@ export const conf = {
         ],
 
         permissions: [
-            {name: 'company.get',    title: loc._f('Get companies'),    roles: 'companyManager', ownerModule: name, menuItem: {name:'company.get', label: loc._f('Companies'), action: 'grid', service: 'company'}},
-            {name: 'company.create', title: loc._f('Create companies'), roles: 'companyManager', ownerModule: name,},
-            {name: 'company.edit',   title: loc._f('Edit companies'),   roles: 'companyManager', ownerModule: name,},
-            {name: 'company.delete', title: loc._f('Delete companies'), roles: 'companyManager', ownerModule: name,},
+            {name: 'company.get',    title: loc._f('Get companies'),    isTranslatable: true, roles: 'companyManager', ownerModule: name, menuItem: {label: loc._f('Companies'), isTranslatable: true, action: 'grid', service: 'company'}},
+            {name: 'company.create', title: loc._f('Create companies'), isTranslatable: true, roles: 'companyManager', ownerModule: name,},
+            {name: 'company.edit',   title: loc._f('Edit companies'),   isTranslatable: true, roles: 'companyManager', ownerModule: name,},
+            {name: 'company.delete', title: loc._f('Delete companies'), isTranslatable: true, roles: 'companyManager', ownerModule: name,},
         ],
     },
 };

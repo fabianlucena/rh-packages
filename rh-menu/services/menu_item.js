@@ -85,7 +85,7 @@ export class MenuItemService {
 
         if (options.view) {
             if (!options.attributes)
-                options.attributes = ['uuid', 'name', 'jsonData', 'data'];
+                options.attributes = ['uuid', 'name', 'jsonData', 'isTranslatable', 'data'];
             
             completeIncludeOptions(options, 'Parent', {model: conf.global.models.MenuItem, as: 'Parent', required: false, attributes: ['name'], where: {isEnabled: true}});
             checkViewOptions(options);

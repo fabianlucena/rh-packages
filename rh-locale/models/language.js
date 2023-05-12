@@ -36,6 +36,11 @@ export default (sequelize, DataTypes) => {
             allowNull: false,
             unique: true
         },
+        isTranslatable: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        },
         description: {
             type: DataTypes.STRING,
             allowNull: true

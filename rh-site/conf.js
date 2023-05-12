@@ -21,13 +21,13 @@ export const conf = {
     afterConfigAsync: null,
     data: {
         sites: [
-            {name: 'system', title: loc._f('System'), ownerModule: name},
+            {name: 'system', title: loc._f('System'), isTranslatable: true, ownerModule: name},
         ],
 
         permissions: [
-            {name: 'current-site.switch', title: loc._f('Switch site'),      roles: 'everybody', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site'}},
-            {name: 'current-site.get',    title: loc._f('Get current site'), roles: 'everybody', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site', method: 'get'}},
-            {name: 'site.get',            title: loc._f('Get site(s)'),      roles: 'everybody', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site'}},
+            {name: 'current-site.switch', title: loc._f('Switch site'),      isTranslatable: true, roles: 'everybody', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site'}},
+            {name: 'current-site.get',    title: loc._f('Get current site'), isTranslatable: true, roles: 'everybody', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site', method: 'get'}},
+            {name: 'site.get',            title: loc._f('Get site(s)'),      isTranslatable: true, roles: 'everybody', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site'}},
         ],
     },
 };

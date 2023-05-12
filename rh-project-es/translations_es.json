@@ -1,47 +1,47 @@
 {
     "Project manager": {
         "language": "es",
-        "ref": "..\\rh-project\\conf.js [24,70]",
+        "ref": "..\\rh-project\\conf.js [22,70]",
         "translation": "Administrador de proyectos"
     },
     "Get projects": {
         "language": "es",
-        "ref": "..\\rh-project\\conf.js [32,67]",
+        "ref": "..\\rh-project\\conf.js [30,67]",
         "translation": "Obtener proyectos"
     },
     "Projects": {
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [180,43]",
+        "ref": "..\\rh-project\\controllers\\project.js [203,43]",
         "translation": "Proyectos"
     },
     "Create projects": {
         "language": "es",
-        "ref": "..\\rh-project\\conf.js [33,70]",
+        "ref": "..\\rh-project\\conf.js [31,70]",
         "translation": "Crear proyectos"
     },
     "Edit projects": {
         "language": "es",
-        "ref": "..\\rh-project\\conf.js [34,68]",
+        "ref": "..\\rh-project\\conf.js [32,68]",
         "translation": "Modificar proyectos"
     },
     "Delete projects": {
         "language": "es",
-        "ref": "..\\rh-project\\conf.js [35,70]",
+        "ref": "..\\rh-project\\conf.js [33,70]",
         "translation": "Eliminar proyectos"
     },
     "Title": {
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [187,54]",
+        "ref": "..\\rh-project\\controllers\\project.js [210,54]",
         "translation": "Título"
     },
     "Name": {
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [193,53]",
+        "ref": "..\\rh-project\\controllers\\project.js [217,53]",
         "translation": "Nombre"
     },
     "Enabled": {
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [200,56]",
+        "ref": "..\\rh-project\\controllers\\project.js [240,56]",
         "translation": "Habilitado"
     },
     "Spanish": {
@@ -53,5 +53,20 @@
         "language": "es",
         "ref": "rh-project-es.js [20,57]",
         "translation": "Idioma español."
+    },
+    "The project data does not have a owner.": {
+        "language": "es",
+        "ref": "..\\rh-project\\controllers\\project.js [70,91]",
+        "translation": "Los datos del proyecto no tienen un propietario."
+    },
+    "Company": {
+        "language": "es",
+        "ref": "..\\rh-project\\controllers\\project.js [228,56]",
+        "translation": "Empresa"
+    },
+    "Owner": {
+        "language": "es",
+        "ref": "..\\rh-project\\controllers\\project.js [192,48]",
+        "translation": "Propietario"
     }
 }

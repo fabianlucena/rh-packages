@@ -61,14 +61,14 @@ export class MenuController {
                         delete mi.Parent;
                     }
 
-                    if(mi.jsonData) {
+                    if (mi.jsonData) {
                         if (mi.data)
                             mi = {...mi, Parent: undefined, data: undefined, ...mi.data};
 
                         delete mi.jsonData;
                     }
 
-                    if (mi.label)
+                    if (mi.isTranslatable && mi.label)
                         mi.label = await loc._d('menu', mi.label);
 
                     return mi;
