@@ -19,7 +19,7 @@ export const conf = {
     afterConfigAsync: null,
     data: {
         roles: [
-            {name: 'projectManager', title: loc._f('Project manager'), ownerModule: name},
+            {name: 'projectManager', title: loc._f('Project manager'), isTranslatable: true, ownerModule: name},
         ],
 
         rolesParentsSites: [
@@ -27,10 +27,10 @@ export const conf = {
         ],
 
         permissions: [
-            {name: 'project.get',    title: loc._f('Get projects'),    roles: 'projectManager', ownerModule: name, menuItem: {name:'project.get', label: loc._f('Projects'), action: 'grid', service: 'project'}},
-            {name: 'project.create', title: loc._f('Create projects'), roles: 'projectManager', ownerModule: name,},
-            {name: 'project.edit',   title: loc._f('Edit projects'),   roles: 'projectManager', ownerModule: name,},
-            {name: 'project.delete', title: loc._f('Delete projects'), roles: 'projectManager', ownerModule: name,},
+            {name: 'project.get',    title: loc._f('Get projects'),    isTranslatable: true, roles: 'projectManager', ownerModule: name, menuItem: {label: loc._f('Projects'), isTranslatable: true, action: 'grid', service: 'project'}},
+            {name: 'project.create', title: loc._f('Create projects'), isTranslatable: true, roles: 'projectManager', ownerModule: name,},
+            {name: 'project.edit',   title: loc._f('Edit projects'),   isTranslatable: true, roles: 'projectManager', ownerModule: name,},
+            {name: 'project.delete', title: loc._f('Delete projects'), isTranslatable: true, roles: 'projectManager', ownerModule: name,},
         ],
     },
 };

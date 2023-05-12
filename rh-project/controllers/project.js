@@ -59,7 +59,7 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async post(req, res) {
-        checkParameter(req?.body, 'name', 'title');
+        checkParameter(req?.body, 'name', 'title', 'companyUuid');
         if (await ProjectService.getForName(req.body.name, {skipNoRowsError: true}))
             throw new ConflictError();
 
@@ -133,10 +133,20 @@ export class ProjectController {
             return ProjectController.getForm(req, res);
             
         const definitions = {uuid: 'uuid', name: 'string'};
-        let options = {view: true, limit: 10, offset: 0};
+        let options = {view: true, limit: 10, offset: 0, includeCompany: true, includeOwner: true};
 
         options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
         const result = await ProjectService.getListAndCount(options);
+
+        result.rows = result.rows.map(row => {
+            row = row.toJSON();
+            return {
+                ...row,
+                companyUuid: row.Company.uuid,
+                companyTitle: row.Company.title,
+                ownerDisplayName: row.Collaborators[0].User?.displayName ?? null
+            };
+        });
 
         res.status(200).send(result);
     }
@@ -171,6 +181,16 @@ export class ProjectController {
                     type: 'text',
                     label: await loc._('Name'),
                 },
+                {
+                    name: 'companyTitle',
+                    type: 'text',
+                    label: await loc._('Company'),
+                },
+                {
+                    name: 'ownerDisplayName',
+                    type: 'text',
+                    label: await loc._('Owner'),
+                },
             ]
         });
     }
@@ -188,15 +208,29 @@ export class ProjectController {
                     type: 'text',
                     label: await loc._('Title'),
                     placeholder: await loc._('Title'),
+                    required: true,
                 },
                 {
                     name: 'name',
                     type: 'text',
                     label: await loc._('Name'),
                     placeholder: await loc._('Name'),
+                    required: true,
                     readonly: {
                         create: false,
                         defaultValue: true,
+                    },
+                },
+                {
+                    name: 'companyUuid',
+                    type: 'select',
+                    label: await loc._('Company'),
+                    placeholder: await loc._('Company'),
+                    required: true,
+                    loadOptionsFrom: {
+                        service: 'company',
+                        text: 'title',
+                        value: 'uuid',
                     },
                 },
                 {

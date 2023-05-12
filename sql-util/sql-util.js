@@ -300,3 +300,45 @@ export function addEnabledWithOnerModuleFilter(options, ownerModule) {
 
     return options;
 }
+
+/**
+ * Completes the include (JOIN) of a sequelize query with the references of collaborators using the share table.
+ * @param {object} options - Original options
+ * @param {string} object - [mandatory] name of the object for filter in the share table
+ * @param {object} models - [mandatory] models to take the ObjectName, ShareType and User sequelize models
+ * @param {string|array} type - type of collabortion can be one or a list of: owner, editor, viewer, or others.
+ * @return {Options}
+ */
+export function includeCollaborators(options, object, models, type) {
+    let where;
+    if (options.isEnabled !== undefined)
+        where = {isEnabled: options.isEnabled};
+
+    return completeIncludeOptions(
+        options,
+        'Collaborators',
+        {
+            model: models.Share,
+            as: 'Collaborators',
+            attributes: ['isEnabled'],
+            // where,
+            include: [
+                {
+                    model: models.ObjectName,
+                    attributes: [],
+                    where: {name: object},
+                },
+                {
+                    model: models.ShareType,
+                    attributes: ['name', 'title'],
+                    where: {name: type},
+                },
+                {
+                    model: models.User,
+                    attributes: ['uuid', 'userName', 'displayName'],
+                    where,
+                },
+            ],
+        }
+    );
+}

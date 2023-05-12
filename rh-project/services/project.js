@@ -1,8 +1,24 @@
 import {conf} from '../conf.js';
-import {getSingle, addEnabledFilter} from 'sql-util';
+import {getSingle, addEnabledFilter, includeCollaborators, completeIncludeOptions} from 'sql-util';
 import {complete, deepComplete, _Error} from 'rf-util';
 
 export class ProjectService {
+    /**
+     * Completes the data object with the companyId property if not exists. 
+     * @param {{company: string, companyUuis: string,  ...}} data 
+     * @returns {Promise{data}}
+     */
+    static async completeCompanyId(data) {
+        if (!data.companyId) {
+            if (data.companyUuid)
+                data.companyId = await conf.global.services.Company.getIdForUuid(data.companyUuid);
+            else if (data.company)
+                data.companyId = await conf.global.services.Company.getIdForName(data.company);
+        }
+        
+        return data;
+    }
+    
     /**
      * Creates a new project row into DB. If no typeId provided or type, 'project' type is used. If a password is provided also a local @ref Identity is created.
      * @param {{isEnabled: boolean, name: string, title: string}} data - data for the new Project.
@@ -10,12 +26,28 @@ export class ProjectService {
      * @returns {Promise{Project}}
      */
     static async create(data) {
-        const project = await conf.global.models.Project.create(data);
+        await ProjectService.completeCompanyId(data);
+        
+        try {
+            return await conf.global.sequelize.transaction(async t => {
+                const project = await conf.global.models.Project.create(data, { transaction: t });
+                if (data.owner || data.ownerId)
+                    await conf.global.services.Share.create(
+                        {
+                            objectName: 'Project',
+                            objectId: project.id,
+                            userId: data.ownerId,
+                            user: data.owner,
+                            type: 'owner'
+                        },
+                        { transaction: t }
+                    );
 
-        if (data.owner || data.ownerId)
-            await conf.global.services.Share.create({objectName: 'Project', objectId: project.id, userId: data.ownerId, user: data.owner, type: 'owner'});
-
-        return project;
+                return project;
+            });
+        } catch (error) {
+            return null;
+        }
     }
 
     /**
@@ -31,6 +63,29 @@ export class ProjectService {
         if (options.view) {
             if (!options.attributes)
                 options.attributes = ['uuid', 'isEnabled', 'name', 'title'];
+        }
+
+        if (options.includeCompany) {
+            let where;
+            if (options.isEnabled !== undefined)
+                where = {isEnabled: options.isEnabled};
+
+            completeIncludeOptions(
+                options,
+                'Company',
+                {
+                    model: conf.global.models.Company,
+                    attributes: ['uuid', 'name', 'title'],
+                    where,
+                }
+            );
+
+            delete options.includeCompany;
+        }
+
+        if (options.includeOwner) {
+            includeCollaborators(options, 'Project', conf.global.models, 'owner');
+            delete options.includeOwner;
         }
 
         if (options.q) {
@@ -145,7 +200,9 @@ export class ProjectService {
      * @returns {Promise{Result}} updated rows count.
      */
     static async updateForUuid(data, uuid) {
-        return await conf.global.models.Project.update(data, {where:{uuid}});
+        await ProjectService.completeCompanyId(data);
+
+        return conf.global.models.Project.update(data, {where:{uuid}});
     }
 
     /**
