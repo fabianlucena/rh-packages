@@ -16,22 +16,77 @@
     },
     "Privileges": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [32,160]",
+        "ref": "..\\rh-access\\conf.js [45,73]",
         "translation": "Privilegios"
     },
     "Owner": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [22,52]",
+        "ref": "..\\rh-access\\conf.js [26,52]",
         "translation": "Propietario"
     },
     "Editor": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [23,53]",
+        "ref": "..\\rh-access\\conf.js [27,53]",
         "translation": "Editor"
     },
     "Viewer": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [24,53]",
+        "ref": "..\\rh-access\\conf.js [28,53]",
         "translation": "Visor"
+    },
+    "Authorized users manager": {
+        "language": "es",
+        "ref": "..\\rh-access\\conf.js [22,91]",
+        "translation": "Administrador de usuarios autorizados"
+    },
+    "Add an authorized user": {
+        "language": "es",
+        "ref": "..\\rh-access\\conf.js [40,85]",
+        "translation": "Agregar un usuario autorizado"
+    },
+    "Get authorized users": {
+        "language": "es",
+        "ref": "..\\rh-access\\conf.js [41,83]",
+        "translation": "Obtener usuarios autorizados"
+    },
+    "Authorized users": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\authorized-user.js [155,51]",
+        "translation": "Usuarios autorizados"
+    },
+    "Edit authorized users": {
+        "language": "es",
+        "ref": "..\\rh-access\\conf.js [42,84]",
+        "translation": "Modificar usuarios autorizados"
+    },
+    "Delete authorized users": {
+        "language": "es",
+        "ref": "..\\rh-access\\conf.js [43,86]",
+        "translation": "Eliminar usuarios autorizados"
+    },
+    "Display name": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\authorized-user.js [198,61]",
+        "translation": "Nombre mostrado"
+    },
+    "Username": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\authorized-user.js [204,57]",
+        "translation": "Nombre de usuario"
+    },
+    "Enabled": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\authorized-user.js [214,56]",
+        "translation": "Habilitado"
+    },
+    "Roles": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\authorized-user.js [180,48]",
+        "translation": "Roles"
+    },
+    "Users": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\authorized-user.js [191,40]",
+        "translation": "Usuarios"
     }
 }

@@ -17,14 +17,14 @@ export default (app, checkPermission) => {
     app.delete('/user', checkPermission('user.delete'), asyncHandler(UserController.delete));
     app.delete('/user/:uuid', checkPermission('user.delete'), asyncHandler(UserController.delete));
 
-    app.post('/user/enable', checkPermission('user.update'), asyncHandler(UserController.enablePost));
-    app.post('/user/enable/:uuid', checkPermission('user.update'), asyncHandler(UserController.enablePost));
+    app.post('/user/enable', checkPermission('user.edit'), asyncHandler(UserController.enablePost));
+    app.post('/user/enable/:uuid', checkPermission('user.edit'), asyncHandler(UserController.enablePost));
     
-    app.post('/user/disable', checkPermission('user.update'), asyncHandler(UserController.disablePost));
-    app.post('/user/disable/:uuid', checkPermission('user.update'), asyncHandler(UserController.disablePost));
+    app.post('/user/disable', checkPermission('user.edit'), asyncHandler(UserController.disablePost));
+    app.post('/user/disable/:uuid', checkPermission('user.edit'), asyncHandler(UserController.disablePost));
 
-    app.patch('/user', checkPermission('user.update'), asyncHandler(UserController.patch));
-    app.patch('/user/:uuid', checkPermission('user.update'), asyncHandler(UserController.patch));
+    app.patch('/user', checkPermission('user.edit'), asyncHandler(UserController.patch));
+    app.patch('/user/:uuid', checkPermission('user.edit'), asyncHandler(UserController.patch));
 
     app.all('/user', methodNotAllowed);
 };

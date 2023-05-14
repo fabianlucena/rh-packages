@@ -28,21 +28,18 @@ export class IdentityService {
      * @param {{data: string, password: JSON}} data - data to pass to create method.
      * @returns {Promise{data}}
      */
-    static completeDataFromHashPassword(data) {
-        return new Promise((resolve, reject) => {
-            if (data.data)
-                return resolve(data);
+    static async completeDataFromHashPassword(data) {
+        if (data.data)
+            return data;
 
-            if (!data.password)
-                return reject(new MissingPropertyError('Identity', 'type'));
+        if (!data.password)
+            throw new MissingPropertyError('Identity', 'password');
 
-            return IdentityService.hashPassword(data.password)
-                .then(hash => {
-                    data.data = '{"password":"' + hash + '"}';
-                    resolve(data);
-                })
-                .catch(reject);
-        });
+        return IdentityService.hashPassword(data.password)
+            .then(hash => {
+                data.data = '{"password":"' + hash + '"}';
+                return data;
+            });
     }
 
     /**

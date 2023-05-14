@@ -139,15 +139,14 @@ export class UserController {
 
         const actions = [];
         if (req.permissions.includes('user.create')) actions.push('create');
+        if (req.permissions.includes('user.edit'))   actions.push('enableDisable', 'edit');
         if (req.permissions.includes('user.delete')) actions.push('delete');
-        if (req.permissions.includes('user.edit'))   actions.push('edit', 'enable', 'disable');
-
         actions.push('search', 'paginate');
-        
+                
         let loc = req.loc;
 
         res.status(200).send({
-            title: await loc._('Users'),
+            title: await loc._('User'),
             load: {
                 service: 'user',
                 method: 'get',
@@ -198,10 +197,11 @@ export class UserController {
                     },
                 },
                 {
-                    name: 'enabled',
+                    name: 'isEnabled',
                     type: 'checkbox',
                     label: await loc._('Enabled'),
                     placeholder: await loc._('Enabled'),
+                    value: true,
                 },
             ],
         });

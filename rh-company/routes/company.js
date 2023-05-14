@@ -17,14 +17,14 @@ export default (app, checkPermission) => {
     app.delete('/company', checkPermission('company.delete'), asyncHandler(CompanyController.delete));
     app.delete('/company/:uuid', checkPermission('company.delete'), asyncHandler(CompanyController.delete));
 
-    app.post('/company/enable', checkPermission('company.update'), asyncHandler(CompanyController.enablePost));
-    app.post('/company/enable/:uuid', checkPermission('company.update'), asyncHandler(CompanyController.enablePost));
+    app.post('/company/enable', checkPermission('company.edit'), asyncHandler(CompanyController.enablePost));
+    app.post('/company/enable/:uuid', checkPermission('company.edit'), asyncHandler(CompanyController.enablePost));
     
-    app.post('/company/disable', checkPermission('company.update'), asyncHandler(CompanyController.disablePost));
-    app.post('/company/disable/:uuid', checkPermission('company.update'), asyncHandler(CompanyController.disablePost));
+    app.post('/company/disable', checkPermission('company.edit'), asyncHandler(CompanyController.disablePost));
+    app.post('/company/disable/:uuid', checkPermission('company.edit'), asyncHandler(CompanyController.disablePost));
 
-    app.patch('/company', checkPermission('company.update'), asyncHandler(CompanyController.patch));
-    app.patch('/company/:uuid', checkPermission('company.update'), asyncHandler(CompanyController.patch));
+    app.patch('/company', checkPermission('company.edit'), asyncHandler(CompanyController.patch));
+    app.patch('/company/:uuid', checkPermission('company.edit'), asyncHandler(CompanyController.patch));
 
     app.all('/company', methodNotAllowed);
 };

@@ -14,6 +14,7 @@ export const conf = {
     routesPath: dirname + '/routes',
     modelsPath: dirname + '/models',
     servicesPath: dirname + '/services',
+    controllersPath: dirname + '/controllers',
     apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
     data: {
         userTypes: [
@@ -30,7 +31,7 @@ export const conf = {
         ],
 
         identities: [
-            {username: 'admin', type: 'local', data: '{"password":"da842b69d8f584f01700f64af185fd59:cd3569832703bf38d0ad86ed9f2ae95e1f385ba998e630a5032523d19405901886aad13b5f9edd6b6acfae7861109baab9c52020338c753d24e8f0a11fea4c45"}' /* password: 1234 */ },
+            {username: 'admin', type: 'local', password: '1234'},
         ],
 
         roles: [
@@ -46,14 +47,14 @@ export const conf = {
         ],
 
         permissions: [
-            {name: 'login',          title: loc._f('Login'),                 isTranslatable: true, roles: 'anonymous',   ownerModule: name, menuItem: {                                                 parent: 'session-menu', action: 'form',    service: 'login'}},
-            {name: 'logout',         title: loc._f('Logout'),                isTranslatable: true, roles: 'user',        ownerModule: name, menuItem: {                                                 parent: 'session-menu', action: 'apiCall', service: 'logout', method: 'post', onSuccess: 'clearBearerAuthorization(); reloadMenu();'}},
+            {name: 'login',          title: loc._f('Login'),                 isTranslatable: true, roles: 'anonymous',   ownerModule: name, menuItem: {                                                    parent: 'session-menu', action: 'form',    service: 'login'}},
+            {name: 'logout',         title: loc._f('Logout'),                isTranslatable: true, roles: 'user',        ownerModule: name, menuItem: {                                                    parent: 'session-menu', action: 'apiCall', service: 'logout', method: 'post', onSuccess: 'clearBearerAuthorization(); reloadMenu();'}},
             {name: 'user.get',       title: loc._f('Get user(s)'),           isTranslatable: true, roles: 'userManager', ownerModule: name, menuItem: {label: loc._f('Users'),       isTranslatable: true,                         action: 'grid',    service: 'user'}},
-            {name: 'user.create',    title: loc._f('Create user'),           isTranslatable: true, roles: 'userManager', ownerModule: name,},
-            {name: 'user.edit',      title: loc._f('Edit user'),             isTranslatable: true, roles: 'userManager', ownerModule: name,},
-            {name: 'user.delete',    title: loc._f('Delete user'),           isTranslatable: true, roles: 'userManager', ownerModule: name,},
+            {name: 'user.create',    title: loc._f('Create user'),           isTranslatable: true, roles: 'userManager', ownerModule: name},
+            {name: 'user.edit',      title: loc._f('Edit user'),             isTranslatable: true, roles: 'userManager', ownerModule: name},
+            {name: 'user.delete',    title: loc._f('Delete user'),           isTranslatable: true, roles: 'userManager', ownerModule: name},
             {name: 'session.get',    title: loc._f('Get session(s)'),        isTranslatable: true, roles: 'userManager', ownerModule: name, menuItem: {label: loc._f('Sessions'),    isTranslatable: true,                         action: 'grid',    service: 'session'}},
-            {name: 'session.delete', title: loc._f('Delete session'),        isTranslatable: true, roles: 'userManager', ownerModule: name,},
+            {name: 'session.delete', title: loc._f('Delete session'),        isTranslatable: true, roles: 'userManager', ownerModule: name},
             {name: 'ownsession.get', title: loc._f('Get own sessions only'), isTranslatable: true, roles: 'user',        ownerModule: name, menuItem: {label: loc._f('My sessions'), isTranslatable: true, parent: 'session-menu', action: 'grid',    service: 'session'}},
         ]
     },

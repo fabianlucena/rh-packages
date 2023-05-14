@@ -142,7 +142,7 @@ export const defaultGlobal = {
 
 export async function httpUtilConfigureAsync(global, ...modules) {
     if (!global)
-        global = defaultGlobal;
+        global = {...defaultGlobal};
 
     if (global.checkRoutePermission === undefined) {
         if (global.checkPermissionHandler === undefined)
@@ -213,10 +213,31 @@ export function configureServices(services, servicesPath, options) {
                 let module = modules[k];
                 let name = k;
                 let l = name.length;
-                if (l > 7 && name.substring(l - 7) === 'Service')
+                if (l > 7 && name.endsWith('Service'))
                     name = name.substring(0, l - 7);
 
                 services[name] = module;
+            }
+        });
+}
+
+export function configureControllers(controllers, controllersPath, options) {
+    if (!controllersPath)
+        return;
+        
+    fs
+        .readdirSync(controllersPath)
+        .filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js' && (!options?.exclude || !options.exclude.test(file)))
+        .forEach(async file => {
+            const modules = await import('file://' + path.join(controllersPath, file));
+            for (let k in modules) {
+                let module = modules[k];
+                let name = k;
+                let l = name.length;
+                if (l > 7 && name.endsWith('Controller'))
+                    name = name.substring(0, l - 10);
+
+                controllers[name] = module;
             }
         });
 }
@@ -405,6 +426,9 @@ export async function configureModuleAsync(global, theModule) {
     if (theModule.servicesPath)
         await configureServices(global.services, theModule.servicesPath);
 
+    if (theModule.controllersPath)
+        await configureControllers(global.controllers, theModule.controllersPath);
+
     if (theModule.schema && global.createSchema)
         await global.createSchema(theModule.schema);
 
@@ -442,14 +466,10 @@ export async function installModuleAsync(global, theModule) {
 }
 
 export async function configureModulesAsync(global, modules) {
-    if (!global.modules)
-        global.modules = {};
-
-    if (!global.services)
-        global.services = {};
-            
-    if (!global.data)
-        global.data = {};
+    global.modules ||= {};
+    global.services ||= {};
+    global.controllers ||= {};
+    global.data ||= {};
 
     for (let i = 0, e = modules.length; i < e; i++)
         modules[i] = await configureModuleAsync(global, modules[i]);

@@ -17,14 +17,14 @@ export default (app, checkPermission) => {
     app.delete('/project', checkPermission('project.delete'), asyncHandler(ProjectController.delete));
     app.delete('/project/:uuid', checkPermission('project.delete'), asyncHandler(ProjectController.delete));
 
-    app.post('/project/enable', checkPermission('project.update'), asyncHandler(ProjectController.enablePost));
-    app.post('/project/enable/:uuid', checkPermission('project.update'), asyncHandler(ProjectController.enablePost));
+    app.post('/project/enable', checkPermission('project.edit'), asyncHandler(ProjectController.enablePost));
+    app.post('/project/enable/:uuid', checkPermission('project.edit'), asyncHandler(ProjectController.enablePost));
     
-    app.post('/project/disable', checkPermission('project.update'), asyncHandler(ProjectController.disablePost));
-    app.post('/project/disable/:uuid', checkPermission('project.update'), asyncHandler(ProjectController.disablePost));
+    app.post('/project/disable', checkPermission('project.edit'), asyncHandler(ProjectController.disablePost));
+    app.post('/project/disable/:uuid', checkPermission('project.edit'), asyncHandler(ProjectController.disablePost));
 
-    app.patch('/project', checkPermission('project.update'), asyncHandler(ProjectController.patch));
-    app.patch('/project/:uuid', checkPermission('project.update'), asyncHandler(ProjectController.patch));
+    app.patch('/project', checkPermission('project.edit'), asyncHandler(ProjectController.patch));
+    app.patch('/project/:uuid', checkPermission('project.edit'), asyncHandler(ProjectController.patch));
 
     app.all('/project', methodNotAllowed);
 };

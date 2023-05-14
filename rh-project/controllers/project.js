@@ -158,7 +158,6 @@ export class ProjectController {
         if (req.permissions.includes('project.create')) actions.push('create');
         if (req.permissions.includes('project.edit'))   actions.push('enableDisable','edit');
         if (req.permissions.includes('project.delete')) actions.push('delete');
-
         actions.push('search', 'paginate');
         
         let loc = req.loc;
