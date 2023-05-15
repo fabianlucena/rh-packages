@@ -157,11 +157,13 @@ export class UserController {
                     name: 'displayName',
                     type: 'text',
                     label: await loc._('Display name'),
+                    autocomplete: 'name',
                 },
                 {
                     name: 'username',
                     type: 'text',
                     label: await loc._('Username'),
+                    autocomplete: 'username',
                 },
                 {
                     name: 'isEnabled',

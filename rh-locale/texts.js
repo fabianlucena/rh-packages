@@ -16,5 +16,6 @@ loc._f('Next');
 loc._f('Prior');
 loc._f('Reset');
 loc._f('Search');
+loc._f('-- Select an option --');
 loc._f('Submit');
 loc._f('Total pages %s\nTotal rows founded %s\nShowing %s rows from %s to %s');

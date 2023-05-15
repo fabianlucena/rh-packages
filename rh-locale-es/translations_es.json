@@ -76,7 +76,7 @@
     },
     "Total pages %s\\nTotal rows founded %s\\nShowing %s rows from %s to %s": {
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [20,79]",
+        "ref": "..\\rh-locale\\texts.js [21,79]",
         "translation": "Páginas en total %s\\nFilas en total encontradas %s\\nMostrando %s filas desde %s al %s"
     },
     "Cancel": {
@@ -91,7 +91,12 @@
     },
     "Submit": {
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [19,17]",
+        "ref": "..\\rh-locale\\texts.js [20,17]",
         "translation": "Enviar"
+    },
+    "-- Select an option --": {
+        "language": "es",
+        "ref": "..\\rh-locale\\texts.js [19,33]",
+        "translation": "-- Seleccione una opción --"
     }
 }
