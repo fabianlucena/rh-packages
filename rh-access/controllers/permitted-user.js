@@ -124,7 +124,7 @@ export class PermittedUserController {
      */
     static async get(req, res) {
         if ('$grid' in req.query)
-            return PermittederController.getGrid(req, res);
+            return PermittedUserController.getGrid(req, res);
         else if ('$form' in req.query)
             return PermittedUserController.getForm(req, res);
             
@@ -143,7 +143,7 @@ export class PermittedUserController {
         checkParameter(req.query, '$grid');
 
         const actions = [];
-        if (req.permissions.includes('permitteder.create')) actions.push('create');
+        if (req.permissions.includes('permitted-user.create')) actions.push('create');
         if (req.permissions.includes('permitted-user.edit'))   actions.push('enableDisable', 'edit');
         if (req.permissions.includes('permitted-user.delete')) actions.push('delete');
         actions.push('search', 'paginate');
@@ -205,7 +205,7 @@ export class PermittedUserController {
                 },
                 {
                     name: 'roles',
-                    type: 'text',
+                    type: 'selectFromList',
                     label: await loc._('Roles'),
                 },
                 {
