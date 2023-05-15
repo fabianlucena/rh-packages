@@ -37,12 +37,12 @@ export const conf = {
         ],
 
         permissions: [
-            {name: 'permitted-user.create', title: loc._f('Add an permitted user'),   isTranslatable: true, roles: 'permittedUserManager', ownerModule: name},
-            {name: 'permitted-user.get',    title: loc._f('Get permitted users'),     isTranslatable: true, roles: 'permittedUserManager', ownerModule: name, menuItem: {label: loc._f('Permitted users'), isTranslatable: true, action: 'grid',   service: 'permitted-user'}},
-            {name: 'permitted-user.edit',   title: loc._f('Edit permitted users'),    isTranslatable: true, roles: 'permittedUserManager', ownerModule: name},
-            {name: 'permitted-user.delete', title: loc._f('Delete permitted users'),  isTranslatable: true, roles: 'permittedUserManager', ownerModule: name},
+            {name: 'permitted-user.create', title: loc._f('Add an permitted user'),   isTranslatable: true, roles: 'permittedUsersManager', ownerModule: name},
+            {name: 'permitted-user.get',    title: loc._f('Get permitted users'),     isTranslatable: true, roles: 'permittedUsersManager', ownerModule: name, menuItem: {label: loc._f('Permitted users'), isTranslatable: true, action: 'grid',   service: 'permitted-user'}},
+            {name: 'permitted-user.edit',   title: loc._f('Edit permitted users'),    isTranslatable: true, roles: 'permittedUsersManager', ownerModule: name},
+            {name: 'permitted-user.delete', title: loc._f('Delete permitted users'),  isTranslatable: true, roles: 'permittedUsersManager', ownerModule: name},
 
-            {name: 'privileges',            title: loc._f('Privileges'),              isTranslatable: true, roles: 'everybody',            ownerModule: name, menuItem: {parent: 'session-menu',                                 action: 'object', service: 'privileges'}},
+            {name: 'privileges',            title: loc._f('Privileges'),              isTranslatable: true, roles: 'everybody',             ownerModule: name, menuItem: {parent: 'session-menu',                                 action: 'object', service: 'privileges'}},
         ],
     },
 };
