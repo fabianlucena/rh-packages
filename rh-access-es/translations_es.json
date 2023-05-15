@@ -67,7 +67,7 @@
     "Permitted users": {
         "language": "es",
         "ref": "..\\rh-access\\controllers\\permitted-user.js [154,50]",
-        "translation": "Usuario permitido"
+        "translation": "Usuarios permitidos"
     },
     "Permitted users manager": {
         "language": "es",
