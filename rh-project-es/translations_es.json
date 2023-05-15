@@ -11,7 +11,7 @@
     },
     "Projects": {
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [203,43]",
+        "ref": "..\\rh-project\\controllers\\project.js [202,43]",
         "translation": "Proyectos"
     },
     "Create projects": {
@@ -31,12 +31,12 @@
     },
     "Title": {
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [210,54]",
+        "ref": "..\\rh-project\\controllers\\project.js [209,54]",
         "translation": "Título"
     },
     "Name": {
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [217,53]",
+        "ref": "..\\rh-project\\controllers\\project.js [216,53]",
         "translation": "Nombre"
     },
     "Enabled": {
@@ -61,12 +61,17 @@
     },
     "Company": {
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [228,56]",
+        "ref": "..\\rh-project\\controllers\\project.js [227,56]",
         "translation": "Empresa"
     },
     "Owner": {
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [192,48]",
+        "ref": "..\\rh-project\\controllers\\project.js [191,48]",
         "translation": "Propietario"
+    },
+    "Description": {
+        "language": "es",
+        "ref": "..\\rh-project\\controllers\\project.js [247,60]",
+        "translation": "Descripción"
     }
 }

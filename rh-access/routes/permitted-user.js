@@ -11,6 +11,8 @@ export default (app, checkPermission) => {
     app.options('/permitted-user/disable', corsSimplePreflight('POST'));
     app.options('/permitted-user/disable/:uuid', corsSimplePreflight('POST'));
     app.options('/permitted-user/:uuid', corsSimplePreflight('GET,PATCH,DELETE'));
+    app.options('/permitted-user-site', corsSimplePreflight('GET'));
+    app.options('/permitted-user-groups', corsSimplePreflight('GET'));
 
     app.post('/permitted-user', checkPermission('permitted-user.create'), asyncHandler(PermittedUserController.post));
     app.get('/permitted-user', checkPermission('permitted-user.get'), asyncHandler(PermittedUserController.get));
@@ -28,6 +30,9 @@ export default (app, checkPermission) => {
 
     app.patch('/permitted-user', checkPermission('permitted-user.edit'), asyncHandler(UserController.patch));
     app.patch('/permitted-user/:uuid', checkPermission('permitted-user.edit'), asyncHandler(UserController.patch));
+
+    app.get('/permitted-user-site', checkPermission('permitted-user.edit'), asyncHandler(PermittedUserController.getSites));
+    app.get('/permitted-user-groups', checkPermission('permitted-user.edit'), asyncHandler(PermittedUserController.getGroups));
 
     app.all('/permitted-user', methodNotAllowed);
 };

@@ -11,7 +11,7 @@
     },
     "Companies": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [183,44]",
+        "ref": "..\\rh-company\\controllers\\company.js [195,44]",
         "translation": "Empresas"
     },
     "Create companies": {
@@ -31,17 +31,17 @@
     },
     "Title": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [190,54]",
+        "ref": "..\\rh-company\\controllers\\company.js [202,54]",
         "translation": "Título"
     },
     "Name": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [196,53]",
+        "ref": "..\\rh-company\\controllers\\company.js [208,53]",
         "translation": "Nombre"
     },
     "Enabled": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [206,56]",
+        "ref": "..\\rh-company\\controllers\\company.js [218,56]",
         "translation": "Habilitado"
     },
     "Spanish": {
@@ -58,5 +58,15 @@
         "language": "es",
         "ref": "..\\rh-company\\controllers\\company.js [70,91]",
         "translation": "La empresa no tiene un propietario."
+    },
+    "Owner": {
+        "language": "es",
+        "ref": "..\\rh-company\\controllers\\company.js [184,48]",
+        "translation": "Propietario"
+    },
+    "Description": {
+        "language": "es",
+        "ref": "..\\rh-company\\controllers\\company.js [225,60]",
+        "translation": "Descripción"
     }
 }

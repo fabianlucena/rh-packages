@@ -218,6 +218,12 @@ export class CompanyController {
                     placeholder: await loc._('Enabled'),
                     value: true,
                 },
+                {
+                    name: 'description',
+                    type: 'textArea',
+                    label: await loc._('Description'),
+                    placeholder: await loc._('Description'),
+                },
             ],
         });
     }

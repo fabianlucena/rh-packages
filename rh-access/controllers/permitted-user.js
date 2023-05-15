@@ -129,12 +129,40 @@ export class PermittedUserController {
             return PermittedUserController.getForm(req, res);
             
         const definitions = {uuid: 'uuid', username: 'string'};
-        let options = {view: true, limit: 10, offset: 0};
+        let options = {
+            view: true,
+            limit: 10,
+            offset: 0,
+            include: [
+                { 
+                    model: conf.global.models.Role,
+                    attributes: ['uuid', 'name', 'title']
+                },
+                { 
+                    model: conf.global.models.UserGroup,
+                    attributes: ['uuid', 'name', 'title']
+                }
+            ],
+            raw: true,
+            nest: true
+        };
 
         options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
 
         const UserService = conf.global.services.User;
         const result = await UserService.getListAndCount(options);
+
+        result.rows = await Promise.all(result.rows.map(async row => {
+            let roles = row.Roles;
+            delete row.Roles;
+
+            if (!(roles instanceof Array))
+                roles = [roles];
+            
+            row.roles = roles;
+
+            return row;
+        }));
 
         res.status(200).send(result);
     }
@@ -178,13 +206,14 @@ export class PermittedUserController {
         let loc = req.loc;
         res.status(200).send({
             title: await loc._('Permitted user'),
-            action: 'user',
+            action: 'permitted-user',
             fields: [
                 {
                     name: 'displayName',
                     type: 'text',
                     label: await loc._('Display name'),
                     placeholder: await loc._('Display name'),
+                    required: true,
                 },
                 {
                     name: 'username',
@@ -195,6 +224,7 @@ export class PermittedUserController {
                         create: false,
                         defaultValue: true,
                     },
+                    required: true,
                 },
                 {
                     name: 'isEnabled',
@@ -204,16 +234,77 @@ export class PermittedUserController {
                     value: true,
                 },
                 {
+                    name: 'sites',
+                    type: 'selectFromList',
+                    label: await loc._('Sites'),
+                    loadOptionsFrom: {
+                        service: 'permitted-user-site',
+                        valueProperty: 'uuid',
+                        value: 'uuid',
+                        text: 'title',
+                        title: 'description',
+                    },
+                },
+                /*{
                     name: 'roles',
                     type: 'selectFromList',
                     label: await loc._('Roles'),
-                },
+                    loadOptionsFrom: {
+                        service: 'permitted-user-role',
+                        valueProperty: 'uuid',
+                        value: 'uuid',
+                        text: 'title',
+                        title: 'description',
+                    },
+                },*/
                 {
                     name: 'groups',
-                    type: 'text',
+                    type: 'selectFromList',
                     label: await loc._('Groups'),
+                    loadOptionsFrom: {
+                        service: 'permitted-user-group',
+                        valueProperty: 'uuid',
+                        value: 'uuid',
+                        text: 'displayName',
+                    },                    
                 },
             ],
         });
+    }
+
+    static async getRoles(req, res) {
+        const definitions = {uuid: 'uuid', title: 'string'};
+        let options = {view: true, limit: 100, offset: 0, attributes: ['uuid', 'name', 'title', 'description'], isEnabled: true};
+
+        options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
+
+        const RoleService = conf.global.services.Role;
+        const result = await RoleService.getListAndCount(options);
+
+        res.status(200).send(result);
+    }
+
+    static async getSites(req, res) {
+        const definitions = {uuid: 'uuid', title: 'string'};
+        let options = {view: true, limit: 100, offset: 0, attributes: ['uuid', 'name', 'title', 'description'], isEnabled: true};
+
+        options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
+
+        const SiteService = conf.global.services.Site;
+        const result = await SiteService.getListAndCount(options);
+
+        res.status(200).send(result);
+    }
+
+    static async getGroups(req, res) {
+        const definitions = {uuid: 'uuid', title: 'string'};
+        let options = {view: true, limit: 100, offset: 0, attributes: ['uuid', 'username', 'displayName'], isEnabled: true};
+
+        options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
+
+        const UserService = conf.global.services.User;
+        const result = await UserService.getListAndCount(options);
+
+        res.status(200).send(result);
     }
 }

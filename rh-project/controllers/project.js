@@ -228,8 +228,9 @@ export class ProjectController {
                     required: true,
                     loadOptionsFrom: {
                         service: 'company',
-                        text: 'title',
                         value: 'uuid',
+                        text: 'title',
+                        title: 'description',
                     },
                 },
                 {
@@ -238,6 +239,12 @@ export class ProjectController {
                     label: await loc._('Enabled'),
                     placeholder: await loc._('Enabled'),
                     value: true,
+                },
+                {
+                    name: 'description',
+                    type: 'textArea',
+                    label: await loc._('Description'),
+                    placeholder: await loc._('Description'),
                 },
             ],
         });

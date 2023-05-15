@@ -41,6 +41,10 @@ export default (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: false
         },
+        description: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
     }, {
         sequelize,
         timestamps: true,

@@ -44,7 +44,7 @@ export class CompanyService {
 
         if (options.view) {
             if (!options.attributes)
-                options.attributes = ['uuid', 'isEnabled', 'name', 'title'];
+                options.attributes = ['uuid', 'isEnabled', 'name', 'title', 'description'];
         }
 
         if (options.includeOwner) {

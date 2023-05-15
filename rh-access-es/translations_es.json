@@ -16,7 +16,7 @@
     },
     "Privileges": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [45,73]",
+        "ref": "..\\rh-access\\conf.js [45,72]",
         "translation": "Privilegios"
     },
     "Owner": {
@@ -36,37 +36,37 @@
     },
     "Display name": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\permitted-user.js [187,61]",
+        "ref": "..\\rh-access\\controllers\\permitted-user.js [215,61]",
         "translation": "Nombre mostrado"
     },
     "Username": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\permitted-user.js [193,57]",
+        "ref": "..\\rh-access\\controllers\\permitted-user.js [222,57]",
         "translation": "Nombre de usuario"
     },
     "Enabled": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\permitted-user.js [203,56]",
+        "ref": "..\\rh-access\\controllers\\permitted-user.js [233,56]",
         "translation": "Habilitado"
     },
     "Roles": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\permitted-user.js [209,48]",
+        "ref": "..\\rh-access\\controllers\\permitted-user.js [251,48]",
         "translation": "Roles"
     },
     "Groups": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\permitted-user.js [214,49]",
+        "ref": "..\\rh-access\\controllers\\permitted-user.js [263,49]",
         "translation": "Grupos"
     },
     "Permitted user": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\permitted-user.js [180,49]",
+        "ref": "..\\rh-access\\controllers\\permitted-user.js [208,49]",
         "translation": "Usuario permitido"
     },
     "Permitted users": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\permitted-user.js [154,50]",
+        "ref": "..\\rh-access\\controllers\\permitted-user.js [182,50]",
         "translation": "Usuarios permitidos"
     },
     "Permitted users manager": {
@@ -76,22 +76,27 @@
     },
     "Add an permitted user": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [40,84]",
+        "ref": "..\\rh-access\\conf.js [40,83]",
         "translation": "Agregar un usuario permitido"
     },
     "Get permitted users": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [41,82]",
+        "ref": "..\\rh-access\\conf.js [41,81]",
         "translation": "Obtener usuarios permitidos"
     },
     "Edit permitted users": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [42,83]",
+        "ref": "..\\rh-access\\conf.js [42,82]",
         "translation": "Modificar usuarios permitidos"
     },
     "Delete permitted users": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [43,85]",
+        "ref": "..\\rh-access\\conf.js [43,84]",
         "translation": "Eliminar usuarios permitidos"
+    },
+    "Sites": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\permitted-user.js [239,48]",
+        "translation": "Sitios"
     }
 }

@@ -232,7 +232,9 @@ export class RoleService {
      */
     static async getAllForUsernameAndSiteName(username, siteName, options) {
         const roleIdList = await RoleService.getAllIdsForUsernameAndSiteName(username, siteName, options);
-        return RoleService.getList(complete(options, {where:{id:roleIdList}}));
+        options ??= {};
+        options.where = {id:roleIdList, ...options.where};
+        return RoleService.getList(options);
     }
 
     /**
