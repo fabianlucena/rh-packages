@@ -68,6 +68,17 @@ export class UserTypeService {
         return this.getList(deepComplete(options, {where:{name}, limit: 2}))
             .then(rowList => getSingle(rowList, deepComplete(options, {params: ['user type', 'name', name, 'UserType']})));
     }
+
+    /**
+     * Gets an user type ID for its name.
+     * @param {string} name - name for the user type to get.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {Promise{UserType}}
+     */
+    static getIdForName(name, options) {
+        return this.getForName(name, options)
+            .then(type => type.id);
+    }
     
     /**
      * Creates a new user type row into DB if not exists.

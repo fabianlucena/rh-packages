@@ -31,27 +31,27 @@
     },
     "User \"%s\" does not have local identity": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\identity.js [154,102]",
+        "ref": "..\\rh-auth\\services\\identity.js [182,102]",
         "translation": "El usuario \"%s\" no tiene identidad local."
     },
     "User \"%s\" local entity is not enabled": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\identity.js [157,101]",
+        "ref": "..\\rh-auth\\services\\identity.js [185,101]",
         "translation": "La identidad local del usuario \"%s\" no está habilitada."
     },
     "User \"%s\" does not have local identity data": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\identity.js [160,107]",
+        "ref": "..\\rh-auth\\services\\identity.js [188,107]",
         "translation": "El usuario \"%s\" no tiene datos de identidad local."
     },
     "User \"%s\" does not have local password": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\identity.js [164,102]",
+        "ref": "..\\rh-auth\\services\\identity.js [192,102]",
         "translation": "El usuario \"%s\" no tiene contraseña local."
     },
     "Can\\'t get the identity for: \"%s\", %s": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\identity.js [175,95]",
+        "ref": "..\\rh-auth\\services\\identity.js [203,95]",
         "translation": "No se pude obtener la identidad para: \"%s\", %s"
     },
     "HTTP error 403 forbiden, session is closed.": {
@@ -111,7 +111,7 @@
     },
     "User": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [40,56]",
+        "ref": "..\\rh-auth\\controllers\\user.js [149,39]",
         "translation": "Usuario"
     },
     "Logout": {
@@ -126,7 +126,7 @@
     },
     "Users": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\user.js [181,40]",
+        "ref": "..\\rh-auth\\controllers\\user.js [175,40]",
         "translation": "Usuarios"
     },
     "Create user": {
@@ -171,12 +171,12 @@
     },
     "Display name": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\user.js [188,61]",
+        "ref": "..\\rh-auth\\controllers\\user.js [182,61]",
         "translation": "Nombre mostrado"
     },
     "Enabled": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\user.js [204,56]",
+        "ref": "..\\rh-auth\\controllers\\user.js [200,56]",
         "translation": "Habilitado"
     },
     "Group": {
@@ -213,5 +213,10 @@
         "language": "es",
         "ref": "..\\rh-auth\\controllers\\session.js [166,48]",
         "translation": "Cerrado"
+    },
+    "Type here the new password for user": {
+        "language": "es",
+        "ref": "..\\rh-auth\\controllers\\user.js [207,84]",
+        "translation": "Escriba aquí la nueva contraseña para el usuario"
     }
 }

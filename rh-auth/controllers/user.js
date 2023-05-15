@@ -157,18 +157,11 @@ export class UserController {
                     name: 'displayName',
                     type: 'text',
                     label: await loc._('Display name'),
-                    autocomplete: 'name',
                 },
                 {
                     name: 'username',
                     type: 'text',
                     label: await loc._('Username'),
-                    autocomplete: 'username',
-                },
-                {
-                    name: 'isEnabled',
-                    type: 'bool',
-                    label: await loc._('Enabled'),
                 },
             ]
         });
@@ -187,12 +180,14 @@ export class UserController {
                     type: 'text',
                     label: await loc._('Display name'),
                     placeholder: await loc._('Display name'),
+                    autocomplete: 'off',
                 },
                 {
                     name: 'username',
                     type: 'text',
                     label: await loc._('Username'),
                     placeholder: await loc._('Username'),
+                    autocomplete: 'off',
                     readonly: {
                         create: false,
                         defaultValue: true,
@@ -204,6 +199,13 @@ export class UserController {
                     label: await loc._('Enabled'),
                     placeholder: await loc._('Enabled'),
                     value: true,
+                },
+                {
+                    name: 'password',
+                    type: 'password',
+                    label: await loc._('Password'),
+                    placeholder: await loc._('Type here the new password for user'),
+                    autocomplete: 'off',
                 },
             ],
         });

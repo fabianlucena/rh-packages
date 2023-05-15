@@ -11,13 +11,8 @@ export class UserService {
      * @returns {Promise{data}}
      */
     static async completeTypeId(data) {
-        if (!data.typeId) {
-            if (!data.type)
-                data.type = 'user';
-
-            const userType = await UserTypeService.getForName(data.type);
-            data.typeId = userType.id;
-        }
+        if (!data.typeId && data.type)
+            data.typeId = await UserTypeService.getIdForName(data.type);
 
         return data;
     }
@@ -32,13 +27,17 @@ export class UserService {
         if (data.type)
             data.type = 'user';
 
+        if (!data.typeId && !data.type)
+            data.type = 'user';
+
         data = await UserService.completeTypeId(data);
         const user = await conf.global.models.User.create(data);
-        if (data.password)
+        if (data.password) {
             await IdentityService.createLocal({
                 password: data.password,
                 userId: user.id,
             });
+        }
 
         return user;
     }
@@ -56,15 +55,15 @@ export class UserService {
         if (options.view) {
             if (!options.attributes)
                 options.attributes = ['uuid', 'isEnabled', 'username', 'displayName'];
-            
-            if (!options.include) {
-                options.include = [
-                    { 
-                        model: conf.global.models.UserType, 
-                        attributes: ['uuid', 'name', 'title']
-                    }        
-                ];
-            }
+        }
+
+        options.include ??= [];
+
+        if (options.includeType) {
+            options.include.push({ 
+                model: conf.global.models.UserType, 
+                attributes: ['uuid', 'name', 'title']
+            });
         }
 
         if (options.q) {
@@ -180,7 +179,23 @@ export class UserService {
      * @returns {Promise{Result}} updated rows count.
      */
     static async updateForUuid(data, uuid) {
-        return await conf.global.models.User.update(data, {where:{uuid}});
+        data = await UserService.completeTypeId(data);
+        const result = await conf.global.models.User.update(data, {where:{uuid}});
+        
+        if (data.password) {
+            const user = await UserService.getForUuid(uuid);
+            const identity = await IdentityService.getLocalForUsername(user.username);
+            if (identity?.id) {
+                console.log(await IdentityService.updateForId({password: data.password}, identity?.id));
+            } else {
+                await IdentityService.createLocal({
+                    password: data.password,
+                    userId: user.id,
+                });
+            }
+        }
+
+        return result;
     }
 
     /**

@@ -2,7 +2,6 @@ import {IdentityTypeService} from '../services/identity_type.js';
 import {UserService} from '../services/user.js';
 import {conf} from '../conf.js';
 import {checkDataForMissingProperties, MissingPropertyError, completeAssociationOptions, addEnabledFilter, getSingle} from 'sql-util';
-import {complete} from 'rf-util';
 import crypto from 'crypto';
 
 export class IdentityService {
@@ -28,18 +27,20 @@ export class IdentityService {
      * @param {{data: string, password: JSON}} data - data to pass to create method.
      * @returns {Promise{data}}
      */
-    static async completeDataFromHashPassword(data) {
-        if (data.data)
+    static async completeDataFromPassword(data) {
+        if (!data.password)
             return data;
 
-        if (!data.password)
-            throw new MissingPropertyError('Identity', 'password');
+        let jsonData;
+        if (data.data)
+            jsonData = JSON.parse(data.data);
+        else
+            jsonData = {};
 
-        return IdentityService.hashPassword(data.password)
-            .then(hash => {
-                data.data = '{"password":"' + hash + '"}';
-                return data;
-            });
+        jsonData.password = await IdentityService.hashPassword(data.password);
+        data.data = JSON.stringify(jsonData);
+
+        return data;
     }
 
     /**
@@ -74,7 +75,10 @@ export class IdentityService {
     static async create(data) {
         await IdentityService.completeUserId(data);
         await IdentityService.completeTypeId(data);
-        await IdentityService.completeDataFromHashPassword(data);
+        await IdentityService.completeDataFromPassword(data);
+
+        if (!data.data)
+            throw new MissingPropertyError('Identity', 'password');
 
         checkDataForMissingProperties(data, 'Identity', 'type', 'typeId', 'username', 'userId');
 
@@ -113,16 +117,40 @@ export class IdentityService {
     static async getList(options) {
         return conf.global.models.Identity.findAll(await IdentityService.getListOptions(options));
     }
-    
+
     /**
-     * Get the identity for a given username and type name. If not exists or exist mani cohincidences the method fails. If the isEnabled value is not defined this value is setted to true.
+     * Get the identity for its UUID. If not exists or exist many cohincidences the method fails.
+     * @param {string} uuid - the uuid to search.
+     * @param {OptionsObject} options - For valid options see: sqlUtil.completeAssociationOptions method, and sqlUtil.getSingle.
+     * @returns {Promise{Identity}}
+     */
+    static async getForId(id, options) {
+        options = {include: [], limit: 2, where:{id}, ...options};
+        const rowList = await IdentityService.getList(options);
+        return getSingle(rowList, options);
+    }
+
+    /**
+     * Get the identity for its UUID. If not exists or exist many cohincidences the method fails.
+     * @param {string} uuid - the uuid to search.
+     * @param {OptionsObject} options - For valid options see: sqlUtil.completeAssociationOptions method, and sqlUtil.getSingle.
+     * @returns {Promise{Identity}}
+     */
+    static async getForUuid(uuid, options) {
+        options = {include: [], limit: 2, where:{uuid}, ...options};
+        const rowList = await IdentityService.getList(options);
+        return getSingle(rowList, options);
+    }
+
+    /**
+     * Get the identity for a given username and type name. If not exists or exist many cohincidences the method fails. If the isEnabled value is not defined this value is setted to true.
      * @param {string} username - the username to search.
      * @param {string} typeName - the typename to search.
      * @param {OptionsObject} options - For valid options see: sqlUtil.completeAssociationOptions method, and sqlUtil.getSingle.
      * @returns {Promise{Identity}}
      */
     static async getForUsernameTypeName(username, typeName, options) {
-        options = complete(options, {include: [], limit: 2});
+        options = {include: [], limit: 2, ...options};
         options.include.push(completeAssociationOptions({model: conf.global.models.IdentityType, where: {name: typeName}, required: true}, options));
         options.include.push(completeAssociationOptions({model: conf.global.models.User,         where: {username},       required: true}, options));
 
@@ -190,5 +218,27 @@ export class IdentityService {
 
                 return IdentityService.create(data);
             });
+    }
+
+    /**
+     * Updates an identity.
+     * @param {object} data - Data to update.
+     * @param {object} uuid - UUID of the uer to update.
+     * @returns {Promise{Result}} updated rows count.
+     */
+    static async updateForId(data, id) {
+        await IdentityService.completeUserId(data);
+        await IdentityService.completeTypeId(data);
+
+        if (data.password) {
+            if (!data.data) {
+                const identity = await this.getForId(id);
+                data.data = identity.data;
+            }
+
+            await IdentityService.completeDataFromPassword(data);
+        }
+
+        return conf.global.models.Identity.update(data, {where:{id}});
     }
 }
