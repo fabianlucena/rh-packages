@@ -22,10 +22,10 @@ import {checkParameter} from 'rf-util';
  *              type: boolean
  */
     
-export class AuthorizedUserController {
+export class PermittedUserController {
     /**
      * @swagger
-     * /api/authorized-user:
+     * /api/permitted-user:
      *  post:
      *      tags:
      *          - User
@@ -72,7 +72,7 @@ export class AuthorizedUserController {
 
     /**
      * @swagger
-     * /api/authorized-user:
+     * /api/permitteduser:
      *  get:
      *      tags:
      *          - User
@@ -124,9 +124,9 @@ export class AuthorizedUserController {
      */
     static async get(req, res) {
         if ('$grid' in req.query)
-            return AuthorizedUserController.getGrid(req, res);
+            return PermittederController.getGrid(req, res);
         else if ('$form' in req.query)
-            return AuthorizedUserController.getForm(req, res);
+            return PermittedUserController.getForm(req, res);
             
         const definitions = {uuid: 'uuid', username: 'string'};
         let options = {view: true, limit: 10, offset: 0};
@@ -143,17 +143,17 @@ export class AuthorizedUserController {
         checkParameter(req.query, '$grid');
 
         const actions = [];
-        if (req.permissions.includes('authorized-user.create')) actions.push('create');
-        if (req.permissions.includes('authorized-user.edit'))   actions.push('enableDisable', 'edit');
-        if (req.permissions.includes('authorized-user.delete')) actions.push('delete');
+        if (req.permissions.includes('permitteder.create')) actions.push('create');
+        if (req.permissions.includes('permitted-user.edit'))   actions.push('enableDisable', 'edit');
+        if (req.permissions.includes('permitted-user.delete')) actions.push('delete');
         actions.push('search', 'paginate');
         
         let loc = req.loc;
 
         res.status(200).send({
-            title: await loc._('Authorized users'),
+            title: await loc._('Permitted users'),
             load: {
-                service: 'authorized-user',
+                service: 'permitted-user',
                 method: 'get',
             },
             actions: actions,
@@ -177,7 +177,7 @@ export class AuthorizedUserController {
 
         let loc = req.loc;
         res.status(200).send({
-            title: await loc._('Authorized user'),
+            title: await loc._('Permitted user'),
             action: 'user',
             fields: [
                 {

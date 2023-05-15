@@ -34,59 +34,64 @@
         "ref": "..\\rh-access\\conf.js [28,53]",
         "translation": "Visor"
     },
-    "Authorized users manager": {
-        "language": "es",
-        "ref": "..\\rh-access\\conf.js [22,91]",
-        "translation": "Administrador de usuarios autorizados"
-    },
-    "Add an authorized user": {
-        "language": "es",
-        "ref": "..\\rh-access\\conf.js [40,85]",
-        "translation": "Agregar un usuario autorizado"
-    },
-    "Get authorized users": {
-        "language": "es",
-        "ref": "..\\rh-access\\conf.js [41,83]",
-        "translation": "Obtener usuarios autorizados"
-    },
-    "Authorized users": {
-        "language": "es",
-        "ref": "..\\rh-access\\controllers\\authorized-user.js [155,51]",
-        "translation": "Usuarios autorizados"
-    },
-    "Edit authorized users": {
-        "language": "es",
-        "ref": "..\\rh-access\\conf.js [42,84]",
-        "translation": "Modificar usuarios autorizados"
-    },
-    "Delete authorized users": {
-        "language": "es",
-        "ref": "..\\rh-access\\conf.js [43,86]",
-        "translation": "Eliminar usuarios autorizados"
-    },
     "Display name": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\authorized-user.js [198,61]",
+        "ref": "..\\rh-access\\controllers\\permitted-user.js [187,61]",
         "translation": "Nombre mostrado"
     },
     "Username": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\authorized-user.js [204,57]",
+        "ref": "..\\rh-access\\controllers\\permitted-user.js [193,57]",
         "translation": "Nombre de usuario"
     },
     "Enabled": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\authorized-user.js [214,56]",
+        "ref": "..\\rh-access\\controllers\\permitted-user.js [203,56]",
         "translation": "Habilitado"
     },
     "Roles": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\authorized-user.js [180,48]",
+        "ref": "..\\rh-access\\controllers\\permitted-user.js [209,48]",
         "translation": "Roles"
     },
-    "Users": {
+    "Groups": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\authorized-user.js [191,40]",
-        "translation": "Usuarios"
+        "ref": "..\\rh-access\\controllers\\permitted-user.js [214,49]",
+        "translation": "Grupos"
+    },
+    "Permitted user": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\permitted-user.js [180,49]",
+        "translation": "Usuario permitido"
+    },
+    "Permitted users": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\permitted-user.js [154,50]",
+        "translation": "Usuario permitido"
+    },
+    "Permitted users manager": {
+        "language": "es",
+        "ref": "..\\rh-access\\conf.js [22,90]",
+        "translation": "Administrador de usuarios permitidos"
+    },
+    "Add an permitted user": {
+        "language": "es",
+        "ref": "..\\rh-access\\conf.js [40,84]",
+        "translation": "Agregar un usuario permitido"
+    },
+    "Get permitted users": {
+        "language": "es",
+        "ref": "..\\rh-access\\conf.js [41,82]",
+        "translation": "Obtener usuarios permitidos"
+    },
+    "Edit permitted users": {
+        "language": "es",
+        "ref": "..\\rh-access\\conf.js [42,83]",
+        "translation": "Modificar usuarios permitidos"
+    },
+    "Delete permitted users": {
+        "language": "es",
+        "ref": "..\\rh-access\\conf.js [43,85]",
+        "translation": "Eliminar usuarios permitidos"
     }
 }

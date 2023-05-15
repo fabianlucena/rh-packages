@@ -1,4 +1,4 @@
-import {AuthorizedUserController} from '../controllers/authorized-user.js';
+import {AuthorizedUserController} from '../controllers/permitted-user.js';
 import {conf} from '../conf.js';
 import {methodNotAllowed, corsSimplePreflight, asyncHandler} from 'http-util';
 

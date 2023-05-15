@@ -19,7 +19,7 @@ export const conf = {
     afterConfigAsync: null,
     data: {
         roles: [
-            {name: 'authorizedUserManager',      title: loc._f('Authorized users manager'), isTranslatable: true, ownerModule: name},
+            {name: 'permittedUsersManager',      title: loc._f('Permitted users manager'), isTranslatable: true, ownerModule: name},
         ],
 
         shareTypes: [
@@ -29,7 +29,7 @@ export const conf = {
         ],
 
         rolesParentsSites: [
-            {role: 'admin', parent: 'authorizedUserManager', site: 'system', ownerModule: name},
+            {role: 'admin', parent: 'permittedUsersManager', site: 'system', ownerModule: name},
         ],
 
         usersRolesSites: [
@@ -37,12 +37,12 @@ export const conf = {
         ],
 
         permissions: [
-            {name: 'authorized-user.create', title: loc._f('Add an authorized user'),   isTranslatable: true, roles: 'authorizedUserManager', ownerModule: name},
-            {name: 'authorized-user.get',    title: loc._f('Get authorized users'),     isTranslatable: true, roles: 'authorizedUserManager', ownerModule: name, menuItem: {label: loc._f('Authorized users'), isTranslatable: true, action: 'grid',   service: 'authorized-user'}},
-            {name: 'authorized-user.edit',   title: loc._f('Edit authorized users'),    isTranslatable: true, roles: 'authorizedUserManager', ownerModule: name},
-            {name: 'authorized-user.delete', title: loc._f('Delete authorized users'),  isTranslatable: true, roles: 'authorizedUserManager', ownerModule: name},
+            {name: 'authorized-user.create', title: loc._f('Add an permitted user'),   isTranslatable: true, roles: 'authorizedUserManager', ownerModule: name},
+            {name: 'authorized-user.get',    title: loc._f('Get permitted users'),     isTranslatable: true, roles: 'authorizedUserManager', ownerModule: name, menuItem: {label: loc._f('Permitted users'), isTranslatable: true, action: 'grid',   service: 'authorized-user'}},
+            {name: 'authorized-user.edit',   title: loc._f('Edit permitted users'),    isTranslatable: true, roles: 'authorizedUserManager', ownerModule: name},
+            {name: 'authorized-user.delete', title: loc._f('Delete permitted users'),  isTranslatable: true, roles: 'authorizedUserManager', ownerModule: name},
 
-            {name: 'privileges',             title: loc._f('Privileges'),               isTranslatable: true, roles: 'everybody',             ownerModule: name, menuItem: {parent: 'session-menu',                                  action: 'object', service: 'privileges'}},
+            {name: 'privileges',             title: loc._f('Privileges'),              isTranslatable: true, roles: 'everybody',             ownerModule: name, menuItem: {parent: 'session-menu',                                 action: 'object', service: 'privileges'}},
         ],
     },
 };
