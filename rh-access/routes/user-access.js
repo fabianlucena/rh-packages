@@ -9,7 +9,7 @@ export default (app, checkPermission) => {
     app.options('/user-access-site', corsSimplePreflight('GET'));
     app.options('/user-access-role', corsSimplePreflight('GET'));
     
-    //app.post('/user-access', checkPermission('user-access.create'), asyncHandler(UserAccessController.post));
+    app.post('/user-access', checkPermission('user-access.create'), asyncHandler(UserAccessController.post));
     app.get('/user-access', checkPermission('user-access.get'), asyncHandler(UserAccessController.get));
     app.get('/user-access/:uuid', checkPermission('user-access.get'), asyncHandler(UserAccessController.get));
 
