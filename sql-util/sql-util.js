@@ -231,11 +231,18 @@ export function getIncludedModelOptions(options, model, as) {
  * @param {Options} options - Original options
  * @param {string} name - name of the property in options in the options.foreign[name]  property
  * @param {Options} includeOptions - options for include, this option must include the model property
+ * @param {Options} includeDefaultOptions - options for include, this options are use as default for those that are not defined in the includetOptions
  * @return {Options}
  */
-export function completeIncludeOptions(options, name, includeOptions) {
+export function completeIncludeOptions(options, name, includeOptions, includeDefaultOptions) {
     if (options?.foreign && options?.foreign[name] === false)
         return options;
+
+    if (typeof includeOptions !== 'object')
+        includeOptions = {};
+        
+    if (includeDefaultOptions)
+        includeOptions = {...includeDefaultOptions, ...includeOptions};
 
     let includedOptions;
     if (options.include)

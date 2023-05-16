@@ -80,7 +80,7 @@ export class IdentityService {
         if (!data.data)
             throw new MissingPropertyError('Identity', 'password');
 
-        checkDataForMissingProperties(data, 'Identity', 'type', 'typeId', 'username', 'userId');
+        checkDataForMissingProperties(data, 'Identity', 'typeId', 'userId');
 
         return conf.global.models.Identity.create(data);
     }

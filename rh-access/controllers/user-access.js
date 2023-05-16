@@ -1,6 +1,6 @@
-import {UserRoleSiteService} from '../services/user_role_site.js';
+import {UserSiteRoleService} from '../services/user_site_role.js';
 import {conf} from '../conf.js';
-import {getOptionsFromParamsAndODataAsync} from 'http-util';
+import {getOptionsFromParamsAndODataAsync, ConflictError} from 'http-util';
 import {checkParameter} from 'rf-util';
 
 /**
@@ -37,7 +37,7 @@ export class UserAccessController {
      *      produces:
      *          - application/json
      *      parameters:
-     *          -  name: body
+     *          -  User: body
      *             in: body
      *             schema:
      *                $ref: '#/definitions/User'
@@ -59,17 +59,17 @@ export class UserAccessController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    /*static async post(req, res) {
-        checkParameter(req?.body, 'username', 'displayName');
-        const UserService = conf.global.services.User;
+    static async post(req, res) {
+        checkParameter(req?.body, 'User', 'Site', 'Role');
+        //const UserService = conf.global.services.User;
 
-        if (await UserService.getForUsername(req.body.username, {skipNoRowsError: true}))
+        if (await UserSiteRoleService.getList(req.body.username, {skipNoRowsError: true}))
             throw new ConflictError();
 
-        await UserService.create(req.body);
+        //await UserService.create(req.body);
 
         res.status(204).send();
-    }*/
+    }
 
     /**
      * @swagger
@@ -143,7 +143,7 @@ export class UserAccessController {
                 [sequelize.fn('concat', sequelize.col('User.uuid'), ',', sequelize.col('Site.uuid')), 'uuid'],
             ],
             group: [
-                'UserRoleSite.userId',
+                'UserSiteRole.userId',
                 'User.uuid',
                 'User.username',
                 'User.displayName',
@@ -161,7 +161,7 @@ export class UserAccessController {
         if (options.where?.uuid)
             options.where.uuid = sequelize.where(sequelize.fn('concat', sequelize.col('User.uuid'), ',', sequelize.col('Site.uuid')), options.where.uuid);
 
-        const result = await UserRoleSiteService.getListAndCount(options);
+        const result = await UserSiteRoleService.getListAndCount(options);
         const loc = req.loc;
 
         result.rows = await Promise.all(result.rows.map(async row => {
@@ -174,12 +174,18 @@ export class UserAccessController {
             delete row.Site.isTranslatable;
 
             row.Roles = await Promise.all(
-                (await UserRoleSiteService.getList({
-                    includeRole: true,
+                (await UserSiteRoleService.getList({
                     view: true,
+                    includeUser: {attributes: []},
+                    includeSite: {attributes: []},
+                    includeRole: true,
                     attributes: [],
                     raw: true,
                     nest: true,
+                    where: sequelize.where(
+                        sequelize.fn('concat', sequelize.col('User.uuid'), ',', sequelize.col('Site.uuid')),
+                        row.uuid
+                    )
                 })).map(async role => {
                     role = role.Role;
                     if (role?.isTranslatable)
@@ -254,6 +260,10 @@ export class UserAccessController {
                         text: 'displayName',
                         title: 'username',
                     },
+                    readonly: {
+                        create: false,
+                        defaultValue: true,
+                    },
                 },
                 {
                     name: 'Site',
@@ -265,6 +275,10 @@ export class UserAccessController {
                         value: 'uuid',
                         text: 'title',
                         title: 'description',
+                    },
+                    readonly: {
+                        create: false,
+                        defaultValue: true,
                     },
                 },
                 {

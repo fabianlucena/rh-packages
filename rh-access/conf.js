@@ -32,7 +32,7 @@ export const conf = {
             {role: 'admin', parent: 'userAccessManager', site: 'system', ownerModule: name},
         ],
 
-        usersRolesSites: [
+        usersSitesRoles: [
             {username: 'admin', role: 'admin', site: 'system'},
         ],
 
