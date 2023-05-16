@@ -1,6 +1,6 @@
 import {RoleService} from './role.js';
 import {conf} from '../conf.js';
-import {addEnabledOnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes} from 'sql-util';
+import {addEnabledOnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes, completeIncludeOptions} from 'sql-util';
 import {complete} from 'rf-util';
 
 export class UserRoleSiteService {
@@ -74,6 +74,42 @@ export class UserRoleSiteService {
         if (options.isEnabled !== undefined)
             options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
 
+        if (options.view) {
+            if (!options.attributes)
+                options.attributes = ['uuid'];
+        }
+
+        if (options.includeUser)
+            completeIncludeOptions(
+                options,
+                'User',
+                {
+                    model: conf.global.models.User,
+                    attributes: options.view? ['uuid', 'username', 'displayName', 'isTranslatable']: null
+                }
+            );
+
+        if (options.includeRole)
+            completeIncludeOptions(
+                options,
+                'User',
+                {
+                    model: conf.global.models.Role,
+                    attributes: options.view? ['uuid', 'name', 'title', 'isTranslatable']: null
+                }
+            );
+        
+
+        if (options.includeSite)
+            completeIncludeOptions(
+                options,
+                'User',
+                {
+                    model: conf.global.models.Site,
+                    attributes: options.view? ['uuid', 'name', 'title', 'isTranslatable']: null
+                }
+            );
+
         return options;
     }
 
@@ -84,6 +120,10 @@ export class UserRoleSiteService {
      */
     static async getList(options) {
         return conf.global.models.UserRoleSite.findAll(await UserRoleSiteService.getListOptions(options));
+    }
+
+    static async getListAndCount(options) {
+        return conf.global.models.UserRoleSite.findAndCountAll(await UserRoleSiteService.getListOptions(options));
     }
 
     /**

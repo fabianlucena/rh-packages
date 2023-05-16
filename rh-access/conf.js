@@ -19,7 +19,7 @@ export const conf = {
     afterConfigAsync: null,
     data: {
         roles: [
-            {name: 'permittedUsersManager',      title: loc._f('Permitted users manager'), isTranslatable: true, ownerModule: name},
+            {name: 'userAccessManager', title: loc._f('User access manager'), isTranslatable: true, ownerModule: name},
         ],
 
         shareTypes: [
@@ -29,7 +29,7 @@ export const conf = {
         ],
 
         rolesParentsSites: [
-            {role: 'admin', parent: 'permittedUsersManager', site: 'system', ownerModule: name},
+            {role: 'admin', parent: 'userAccessManager', site: 'system', ownerModule: name},
         ],
 
         usersRolesSites: [
@@ -37,12 +37,12 @@ export const conf = {
         ],
 
         permissions: [
-            {name: 'permitted-user.create', title: loc._f('Add an permitted user'),   isTranslatable: true, roles: 'permittedUsersManager', ownerModule: name},
-            {name: 'permitted-user.get',    title: loc._f('Get permitted users'),     isTranslatable: true, roles: 'permittedUsersManager', ownerModule: name, menuItem: {label: loc._f('Permitted users'), isTranslatable: true, action: 'grid',   service: 'permitted-user'}},
-            {name: 'permitted-user.edit',   title: loc._f('Edit permitted users'),    isTranslatable: true, roles: 'permittedUsersManager', ownerModule: name},
-            {name: 'permitted-user.delete', title: loc._f('Delete permitted users'),  isTranslatable: true, roles: 'permittedUsersManager', ownerModule: name},
+            {name: 'user-access.create', title: loc._f('Add users accesses'),    isTranslatable: true, roles: 'userAccessManager', ownerModule: name},
+            {name: 'user-access.get',    title: loc._f('Get users accesses'),    isTranslatable: true, roles: 'userAccessManager', ownerModule: name, menuItem: {label: loc._f('Users accesses'), isTranslatable: true, action: 'grid',   service: 'user-access'}},
+            {name: 'user-access.edit',   title: loc._f('Edit users accesses'),   isTranslatable: true, roles: 'userAccessManager', ownerModule: name},
+            {name: 'user-access.delete', title: loc._f('Delete users accesses'), isTranslatable: true, roles: 'userAccessManager', ownerModule: name},
 
-            {name: 'privileges',            title: loc._f('Privileges'),              isTranslatable: true, roles: 'everybody',             ownerModule: name, menuItem: {parent: 'session-menu',                                 action: 'object', service: 'privileges'}},
+            {name: 'privileges',         title: loc._f('Privileges'),            isTranslatable: true, roles: 'everybody',         ownerModule: name, menuItem: {parent: 'session-menu',                                action: 'object', service: 'privileges'}},
         ],
     },
 };

@@ -1,5 +1,6 @@
+import {UserRoleSiteService} from '../services/user_role_site.js';
 import {conf} from '../conf.js';
-import {getOptionsFromParamsAndODataAsync, ConflictError} from 'http-util';
+import {getOptionsFromParamsAndODataAsync} from 'http-util';
 import {checkParameter} from 'rf-util';
 
 /**
@@ -22,10 +23,10 @@ import {checkParameter} from 'rf-util';
  *              type: boolean
  */
     
-export class PermittedUserController {
+export class UserAccessController {
     /**
      * @swagger
-     * /api/permitted-user:
+     * /api/user-access:
      *  post:
      *      tags:
      *          - User
@@ -58,7 +59,7 @@ export class PermittedUserController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static async post(req, res) {
+    /*static async post(req, res) {
         checkParameter(req?.body, 'username', 'displayName');
         const UserService = conf.global.services.User;
 
@@ -68,11 +69,11 @@ export class PermittedUserController {
         await UserService.create(req.body);
 
         res.status(204).send();
-    }
+    }*/
 
     /**
      * @swagger
-     * /api/permitteduser:
+     * /api/user-access:
      *  get:
      *      tags:
      *          - User
@@ -124,42 +125,70 @@ export class PermittedUserController {
      */
     static async get(req, res) {
         if ('$grid' in req.query)
-            return PermittedUserController.getGrid(req, res);
+            return UserAccessController.getGrid(req, res);
         else if ('$form' in req.query)
-            return PermittedUserController.getForm(req, res);
-            
-        const definitions = {uuid: 'uuid', username: 'string'};
+            return UserAccessController.getForm(req, res);
+           
+        const sequelize = conf.global.sequelize;
+        const definitions = {uuid: 'string', username: 'string'};
         let options = {
             view: true,
             limit: 10,
             offset: 0,
-            include: [
-                { 
-                    model: conf.global.models.Role,
-                    attributes: ['uuid', 'name', 'title']
-                },
-                { 
-                    model: conf.global.models.UserGroup,
-                    attributes: ['uuid', 'name', 'title']
-                }
-            ],
+            includeUser: true,
+            includeSite: true,
             raw: true,
-            nest: true
+            nest: true,
+            attributes: [
+                [sequelize.fn('concat', sequelize.col('User.uuid'), ',', sequelize.col('Site.uuid')), 'uuid'],
+            ],
+            group: [
+                'UserRoleSite.userId',
+                'User.uuid',
+                'User.username',
+                'User.displayName',
+                'User.isTranslatable',
+                'Site.uuid',
+                'Site.name',
+                'Site.title',
+                'Site.isTranslatable',
+            ],
+            order: [[sequelize.col('User.username'), 'ASC']],
         };
 
         options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
 
-        const UserService = conf.global.services.User;
-        const result = await UserService.getListAndCount(options);
+        if (options.where?.uuid)
+            options.where.uuid = sequelize.where(sequelize.fn('concat', sequelize.col('User.uuid'), ',', sequelize.col('Site.uuid')), options.where.uuid);
+
+        const result = await UserRoleSiteService.getListAndCount(options);
+        const loc = req.loc;
 
         result.rows = await Promise.all(result.rows.map(async row => {
-            let roles = row.Roles;
-            delete row.Roles;
+            if (row.User.isTranslatable)
+                row.User.displayName = await loc._(row.User.displayName);
+            delete row.User.isTranslatable;
 
-            if (!(roles instanceof Array))
-                roles = [roles];
-            
-            row.roles = roles;
+            if (row.Site?.isTranslatable)
+                row.Site.title = await loc._(row.Site.title);
+            delete row.Site.isTranslatable;
+
+            row.Roles = await Promise.all(
+                (await UserRoleSiteService.getList({
+                    includeRole: true,
+                    view: true,
+                    attributes: [],
+                    raw: true,
+                    nest: true,
+                })).map(async role => {
+                    role = role.Role;
+                    if (role?.isTranslatable)
+                        role.title = await loc._(role.title);
+                    delete role.isTranslatable;
+
+                    return role;
+                })
+            );
 
             return row;
         }));
@@ -171,30 +200,36 @@ export class PermittedUserController {
         checkParameter(req.query, '$grid');
 
         const actions = [];
-        if (req.permissions.includes('permitted-user.create')) actions.push('create');
-        if (req.permissions.includes('permitted-user.edit'))   actions.push('enableDisable', 'edit');
-        if (req.permissions.includes('permitted-user.delete')) actions.push('delete');
+        if (req.permissions.includes('user-access.create')) actions.push('create');
+        if (req.permissions.includes('user-access.edit'))   actions.push('edit');
+        if (req.permissions.includes('user-access.delete')) actions.push('delete');
         actions.push('search', 'paginate');
         
         let loc = req.loc;
 
         res.status(200).send({
-            title: await loc._('Permitted users'),
+            title: await loc._('Users accesses'),
             load: {
-                service: 'permitted-user',
+                service: 'user-access',
                 method: 'get',
             },
             actions: actions,
             columns: [
                 {
-                    name: 'displayName',
+                    name: 'User.displayName',
                     type: 'text',
-                    label: await loc._('Display name'),
+                    label: await loc._('User'),
                 },
                 {
-                    name: 'username',
+                    name: 'Site.title',
                     type: 'text',
-                    label: await loc._('Username'),
+                    label: await loc._('Site'),
+                },
+                {
+                    name: 'Roles',
+                    type: 'objectList',
+                    label: await loc._('Roles'),
+                    properties: ['title'],
                 },
             ]
         });
@@ -205,81 +240,57 @@ export class PermittedUserController {
 
         let loc = req.loc;
         res.status(200).send({
-            title: await loc._('Permitted user'),
-            action: 'permitted-user',
+            title: await loc._('User access'),
+            action: 'user-access',
             fields: [
                 {
-                    name: 'displayName',
-                    type: 'text',
-                    label: await loc._('Display name'),
-                    placeholder: await loc._('Display name'),
-                    required: true,
-                },
-                {
-                    name: 'username',
-                    type: 'text',
-                    label: await loc._('Username'),
-                    placeholder: await loc._('Username'),
-                    readonly: {
-                        create: false,
-                        defaultValue: true,
-                    },
-                    required: true,
-                },
-                {
-                    name: 'isEnabled',
-                    type: 'checkbox',
-                    label: await loc._('Enabled'),
-                    placeholder: await loc._('Enabled'),
-                    value: true,
-                },
-                {
-                    name: 'sites',
-                    type: 'selectFromList',
-                    label: await loc._('Sites'),
+                    name: 'User',
+                    type: 'select',
+                    label: await loc._('User'),
                     loadOptionsFrom: {
-                        service: 'permitted-user-site',
-                        valueProperty: 'uuid',
-                        value: 'uuid',
-                        text: 'title',
-                        title: 'description',
-                    },
-                },
-                /*{
-                    name: 'roles',
-                    type: 'selectFromList',
-                    label: await loc._('Roles'),
-                    loadOptionsFrom: {
-                        service: 'permitted-user-role',
-                        valueProperty: 'uuid',
-                        value: 'uuid',
-                        text: 'title',
-                        title: 'description',
-                    },
-                },*/
-                {
-                    name: 'groups',
-                    type: 'selectFromList',
-                    label: await loc._('Groups'),
-                    loadOptionsFrom: {
-                        service: 'permitted-user-group',
+                        service: 'user-access-user',
                         valueProperty: 'uuid',
                         value: 'uuid',
                         text: 'displayName',
-                    },                    
+                        title: 'username',
+                    },
+                },
+                {
+                    name: 'Site',
+                    type: 'select',
+                    label: await loc._('Sites'),
+                    loadOptionsFrom: {
+                        service: 'user-access-site',
+                        valueProperty: 'uuid',
+                        value: 'uuid',
+                        text: 'title',
+                        title: 'description',
+                    },
+                },
+                {
+                    name: 'Roles',
+                    type: 'selectFromList',
+                    label: await loc._('Roles'),
+                    loadOptionsFrom: {
+                        service: 'user-access-role',
+                        valueProperty: 'uuid',
+                        value: 'uuid',
+                        text: 'title',
+                        title: 'description',
+                    },
                 },
             ],
         });
     }
 
-    static async getRoles(req, res) {
+    static async getUsers(req, res) {
         const definitions = {uuid: 'uuid', title: 'string'};
-        let options = {view: true, limit: 100, offset: 0, attributes: ['uuid', 'name', 'title', 'description'], isEnabled: true};
+        let options = {view: true, limit: 100, offset: 0, attributes: ['uuid', 'username', 'displayName'], isEnabled: true};
 
         options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
 
-        const RoleService = conf.global.services.Role;
-        const result = await RoleService.getListAndCount(options);
+        const UserService = conf.global.services.User;
+        const result = await UserService.getListAndCount(options);
 
         res.status(200).send(result);
     }
@@ -296,14 +307,14 @@ export class PermittedUserController {
         res.status(200).send(result);
     }
 
-    static async getGroups(req, res) {
+    static async getRoles(req, res) {
         const definitions = {uuid: 'uuid', title: 'string'};
-        let options = {view: true, limit: 100, offset: 0, attributes: ['uuid', 'username', 'displayName'], isEnabled: true};
+        let options = {view: true, limit: 100, offset: 0, attributes: ['uuid', 'name', 'title', 'description'], isEnabled: true};
 
         options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
 
-        const UserService = conf.global.services.User;
-        const result = await UserService.getListAndCount(options);
+        const RoleService = conf.global.services.Role;
+        const result = await RoleService.getListAndCount(options);
 
         res.status(200).send(result);
     }
