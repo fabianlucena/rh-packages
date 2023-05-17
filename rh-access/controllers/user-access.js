@@ -1,7 +1,7 @@
 import {UserSiteRoleService} from '../services/user_site_role.js';
 import {conf} from '../conf.js';
-import {getOptionsFromParamsAndODataAsync, ConflictError} from 'http-util';
-import {checkParameter} from 'rf-util';
+import {getOptionsFromParamsAndODataAsync} from 'http-util';
+import {checkParameter, checkParameterUuid, checkParameterUuidList} from 'rf-util';
 
 /**
  * @swagger
@@ -60,13 +60,34 @@ export class UserAccessController {
      *                  $ref: '#/definitions/Error'
      */
     static async post(req, res) {
-        checkParameter(req?.body, 'User', 'Site', 'Role');
-        //const UserService = conf.global.services.User;
+        const userUuid = checkParameterUuid(req.body, 'User');
+        const siteUuid = checkParameterUuid(req.body, 'Site');
+        const roleUuidList = checkParameterUuidList(req.body, 'Roles');
 
-        if (await UserSiteRoleService.getList(req.body.username, {skipNoRowsError: true}))
-            throw new ConflictError();
+        await Promise.all(await roleUuidList.map(async roleUuid => {
+            const result = await UserSiteRoleService.getList({
+                includeUser: {attributes: [], where:{'uuid': userUuid}},
+                includeSite: {attributes: [], where:{'uuid': siteUuid}},
+                includeRole: {attributes: [], where:{'uuid': roleUuid}},
+                attributes: ['userId'],
+                raw: true,
+                nest: true,
+            });
 
-        //await UserService.create(req.body);
+            if (!result?.length) {
+                await UserSiteRoleService.create({
+                    userUuid,
+                    siteUuid,
+                    roleUuid,
+                });
+            }
+        }));
+
+        await UserSiteRoleService.deleteForUserUuidSiteUuidAndNotRoleUuid(
+            userUuid,
+            siteUuid,
+            roleUuidList,
+        );
 
         res.status(204).send();
     }

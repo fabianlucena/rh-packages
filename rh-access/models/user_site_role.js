@@ -18,17 +18,14 @@ export default (sequelize, DataTypes) => {
     UserSiteRole.init({
         userId: {
             type: DataTypes.BIGINT,
-            primaryKey: true,
             allowNull: false,
         },
         siteId: {
             type: DataTypes.BIGINT,
-            primaryKey: true,
             allowNull: false,
         },
         roleId: {
             type: DataTypes.BIGINT,
-            primaryKey: true,
             allowNull: false,
         },
     }, {

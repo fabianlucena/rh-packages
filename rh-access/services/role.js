@@ -91,6 +91,17 @@ export class RoleService {
     }
 
     /**
+     * Gets a role for its UUID. For many coincidences and for no rows this method fails.
+     * @param {string} uuid - UUID for the role to get.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {Promise{Role}}
+     */
+    static async getForUuid(uuid, options) {
+        const rowList = await RoleService.getList(deepComplete(options, {where:{uuid}, limit: 2}));
+        return getSingle(rowList, deepComplete(options, {params: ['roles', ['UUID = %s', uuid], 'Role']}));
+    }
+
+    /**
      * Gets a role for its name. For many coincidences and for no rows this method fails.
      * @param {string} name - name for the role to get.
      * @param {Options} options - Options for the @ref getList method.
@@ -99,6 +110,16 @@ export class RoleService {
     static async getForName(name, options) {
         const rowList = await RoleService.getList(deepComplete(options, {where:{name}, limit: 2}));
         return getSingle(rowList, deepComplete(options, {params: ['roles', ['name = %s', name], 'Role']}));
+    }
+
+    /**
+     * Gets a role ID for its UUID. For many coincidences and for no rows this method fails.
+     * @param {string} uuid - UUID for the role to get.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {Promise{Permission}}
+     */
+    static async getIdForUuid(uuid, options) {
+        return (await RoleService.getForUuid(uuid, {...options, attributes: ['id']})).id;
     }
 
     /**

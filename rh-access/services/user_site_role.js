@@ -10,8 +10,12 @@ export class UserSiteRoleService {
      * @returns {Promise{data}}
      */
     static async completeUserId(data) {
-        if (!data.userId && data.username)
-            data.userId = await conf.global.services.User.getIdForUsername(data.username);
+        if (!data.userId) {
+            if (data.userUuid)
+                data.userId = await conf.global.services.User.getIdForUuid(data.userUuid);
+            else if (data.username)
+                data.userId = await conf.global.services.User.getIdForUsername(data.username);
+        }
 
         return data;
     }
@@ -22,8 +26,12 @@ export class UserSiteRoleService {
      * @returns {Promise{data}}
      */
     static async completeSiteId(data) {
-        if (!data.siteId && data.site)
-            data.siteId = await conf.global.services.Site.getIdForName(data.site, {foreign:{module: false}});
+        if (!data.siteId) {
+            if (data.siteUuid)
+                data.siteId = await conf.global.services.Site.getIdForUuid(data.siteUuid);
+            else if (data.site)
+                data.siteId = await conf.global.services.Site.getIdForName(data.site);
+        }
 
         return data;
     }
@@ -34,8 +42,12 @@ export class UserSiteRoleService {
      * @returns {Promise{data}}
      */
     static async completeRoleId(data) {
-        if (!data.roleId && data.role)
-            data.roleId = await RoleService.getIdForName(data.role);
+        if (!data.roleId) {
+            if (data.roleUuid)
+                data.roleId = await RoleService.getIdForUuid(data.roleUuid);
+            else if (data.role)
+                data.roleId = await RoleService.getIdForName(data.role);
+        }
 
         return data;
     }
@@ -163,5 +175,27 @@ export class UserSiteRoleService {
             return rowList[0];
 
         return UserSiteRoleService.create(data);
+    }
+
+    static async deleteForUserUuidSiteUuidAndNotRoleUuid(userUuid, siteUuid, roleUuidList, options) {
+        options ??= {};
+        options.where ??= {};
+        const userId = await conf.global.services.User.getIdForUuid(userUuid);
+        const siteId = await conf.global.services.Site.getIdForUuid(siteUuid);
+        const roleId = [];
+        for (let i in roleUuidList) {
+            let roleUuid = roleUuidList[i];
+            roleId.push(await conf.global.services.Role.getIdForUuid(roleUuid));
+        }
+        
+        const sequelize = conf.global.sequelize;
+        const Op = sequelize.Op;
+        options.where = {
+            userId,
+            siteId,
+            roleId: {[Op.notIn]: roleId},
+        };
+
+        return conf.global.models.UserSiteRole.destroy(options);
     }
 }

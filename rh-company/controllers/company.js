@@ -1,6 +1,6 @@
 import {CompanyService} from '../services/company.js';
 import {getOptionsFromParamsAndODataAsync, _HttpError, ConflictError} from 'http-util';
-import {checkParameter, checkParameterUUID} from 'rf-util';
+import {checkParameter, checkParameterUuid} from 'rf-util';
 
 /**
  * @swagger
@@ -268,7 +268,7 @@ export class CompanyController {
      *                  $ref: '#/definitions/Error'
      */
     static async delete(req, res) {
-        const uuid = await checkParameterUUID({...req.query, ...req.params, ...req.body}, 'uuid');
+        const uuid = await checkParameterUuid({...req.query, ...req.params, ...req.body}, 'uuid');
         const rowsDeleted = await CompanyService.deleteForUuid(uuid);
         if (!rowsDeleted)
             throw new _HttpError('Company with UUID %s does not exists.', 403, uuid);
@@ -316,7 +316,7 @@ export class CompanyController {
      *                  $ref: '#/definitions/Error'
      */
     static async enablePost(req, res) {
-        const uuid = await checkParameterUUID({...req.query, ...req.params, ...req.body}, 'uuid');
+        const uuid = await checkParameterUuid({...req.query, ...req.params, ...req.body}, 'uuid');
         const rowsUpdated = await CompanyService.enableForUuid(uuid);
         if (!rowsUpdated)
             throw new _HttpError('Company with UUID %s does not exists.', 403, uuid);
@@ -364,7 +364,7 @@ export class CompanyController {
      *                  $ref: '#/definitions/Error'
      */
     static async disablePost(req, res) {
-        const uuid = await checkParameterUUID({...req.query, ...req.params, ...req.body}, 'uuid');
+        const uuid = await checkParameterUuid({...req.query, ...req.params, ...req.body}, 'uuid');
         const rowsUpdated = await CompanyService.disableForUuid(uuid);
         if (!rowsUpdated)
             throw new _HttpError('Company with UUID %s does not exists.', 403, uuid);
@@ -410,7 +410,7 @@ export class CompanyController {
      *                  $ref: '#/definitions/Error'
      */
     static async patch(req, res) {
-        const uuid = await checkParameterUUID({...req.body, ...req.params}, 'uuid');
+        const uuid = await checkParameterUuid({...req.body, ...req.params}, 'uuid');
         const rowsUpdated = await CompanyService.updateForUuid(req.body, uuid);
         if (!rowsUpdated)
             throw new _HttpError('Company with UUID %s does not exists.', 403, uuid);

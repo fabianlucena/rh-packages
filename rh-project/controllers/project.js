@@ -1,6 +1,6 @@
 import {ProjectService} from '../services/project.js';
 import {getOptionsFromParamsAndODataAsync, _HttpError, ConflictError} from 'http-util';
-import {checkParameter, checkParameterUUID} from 'rf-util';
+import {checkParameter, checkParameterUuid} from 'rf-util';
 
 /**
  * @swagger
@@ -60,6 +60,8 @@ export class ProjectController {
      */
     static async post(req, res) {
         checkParameter(req?.body, 'name', 'title', 'companyUuid');
+        checkParameterUuid(req?.body, 'Company');
+        
         if (await ProjectService.getForName(req.body.name, {skipNoRowsError: true}))
             throw new ConflictError();
 
@@ -290,7 +292,7 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async delete(req, res) {
-        const uuid = await checkParameterUUID({...req.query, ...req.params, ...req.body}, 'uuid');
+        const uuid = await checkParameterUuid({...req.query, ...req.params, ...req.body}, 'uuid');
         const rowsDeleted = await ProjectService.deleteForUuid(uuid);
         if (!rowsDeleted)
             throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);
@@ -338,7 +340,7 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async enablePost(req, res) {
-        const uuid = await checkParameterUUID({...req.query, ...req.params, ...req.body}, 'uuid');
+        const uuid = await checkParameterUuid({...req.query, ...req.params, ...req.body}, 'uuid');
         const rowsUpdated = await ProjectService.enableForUuid(uuid);
         if (!rowsUpdated)
             throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);
@@ -386,7 +388,7 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async disablePost(req, res) {
-        const uuid = await checkParameterUUID({...req.query, ...req.params, ...req.body}, 'uuid');
+        const uuid = await checkParameterUuid({...req.query, ...req.params, ...req.body}, 'uuid');
         const rowsUpdated = await ProjectService.disableForUuid(uuid);
         if (!rowsUpdated)
             throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);
@@ -432,7 +434,7 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async patch(req, res) {
-        const uuid = await checkParameterUUID({...req.body, ...req.params}, 'uuid');
+        const uuid = await checkParameterUuid({...req.body, ...req.params}, 'uuid');
         const rowsUpdated = await ProjectService.updateForUuid(req.body, uuid);
         if (!rowsUpdated)
             throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);

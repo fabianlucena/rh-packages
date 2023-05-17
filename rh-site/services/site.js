@@ -111,6 +111,17 @@ export class SiteService {
     }
 
     /**
+     * Gets a site for its UUID. For many coincidences and for no rows this method fails.
+     * @param {string} uuid - UUID for the site type to get.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {Promise{Site}}
+     */
+    static async getForUuid(uuid, options) {
+        const rowList = await SiteService.getList(deepComplete(options, {where:{uuid}, limit: 2}));
+        return getSingle(rowList, deepComplete(options, {params: ['site', ['uuid = %s', uuid], 'Site']}));
+    }
+
+    /**
      * Gets a site for its name. For many coincidences and for no rows this method fails.
      * @param {string} name - name for the site type to get.
      * @param {Options} options - Options for the @ref getList method.
@@ -119,6 +130,16 @@ export class SiteService {
     static async getForName(name, options) {
         const rowList = await SiteService.getList(deepComplete(options, {where:{name}, limit: 2}));
         return getSingle(rowList, deepComplete(options, {params: ['site', ['name = %s', name], 'Site']}));
+    }
+
+    /**
+     * Gets a site ID from its UUID. For many coincidences and for no rows this method fails.
+     * @param {string} uuid - UUID for the site type to get.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {Promise{ID}}
+     */
+    static async getIdForUuid(uuid, options) {
+        return (await SiteService.getForUuid(uuid, {...options, attributes: ['id']})).id;
     }
 
     /**

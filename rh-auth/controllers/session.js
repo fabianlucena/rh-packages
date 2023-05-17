@@ -1,6 +1,6 @@
 import {SessionService, SessionClosedError, NoSessionForAuthTokenError} from '../services/session.js';
 import {getOptionsFromParamsAndODataAsync, deleteHandlerAsync} from 'http-util';
-import {getErrorMessageAsync, checkParameter, checkParameterUUID} from 'rf-util';
+import {getErrorMessageAsync, checkParameter, checkParameterUuid} from 'rf-util';
 
 export class SessionController {
     static configureMiddleware() {
@@ -209,7 +209,7 @@ export class SessionController {
      *                  $ref: '#/definitions/Error'
      */
     static async delete(req, res) {
-        const uuid = checkParameterUUID(req?.query, 'uuid');
+        const uuid = checkParameterUuid(req?.query, 'uuid');
         const rowCount = await SessionService.deleteForUuid(uuid);
         await deleteHandlerAsync(req, res, rowCount);
     }

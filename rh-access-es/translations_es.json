@@ -34,34 +34,14 @@
         "ref": "..\\rh-access\\conf.js [28,53]",
         "translation": "Visor"
     },
-    "Display name": {
-        "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [245,61]",
-        "translation": "Nombre mostrado"
-    },
-    "Username": {
-        "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [252,57]",
-        "translation": "Nombre de usuario"
-    },
-    "Enabled": {
-        "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [263,56]",
-        "translation": "Habilitado"
-    },
     "Roles": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [281,48]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [308,48]",
         "translation": "Roles"
-    },
-    "Groups": {
-        "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [293,49]",
-        "translation": "Grupos"
     },
     "Sites": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [269,48]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [292,48]",
         "translation": "Sitios"
     },
     "User access manager": {
@@ -76,7 +56,7 @@
     },
     "Users accesses": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [207,49]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [238,49]",
         "translation": "Accesos de usuarios"
     },
     "Edit users accesses": {
@@ -96,17 +76,17 @@
     },
     "User access": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [238,46]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [270,46]",
         "translation": "Acceso de usuario"
     },
     "User": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [217,47]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [276,47]",
         "translation": "Usuario"
     },
     "Site": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [222,47]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [253,47]",
         "translation": "Sitio"
     }
 }

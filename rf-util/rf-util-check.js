@@ -48,7 +48,7 @@ export async function checkAsync(ok, options) {
     return check(ok, options);
 }
 
-export function checkValidUUID(value, paramName, options) {
+export function checkValidUuid(value, paramName, options) {
     if (!options)
         options = {};
 
@@ -64,7 +64,35 @@ export function checkValidUUID(value, paramName, options) {
     return check(value, options);
 }
 
-export function checkParameterUUID(value, paramName) {
+export function checkParameterUuid(value, paramName) {
     value = checkParameter(value, paramName);
-    return checkValidUUID(value, paramName, {statusCode: 400});
+    return checkValidUuid(value, paramName, {statusCode: 400});
+}
+
+export function checkValidUuidList(value, paramName, options) {
+    if (!options)
+        options = {};
+
+    if (!options.statusCode)
+        options.statusCode = 500;
+        
+    if (!options.method)
+        options.method = uuidList => {
+            for (let i in uuidList) {
+                if (!uuid.validate(uuidList[i]))
+                    return false;
+            }
+
+            return true;
+        };
+
+    if (!options._message)
+        options._message = ['%s is not a valid UUID value', paramName];
+
+    return check(value, options);
+}
+
+export function checkParameterUuidList(value, paramName) {
+    value = checkParameter(value, paramName);
+    return checkValidUuidList(value, paramName, {statusCode: 400});
 }

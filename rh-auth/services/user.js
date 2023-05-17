@@ -140,6 +140,16 @@ export class UserService {
     }
 
     /**
+     * Gets an user for its UUID. For many coincidences and for no rows this method fails.
+     * @param {string} uuid - username for the user to get.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {Promise{User}}
+     */
+    static async getIdForUuid(uuid, options) {
+        return (await UserService.getForUuid(uuid, deepComplete(options, {attributes: ['id']}))).id;
+    }
+
+    /**
      * Gets an user for its username. For many coincidences and for no rows this method fails.
      * @param {string} username - username for the user to get.
      * @param {Options} options - Options for the @ref getList method.
