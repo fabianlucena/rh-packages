@@ -6,18 +6,33 @@
     },
     "Cannot merge into \"%s\" from \"%s\".": {
         "language": "es",
-        "ref": "..\\rf-util\\rf-util-error.js [90,66]",
+        "ref": "..\\rf-util\\rf-util-error.js [84,66]",
         "translation": "No se puede fusionar en \"%s\" desde \"%s\"."
-    },
-    "%s is not a valid UUID value": {
-        "language": "es",
-        "ref": "..\\rf-util\\rf-util-check.js [72,67]",
-        "translation": "%s no es un valor UUID válido"
     },
     "[null,\"Missing parameter: \\\"%s\\\".\",\"Missing parameters: \\\"%s\\\".\"]": {
         "language": "es",
         "ref": "..\\rf-util\\rf-util-error.js [59,90]",
         "translation": "[null,\"Falta el parámetro: \\\"%s\\\".\",\"Faltan los parámetros: \\\"%s\\\".\"]",
         "isJson": true
+    },
+    "\"%s\" is null or empty": {
+        "language": "es",
+        "ref": "..\\rf-util\\rf-util-check.js [68,51]",
+        "translation": "\"%s\" es nulo o vacío"
+    },
+    "\"%s\" parameter is null or empty": {
+        "language": "es",
+        "ref": "..\\rf-util\\rf-util-check.js [81,65]",
+        "translation": "El parámetro \"%s\" es nulo o vacío"
+    },
+    "\"%s\" is not a valid UUID value": {
+        "language": "es",
+        "ref": "..\\rf-util\\rf-util-check.js [121,60]",
+        "translation": "\"%s\" no es un valor UUID válido"
+    },
+    "\"%s\" parameter is not a valid UUID value": {
+        "language": "es",
+        "ref": "..\\rf-util\\rf-util-check.js [134,74]",
+        "translation": "El parámetro \"%s\" no es un valor UUID válido"
     }
 }

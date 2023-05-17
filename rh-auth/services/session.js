@@ -1,6 +1,6 @@
 import {conf} from '../conf.js';
 import {checkViewOptions, getSingle} from 'sql-util';
-import {complete, deepComplete, checkAsync} from 'rf-util';
+import {complete, deepComplete, check} from 'rf-util';
 import {loc} from 'rf-locale';
 import crypto from 'crypto';
 
@@ -185,9 +185,10 @@ export class SessionService {
      * @param {number} id - ID for the session o close.
      * @returns {Promise{Session}}
      */
-    static closeForId(id) {
-        return checkAsync(id, {_message: loc._f('There is no id for session')})
-            .then(() => SessionService.getForId(id))
+    static async closeForId(id) {
+        check(id, {_message: loc._f('There is no id for session')});
+
+        return SessionService.getForId(id)
             .then(session => {
                 const authToken = session.authToken;
                 if (conf.sessionCache[authToken])

@@ -92,6 +92,12 @@ export class TranslationService {
     }
 
     static async _gt(language, text, domain, isJson) {
+        if (!text)
+            return text;
+
+        if (typeof text === 'function')
+            return text();
+
         if (!language)
             return text;
 
