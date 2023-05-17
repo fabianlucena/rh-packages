@@ -111,7 +111,7 @@ export class LoginController {
         if (req?.body?.autoLoginToken)
             checkParameter(req?.body, 'autoLoginToken', 'deviceToken');
         else
-            checkParameter(req?.body, {username: () => loc._('Username'), password: () => loc._('Password')});
+            checkParameter(req?.body, {username: loc._f('Username'), password: loc._f('Password')});
 
         try {
             let session;

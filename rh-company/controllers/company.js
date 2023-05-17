@@ -59,7 +59,8 @@ export class CompanyController {
      *                  $ref: '#/definitions/Error'
      */
     static async post(req, res) {
-        checkParameter(req?.body, {name: () => loc._('Name'), title: () => loc._('Title')});
+        const loc = req.loc;
+        checkParameter(req?.body, {name: loc._f('Name'), title: loc._f('Title')});
         if (await CompanyService.getForName(req.body.name, {skipNoRowsError: true}))
             throw new ConflictError();
 

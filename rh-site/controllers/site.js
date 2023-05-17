@@ -78,7 +78,7 @@ export class SiteController {
      */
     static async switchSitePost(req, res) {
         const loc = req.loc;
-        checkParameter(req?.body, {name: () => loc._('Name')});
+        checkParameter(req?.body, {name: loc._f('Name')});
         await SessionSiteService.createOrUpdate({
             sessionId: req?.session?.id,
             site: req.body.name,
