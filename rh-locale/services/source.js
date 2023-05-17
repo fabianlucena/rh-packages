@@ -43,22 +43,26 @@ export class SourceService {
     /**
      * Gets a source for its text. For many coincidences and for no rows this method fails.
      * @param {string} text - text for the source to get.
+     * @param {boolean} isJson - indicates if the text is a object in JSON format.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Source}}
      */
-    static getForText(text, options) {
-        return this.getList(deepComplete(options, {where:{text}, limit: 2}))
+    static getForTextAndIsJson(text, isJson, options) {
+        options = {...options, limit: 2};
+        options.where = {...options.where, text, isJson: isJson ?? false};
+        return this.getList(options)
             .then(rowList => getSingle(rowList, deepComplete(options, {params: ['source', 'text', text, 'Source']})));
     }
     
     /**
     * Gets a source ID for its text. For many coincidences and for no rows this method fails.
     * @param {string} text - text for the source to get.
+    * * @param {boolean} isJson - indicates if the text is a object in JSON format.
     * @param {Options} options - Options for the @ref getList method.
     * @returns {Promise{ID}}
     */
-    static async getIdForText(text, options) {
-        return (await this.getForText(text, {...options, attributes: ['id']}))?.id;
+    static async getIdForTextAndIsJson(text, isJson, options) {
+        return (await this.getForTextIsJson(text, isJson, {...options, attributes: ['id']}))?.id;
     }
 
     /**
@@ -67,7 +71,9 @@ export class SourceService {
      * @returns {Promise{Source}}
      */
     static createIfNotExists(data, options) {
-        return this.getForText(data.text, {attributes: ['id'], skipNoRowsError: true, ...options})
+        data.text = data.text.trim();
+        data.isJson ??= false;
+        return this.getForTextAndIsJson(data.text, data.isJson, {attributes: ['id'], skipNoRowsError: true, ...options})
             .then(element => {
                 if (element)
                     return element;
@@ -79,10 +85,11 @@ export class SourceService {
     /**
     * Gets a source ID for its text. For many coincidences this method fails, for no rows this method will creates a newone.
     * @param {string} text - text for the source to get.
+    * @param {boolean} isJson - true when the text is a JSON object.
     * @param {Options} options - Options for the @ref getList method.
     * @returns {Promise{ID}}
     */
-    static async getIdOrCreateForText(text, options) {
-        return (await this.createIfNotExists({text, isJson: options?.data?.isJson, ref: options?.data?.ref}, {...options, attributes: ['id']})).id;
+    static async getIdOrCreateForTextAndIsJson(text, isJson, options) {
+        return (await this.createIfNotExists({text, isJson, ref: options?.data?.ref}, {...options, attributes: ['id']})).id;
     }
 }

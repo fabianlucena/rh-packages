@@ -76,14 +76,14 @@ export class SiteController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static switchSitePost(req, res) {
-        checkParameter(req?.body, 'name')
-            .then(siteName => SessionSiteService.createOrUpdate({
-                sessionId: req?.session?.id,
-                site: siteName,
-            }))
-            .then(() => res.status(204).send())
-            .catch(httpErrorHandlerAsync(req, res));
+    static async switchSitePost(req, res) {
+        const loc = req.loc;
+        checkParameter(req?.body, {name: () => loc._('Name')});
+        await SessionSiteService.createOrUpdate({
+            sessionId: req?.session?.id,
+            site: req.body.name,
+        });
+        res.status(204).send();
     }
 
     /** 

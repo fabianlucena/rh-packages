@@ -107,10 +107,11 @@ export class LoginController {
      *                  $ref: '#/definitions/Error'
      */
     static async post(req, res) {
+        const loc = req.loc;
         if (req?.body?.autoLoginToken)
             checkParameter(req?.body, 'autoLoginToken', 'deviceToken');
         else
-            checkParameter(req?.body, 'username', 'password');
+            checkParameter(req?.body, {username: () => loc._('Username'), password: () => loc._('Password')});
 
         try {
             let session;

@@ -15,7 +15,7 @@ export class TranslationService {
      */
     static async completeSourceId(data) {
         if (!data.sourceId && data.source)
-            data.sourceId = await conf.global.services.Source.getIdOrCreateForText(data.source, {data: {isJson: data.isJson, ref: data.ref}});
+            data.sourceId = await conf.global.services.Source.getIdOrCreateForTextAndIsJson(data.source, data.isJson, {data: {ref: data.ref}});
 
         return data;
     }
@@ -91,30 +91,40 @@ export class TranslationService {
         return conf.global.models.Translation.findAll(await TranslationService.getListOptions(options));
     }
 
-    static async _gt(language, text, domain) {
+    static async _gt(language, text, domain, isJson) {
         if (!language)
             return text;
+
+        isJson ??= false;
+        if (text instanceof Array) {
+            isJson = true;
+            text = JSON.stringify(text);
+        }
         
         text = text.trim();
-        let translation = await conf.global.models.TranslationCache.findOne({where: {language, domain, source: text}});
-        if (translation)
-            return translation.translation;
-            
-        translation = await this.getBestMatchForLanguageTextAndDomains(language, text, domain);
-        if (translation) {
-            const source = await SourceService.getForText(text);
-
-            await conf.global.models.TranslationCache.create({language, domain, source: text, translation, ref: source.ref});
+        let translationObject = await conf.global.models.TranslationCache.findOne({where: {language, domain, source: text, isJson}});
+        if (!translationObject) {
+            const bestTranslation = await this.getBestMatchForLanguageTextIsJsonAndDomains(language, text, isJson, domain);
+            if (bestTranslation) {
+                const source = await SourceService.getForTextAndIsJson(text, isJson);
+                translationObject = await conf.global.models.TranslationCache.create({language, domain, source: text, isJson, translation: bestTranslation, ref: source.ref});
+            }
         }
+
+        let translation;
+        if (translationObject.isJson)
+            translation = JSON.parse(translationObject.translation);
+        else
+            translation = translationObject.translation;
         
         return translation;
     }
 
-    static async getBestMatchForLanguageTextAndDomains(language, text, domains) {
+    static async getBestMatchForLanguageTextIsJsonAndDomains(language, text, isJson, domains) {
         if (!language)
             return text;
 
-        const sourceId = await SourceService.getIdOrCreateForText(text.trim());
+        const sourceId = await SourceService.getIdOrCreateForTextAndIsJson(text, isJson);
         const domainsId = [];
         if (domains) {
             if (!(domains instanceof Array))

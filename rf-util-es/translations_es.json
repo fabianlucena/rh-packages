@@ -1,0 +1,23 @@
+{
+    "Missing parameters.": {
+        "language": "es",
+        "ref": "..\\rf-util\\rf-util-error.js [58,56]",
+        "translation": "Faltan parámetros."
+    },
+    "Cannot merge into \"%s\" from \"%s\".": {
+        "language": "es",
+        "ref": "..\\rf-util\\rf-util-error.js [90,66]",
+        "translation": "No se puede fusionar en \"%s\" desde \"%s\"."
+    },
+    "%s is not a valid UUID value": {
+        "language": "es",
+        "ref": "..\\rf-util\\rf-util-check.js [72,67]",
+        "translation": "%s no es un valor UUID válido"
+    },
+    "[null,\"Missing parameter: \\\"%s\\\".\",\"Missing parameters: \\\"%s\\\".\"]": {
+        "language": "es",
+        "ref": "..\\rf-util\\rf-util-error.js [59,90]",
+        "translation": "[null,\"Falta el parámetro: \\\"%s\\\".\",\"Faltan los parámetros: \\\"%s\\\".\"]",
+        "isJson": true
+    }
+}

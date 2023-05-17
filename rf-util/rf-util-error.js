@@ -55,8 +55,8 @@ export class CheckError extends Error {
 export class MissingParameterError extends Error {
     static NoObjectValues = ['missingParameters'];
     static VisibleProperties = ['message', 'missingParameters'];
-    static _zeroMessage = loc._f('Mising parameters.');
-    static _message = loc._nf(0, 'Mising parameter: "%s".', 'Mising parameters: "%s".');
+    static _zeroMessage = loc._f('Missing parameters.');
+    static _message = loc._nf(0, 'Missing parameter: "%s".', 'Missing parameters: "%s".');
 
     statusCode = 400;
     missingParameters = [];
@@ -74,14 +74,14 @@ export class MissingParameterError extends Error {
     _n() {return this.missingParameters.length;}
 
     async getMessageParamsAsync(loc) {
-        return [await loc._and(...this.missingParameters)];
+        return [await loc._and(...await loc._a(this.missingParameters))];
     }
 }
 
 export class MergeTypeError extends Error {
     static NoObjectValues = ['dstType', 'srcType'];
     static VisibleProperties = ['message'];
-    static _message = loc._f('Cannot merge into "%s" a "%s".');
+    static _message = loc._f('Cannot merge into "%s" from "%s".');
 
     constructor(dstType, srcType) {
         super();

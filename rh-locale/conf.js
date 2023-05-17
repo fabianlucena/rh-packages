@@ -21,7 +21,7 @@ export const conf = {
     afterConfigAsync: null,
     data: {
         languages: {
-            'en':    {title: loc._f('English')},
+            'en': {title: loc._f('English')},
         },
     },
 };

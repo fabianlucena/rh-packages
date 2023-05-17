@@ -1,21 +1,31 @@
 'use strict';
 
 import {MissingParameterError, CheckError} from './rf-util-error.js';
+import {loc} from 'rf-locale';
 import * as uuid from 'uuid';
 
-export function checkParameter(value, ...paramName) {
+export function checkParameter(value, params, ...freeParams) {
+    if (typeof params === 'string') {
+        const newParams = {};
+        newParams[params] = params;
+        params = newParams;
+    }
+
+    freeParams.forEach(p => params[p] = p);
+
     if (!value)
-        throw new MissingParameterError(...paramName);
+        throw new MissingParameterError(...Object.values(params));
 
     const missing = [];
-    for (let i = 0, e = paramName.length; i < e; i++)
-        if (value[paramName[i]] === undefined)
-            missing.push(paramName[i]);
+    for (let name in params) {
+        if (value[name] === undefined)
+            missing.push(params[name]);
+    }
 
     if (missing.length)
         throw new MissingParameterError(...missing);
 
-    return value[paramName];
+    return value;
 }
 
 export function checkNull(obj, errMsj) {
@@ -59,7 +69,7 @@ export function checkValidUuid(value, paramName, options) {
         options.method = uuid.validate;
 
     if (!options._message)
-        options._message = ['%s is not a valid UUID value', paramName];
+        options._message = [loc._f('%s is not a valid UUID value'), paramName];
 
     return check(value, options);
 }
