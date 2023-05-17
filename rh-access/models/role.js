@@ -5,14 +5,16 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class Role extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.Module,         {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
+            this.belongsTo(models.Module,          {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
 
-            this.belongsToMany(models.User,        {through: models.UserSiteRole,   foreignKey: 'roleId', otherKey: 'userId'});
-            this.belongsToMany(models.Permission,  {through: models.RolePermission, foreignKey: 'roleId', otherKey: 'permissionId'});
-            this.belongsToMany(models.Site,        {through: models.UserSiteRole,   foreignKey: 'roleId', otherKey: 'siteId'});
+            this.             belongsToMany(models.Permission, {through: models.RolePermission, foreignKey: 'roleId', otherKey: 'permissionId'});
+            models.Permission.belongsToMany(models.Role,       {through: models.RolePermission, foreignKey: 'permissionId', otherKey: 'roleId'});
+        }
 
-            models.User.      belongsToMany(models.Role, {through: models.UserSiteRole,   foreignKey: 'userId',       otherKey: 'roleId'});
-            models.Permission.belongsToMany(models.Role, {through: models.RolePermission, foreignKey: 'permissionId', otherKey: 'roleId'});
+        static postAssociate(models) {
+            this.       belongsToMany(models.User, {through: models.UserSiteRole,   foreignKey: 'roleId', otherKey: 'userId', unique: false});
+            this.       belongsToMany(models.Site, {through: models.UserSiteRole,   foreignKey: 'roleId', otherKey: 'siteId', unique: false});
+            models.User.belongsToMany(models.Role, {through: models.UserSiteRole,   foreignKey: 'userId', otherKey: 'roleId', unique: false});
         }
     }
     Role.init({

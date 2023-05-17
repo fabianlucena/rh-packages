@@ -188,8 +188,8 @@ export class UserSiteRoleService {
             roleId.push(await conf.global.services.Role.getIdForUuid(roleUuid));
         }
         
-        const sequelize = conf.global.sequelize;
-        const Op = sequelize.Op;
+        const Sequelize = conf.global.Sequelize;
+        const Op = Sequelize.Op;
         options.where = {
             userId,
             siteId,

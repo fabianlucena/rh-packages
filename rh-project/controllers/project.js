@@ -293,7 +293,7 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async delete(req, res) {
-        const uuid = await checkParameterUuid({...req.query, ...req.params, ...req.body}, 'uuid');
+        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
         const rowsDeleted = await ProjectService.deleteForUuid(uuid);
         if (!rowsDeleted)
             throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);
@@ -341,7 +341,7 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async enablePost(req, res) {
-        const uuid = await checkParameterUuid({...req.query, ...req.params, ...req.body}, 'uuid');
+        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
         const rowsUpdated = await ProjectService.enableForUuid(uuid);
         if (!rowsUpdated)
             throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);
@@ -389,7 +389,7 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async disablePost(req, res) {
-        const uuid = await checkParameterUuid({...req.query, ...req.params, ...req.body}, 'uuid');
+        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
         const rowsUpdated = await ProjectService.disableForUuid(uuid);
         if (!rowsUpdated)
             throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);
@@ -435,7 +435,7 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async patch(req, res) {
-        const uuid = await checkParameterUuid({...req.body, ...req.params}, 'uuid');
+        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
         const rowsUpdated = await ProjectService.updateForUuid(req.body, uuid);
         if (!rowsUpdated)
             throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);

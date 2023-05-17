@@ -97,7 +97,7 @@ export function checkValidUuid(value, options) {
 
 export function checkParameterUuid(value, options) {
     options = getCheckOptionsFromParams(options);
-    return checkNotNullOrEmpty(
+    return checkValidUuid(
         value,
         {
             statusCode: 400,
@@ -127,7 +127,7 @@ export function checkValidUuidList(value, options) {
 
 export function checkParameterUuidList(value, options) {
     options = getCheckOptionsFromParams(options);
-    return checkNotNullOrEmpty(
+    return checkValidUuidList(
         value,
         {
             statusCode: 400,

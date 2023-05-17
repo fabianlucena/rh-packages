@@ -60,9 +60,10 @@ export class UserAccessController {
      *                  $ref: '#/definitions/Error'
      */
     static async post(req, res) {
-        const userUuid = checkParameterUuid(req.body, 'User');
-        const siteUuid = checkParameterUuid(req.body, 'Site');
-        const roleUuidList = checkParameterUuidList(req.body, 'Roles');
+        const loc = req.loc;
+        const userUuid = checkParameterUuid(req.body.User, loc._f('User'));
+        const siteUuid = checkParameterUuid(req.body.Site, loc._f('Site'));
+        const roleUuidList = checkParameterUuidList(req.body.Roles, loc._f('Roles'));
 
         await Promise.all(await roleUuidList.map(async roleUuid => {
             const result = await UserSiteRoleService.getList({
