@@ -61,7 +61,7 @@ export class ProjectController {
     static async post(req, res) {
         const loc = req.loc;
         checkParameter(req?.body, {name: loc._f('Name'), title: loc._f('Title'), companyUuid: loc._f('Company')});
-        checkParameterUuid(req?.body, 'companyUuid', loc._f('Company'));
+        checkParameterUuid(req?.body.companyUuid, loc._f('Company'));
         
         if (await ProjectService.getForName(req.body.name, {skipNoRowsError: true}))
             throw new ConflictError();
