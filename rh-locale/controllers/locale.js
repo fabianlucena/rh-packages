@@ -24,9 +24,7 @@ export class LocaleController {
                 data.gt = {};
                 data.gt[req.body.gt] = await req.loc._(req.body.gt);
             } else if (req.body.gt instanceof Array) {
-                data.gt = {};
-                const translations = await Promise.all(await req.body.gt.map(async t => ({source: t, translation: await req.loc._(t)})));
-                translations.map(t => data.gt[t.source] = t.translation);
+                data.gt = await req.loc.getTextRaw(req.body.gt);
             }
 
             res.status(200).send(data);

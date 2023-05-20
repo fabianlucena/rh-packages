@@ -91,39 +91,46 @@ export class TranslationService {
         return conf.global.models.Translation.findAll(await TranslationService.getListOptions(options));
     }
 
-    static async _gt(language, text, domain, isJson) {
-        if (!text)
-            return text;
+    static async _gt(language, texts, domain, isJson) {
+        if (!texts?.length)
+            return {};
 
-        if (typeof text === 'function')
-            return text();
+        const translatations = {};
+        for (let text of texts) {
+            if (typeof text === 'function')
+                return text();
 
-        if (!language)
-            return text;
+            if (!language)
+                return text;
 
-        isJson ??= false;
-        if (text instanceof Array) {
-            isJson = true;
-            text = JSON.stringify(text);
-        }
-        
-        text = text.trim();
-        let translationObject = await conf.global.models.TranslationCache.findOne({where: {language, domain, source: text, isJson}});
-        if (!translationObject) {
-            const bestTranslation = await this.getBestMatchForLanguageTextIsJsonAndDomains(language, text, isJson, domain);
-            if (bestTranslation) {
-                const source = await SourceService.getForTextAndIsJson(text, isJson);
-                translationObject = await conf.global.models.TranslationCache.create({language, domain, source: text, isJson, translation: bestTranslation, ref: source.ref});
+            isJson ??= false;
+            if (text instanceof Array) {
+                isJson = true;
+                text = JSON.stringify(text);
             }
-        }
 
-        let translation;
-        if (translationObject.isJson)
-            translation = JSON.parse(translationObject.translation);
-        else
-            translation = translationObject.translation;
+            domain ??= null;
+            
+            text = text.trim();
+            let translationObject = await conf.global.models.TranslationCache.findOne({where: {language, domain, source: text, isJson}});
+            if (!translationObject) {
+                const bestTranslation = await this.getBestMatchForLanguageTextIsJsonAndDomains(language, text, isJson, domain);
+                if (bestTranslation) {
+                    const source = await SourceService.getForTextAndIsJson(text, isJson);
+                    translationObject = await conf.global.models.TranslationCache.create({language, domain, source: text, isJson, translation: bestTranslation, ref: source.ref});
+                }
+            }
+
+            let translation;
+            if (translationObject.isJson)
+                translation = JSON.parse(translationObject.translation);
+            else
+                translation = translationObject.translation;
+
+            translatations[text] = translation;
+        }
         
-        return translation;
+        return translatations;
     }
 
     static async getBestMatchForLanguageTextIsJsonAndDomains(language, text, isJson, domains) {
