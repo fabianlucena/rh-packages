@@ -7,11 +7,19 @@ const loc = new Locale({
     driver: (language, text, domains) => TranslationService._gt(language, text, domains),
 });
 
+const languageCache = {};
+
 export class LocaleController {
     static middleware() {
         return (req, res, next) => {
-            req.loc = loc.clone()
-                .setOptions({language: 'es'});
+            const acceptLanguage = req.header('accept-language');
+            if (languageCache[acceptLanguage])
+                req.loc = languageCache[acceptLanguage];
+            else {
+                const newLoc = loc.clone({acceptLanguage});
+                languageCache[acceptLanguage] = newLoc;
+                req.loc = newLoc;
+            }
     
             next();
         };

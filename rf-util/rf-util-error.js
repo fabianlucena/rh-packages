@@ -1,6 +1,6 @@
 'use strict';
 
-import {loc, getTranslatedParamsAsync} from 'rf-locale';
+import {loc} from 'rf-locale';
 import * as util from 'util';
 
 export function setUpError(error, options) {
@@ -96,6 +96,24 @@ export class MergeTypeError extends Error {
 
     async getMessageParamAsync(loc) {  // eslint-disable-line no-unused-vars
         return [this.dstType, this.srcType];
+    }
+}
+
+export async function getTranslatedParamsAsync(params, all, loc) {
+    if (all) {
+        return Promise.all(await params.map(async param => {
+            if (param instanceof Array)
+                return await loc._(...param);
+            else
+                return await loc._(param);
+        }));
+    } else {
+        return Promise.all(await params.map(async param => {
+            if (param instanceof Array)
+                return await loc._(...param);
+            else
+                return param;
+        }));
     }
 }
 
