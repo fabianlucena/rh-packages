@@ -132,9 +132,17 @@ export class SessionController {
             options.where = {...options.where, id: req.session.id};
         }
 
-        const result = await SessionService.getListAndCount(options);
+        const data = await SessionService.getListAndCount(options);
+        data.rows = await Promise.all(data.rows.map(async row => {
+            row = row.toJSON();
+            row.open = await req.loc.strftime('%x %X', row.open);
+            if (row.close)
+                row.close = await req.loc.strftime('%x %X', row.close);
 
-        res.status(200).send(result);
+            return row;
+        }));
+
+        res.status(200).send(data);
     }
 
     static async getGrid(req, res) {
