@@ -327,8 +327,8 @@ export function includeCollaborators(options, object, models, type) {
         {
             model: models.Share,
             as: 'Collaborators',
-            attributes: ['isEnabled'],
-            // where,
+            attributes: ['isEnabled'], // A column is needed because a Sequelize bug
+            // where, // Cannot use this where because a Sequelize bug
             include: [
                 {
                     model: models.ObjectName,

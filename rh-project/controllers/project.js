@@ -141,15 +141,7 @@ export class ProjectController {
         options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
         const result = await ProjectService.getListAndCount(options);
 
-        result.rows = result.rows.map(row => {
-            row = row.toJSON();
-            return {
-                ...row,
-                companyUuid: row.Company.uuid,
-                companyTitle: row.Company.title,
-                ownerDisplayName: row.Collaborators[0].User?.displayName ?? null
-            };
-        });
+        result.rows = result.rows.map(row => row.toJSON());
 
         res.status(200).send(result);
     }
@@ -184,12 +176,12 @@ export class ProjectController {
                     label: await loc._('Name'),
                 },
                 {
-                    name: 'companyTitle',
+                    name: 'Company.title',
                     type: 'text',
                     label: await loc._('Company'),
                 },
                 {
-                    name: 'ownerDisplayName',
+                    name: 'Collaborators[0].User.displayName',
                     type: 'text',
                     label: await loc._('Owner'),
                 },
