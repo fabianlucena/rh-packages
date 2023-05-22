@@ -1,0 +1,4 @@
+{
+    "yesexpr": "^([yY][eE][sS]|[yY])",
+    "noexpr":  "^([nN][oO]|[nN])"
+}

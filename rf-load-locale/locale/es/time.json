@@ -1,0 +1,72 @@
+{
+    "_": "For use in %a",
+    "abday": [
+        "Do.",
+        "Lu.",
+        "Ma.",
+        "Mi.",
+        "Ju.",
+        "Vi.",
+        "Sa."
+    ],
+
+    "_": "For use in %A",
+    "day": [
+        "Domingo",
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado"
+    ],
+
+    "_": "For use in %b",
+    "abmon": [
+        "Ene.",
+        "Feb.",
+        "Mar.",
+        "Abr.",
+        "May.",
+        "Jun.",
+        "Jul.",
+        "Ago.",
+        "Sep.",
+        "Oct.",
+        "Nov.",
+        "Dic."
+    ],
+
+    "_": "For use in %B",
+    "mon": [
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre"
+    ],
+
+    "_": "Equivalent of AM/PM (%p)",
+    "am_pm": ["AM", "PM"],
+
+    "_": "Appropriate date and time representation (%c) '%a %b %e %H:%M:%S %Y'",
+    "d_t_fmt": "%A %e de %B de %Y %H:%M:%S",
+        
+    "_": "Appropriate date representation (%x) '%d/%m/%Y'",
+    "d_fmt": "%d/%m/%Y",
+
+    "_": "Appropriate time representation (%X) '%H:%M:%S'",
+    "t_fmt": "%H:%M:%S",
+
+    "_": "Appropriate 12-hour time representation (%r) '%I:%M:%S %p'",
+    "t_fmt_ampm": "%I:%M:%S %p",
+
+    "date_fmt": "%F %Z"
+}
