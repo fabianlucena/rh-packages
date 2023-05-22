@@ -306,7 +306,9 @@ export class UserAccessController {
                 },
                 {
                     name: 'Roles',
-                    type: 'selectFromList',
+                    type: 'select',
+                    multiple: true,
+                    big: true,
                     label: await loc._('Roles'),
                     loadOptionsFrom: {
                         service: 'user-access-role',
