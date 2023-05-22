@@ -40,23 +40,31 @@ export function checkNotNull(obj, errMsj) {
     throw errMsj;
 }
 
-export function check(ok, options) {
+export function check(value, options) {
     if (typeof options === 'string')
         options = {message: options};
 
-    const result = options?.method?
-        options.method(ok):
-        ok;
+    if (options.allowNull && value === null)
+        return value;
+    
+    if (options.allowUndefined && value === undefined)
+        return value;
+
+    let result;
+    if (options?.method)
+        result = options.method(value);
+    else
+        result = !!value;
 
     if (result)
-        return ok;
+        return value;
     
     throw new CheckError(options);
 }
 
 function getCheckOptionsFromParams(options, moreOptions) {
     if (typeof options === 'string' || typeof options === 'function')
-        options = {paramName: options};
+        options = {paramTitle: options};
 
     return {...options, ...moreOptions};
 }
@@ -65,7 +73,7 @@ export function checkNotNullOrEmpty(value, options) {
     options = {
         method: v => !!v,
         statusCode: 500,
-        _message: [loc._f('"%s" is null or empty'), options.paramName],
+        _message: [loc._f('"%s" is null or empty'), options.paramTitle],
         ...options
     };
 
@@ -78,7 +86,7 @@ export function checkParameterNotNullOrEmpty(value, options) {
         value,
         {
             statusCode: 400,
-            _message: [loc._f('"%s" parameter is null or empty'), options.paramName],
+            _message: [loc._f('"%s" parameter is null or empty'), options.paramTitle],
             ...options,
         }
     );
@@ -88,7 +96,7 @@ export function checkValidUuid(value, options) {
     options = {
         method: uuid.validate,
         statusCode: 500,
-        _message: [loc._f('"%s" is not a valid UUID value'), options.paramName],
+        _message: [loc._f('"%s" is not a valid UUID value'), options.paramTitle],
         ...options
     };
 
@@ -101,7 +109,7 @@ export function checkParameterUuid(value, options) {
         value,
         {
             statusCode: 400,
-            _message: [loc._f('"%s" parameter is not a valid UUID value'), options.paramName],
+            _message: [loc._f('"%s" parameter is not a valid UUID value'), options.paramTitle],
             ...options,
         }
     );
@@ -118,7 +126,7 @@ export function checkValidUuidList(value, options) {
             return true;
         },
         statusCode: 500,
-        _message: [loc._f('"%s" is not a valid UUID value'), options.paramName],
+        _message: [loc._f('"%s" is not a valid UUID value'), options.paramTitle],
         ...options,
     };
 
@@ -131,7 +139,7 @@ export function checkParameterUuidList(value, options) {
         value,
         {
             statusCode: 400,
-            _message: [loc._f('"%s" parameter is not a valid UUID value'), options.paramName],
+            _message: [loc._f('"%s" parameter is not a valid UUID value'), options.paramTitle],
             ...options,
         }
     );
