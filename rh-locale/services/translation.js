@@ -95,42 +95,50 @@ export class TranslationService {
         if (!texts?.length)
             return {};
 
-        const translatations = {};
-        for (let text of texts) {
-            if (typeof text === 'function')
-                return text();
+        const translations = {};
+        if (!language) {
+            for (const text of texts)
+                translations[text] = text;
 
-            if (!language)
-                return text;
+            return translations;
+        }
 
-            isJson ??= false;
-            if (text instanceof Array) {
-                isJson = true;
-                text = JSON.stringify(text);
-            }
-
-            domain ??= null;
-            
-            text = text.trim();
-            let translationObject = await conf.global.models.TranslationCache.findOne({where: {language, domain, source: text, isJson}});
-            if (!translationObject) {
-                const bestTranslation = await this.getBestMatchForLanguageTextIsJsonAndDomains(language, text, isJson, domain);
-                if (bestTranslation) {
-                    const source = await SourceService.getForTextAndIsJson(text, isJson);
-                    translationObject = await conf.global.models.TranslationCache.create({language, domain, source: text, isJson, translation: bestTranslation, ref: source.ref});
-                }
-            }
-
+        for (const text of texts) {
             let translation;
-            if (translationObject.isJson)
-                translation = JSON.parse(translationObject.translation);
-            else
-                translation = translationObject.translation;
 
-            translatations[text] = translation;
+            if (typeof text === 'function') {
+                translation = text();
+            } else {
+                let arrangedText;
+                isJson ??= false;
+                if (text instanceof Array) {
+                    isJson = true;
+                    arrangedText = JSON.stringify(text);
+                } else
+                    arrangedText = text;
+
+                domain ??= null;
+                
+                arrangedText = text.trim();
+                let translationObject = await conf.global.models.TranslationCache.findOne({where: {language, domain, source: arrangedText, isJson}});
+                if (!translationObject) {
+                    const bestTranslation = await TranslationService.getBestMatchForLanguageTextIsJsonAndDomains(language, arrangedText, isJson, domain);
+                    if (bestTranslation) {
+                        const source = await SourceService.getForTextAndIsJson(arrangedText, isJson);
+                        translationObject = await conf.global.models.TranslationCache.create({language, domain, source: arrangedText, isJson, translation: bestTranslation, ref: source.ref});
+                    }
+                }
+
+                if (translationObject.isJson)
+                    translation = JSON.parse(translationObject.translation);
+                else
+                    translation = translationObject.translation;
+            }
+
+            translations[text] = translation;
         }
         
-        return translatations;
+        return translations;
     }
 
     static async getBestMatchForLanguageTextIsJsonAndDomains(language, text, isJson, domains) {
@@ -160,11 +168,11 @@ export class TranslationService {
         } else 
             domainsId.push(null);
         
-        language = await LanguageService.createIfNotExists({name: language.trim(), title: language.trim()});
-        while (language.id) {
+        let languageData = await LanguageService.createIfNotExists({name: language.trim(), title: language.trim()});
+        while (languageData.id) {
             const data = {
                 sourceId,
-                languageId: language.id,
+                languageId: languageData.id,
             };
 
             let translation;
@@ -181,10 +189,10 @@ export class TranslationService {
                 }
             }
 
-            if (!language.parentId) 
+            if (!languageData.parentId) 
                 break;
 
-            language = await LanguageService.get(language.parentId);
+            languageData = await LanguageService.get(languageData.parentId);
         }
 
         return text;

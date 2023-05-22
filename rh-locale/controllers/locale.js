@@ -5,7 +5,7 @@ import {Locale} from 'rf-locale';
 import {loadLocale} from 'rf-load-locale';
 
 const loc = new Locale({
-    driver: (language, text, domains) => TranslationService._gt(language, text, domains),
+    driver: TranslationService._gt,
     loadLocale: loadLocale,
 });
 

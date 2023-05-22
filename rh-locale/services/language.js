@@ -6,6 +6,18 @@ import {deepComplete} from 'rf-util';
 
 export class LanguageService {
     /**
+     * Complete the data object with the parentId property if not exists. 
+     * @param {{parent: string, parentId: integer, ...}} data 
+     * @returns {Promise{data}}
+     */
+    static async completeParentId(data) {
+        if (!data.parentId && data.parent)
+            data.parentId = await LanguageService.getIdForName({name: data.parent});
+
+        return data;
+    }
+    
+    /**
      * Creates a new language row into DB.
      * @param {{name: string, title: string, description: string}} data - data for the new language.
      *  - name: must be unique.
@@ -15,6 +27,8 @@ export class LanguageService {
     static async create(data) {
         if (!data.name)
             throw new MissingPropertyError('Language', 'name');
+
+        await LanguageService.completeParentId(data);
 
         return conf.global.models.Language.create(data);
     }
@@ -39,6 +53,17 @@ export class LanguageService {
      */
     static async getList(options) {
         return conf.global.models.Language.findAll(await LanguageService.getListOptions(options));
+    }
+
+    /**
+     * Gets a language for its ID. For many coincidences and for no rows this method fails.
+     * @param {string} id - ID for the language to get.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {Promise{Language}}
+     */
+    static get(id, options) {
+        return this.getList(deepComplete(options, {where:{id}, limit: 2}))
+            .then(rowList => getSingle(rowList, deepComplete(options, {params: ['language', 'id', id, 'language']})));
     }
 
     /**
@@ -67,14 +92,22 @@ export class LanguageService {
      * @param {data} data - data for the new Language @see create.
      * @returns {Promise{Language}}
      */
-    static createIfNotExists(data, options) {
-        return this.getForName(data.name, {attributes: ['id'], skipNoRowsError: true, ...options})
-            .then(element => {
-                if (element)
-                    return element;
+    static async createIfNotExists(data, options) {
+        const row = await this.getForName(data.name, {attributes: ['id', 'parentId'], skipNoRowsError: true, ...options});
+        if (row)
+            return row;
 
-                return this.create(data);
-            });
+        await LanguageService.completeParentId(data);
+
+        if (!data.parentId) {
+            const nameParts = data.name.split('-');
+            if (nameParts.length > 1) {
+                const parent = await LanguageService.createIfNotExists({name: nameParts[0].trim(), title: nameParts[0].trim()});
+                data.parentId = parent.id;
+            }
+        }
+
+        return this.create(data);
     }
 
     /**
