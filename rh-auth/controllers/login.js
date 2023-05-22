@@ -58,6 +58,7 @@ export class LoginController {
             action: 'login',
             method: 'post',
             onSuccess: 'setBearerAuthorizationFromResponseProperty("authToken"); reloadMenu();',
+            includeSessionIndexInBody: true,
             fields: [
                 {
                     name: 'username',
@@ -116,9 +117,9 @@ export class LoginController {
         try {
             let session;
             if (req.body.autoLoginToken)
-                session = await LoginService.forAutoLoginTokenAndSessionIndex(req.body.autoLoginToken, req.body.deviceToken, req.body?.sessionIndex, req.loc);
+                session = await LoginService.forAutoLoginTokenAndSessionIndex(req.body.autoLoginToken, req.body.deviceToken, req.body?.sessionIndex ?? req.body.index, req.loc);
             else
-                session = await LoginService.forUsernamePasswordDeviceTokenAndSessionIndex(req.body.username, req.body.password, req.body.deviceToken, req.body.sessionIndex, req.loc);
+                session = await LoginService.forUsernamePasswordDeviceTokenAndSessionIndex(req.body.username, req.body.password, req.body.deviceToken, req.body.sessionIndex ?? req.body.index, req.loc);
 
             const now = new Date();
             const expires30  = new Date();
