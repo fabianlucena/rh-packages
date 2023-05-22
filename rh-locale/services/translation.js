@@ -119,7 +119,7 @@ export class TranslationService {
 
                 domain ??= null;
                 
-                arrangedText = text.trim();
+                arrangedText = arrangedText.trim();
                 let translationObject = await conf.global.models.TranslationCache.findOne({where: {language, domain, source: arrangedText, isJson}});
                 if (!translationObject) {
                     const bestTranslation = await TranslationService.getBestMatchForLanguageTextIsJsonAndDomains(language, arrangedText, isJson, domain);
