@@ -2,23 +2,26 @@
 
 import {TranslationService} from '../services/translation.js';
 import {Locale} from 'rf-locale';
-import {loadLocale} from 'rf-load-locale';
 
 const loc = new Locale({
     driver: TranslationService._gt,
-    loadLocale: loadLocale,
 });
+
+await loc.init();
 
 const languageCache = {};
 
 export class LocaleController {
     static middleware() {
-        return (req, res, next) => {
+        return async (req, res, next) => {
             const acceptLanguage = req.header('accept-language');
             if (languageCache[acceptLanguage])
                 req.loc = languageCache[acceptLanguage];
             else {
-                const newLoc = loc.clone({acceptLanguage});
+                const newLoc = loc.clone();
+                newLoc.language = null;
+                await newLoc.loadLanguageFromAcceptLanguage(acceptLanguage);
+                await newLoc.init();
                 languageCache[acceptLanguage] = newLoc;
                 req.loc = newLoc;
             }
