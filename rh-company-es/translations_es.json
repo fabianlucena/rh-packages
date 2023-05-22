@@ -11,7 +11,7 @@
     },
     "Companies": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [195,44]",
+        "ref": "..\\rh-company\\controllers\\company.js [196,44]",
         "translation": "Empresas"
     },
     "Create companies": {
@@ -31,17 +31,17 @@
     },
     "Title": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [202,54]",
+        "ref": "..\\rh-company\\controllers\\company.js [203,54]",
         "translation": "Título"
     },
     "Name": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [208,53]",
+        "ref": "..\\rh-company\\controllers\\company.js [209,53]",
         "translation": "Nombre"
     },
     "Enabled": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [218,56]",
+        "ref": "..\\rh-company\\controllers\\company.js [219,56]",
         "translation": "Habilitado"
     },
     "Spanish": {
@@ -56,17 +56,37 @@
     },
     "The company data does not have a owner.": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [70,91]",
+        "ref": "..\\rh-company\\controllers\\company.js [71,91]",
         "translation": "La empresa no tiene un propietario."
     },
     "Owner": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [184,48]",
+        "ref": "..\\rh-company\\controllers\\company.js [185,48]",
         "translation": "Propietario"
     },
     "Description": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [225,60]",
+        "ref": "..\\rh-company\\controllers\\company.js [226,60]",
         "translation": "Descripción"
+    },
+    "UUID": {
+        "language": "es",
+        "ref": "..\\rh-company\\controllers\\company.js [414,120]",
+        "translation": "UUID"
+    },
+    "Company with UUID %s does not exists.": {
+        "language": "es",
+        "ref": "..\\rh-company\\controllers\\company.js [417,85]",
+        "translation": "La empresa con el UUID %s no existe."
+    },
+    "Company \"%s\" does not exist": {
+        "language": "es",
+        "ref": "..\\rh-company\\services\\company.js [143,67]",
+        "translation": "La empresa \"%s\" no existe"
+    },
+    "Company \"%s\" is not enabled": {
+        "language": "es",
+        "ref": "..\\rh-company\\services\\company.js [146,67]",
+        "translation": "La empresa \"%s\" no está habilitada"
     }
 }

@@ -4,6 +4,7 @@ import {IdentityService} from '../services/identity.js';
 import {SessionService} from '../services/session.js';
 import {_Error} from 'rf-util';
 import {HttpError} from 'http-util';
+import {loc} from 'rf-locale';
 
 export class LoginService {
     /**
@@ -22,7 +23,7 @@ export class LoginService {
     static async forUsernamePasswordDeviceTokenAndSessionIndex(username, password, deviceToken, sessionIndex, loc) {
         const user = await UserService.getForUsername(username);
         if (!user)
-            throw new _Error('Error to get user to create session');
+            throw new _Error(loc._f('Error to get user to create session'));
 
         await UserService.checkEnabledUser(user, username);
         if (!await IdentityService.checkLocalPasswordForUsername(username, password, loc))
@@ -70,17 +71,17 @@ export class LoginService {
     static async forAutoLoginTokenAndSessionIndex(autoLoginToken, deviceToken, sessionIndex) {
         const oldSession = await SessionService.getForAutoLoginToken(autoLoginToken);
         if (!oldSession)
-            throw new _Error('Error to get old session to create session');
+            throw new _Error(loc._f('Error to get old session to create session'));
 
         if (oldSession.close)
-            throw new _Error('The auto login token is invalid becasuse the session is closed');
+            throw new _Error(loc._f('The auto login token is invalid becasuse the session is closed'));
 
         const device = await DeviceService.getForToken(deviceToken);
         if (!device)
             throw new HttpError('Invalid device', 400);
 
         if (oldSession.deviceId != device.id)
-            throw new _Error('The device is not the same');
+            throw new _Error(loc._f('The device is not the same'));
 
         const user = await UserService.get(oldSession.userId);
         await UserService.checkEnabledUser(user, user.username);

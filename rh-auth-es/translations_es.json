@@ -21,12 +21,12 @@
     },
     "There is no id for session": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\session.js [189,78]",
+        "ref": "..\\rh-auth\\services\\session.js [189,66]",
         "translation": "No hay id para la sesión."
     },
     "Row for UUID %s does not exist": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\session.js [209,124]",
+        "ref": "..\\rh-auth\\services\\session.js [210,124]",
         "translation": "La fila UUID %s no existe."
     },
     "User \"%s\" does not have local identity": {
@@ -86,17 +86,17 @@
     },
     "Username": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\login.js [66,57]",
+        "ref": "..\\rh-auth\\controllers\\login.js [115,68]",
         "translation": "Nombre de usuario"
     },
     "Password": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\login.js [72,57]",
+        "ref": "..\\rh-auth\\controllers\\login.js [115,98]",
         "translation": "Contraseña"
     },
     "Invalid login": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\login.js [150,61]",
+        "ref": "..\\rh-auth\\controllers\\login.js [152,61]",
         "translation": "Ingreso inválido"
     },
     "System administrator": {
@@ -146,7 +146,7 @@
     },
     "Sessions": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\session.js [151,43]",
+        "ref": "..\\rh-auth\\controllers\\session.js [159,43]",
         "translation": "Sesiones"
     },
     "Delete session": {
@@ -206,17 +206,57 @@
     },
     "Open": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\session.js [161,47]",
+        "ref": "..\\rh-auth\\controllers\\session.js [169,47]",
         "translation": "Abierto"
     },
     "Close": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\session.js [166,48]",
+        "ref": "..\\rh-auth\\controllers\\session.js [174,48]",
         "translation": "Cerrado"
     },
     "Type here the new password for user": {
         "language": "es",
         "ref": "..\\rh-auth\\controllers\\user.js [207,84]",
         "translation": "Escriba aquí la nueva contraseña para el usuario"
+    },
+    "UUID": {
+        "language": "es",
+        "ref": "..\\rh-auth\\controllers\\session.js [220,77]",
+        "translation": "UUID"
+    },
+    "User with UUID %s does not exists.": {
+        "language": "es",
+        "ref": "..\\rh-auth\\controllers\\user.js [399,82]",
+        "translation": "No existe el usuario con el UUID %s."
+    },
+    "User \"%s\" does not exist": {
+        "language": "es",
+        "ref": "..\\rh-auth\\services\\user.js [171,64]",
+        "translation": "El usuario \"%s\" no existe"
+    },
+    "User \"%s\" is not enabled": {
+        "language": "es",
+        "ref": "..\\rh-auth\\services\\user.js [174,64]",
+        "translation": "El usuario \"%s no está habilitado"
+    },
+    "Error to get user to create session": {
+        "language": "es",
+        "ref": "..\\rh-auth\\services\\login.js [26,75]",
+        "translation": "Error al obtener el usuario para crear la sesión"
+    },
+    "Error to get old session to create session": {
+        "language": "es",
+        "ref": "..\\rh-auth\\services\\login.js [74,82]",
+        "translation": "Error al obtener la sesión anterior para crear la sesión"
+    },
+    "The auto login token is invalid becasuse the session is closed": {
+        "language": "es",
+        "ref": "..\\rh-auth\\services\\login.js [77,102]",
+        "translation": "La seña (token) de ingreso automático es inválida porque la sesión está cerrada"
+    },
+    "The device is not the same": {
+        "language": "es",
+        "ref": "..\\rh-auth\\services\\login.js [84,66]",
+        "translation": "El dispositivo no es el mismo"
     }
 }

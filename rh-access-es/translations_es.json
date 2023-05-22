@@ -36,12 +36,12 @@
     },
     "Roles": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [308,48]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [312,48]",
         "translation": "Roles"
     },
     "Sites": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [292,48]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [294,48]",
         "translation": "Sitios"
     },
     "User access manager": {
@@ -56,7 +56,7 @@
     },
     "Users accesses": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [238,49]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [239,49]",
         "translation": "Accesos de usuarios"
     },
     "Edit users accesses": {
@@ -76,17 +76,42 @@
     },
     "User access": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [270,46]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [271,46]",
         "translation": "Acceso de usuario"
     },
     "User": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [276,47]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [433,71]",
         "translation": "Usuario"
     },
     "Site": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [253,47]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [434,71]",
         "translation": "Sitio"
+    },
+    "Site UUID param is missing.": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\user-access.js [424,79]",
+        "translation": "Falta el parámetro UUID de sitio."
+    },
+    "User UUID param is missing.": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\user-access.js [426,75]",
+        "translation": "Falta el parámetro UUID de usuario."
+    },
+    "UUID": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\user-access.js [428,125]",
+        "translation": "UUID"
+    },
+    "Wrong UUID format.": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\user-access.js [431,70]",
+        "translation": "UUID mal formado."
+    },
+    "User with UUID %s has not access to the site with UUID %s.": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\user-access.js [439,106]",
+        "translation": "El usuario con el UUID %s no tiene acceso al sitio con el UUID %s."
     }
 }

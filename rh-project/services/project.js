@@ -1,6 +1,7 @@
 import {conf} from '../conf.js';
 import {getSingle, addEnabledFilter, includeCollaborators, completeIncludeOptions} from 'sql-util';
 import {complete, deepComplete, _Error} from 'rf-util';
+import {loc} from 'rf-locale';
 
 export class ProjectService {
     /**
@@ -175,10 +176,10 @@ export class ProjectService {
      */
     static async checkEnabledProject(project, name) {
         if (!project)
-            throw new _Error('Project "%s" does not exist', name);
+            throw new _Error(loc._f('Project "%s" does not exist'), name);
 
         if (!project.isEnabled)
-            throw new _Error('Project "%s" is not enabled', name);
+            throw new _Error(loc._f('Project "%s" is not enabled'), name);
     }
 
     /**

@@ -3,6 +3,7 @@ import {IdentityService} from '../services/identity.js';
 import {conf} from '../conf.js';
 import {getSingle, addEnabledFilter, addEnabledOnerModuleFilter} from 'sql-util';
 import {complete, deepComplete, _Error} from 'rf-util';
+import {loc} from 'rf-locale';
 
 export class UserService {
     /**
@@ -167,10 +168,10 @@ export class UserService {
      */
     static async checkEnabledUser(user, username) {
         if (!user)
-            throw new _Error('User "%s" does not exist', username);
+            throw new _Error(loc._f('User "%s" does not exist'), username);
 
         if (!user.isEnabled)
-            throw new _Error('User "%s" is not enabled', username);
+            throw new _Error(loc._f('User "%s" is not enabled'), username);
     }
 
     /**
