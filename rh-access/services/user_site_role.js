@@ -198,4 +198,15 @@ export class UserSiteRoleService {
 
         return conf.global.models.UserSiteRole.destroy(options);
     }
+
+    static async deleteForUserUuidAndSiteUuid(userUuid, siteUuid, options) {
+        options ??= {};
+        options.where ??= {};
+        const userId = await conf.global.services.User.getIdForUuid(userUuid);
+        const siteId = await conf.global.services.Site.getIdForUuid(siteUuid);
+        
+        options.where = {userId, siteId};
+
+        return conf.global.models.UserSiteRole.destroy(options);
+    }
 }

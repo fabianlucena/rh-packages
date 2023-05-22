@@ -13,13 +13,8 @@ export default (app, checkPermission) => {
     app.get('/user-access', checkPermission('user-access.get'), asyncHandler(UserAccessController.get));
     app.get('/user-access/:uuid', checkPermission('user-access.get'), asyncHandler(UserAccessController.get));
 
-    /*
-    app.delete('/user-access', checkPermission('user-access.delete'), asyncHandler(UserController.delete));
-    app.delete('/user-access/:uuid', checkPermission('user-access.delete'), asyncHandler(UserController.delete));
-
-    app.patch('/user-access', checkPermission('user-access.edit'), asyncHandler(UserController.patch));
-    app.patch('/user-access/:uuid', checkPermission('user-access.edit'), asyncHandler(UserController.patch));
-    */
+    app.delete('/user-access', checkPermission('user-access.delete'), asyncHandler(UserAccessController.delete));
+    app.delete('/user-access/:uuid', checkPermission('user-access.delete'), asyncHandler(UserAccessController.delete));
 
     app.get('/user-access-user', checkPermission('user-access.edit'), asyncHandler(UserAccessController.getUsers));
     app.get('/user-access-site', checkPermission('user-access.edit'), asyncHandler(UserAccessController.getSites));

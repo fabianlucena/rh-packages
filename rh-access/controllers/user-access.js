@@ -1,7 +1,7 @@
 import {UserSiteRoleService} from '../services/user_site_role.js';
 import {conf} from '../conf.js';
-import {getOptionsFromParamsAndODataAsync} from 'http-util';
-import {checkParameter, checkParameterUuid, checkParameterUuidList} from 'rf-util';
+import {getOptionsFromParamsAndODataAsync, _HttpError} from 'http-util';
+import {checkParameter, checkParameterUuid, checkParameterUuidList, checkNotNullOrEmpty} from 'rf-util';
 
 /**
  * @swagger
@@ -270,6 +270,7 @@ export class UserAccessController {
         res.status(200).send({
             title: await loc._('User access'),
             action: 'user-access',
+            method: 'POST',
             fields: [
                 {
                     name: 'User',
@@ -345,13 +346,96 @@ export class UserAccessController {
 
     static async getRoles(req, res) {
         const definitions = {uuid: 'uuid', title: 'string'};
-        let options = {view: true, limit: 100, offset: 0, attributes: ['uuid', 'name', 'title', 'description'], isEnabled: true};
+        let options = {
+            view: true,
+            limit: 100,
+            offset: 0,
+            attributes: ['uuid', 'name', 'title', 'description', 'isTranslatable'],
+            isEnabled: true,
+            raw: true,
+        };
 
         options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
 
         const RoleService = conf.global.services.Role;
         const result = await RoleService.getListAndCount(options);
+        
+        const loc = req.loc;
+        result.rows = await Promise.all(result.rows.map(async row => {
+            if (row.isTranslatable)
+                row.title = await loc._(row.title);
+
+            delete row.isTranslatable;
+
+            return row;
+        }));
 
         res.status(200).send(result);
+    }
+
+    /**
+     * @swagger
+     * /api/user-access:
+     *  delete:
+     *      tags:
+     *          - User Access
+     *      summary: Delete an user access
+     *      description: Delete a user access from the user UUID and site UUID
+     *      security:
+     *          -   bearerAuth: []
+     *      produces:
+     *          -   application/json
+     *      parameters:
+     *          -   name: uuid
+     *              in: query
+     *              type: string
+     *              format: UUID,UUID
+     *              required: true
+     *              example: 0F7B8F7F-D792-405B-8DE0-2E9E04BAC3A4,D781CFDF-CB71-4428-8F49-614387500813
+     *      responses:
+     *          '204':
+     *              description: Success
+     *          '400':
+     *              description: Missing parameters or parameters error
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '401':
+     *              description: Unauthorized
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '403':
+     *              description: Forbidden
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '500':
+     *              description: Internal server error
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     */
+    static async delete(req, res) {
+        const loc = req.loc;
+
+        let userUuid = checkParameterUuid(req.body.User, {paramTitle: loc._f('User'), allowNull: true, allowUndefined: true});
+        let siteUuid = checkParameterUuid(req.body.Site, {paramTitle: loc._f('Site'), allowNull: true, allowUndefined: true});
+        if (userUuid) {
+            if (!siteUuid)
+                throw new _HttpError(req.loc._f('Site UUID param is missing.'), 403);
+        } else if (siteUuid)
+            throw new _HttpError(req.loc._f('User UUID param is missing.'), 403);
+        else {
+            const uuid = await checkNotNullOrEmpty(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
+            const uuidParts = uuid.split(',');
+            if (uuidParts.length !== 2)
+                throw new _HttpError(req.loc._f('Wrong UUID format.'), 403);
+
+            userUuid = checkParameterUuid(uuidParts[0], loc._f('User'));
+            siteUuid = checkParameterUuid(uuidParts[1], loc._f('Site'));
+        }
+
+        const rowsDeleted = await UserSiteRoleService.deleteForUserUuidAndSiteUuid(userUuid, siteUuid);
+        if (!rowsDeleted)
+            throw new _HttpError(req.loc._f('User with UUID %s has not access to the site with UUID %s.'), 403, userUuid, siteUuid);
+
+        res.sendStatus(204);
     }
 }
