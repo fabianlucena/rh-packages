@@ -272,7 +272,7 @@ export class CompanyController {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
         const rowsDeleted = await CompanyService.deleteForUuid(uuid);
         if (!rowsDeleted)
-            throw new _HttpError('Company with UUID %s does not exists.', 403, uuid);
+            throw new _HttpError(req.loc._f('Company with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
     }
@@ -320,7 +320,7 @@ export class CompanyController {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
         const rowsUpdated = await CompanyService.enableForUuid(uuid);
         if (!rowsUpdated)
-            throw new _HttpError('Company with UUID %s does not exists.', 403, uuid);
+            throw new _HttpError(req.loc._f('Company with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
     }
@@ -368,7 +368,7 @@ export class CompanyController {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
         const rowsUpdated = await CompanyService.disableForUuid(uuid);
         if (!rowsUpdated)
-            throw new _HttpError('Company with UUID %s does not exists.', 403, uuid);
+            throw new _HttpError(req.loc._f('Company with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
     }
@@ -414,7 +414,7 @@ export class CompanyController {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
         const rowsUpdated = await CompanyService.updateForUuid(req.body, uuid);
         if (!rowsUpdated)
-            throw new _HttpError('Company with UUID %s does not exists.', 403, uuid);
+            throw new _HttpError(req.loc._f('Company with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
     }

@@ -288,7 +288,7 @@ export class ProjectController {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
         const rowsDeleted = await ProjectService.deleteForUuid(uuid);
         if (!rowsDeleted)
-            throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);
+            throw new _HttpError(req.loc._f('Project with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
     }
@@ -336,7 +336,7 @@ export class ProjectController {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
         const rowsUpdated = await ProjectService.enableForUuid(uuid);
         if (!rowsUpdated)
-            throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);
+            throw new _HttpError(req.loc._f('Project with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
     }
@@ -384,7 +384,7 @@ export class ProjectController {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
         const rowsUpdated = await ProjectService.disableForUuid(uuid);
         if (!rowsUpdated)
-            throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);
+            throw new _HttpError(req.loc._f('Project with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
     }
@@ -430,7 +430,7 @@ export class ProjectController {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
         const rowsUpdated = await ProjectService.updateForUuid(req.body, uuid);
         if (!rowsUpdated)
-            throw new _HttpError('Project with UUID %s does not exists.', 403, uuid);
+            throw new _HttpError(req.loc._f('Project with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
     }
