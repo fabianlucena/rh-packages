@@ -235,10 +235,12 @@ export function getIncludedModelOptions(options, model, as) {
  * @return {Options}
  */
 export function completeIncludeOptions(options, name, includeOptions, includeDefaultOptions) {
+    options ??= {};
+    
     if (options?.foreign && options?.foreign[name] === false)
         return options;
 
-    if (typeof includeOptions !== 'object')
+    if (typeof includeOptions !== 'object' || !includeOptions)
         includeOptions = {};
         
     if (includeDefaultOptions)
@@ -348,4 +350,11 @@ export function includeCollaborators(options, object, models, type) {
             ],
         }
     );
+}
+
+export function arrangeOptions(options, sequelize) {
+    if (options.order?.length)
+        options.order = options.order.map(order => [sequelize.col(order[0]), order[1]]);
+
+    return options;
 }
