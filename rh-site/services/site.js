@@ -118,6 +118,9 @@ export class SiteService {
      */
     static async getForUuid(uuid, options) {
         const rowList = await SiteService.getList(deepComplete(options, {where:{uuid}, limit: 2}));
+        if (Array.isArray(uuid))
+            return rowList;
+
         return getSingle(rowList, deepComplete(options, {params: ['site', ['uuid = %s', uuid], 'Site']}));
     }
 
@@ -129,6 +132,9 @@ export class SiteService {
      */
     static async getForName(name, options) {
         const rowList = await SiteService.getList(deepComplete(options, {where:{name}, limit: 2}));
+        if (Array.isArray(name))
+            return rowList;
+
         return getSingle(rowList, deepComplete(options, {params: ['site', ['name = %s', name], 'Site']}));
     }
 
@@ -139,7 +145,11 @@ export class SiteService {
      * @returns {Promise{ID}}
      */
     static async getIdForUuid(uuid, options) {
-        return (await SiteService.getForUuid(uuid, {...options, attributes: ['id']})).id;
+        const result = await SiteService.getForUuid(uuid, {...options, attributes: ['id']});
+        if (Array.isArray(uuid))
+            return result.map(row => row.id);
+        
+        return result.id;
     }
 
     /**
@@ -149,7 +159,11 @@ export class SiteService {
      * @returns {Promise{ID}}
      */
     static async getIdForName(name, options) {
-        return (await SiteService.getForName(name, {...options, attributes: ['id']})).id;
+        const result = await SiteService.getForName(name, {...options, attributes: ['id']});
+        if (Array.isArray(name))
+            return result.map(row => row.id);
+        
+        return result.id;
     }
 
     /**
