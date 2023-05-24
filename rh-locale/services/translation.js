@@ -111,7 +111,7 @@ export class TranslationService {
             } else {
                 let arrangedText;
                 isJson ??= false;
-                if (text instanceof Array) {
+                if (Array.isArray(text)) {
                     isJson = true;
                     arrangedText = JSON.stringify(text);
                 } else
@@ -148,7 +148,7 @@ export class TranslationService {
         const sourceId = await SourceService.getIdOrCreateForTextAndIsJson(text, isJson);
         const domainsId = [];
         if (domains) {
-            if (!(domains instanceof Array))
+            if (!Array.isArray(domains))
                 domains = domains.split(',');
             
             let useNoDomain = true;

@@ -36,7 +36,7 @@ export class LocaleController {
             if (typeof req.body.gt === 'string') {
                 data.gt = {};
                 data.gt[req.body.gt] = await req.loc._(req.body.gt);
-            } else if (req.body.gt instanceof Array) {
+            } else if (Array.isArray(req.body.gt)) {
                 data.gt = await req.loc.getTextRaw(req.body.gt);
             }
 

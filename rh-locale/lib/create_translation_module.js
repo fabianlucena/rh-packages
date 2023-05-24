@@ -64,7 +64,7 @@ export async function createTranslationModule(options) {
     const dir = './' + srcPackageName + '-' + language;
     if (fs.existsSync(dir)) {
         if (!options.overwrite) {
-            const proceed = await simplePrompt(`The directory "${dir}" is not empty. Do you ant to proceed anyway? the files will be rewriten [y|N]`);
+            const proceed = await simplePrompt(`The directory "${dir}" is not empty. Do you and to proceed anyway? the files will be rewriten [y|N]`);
             if (!proceed || proceed[0].toUpperCase() != 'Y') {
                 console.error(`The directory "${dir}" is not empty.`);
                 process.exit();
