@@ -367,7 +367,7 @@ export async function execAsyncMethodListAsync(asyncMethodList, singleItemName, 
     let method,
         isEmpty,
         itemName;
-    if (asyncMethodList instanceof Array) {
+    if (Array.isArray(asyncMethodList)) {
         if (!asyncMethodList.length)
             return;
 
@@ -457,7 +457,7 @@ export async function installModuleAsync(global, theModule) {
         await runSequentially(theModule.init, async method => await method());
 
     if (theModule.afterConfigAsync) {
-        const afterConfigAsync = (theModule.afterConfigAsync instanceof Array)?
+        const afterConfigAsync = Array.isArray(theModule.afterConfigAsync)?
             theModule.afterConfigAsync:
             [theModule.afterConfigAsync];
         
@@ -482,7 +482,7 @@ export async function configureModulesAsync(global, modules) {
 }
 
 export function getPropertyFromItems(propertyName, list) {
-    if (list instanceof Array) {
+    if (Array.isArray(list)) {
         const checkList = [];
         list.forEach(item => {
             const v = item[propertyName];

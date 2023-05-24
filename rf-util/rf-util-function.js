@@ -5,7 +5,7 @@ export async function runSequentially(arr, func) {
         return;
 
     let result;
-    if (arr instanceof Array)
+    if (Array.isArray(arr))
         result = [];
     else
         result = {};

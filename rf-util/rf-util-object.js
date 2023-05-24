@@ -17,10 +17,10 @@ export function merge(dst, src, options) {
     if (!src)
         return dst;
 
-    if (src instanceof Array) {
+    if (Array.isArray(src)) {
         if (!dst)
             dst = [];
-        else if (!(dst instanceof Array))
+        else if (!Array.isArray(dst))
             throw new MergeTypeError(typeof dst, typeof src);
 
         let result;
@@ -37,7 +37,7 @@ export function merge(dst, src, options) {
             for (let i = 0, e = src.length; i < e; i++) {
                 let v = src[i];
                 if (v && typeof v === 'object')
-                    if (v instanceof Array)
+                    if (Array.isArray(v))
                         v = merge([], v, deepOptions);
                     else
                         v = merge({}, v, deepOptions);
@@ -52,12 +52,12 @@ export function merge(dst, src, options) {
 
     if (!dst)
         dst = {};
-    else if (dst instanceof Array) {
+    else if (Array.isArray(dst)) {
         throw new MergeTypeError(typeof dst, typeof src);
     }
 
     let properties;
-    if (options instanceof Array) {
+    if (Array.isArray(options)) {
         properties = options;
         options = {};
     }
@@ -88,7 +88,7 @@ export function merge(dst, src, options) {
 
             if (dst[p] === undefined) {
                 if (isSrcObject)
-                    if (src[p] instanceof Array)
+                    if (Array.isArray(src[p]))
                         v = merge([], src[p], deepOptions);
                     else if (src[p] === null)
                         v = null;

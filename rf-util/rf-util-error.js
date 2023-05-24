@@ -8,7 +8,7 @@ export function setUpError(error, options) {
     for (const name in options) {
         const value = options[name];
         if (name == 'message' || name == 'statusCode' || error.constructor?.NoObjectValues?.includes(name)) {
-            if (typeof value === 'object' && !(value instanceof Array)) {
+            if (typeof value === 'object' && !Array.isArray(value)) {
                 arranged = {...arranged, ...value};
                 continue;
             }
@@ -102,14 +102,14 @@ export class MergeTypeError extends Error {
 export async function getTranslatedParamsAsync(params, all, loc) {
     if (all) {
         return Promise.all(await params.map(async param => {
-            if (param instanceof Array)
+            if (Array.isArray(param))
                 return await loc._(...param);
             else
                 return await loc._(param);
         }));
     } else {
         return Promise.all(await params.map(async param => {
-            if (param instanceof Array)
+            if (Array.isArray(param))
                 return await loc._(...param);
             else
                 return param;
@@ -157,7 +157,7 @@ export async function getErrorMessageAsync(error, loc) {
             }
 
             let params;
-            if (error.message instanceof Array) {
+            if (Array.isArray(error.message)) {
                 params = await getTranslatedParamsAsync(message.slice(1), false, loc);
                 message = message[0];
             } else
@@ -168,9 +168,9 @@ export async function getErrorMessageAsync(error, loc) {
     }
 
     // Only singular messages
-    if (!(_message instanceof Array) || _message.length < 2 || !error._n) {
+    if (!Array.isArray(_message) || _message.length < 2 || !error._n) {
         let params;
-        if (_message instanceof Array) {
+        if (Array.isArray(_message)) {
             const _params = _message.slice(1);
             _message = _message[0];
 
@@ -201,7 +201,7 @@ export async function getErrorMessageAsync(error, loc) {
         }
 
         if (_message) {
-            if (_message instanceof Array) {
+            if (Array.isArray(_message)) {
                 params = await getTranslatedParamsAsync(_message.slice(1), false, loc);
                 _message = message[0];
             } else
@@ -211,7 +211,7 @@ export async function getErrorMessageAsync(error, loc) {
         }
 
         if (message) {
-            if (message instanceof Array) {
+            if (Array.isArray(message)) {
                 params = await getTranslatedParamsAsync(message.slice(1), false, loc);
                 message = message[0];
             } else
