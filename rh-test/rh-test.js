@@ -168,7 +168,7 @@ export const rt = {
                 if (typeof notAllowedMethods === 'string')
                     notAllowedMethods = notAllowedMethods.split(/[,;]/);
 
-                if (notAllowedMethods instanceof Array) {
+                if (Array.isArray(notAllowedMethods)) {
                     let notAllowedMethodsOptions = {};
                     for (const i in notAllowedMethods) {
                         let method = notAllowedMethods[i].trim();
@@ -240,7 +240,7 @@ export const rt = {
                 if (methodOptions.trace)
                     console.log(methodOptions);
 
-                if (methodOptions instanceof Array)
+                if (Array.isArray(methodOptions))
                     methodOptions = {send: methodOptions};
                 else if (methodOptions === false)
                     methodOptions = {skip: true};
@@ -305,7 +305,7 @@ export const rt = {
 
                         let missing = test[paramType];
                         delete test[paramType];
-                        if (!(missing instanceof Array))
+                        if (!Array.isArray(missing))
                             missing = [missing];
 
                         for (const i in missing) {
@@ -316,7 +316,7 @@ export const rt = {
                                     thisTest[k] = test[k];
 
                             let thisMissing = missing[i];
-                            if (!(thisMissing instanceof Array))
+                            if (!Array.isArray(thisMissing))
                                 thisMissing = thisMissing.split(',');
 
                             for (const k in test[containerName])
@@ -544,7 +544,7 @@ export const rt = {
                     requestLog = requestLog.split(',');
     
                 const message = {};
-                if (requestLog instanceof Array) {
+                if (Array.isArray(requestLog)) {
                     for (const i in requestLog) {
                         const k = requestLog[i];
                         message[k] = test[k];
@@ -627,7 +627,7 @@ export const rt = {
             let haveHeaders = options.haveHeaders;
             if (typeof haveHeaders === 'string')
                 haveHeaders = {haveHeaders: true};
-            else if (haveHeaders instanceof Array) {
+            else if (Array.isArray(haveHeaders)) {
                 const newHaveHeaders = {};
                 haveHeaders.forEach(header => newHaveHeaders[header] = true);
                 haveHeaders = newHaveHeaders;
@@ -635,7 +635,7 @@ export const rt = {
 
             for (let header in haveHeaders) {
                 let values = haveHeaders[header];
-                if (!(values instanceof Array))
+                if (!Array.isArray(values))
                     values = [values];
 
                 values.forEach(value => {
@@ -653,7 +653,7 @@ export const rt = {
             let noHaveHeaders = options.noHaveHeaders;
             if (typeof noHaveHeaders === 'string')
                 noHaveHeaders = {noHaveHeaders: true};
-            else if (noHaveHeaders instanceof Array) {
+            else if (Array.isArray(noHaveHeaders)) {
                 const newNoHaveHeaders = {};
                 noHaveHeaders.forEach(header => newNoHaveHeaders[header] = true);
                 noHaveHeaders = newNoHaveHeaders;
@@ -661,7 +661,7 @@ export const rt = {
 
             for (let header in noHaveHeaders) {
                 let values = noHaveHeaders[header];
-                if (!(values instanceof Array))
+                if (!Array.isArray(values))
                     values = [values];
 
                 values.forEach(value => {
@@ -680,7 +680,7 @@ export const rt = {
             if (typeof haveCookies === 'string')
                 haveCookies = [haveCookies];
 
-            if (haveCookies instanceof Array) {
+            if (Array.isArray(haveCookies)) {
                 for (const i in haveCookies)
                     expect(res).to.have.cookie(haveCookies[i]);
             } else if (typeof haveCookies === 'object') {
@@ -695,7 +695,7 @@ export const rt = {
             if (typeof noHaveCookies === 'string')
                 noHaveCookies = [noHaveCookies];
 
-            if (noHaveCookies instanceof Array) {
+            if (Array.isArray(noHaveCookies)) {
                 for (const i in noHaveCookies)
                     expect(res).to.not.have.cookie(noHaveCookies[i]);
             } else if (typeof noHaveCookies === 'object') {
@@ -730,7 +730,7 @@ export const rt = {
             if (typeof haveProperties === 'string')
                 haveProperties = haveProperties.split(',').map(item => item.trim());
 
-            if (haveProperties instanceof Array) {
+            if (Array.isArray(haveProperties)) {
                 for (const i in haveProperties)
                     expect(value).to.have.property(haveProperties[i]);
             } else if (typeof haveProperties === 'object') {
@@ -745,7 +745,7 @@ export const rt = {
             if (typeof noHaveProperties === 'string')
                 noHaveProperties = noHaveProperties.split(',').map(item => item.trim());
 
-            if (noHaveProperties instanceof Array) {
+            if (Array.isArray(noHaveProperties)) {
                 for (const i in noHaveProperties)
                     expect(value).to.not.have.property(noHaveProperties[i]);
             } else if (typeof noHaveProperties === 'object') {
@@ -759,7 +759,7 @@ export const rt = {
             for (const property in options.propertyContains) {
                 const properties = expect(value).to.have.property(property);
                 const contains = options.propertyContains[property];
-                if (contains instanceof Array)
+                if (Array.isArray(contains))
                     for (const i in contains)
                         properties.contains(contains[i]);
                 else
@@ -801,7 +801,7 @@ export const rt = {
         }
         
         let expectedStatusList = options.status;
-        if (!(expectedStatusList instanceof Array)) {
+        if (!Array.isArray(expectedStatusList)) {
             if (typeof expectedStatusList === 'string')
                 expectedStatusList = expectedStatusList.split(',').map(s => s.trim());
             else if (expectedStatusList instanceof RegExp)
@@ -1089,12 +1089,12 @@ export const rt = {
                 };
 
                 let getByPropertiesList = options[getName];
-                if (!(getByPropertiesList instanceof Array))
+                if (!Array.isArray(getByPropertiesList))
                     getByPropertiesList = [getByPropertiesList];
 
                 for (let i in getByPropertiesList)  {
                     let properties = getByPropertiesList[i];
-                    if (!(properties instanceof Array))
+                    if (!Array.isArray(properties))
                         properties = [properties];
 
                     const query = {};
@@ -1137,7 +1137,7 @@ export const rt = {
                 isDeleteMethodNotAllowed = false;
             else if (typeof options.notAllowedMethods === 'string')
                 isDeleteMethodNotAllowed = options.notAllowedMethods.toUpperCase().indexOf('DELETE') >= 0;
-            else if (options.notAllowedMethods instanceof Array)
+            else if (Array.isArray(options.notAllowedMethods))
                 options.notAllowedMethods.forEach(method => {
                     if (method.toUpperCase() === 'DELETE') 
                         isDeleteMethodNotAllowed = true;
@@ -1150,7 +1150,7 @@ export const rt = {
                     throw new Error('cannot test PATCH because no getCreated is defined.');
                     
                 let patchParameters = options.patchParameters;
-                if (!(patchParameters instanceof Array))
+                if (!Array.isArray(patchParameters))
                     patchParameters = [patchParameters];
                 
                 for (const i in patchParameters) {
