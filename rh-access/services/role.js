@@ -82,7 +82,7 @@ export class RoleService {
     }
     
     /**
-     * Gets a list of roles ant the rows count.
+     * Gets a list of roles and the rows count.
      * @param {Options} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{RoleList, count}}
      */
@@ -98,6 +98,9 @@ export class RoleService {
      */
     static async getForUuid(uuid, options) {
         const rowList = await RoleService.getList(deepComplete(options, {where:{uuid}, limit: 2}));
+        if (Array.isArray(uuid))
+            return rowList;
+
         return getSingle(rowList, deepComplete(options, {params: ['roles', ['UUID = %s', uuid], 'Role']}));
     }
 
@@ -109,6 +112,9 @@ export class RoleService {
      */
     static async getForName(name, options) {
         const rowList = await RoleService.getList(deepComplete(options, {where:{name}, limit: 2}));
+        if (Array.isArray(name))
+            return rowList;
+
         return getSingle(rowList, deepComplete(options, {params: ['roles', ['name = %s', name], 'Role']}));
     }
 
@@ -119,7 +125,11 @@ export class RoleService {
      * @returns {Promise{Permission}}
      */
     static async getIdForUuid(uuid, options) {
-        return (await RoleService.getForUuid(uuid, {...options, attributes: ['id']})).id;
+        const result = await RoleService.getForUuid(uuid, {...options, attributes: ['id']});
+        if (Array.isArray(uuid))
+            return result.map(row => row.id);
+        
+        return result.id;
     }
 
     /**
@@ -129,7 +139,11 @@ export class RoleService {
      * @returns {Promise{Permission}}
      */
     static async getIdForName(name, options) {
-        return (await RoleService.getForName(name, {...options, attributes: ['id']})).id;
+        const result = await RoleService.getForName(name, {...options, attributes: ['id']});
+        if (Array.isArray(name))
+            return result.map(row => row.id);
+        
+        return result.id;
     }
 
     /**

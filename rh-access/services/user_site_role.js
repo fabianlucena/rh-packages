@@ -1,6 +1,6 @@
 import {RoleService} from './role.js';
 import {conf} from '../conf.js';
-import {addEnabledOnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes, completeIncludeOptions} from 'sql-util';
+import {addEnabledOnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes, completeIncludeOptions, arrangeOptions} from 'sql-util';
 import {complete} from 'rf-util';
 
 export class UserSiteRoleService {
@@ -91,7 +91,7 @@ export class UserSiteRoleService {
                 options.attributes = ['uuid'];
         }
 
-        if (options.includeUser)
+        if (options.includeUser) {
             completeIncludeOptions(
                 options,
                 'User',
@@ -101,9 +101,12 @@ export class UserSiteRoleService {
                     attributes: options.view? ['uuid', 'username', 'displayName', 'isTranslatable']: null
                 }
             );
+
+            delete options.includeUser;
+        }
         
 
-        if (options.includeSite)
+        if (options.includeSite) {
             completeIncludeOptions(
                 options,
                 'Site',
@@ -114,7 +117,10 @@ export class UserSiteRoleService {
                 }
             );
 
-        if (options.includeRole)
+            delete options.includeSite;
+        }
+
+        if (options.includeRole) {
             completeIncludeOptions(
                 options,
                 'Role',
@@ -124,6 +130,11 @@ export class UserSiteRoleService {
                     attributes: options.view? ['uuid', 'name', 'title', 'isTranslatable']: null
                 }
             );
+
+            delete options.includeRole;
+        }
+
+        arrangeOptions(options, conf.global.sequelize);
 
         return options;
     }
@@ -177,36 +188,34 @@ export class UserSiteRoleService {
         return UserSiteRoleService.create(data);
     }
 
-    static async deleteForUserUuidSiteUuidAndNotRoleUuid(userUuid, siteUuid, roleUuidList, options) {
-        options ??= {};
-        options.where ??= {};
-        const userId = await conf.global.services.User.getIdForUuid(userUuid);
-        const siteId = await conf.global.services.Site.getIdForUuid(siteUuid);
-        const roleId = [];
-        for (let i in roleUuidList) {
-            let roleUuid = roleUuidList[i];
-            roleId.push(await conf.global.services.Role.getIdForUuid(roleUuid));
+    static async delete(where, options) {
+        const Op = conf.global.Sequelize.Op;
+
+        if (where?.userUuid && !where.userId) {
+            where.userId = await conf.global.services.User.getIdForUuid(where.userUuid);
+            delete where.userUuid;
         }
-        
-        const Sequelize = conf.global.Sequelize;
-        const Op = Sequelize.Op;
-        options.where = {
-            userId,
-            siteId,
-            roleId: {[Op.notIn]: roleId},
-        };
 
-        return conf.global.models.UserSiteRole.destroy(options);
-    }
+        if (where?.siteUuid && !where.siteId) {
+            where.siteId = await conf.global.services.Site.getIdForUuid(where.siteUuid);
+            delete where.siteUuid;
+        }
 
-    static async deleteForUserUuidAndSiteUuid(userUuid, siteUuid, options) {
-        options ??= {};
-        options.where ??= {};
-        const userId = await conf.global.services.User.getIdForUuid(userUuid);
-        const siteId = await conf.global.services.Site.getIdForUuid(siteUuid);
-        
-        options.where = {userId, siteId};
+        if (where?.roleUuid && !where.roleId) {
+            where.roleId = await conf.global.services.Role.getIdForUuid(where.roleUuid);
+            delete where.roleUuid;
+        }
 
-        return conf.global.models.UserSiteRole.destroy(options);
+        if (where?.notRoleId) {
+            const condition = {[Op.notIn]: where.notRoleId};
+            if (where.roleId)
+                where.roleId = {[Op.and]: [where.roleId, condition]};
+            else
+                where.roleId = condition;
+
+            delete where.notRoleId;
+        }
+
+        return conf.global.models.UserSiteRole.destroy({...options, where: {...options?.where, ...where}});
     }
 }

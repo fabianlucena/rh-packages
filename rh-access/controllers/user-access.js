@@ -1,4 +1,6 @@
+import {RoleService} from '../services/role.js';
 import {UserSiteRoleService} from '../services/user_site_role.js';
+import {AssignableRolePerRoleService} from '../services/assignable_role_per_role.js';
 import {conf} from '../conf.js';
 import {getOptionsFromParamsAndODataAsync, _HttpError} from 'http-util';
 import {checkParameter, checkParameterUuid, checkParameterUuidList, checkNotNullOrEmpty} from 'rf-util';
@@ -65,30 +67,44 @@ export class UserAccessController {
         const siteUuid = checkParameterUuid(req.body.Site, loc._f('Site'));
         const roleUuidList = checkParameterUuidList(req.body.Roles, loc._f('Roles'));
 
-        await Promise.all(await roleUuidList.map(async roleUuid => {
-            const result = await UserSiteRoleService.getList({
-                includeUser: {attributes: [], where:{'uuid': userUuid}},
-                includeSite: {attributes: [], where:{'uuid': siteUuid}},
-                includeRole: {attributes: [], where:{'uuid': roleUuid}},
-                attributes: ['userId'],
-                raw: true,
-                nest: true,
-            });
+        const userId = await conf.global.services.User.getIdForUuid(userUuid);
+        const siteId = await conf.global.services.Site.getIdForUuid(siteUuid);
 
-            if (!result?.length) {
+        const options = {
+            attributes: ['userId'],
+            where: {
+                userId,
+                siteId,
+            },
+            raw: true,
+            nest: true,
+        };
+
+        let assignableRolesId;
+        if (!req.roles.includes('admin'))
+            assignableRolesId = await AssignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
+
+        const roleIdList = [];
+        await Promise.all(await roleUuidList.map(async roleUuid => {
+            const roleId = await RoleService.getIdForUuid(roleUuid);
+            roleIdList.push(roleId);
+
+            options.where.roleId = roleId;
+            const result = await UserSiteRoleService.getList(options);
+            if (!result?.length && (!assignableRolesId || assignableRolesId.includes(roleId))) {
                 await UserSiteRoleService.create({
-                    userUuid,
-                    siteUuid,
-                    roleUuid,
+                    userId,
+                    siteId,
+                    roleId,
                 });
             }
         }));
 
-        await UserSiteRoleService.deleteForUserUuidSiteUuidAndNotRoleUuid(
-            userUuid,
-            siteUuid,
-            roleUuidList,
-        );
+        const deleteWhere = {userId, siteId, notRoleId: roleIdList};
+        if (assignableRolesId)
+            deleteWhere.roleId = assignableRolesId;
+
+        await UserSiteRoleService.delete(deleteWhere);
 
         res.status(204).send();
     }
@@ -151,20 +167,18 @@ export class UserAccessController {
         else if ('$form' in req.query)
             return UserAccessController.getForm(req, res);
            
-        const sequelize = conf.global.sequelize;
-        const definitions = {uuid: 'string', username: 'string'};
         let options = {
             view: true,
             limit: 10,
             offset: 0,
-            includeUser: true,
-            includeSite: true,
+            includeUser: {},
+            includeSite: {},
             raw: true,
             nest: true,
-            attributes: [
-                [sequelize.fn('concat', sequelize.col('User.uuid'), ',', sequelize.col('Site.uuid')), 'uuid'],
-            ],
+            attributes: ['userId', 'siteId'],
             group: [
+                'userId',
+                'siteId',
                 'UserSiteRole.userId',
                 'User.uuid',
                 'User.username',
@@ -175,18 +189,47 @@ export class UserAccessController {
                 'Site.title',
                 'Site.isTranslatable',
             ],
-            order: [[sequelize.col('User.username'), 'ASC']],
+            order: [['User.username', 'ASC']],
         };
 
+        const definitions = {uuid: 'string', username: 'string'};
         options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
 
-        if (options.where?.uuid)
-            options.where.uuid = sequelize.where(sequelize.fn('concat', sequelize.col('User.uuid'), ',', sequelize.col('Site.uuid')), options.where.uuid);
+        let assignableRolesId;
+        if (!req.roles.includes('admin')) {
+            assignableRolesId = await AssignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
+            options.where ??= {};
+            options.where.roleId = assignableRolesId;
+        }
+
+        if (options.where?.uuid) {
+            const uuid = options.where.uuid.split(',');
+            delete options.where.uuid;
+
+            options.includeUser = {...options.includeUser, where: {...options.includeUser.where, uuid: uuid[0]}};
+            options.includeSite = {...options.includeSite, where: {...options.includeSite.where, uuid: uuid[1]}};
+        }
+
+        const roleQueryOptions = {
+            view: true,
+            includeUser: {attributes: []},
+            includeSite: {attributes: []},
+            includeRole: {},
+            attributes: [],
+            where: {},
+            raw: true,
+            nest: true,
+        };
+        
+        if (assignableRolesId)
+            roleQueryOptions.where = {roleId: assignableRolesId};
 
         const result = await UserSiteRoleService.getListAndCount(options);
         const loc = req.loc;
 
         result.rows = await Promise.all(result.rows.map(async row => {
+            row.uuid = row.User.uuid + ',' + row.Site.uuid;
+
             if (row.User.isTranslatable)
                 row.User.displayName = await loc._(row.User.displayName);
             delete row.User.isTranslatable;
@@ -195,28 +238,23 @@ export class UserAccessController {
                 row.Site.title = await loc._(row.Site.title);
             delete row.Site.isTranslatable;
 
-            row.Roles = await Promise.all(
-                (await UserSiteRoleService.getList({
-                    view: true,
-                    includeUser: {attributes: []},
-                    includeSite: {attributes: []},
-                    includeRole: true,
-                    attributes: [],
-                    raw: true,
-                    nest: true,
-                    where: sequelize.where(
-                        sequelize.fn('concat', sequelize.col('User.uuid'), ',', sequelize.col('Site.uuid')),
-                        row.uuid
-                    )
-                })).map(async role => {
-                    role = role.Role;
-                    if (role?.isTranslatable)
-                        role.title = await loc._(role.title);
-                    delete role.isTranslatable;
+            roleQueryOptions.where.userId = row.userId;
+            roleQueryOptions.where.siteId = row.siteId;
 
-                    return role;
-                })
+            row.Roles = await Promise.all(
+                (await UserSiteRoleService.getList(roleQueryOptions))
+                    .map(async role => {
+                        role = role.Role;
+                        if (role?.isTranslatable)
+                            role.title = await loc._(role.title);
+                        delete role.isTranslatable;
+
+                        return role;
+                    })
             );
+
+            delete row.userId;
+            delete row.siteId;
 
             return row;
         }));
@@ -359,6 +397,9 @@ export class UserAccessController {
 
         options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
 
+        if (!req.roles.includes('admin'))
+            options.where = {...options.where, id: await AssignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles)};
+
         const RoleService = conf.global.services.Role;
         const result = await RoleService.getListAndCount(options);
         
@@ -434,7 +475,13 @@ export class UserAccessController {
             siteUuid = checkParameterUuid(uuidParts[1], loc._f('Site'));
         }
 
-        const rowsDeleted = await UserSiteRoleService.deleteForUserUuidAndSiteUuid(userUuid, siteUuid);
+        let rowsDeleted;
+        const deleteWhere = {userUuid, siteUuid};
+        if (!req.roles.includes('admin'))
+            deleteWhere.notRoleName = await AssignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
+
+        rowsDeleted = await UserSiteRoleService.delete(deleteWhere);
+
         if (!rowsDeleted)
             throw new _HttpError(req.loc._f('User with UUID %s has not access to the site with UUID %s.'), 403, userUuid, siteUuid);
 

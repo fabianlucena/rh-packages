@@ -66,7 +66,7 @@ export class PermissionService {
     }
 
     /**
-     * Gets a list of permission ant the rows count.
+     * Gets a list of permission and the rows count.
      * @param {Options} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{PermissionList, count}}
      */
@@ -96,7 +96,7 @@ export class PermissionService {
             permission = await PermissionService.create(data);
 
         if (data.roles) {
-            const roles = data.roles instanceof Array?
+            const roles = Array.isArray(data.roles)?
                 data.roles:
                 data.roles.split(',');
 

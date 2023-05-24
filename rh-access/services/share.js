@@ -92,7 +92,7 @@ export class ShareService {
     }
 
     /**
-     * Gets a list of shares ant the rows count.
+     * Gets a list of shares and the rows count.
      * @param {Options} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{ShareList, count}}
      */
