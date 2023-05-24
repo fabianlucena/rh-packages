@@ -124,9 +124,12 @@ export class UserService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{User}}
      */
-    static getForUuid(uuid, options) {
-        return UserService.getList(deepComplete(options, {where: {uuid}, limit: 2}))
-            .then(rowList => getSingle(rowList, complete(options, {params: ['user', ['UUID = %s', uuid], 'User']})));
+    static async getForUuid(uuid, options) {
+        const rowList = await UserService.getList(deepComplete(options, {where: {uuid}, limit: 2}));
+        if (Array.isArray(uuid))
+            return rowList;
+
+        return getSingle(rowList, complete(options, {params: ['user', ['UUID = %s', uuid], 'User']}));
     }
 
     /**
@@ -135,9 +138,12 @@ export class UserService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{User}}
      */
-    static getForUsername(username, options) {
-        return UserService.getList(deepComplete(options, {where: {username}, limit: 2}))
-            .then(rowList => getSingle(rowList, complete(options, {params: ['user', ['username = %s', username], 'User']})));
+    static async getForUsername(username, options) {
+        const rowList = await UserService.getList(deepComplete(options, {where: {username}, limit: 2}));
+        if (Array.isArray(username))
+            return rowList;
+
+        return getSingle(rowList, complete(options, {params: ['user', ['username = %s', username], 'User']}));
     }
 
     /**
@@ -147,7 +153,11 @@ export class UserService {
      * @returns {Promise{User}}
      */
     static async getIdForUuid(uuid, options) {
-        return (await UserService.getForUuid(uuid, deepComplete(options, {attributes: ['id']}))).id;
+        const result = await UserService.getForUuid(uuid, deepComplete(options, {attributes: ['id']}));
+        if (Array.isArray(uuid))
+            return result.map(row => row.id);
+        
+        return result.id;
     }
 
     /**
@@ -157,7 +167,11 @@ export class UserService {
      * @returns {Promise{User}}
      */
     static async getIdForUsername(username, options) {
-        return (await UserService.getForUsername(username, deepComplete(options, {attributes: ['id']}))).id;
+        const result = await UserService.getForUsername(username, deepComplete(options, {attributes: ['id']}));
+        if (Array.isArray(username))
+            return result.map(row => row.id);
+        
+        return result.id;
     }
 
     /**
@@ -232,13 +246,11 @@ export class UserService {
      * @param {data} data - data for the new Role @see create.
      * @returns {Promise{Role}}
      */
-    static createIfNotExists(data, options) {
-        return UserService.getForUsername(data.username, {attributes: ['id'], foreign: {module: {attributes:[]}}, skipNoRowsError: true, ...options})
-            .then(row => {
-                if (row)
-                    return row;
+    static async createIfNotExists(data, options) {
+        const row = await UserService.getForUsername(data.username, {attributes: ['id'], foreign: {module: {attributes:[]}}, skipNoRowsError: true, ...options});
+        if (row)
+            return row;
 
-                return UserService.create(data);
-            });
+        return UserService.create(data);
     }
 }

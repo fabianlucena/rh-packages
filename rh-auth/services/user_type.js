@@ -50,7 +50,7 @@ export class UserTypeService {
     }
 
     /**
-     * Gets a list of users types ant the rows count.
+     * Gets a list of users types and the rows count.
      * @param {Options} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{UserTypeList, count}}
      */

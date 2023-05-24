@@ -109,7 +109,7 @@ export class SessionService {
     }
 
     /**
-     * Gets a list of sessions ant its rows count.
+     * Gets a list of sessions and its rows count.
      * @param {Options} options - options for the @see sequelize.findAll method.
      *  - view: show visible peoperties.
      * @returns {Promise{SessionList}]
