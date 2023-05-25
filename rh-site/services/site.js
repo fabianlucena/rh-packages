@@ -34,7 +34,7 @@ export class SiteService {
      */
     static async create(data) {
         await SiteService.completeOwnerModuleId(data);
-        await checkDataForMissingProperties(data, 'Site', 'name', 'title', 'ownerModuleId');
+        await checkDataForMissingProperties(data, 'Site', 'name', 'title');
 
         return conf.global.models.Site.create(data);
     }
