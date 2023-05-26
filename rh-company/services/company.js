@@ -129,7 +129,7 @@ export class CompanyService {
      * @returns {ID}
      */
     static async getIdForName(name, options) {
-        return (await CompanyService.getForName(name, deepComplete(options, {attributes: ['id']}))).id;
+        return (await CompanyService.getForName(name, deepComplete(options, {attributes: ['id']})))?.id;
     }
 
     /**
@@ -191,13 +191,11 @@ export class CompanyService {
      * @param {data} data - data for the new Role @see create.
      * @returns {Promise{Role}}
      */
-    static createIfNotExists(data, options) {
-        return CompanyService.getForName(data.name, {attributes: ['id'], foreign: {module: {attributes:[]}}, skipNoRowsError: true, ...options})
-            .then(row => {
-                if (row)
-                    return row;
+    static async createIfNotExists(data, options) {
+        const row = await CompanyService.getForName(data.name, {attributes: ['id'], foreign: {module: {attributes:[]}}, skipNoRowsError: true, ...options});
+        if (row)
+            return row;
 
-                return CompanyService.create(data);
-            });
+        return CompanyService.create(data);
     }
 }

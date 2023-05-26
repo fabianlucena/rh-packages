@@ -229,13 +229,11 @@ export class ProjectService {
      * @param {data} data - data for the new Role @see create.
      * @returns {Promise{Role}}
      */
-    static createIfNotExists(data, options) {
-        return ProjectService.getForName(data.name, {attributes: ['id'], foreign: {module: {attributes:[]}}, skipNoRowsError: true, ...options})
-            .then(row => {
-                if (row)
-                    return row;
+    static async createIfNotExists(data, options) {
+        const row = await ProjectService.getForName(data.name, {attributes: ['id'], foreign: {module: {attributes:[]}}, skipNoRowsError: true, ...options});
+        if (row)
+            return row;
 
-                return ProjectService.create(data);
-            });
+        return ProjectService.create(data);
     }
 }

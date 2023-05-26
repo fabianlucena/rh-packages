@@ -8,8 +8,8 @@ export class CompanySiteService {
      * @returns {Promise[data]}
      */
     static async completeCompanyId(data) {
-        if (!data.companyId && data.company)
-            data.companyId = await conf.global.services.Company.getIdForUsername(data.company);
+        if (!data.companyId && (data.company || data.name))
+            data.companyId = await conf.global.services.Company.getIdForName(data.company ?? data.name, {skipNoRowsError: true});
     
         return data;
     }
@@ -20,8 +20,8 @@ export class CompanySiteService {
      * @returns {Promise[data]}
      */
     static async completeSiteId(data) {
-        if (!data.siteId && data.site)
-            data.siteId = await conf.global.services.Site.getIdForUsername(data.site);
+        if (!data.siteId && (data.site || data.name))
+            data.siteId = await conf.global.services.Site.getIdForName(data.site ?? data.name, {skipNoRowsError: true});
 
         return data;
     }
@@ -58,7 +58,6 @@ export class CompanySiteService {
                 data.companyId = company.id;
             }
 
-            
             await checkDataForMissingProperties(data, 'CompanySiteService', 'companyId');
         }
 
@@ -130,7 +129,7 @@ export class CompanySiteService {
         await CompanySiteService.completeSiteId(data);
         
         const rows = await CompanySiteService.getList({...options, where:{...options?.where, companyId: data.companyId ?? null, siteId: data.siteId ?? null}});
-        if (rows && rows.length)
+        if (rows?.length)
             return true;
 
         return CompanySiteService.create(data);
