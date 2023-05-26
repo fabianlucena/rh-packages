@@ -163,7 +163,7 @@ export class SiteService {
         if (Array.isArray(name))
             return result.map(row => row.id);
         
-        return result.id;
+        return result?.id;
     }
 
     /**

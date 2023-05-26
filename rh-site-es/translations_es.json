@@ -1,0 +1,37 @@
+{
+    "Name": {
+        "language": "es",
+        "ref": "..\\rh-site\\controllers\\site.js [81,56]",
+        "translation": "Nombre"
+    },
+    "Spanish": {
+        "language": "es",
+        "ref": "rh-site-es.js [19,41]",
+        "translation": "Español"
+    },
+    "Spanish language.": {
+        "language": "es",
+        "ref": "rh-site-es.js [20,57]",
+        "translation": "Idioma español."
+    },
+    "System": {
+        "language": "es",
+        "ref": "..\\rh-site\\conf.js [24,53]",
+        "translation": "Sistema"
+    },
+    "Switch site": {
+        "language": "es",
+        "ref": "..\\rh-site\\conf.js [28,71]",
+        "translation": "Cambiar de sitio"
+    },
+    "Get current site": {
+        "language": "es",
+        "ref": "..\\rh-site\\conf.js [29,76]",
+        "translation": "Obtener el sitio actual"
+    },
+    "Get sites": {
+        "language": "es",
+        "ref": "..\\rh-site\\conf.js [30,69]",
+        "translation": "Obtener sitios"
+    }
+}

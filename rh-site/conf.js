@@ -26,8 +26,8 @@ export const conf = {
 
         permissions: [
             {name: 'current-site.switch', title: loc._f('Switch site'),      isTranslatable: true, roles: 'everybody', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site'}},
-            {name: 'current-site.get',    title: loc._f('Get current site'), isTranslatable: true, roles: 'everybody', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site', method: 'get'}},
-            {name: 'site.get',            title: loc._f('Get site(s)'),      isTranslatable: true, roles: 'everybody', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site'}},
+            {name: 'current-site.get',    title: loc._f('Get current site'), isTranslatable: true, roles: 'everybody', ownerModule: name},
+            {name: 'site.get',            title: loc._f('Get sites'),        isTranslatable: true, roles: 'everybody', ownerModule: name},
         ],
     },
 };
