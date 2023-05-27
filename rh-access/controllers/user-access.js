@@ -293,7 +293,7 @@ export class UserAccessController {
                 },
                 {
                     name: 'Roles',
-                    type: 'objectList',
+                    type: 'list',
                     label: await loc._('Roles'),
                     properties: ['title'],
                 },

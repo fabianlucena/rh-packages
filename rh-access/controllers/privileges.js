@@ -75,6 +75,6 @@ export class PrivilegesController {
         if (!req?.site?.name)
             result.warning = await (req.loc ?? loc)._('No current site selected');
 
-        res.status(200).send({count: 1, rows: result});
+        res.status(200).send({count: 1, rows: [result]});
     }
 }

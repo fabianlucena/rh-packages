@@ -14,7 +14,7 @@ export const conf = {
     schema: 'syst',
     init: null,
     configure: null,
-    //routesPath: dirname + '/routes',
+    routesPath: dirname + '/routes',
     modelsPath: dirname + '/models',
     servicesPath: dirname + '/services',
     apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
@@ -24,10 +24,12 @@ export const conf = {
             {name: 'system', title: loc._f('System'), isTranslatable: true, ownerModule: name},
         ],
 
+        roles: [
+            {name: 'sitesManager', title: loc._f('Sites manager'), isTranslatable: true, ownerModule: name},
+        ],
+
         permissions: [
-            {name: 'current-site.switch', title: loc._f('Switch site'),      isTranslatable: true, roles: 'everybody', ownerModule: name, menuItem: {parent:'session-menu', action: 'object', service: 'site'}},
-            {name: 'current-site.get',    title: loc._f('Get current site'), isTranslatable: true, roles: 'everybody', ownerModule: name},
-            {name: 'site.get',            title: loc._f('Get sites'),        isTranslatable: true, roles: 'everybody', ownerModule: name},
+            {name: 'site.get',            title: loc._f('Get sites'),        isTranslatable: true, roles: 'sitesManager', ownerModule: name, menuItem: {action: 'grid', service: 'site'}},
         ],
     },
 };

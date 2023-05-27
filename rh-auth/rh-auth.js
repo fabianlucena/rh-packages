@@ -43,7 +43,7 @@ function getCheckPermissionHandler(chain) {
 async function afterConfigAsync(_, global) {
     const data = global?.data;
     await runSequentially(data?.userTypes,     async data => await UserTypeService.    createIfNotExists(data));
-    await runSequentially(data?.users,         async data => await UserService.        createIfNotExists(data));
     await runSequentially(data?.identityTypes, async data => await IdentityTypeService.createIfNotExists(data));
+    await runSequentially(data?.users,         async data => await UserService.        createIfNotExists(data));
     await runSequentially(data?.identities,    async data => await IdentityService.    createIfNotExists(data));
 }

@@ -8,8 +8,12 @@ export class SessionSiteService {
      * @returns {Promise{data}}
      */
     static async completeSessionId(data) {
-        if (!data.sessionId && data.session)
-            data.sessionId = await conf.global.services.Session.getIdForName(data.session);
+        if (!data.sessionId) {
+            if (data.sessionUuid)
+                data.sessionId = await conf.global.services.Session.getIdForUuid(data.sessionUuid);
+            else if (data.session)
+                data.sessionId = await conf.global.services.Session.getIdForName(data.session);
+        }
 
         return data;
     }
@@ -20,8 +24,12 @@ export class SessionSiteService {
      * @returns {Promise{data}}
      */
     static async completeSiteId(data) {
-        if (!data.siteId && data.site)
-            data.siteId = await conf.global.services.Site.getIdForName(data.site, {foreign: {module: false}});
+        if (!data.siteId) {
+            if (data.siteUuid)
+                data.siteId = await conf.global.services.Site.getIdForUuid(data.siteUuid, {foreign: {module: false}});
+            else if (data.site)
+                data.siteId = await conf.global.services.Site.getIdForName(data.site, {foreign: {module: false}});
+        }
 
         return data;
     }

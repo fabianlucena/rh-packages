@@ -1,7 +1,7 @@
+'use strict';
+
 import {SiteService} from '../services/site.js';
-import {SessionSiteService} from '../services/session_site.js';
-import {getOptionsFromParamsAndODataAsync, httpErrorHandlerAsync} from 'http-util';
-import {checkParameter} from 'rf-util';
+import {getOptionsFromParamsAndODataAsync} from 'http-util';
 
 /**
  * @swagger
@@ -22,72 +22,6 @@ import {checkParameter} from 'rf-util';
 export class SiteController {
     /** 
      * @swagger
-     * /api/current-site:
-     *  get:
-     *      tags:
-     *          - Access
-     *      summary: Sites
-     *      description: Get he current site set for the logged user
-     *      produces:
-     *          -  application/json
-     *      responses:
-     *          '200':
-     *              description: The current site
-     *              schema:
-     *                  $ref: '#/definitions/Site'
-     *          '204':
-     *              description: No current site selected
-     *          '403':
-     *              description: No session
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
-    static currentSiteGet(req, res) {
-        const siteId = req?.site?.id;
-        if (!siteId)
-            return res.status(204).send();
-
-        const definitions = {uuid: 'uuid', name: 'string'},
-            options = {view: true, limit: 10, offset: 0};
-
-        getOptionsFromParamsAndODataAsync(req?.query, definitions, options)
-            .then(options => SiteService.getForId(siteId, options))
-            .then(element => res.status(200).send(element))
-            .catch(httpErrorHandlerAsync(req, res));
-    }
-
-    /** 
-     * @swagger
-     * /api/switch-site:
-     *  post:
-     *      tags:
-     *          - Access
-     *      summary: Sites
-     *      description: Switch the site for the logged user
-     *      produces:
-     *          -  application/json
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Site'
-     *          '403':
-     *              description: No session
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
-    static async switchSitePost(req, res) {
-        const loc = req.loc;
-        checkParameter(req?.body, {name: loc._f('Name')});
-        await SessionSiteService.createOrUpdate({
-            sessionId: req?.session?.id,
-            site: req.body.name,
-        });
-        res.status(204).send();
-    }
-
-    /** 
-     * @swagger
      * /api/site:
      *  get:
      *      tags:
@@ -106,13 +40,13 @@ export class SiteController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static get(req, res) {
-        const definitions = {uuid: 'uuid', name: 'string'},
-            options = {view: true, limit: 10, offset: 0};
+    static async get(req, res) {
+        const definitions = {uuid: 'uuid', name: 'string'};
+        let options = {view: true, limit: 10, offset: 0};
 
-        getOptionsFromParamsAndODataAsync(req?.query, definitions, options)
-            .then(options => SiteService.getForUserId(req?.user?.id, options))
-            .then(rows => res.status(200).send(rows))
-            .catch(httpErrorHandlerAsync(req, res));
+        options = getOptionsFromParamsAndODataAsync(req?.query, definitions, options);
+        const rows = await SiteService.getList(options);
+
+        res.status(200).send(rows);
     }
 }

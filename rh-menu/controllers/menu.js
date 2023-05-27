@@ -71,6 +71,11 @@ export class MenuController {
                     if (mi.isTranslatable && mi.label)
                         mi.label = await loc._d('menu', mi.label);
 
+                    if (mi.alias) {
+                        mi.name = mi.alias;
+                        delete mi.alias;
+                    }
+
                     return mi;
                 });
 

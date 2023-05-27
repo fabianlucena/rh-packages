@@ -14,28 +14,28 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.BIGINT,
             autoIncrement: true,
             primaryKey: true,
-            unique: true
+            unique: true,
         },
         uuid: {
             type: DataTypes.UUID,
             allowNull: false,
             defaultValue: DataTypes.UUIDV4,
-            unique: true
+            unique: true,
         },
         isEnabled: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
-            defaultValue: true
+            defaultValue: true,
         },
         name: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true
+            unique: true,
         },
         isTranslatable: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
-            defaultValue: false
+            defaultValue: false,
         },
         jsonData: {
             type: DataTypes.STRING,

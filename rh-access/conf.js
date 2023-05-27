@@ -42,7 +42,7 @@ export const conf = {
             {name: 'user-access.edit',   title: loc._f('Edit users accesses'),   isTranslatable: true, roles: 'userAccessManager', ownerModule: name},
             {name: 'user-access.delete', title: loc._f('Delete users accesses'), isTranslatable: true, roles: 'userAccessManager', ownerModule: name},
 
-            {name: 'privileges',         title: loc._f('Privileges'),            isTranslatable: true, roles: 'everybody',         ownerModule: name, menuItem: {parent: 'session-menu',                                action: 'object', service: 'privileges'}},
+            {name: 'privileges',         title: loc._f('Privileges'),            isTranslatable: true, roles: 'user',              ownerModule: name, menuItem: {parent: 'session-menu',                                action: 'object', service: 'privileges'}},
         ],
     },
 };

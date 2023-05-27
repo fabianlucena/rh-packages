@@ -6,9 +6,12 @@ export const conf = localConf;
 
 conf.afterConfigAsync = async function(_, global) {
     await runSequentially(global?.data?.permissions, async permissionData => {
-        const menuItemData = permissionData.menuItem;
+        let menuItemData = permissionData.menuItem;
         if (!menuItemData)
             return;
+
+        if (menuItemData === true)
+            menuItemData = {};
 
         if (!menuItemData.data)
             menuItemData.data = {};

@@ -13,8 +13,8 @@ export class UserSiteRoleService {
         if (!data.userId) {
             if (data.userUuid)
                 data.userId = await conf.global.services.User.getIdForUuid(data.userUuid);
-            else if (data.username)
-                data.userId = await conf.global.services.User.getIdForUsername(data.username);
+            else if (data.user || data.username || data.name) 
+                data.userId = await conf.global.services.User.getIdForUsername(data.user ?? data.username ?? data.name);
         }
 
         return data;
@@ -162,8 +162,8 @@ export class UserSiteRoleService {
 
         if (data.userId)
             options.where.userId = data.userId;
-        else if (data.username)
-            options.include.push(complete({model: conf.global.models.User, where: {username: data.username}}, skipAssociationAttributes));
+        else if (data.user || data.username || data.name)
+            options.include.push(complete({model: conf.global.models.User, where: {username: data.user ?? data.username ?? data.name}}, skipAssociationAttributes));
         else
             throw new MissingPropertyError('UserSiteRole', 'user', 'userId');
         

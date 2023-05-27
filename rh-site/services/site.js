@@ -36,7 +36,13 @@ export class SiteService {
         await SiteService.completeOwnerModuleId(data);
         await checkDataForMissingProperties(data, 'Site', 'name', 'title');
 
-        return conf.global.models.Site.create(data);
+        const site = await conf.global.models.Site.create(data);
+        if (data.users) {
+            for (const user of data.users)
+                conf.global.services.UserSiteRole.createIfNotExists({user: user.user, siteId: site.id, role: user.role});
+        }
+
+        return site;
     }
 
     /**
@@ -131,7 +137,7 @@ export class SiteService {
      * @returns {Promise{Site}}
      */
     static async getForName(name, options) {
-        const rowList = await SiteService.getList(deepComplete(options, {where:{name}, limit: 2}));
+        const rowList = await SiteService.getList({...options, where:{...options?.where, name}, limit: 2});
         if (Array.isArray(name))
             return rowList;
 
