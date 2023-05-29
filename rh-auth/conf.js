@@ -7,7 +7,7 @@ const name = 'rhAuth';
 
 export const conf = {
     name,
-    title: 'Authorization',
+    title: 'RH Authorization',
     version: '0.1',
     schema: 'auth',
     init: [],

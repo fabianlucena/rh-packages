@@ -9,7 +9,7 @@ const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export const conf = {
     name,
-    title: 'Locale',
+    title: 'RH Locale',
     version: '0.1',
     schema: 'locale',
     init: [],

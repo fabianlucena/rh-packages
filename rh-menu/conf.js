@@ -6,7 +6,7 @@ const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export const conf = {
     name,
-    title: 'Menu',
+    title: 'RH Menu',
     version: '0.1',
     schema: 'menu',
     routesPath: dirname + '/routes',

@@ -9,7 +9,7 @@ const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export const conf = {
     name,
-    title: 'Access',
+    title: 'RH Access',
     version: '0.1',
     schema: 'acc',
     init: [],

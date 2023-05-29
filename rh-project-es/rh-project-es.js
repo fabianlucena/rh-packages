@@ -5,12 +5,12 @@ import {loadJson} from 'rf-util';
 import url from 'url';
 import path from 'path';
 
-const name = 'rh-project-es';
+const name = 'rhProjectEs';
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export const conf = {
     name,
-    title: 'RhProject-es',
+    title: 'RH Project es',
     version: '0.1',
     translationsFilename: '/translations_es.json',
     data: {

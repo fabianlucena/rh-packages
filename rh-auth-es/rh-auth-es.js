@@ -5,12 +5,12 @@ import {loadJson} from 'rf-util';
 import url from 'url';
 import path from 'path';
 
-const name = 'rh-auth-es';
+const name = 'rhAuthEs';
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export const conf = {
     name,
-    title: 'RhAuth-es',
+    title: 'RH Authorization es',
     version: '0.1',
     translationsFilename: './translations_es.json',
     data: {

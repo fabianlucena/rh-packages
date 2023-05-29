@@ -8,7 +8,7 @@ const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export const conf = {
     name,
-    title: 'Session data',
+    title: 'RH Session data',
     version: '0.1',
     schema: 'auth',
     init: null,

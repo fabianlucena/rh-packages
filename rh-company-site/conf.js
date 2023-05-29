@@ -4,12 +4,12 @@ import {loc} from 'rf-locale';
 import url from 'url';
 import path from 'path';
 
-const name = 'rhCompany';
+const name = 'rhCompanySite';
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export const conf = {
     name,
-    title: 'Company Site',
+    title: 'RH Company site',
     version: '0.1',
     schema: 'company',
     modelsPath: dirname + '/models',

@@ -106,7 +106,7 @@ export class CompanySiteController {
         res.status(200).send({
             title: await loc._('User'),
             load: {
-                service: 'site',
+                service: 'company-site',
                 method: 'get',
             },
             actions: actions,

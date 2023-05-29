@@ -9,7 +9,7 @@ const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export const conf = {
     name,
-    title: 'Company',
+    title: 'RH Company',
     version: '0.1',
     schema: 'company',
     routesPath: dirname + '/routes',
