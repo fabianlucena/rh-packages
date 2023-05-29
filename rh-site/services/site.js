@@ -39,7 +39,7 @@ export class SiteService {
         const site = await conf.global.models.Site.create(data);
         if (data.users) {
             for (const user of data.users)
-                conf.global.services.UserSiteRole.createIfNotExists({user: user.user, siteId: site.id, role: user.role});
+                await conf.global.services.UserSiteRole.createIfNotExists({user: user.user, siteId: site.id, role: user.role});
         }
 
         return site;
@@ -137,7 +137,11 @@ export class SiteService {
      * @returns {Promise{Site}}
      */
     static async getForName(name, options) {
-        const rowList = await SiteService.getList({...options, where:{...options?.where, name}, limit: 2});
+        options = {...options, where:{...options?.where, name}};
+        if (!Array.isArray(name))
+            options.limit = 2;
+
+        const rowList = await SiteService.getList(options);
         if (Array.isArray(name))
             return rowList;
 
@@ -183,35 +187,8 @@ export class SiteService {
         options.include.push(completeAssociationOptions({model: conf.global.models.Session, where: {id: sessionId}}, options));
 
         const rowList = await SiteService.getList(options);
-        return getSingle(rowList, deepComplete(options, {params: ['site', ['session id = %s', sessionId], 'Site']}));
+        return getSingle(rowList, {params: ['site', ['session id = %s', sessionId], 'Site'], ...options});
     }
-
-    /**
-     * Gets the site for a given session ID or default site if it is configured. This method uses the @ref SiteService.getForSessionId
-     * @param {integer} sessionId - session ID to retrieve the site.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Site}}
-     */
-    static async getForSessionIdOrDefault(sessionId, options) {
-        let site;
-        if (sessionId) {
-            site = await SiteService.getForSessionId(sessionId, {...options, skipThroughAssociationAttributes: true, skipNoRowsError: true});
-            if (site)
-                return site;
-        }
-
-        if (!conf.global.data.defaultSite)
-            return;
-
-        if (conf.global.services.SessionSite?.createOrUpdate)
-            await conf.global.services.SessionSite?.createOrUpdate({
-                sessionId: sessionId,
-                site: conf.global.data.defaultSite,
-            });
-
-        return await SiteService.getForSessionId(sessionId, {...options, skipThroughAssociationAttributes: true, skipNoRowsError: true});
-    }
-
     /**
      * Gets a site list for an user with the username.
      * @param {string} username - 
