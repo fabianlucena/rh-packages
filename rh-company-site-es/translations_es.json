@@ -1,0 +1,52 @@
+{
+    "Title": {
+        "language": "es",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [90,48]",
+        "translation": "Título"
+    },
+    "Name": {
+        "language": "es",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [95,47]",
+        "translation": "Nombre"
+    },
+    "Spanish": {
+        "language": "es",
+        "ref": "rh-company-site-es.js [19,41]",
+        "translation": "Español"
+    },
+    "Spanish language.": {
+        "language": "es",
+        "ref": "rh-company-site-es.js [20,57]",
+        "translation": "Idioma español."
+    },
+    "Description": {
+        "language": "es",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [100,54]",
+        "translation": "Descripción"
+    },
+    "Switch company": {
+        "language": "es",
+        "ref": "..\\rh-company-site\\conf.js [21,74]",
+        "translation": "Cambiar de empresa"
+    },
+    "Company UUID": {
+        "language": "es",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [20,73]",
+        "translation": "UUID de empresa"
+    },
+    "Site UUID": {
+        "language": "es",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [25,70]",
+        "translation": "UUID de sitio"
+    },
+    "The selected object does not exist or you do not have permission.": {
+        "language": "es",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [34,109]",
+        "translation": "El objeto seleccionado no existe o no tiene permiso"
+    },
+    "User": {
+        "language": "es",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [80,39]",
+        "translation": "Usuario"
+    }
+}
