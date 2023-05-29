@@ -56,11 +56,16 @@ export class PrivilegesService {
         if (username) {
             privileges.roles.push('user');
             
-            if (siteName)
-                privileges.roles = [...privileges.roles, ...await RoleService.getAllNamesForUsernameAndSiteName(username, siteName, {isEnabled: true})];
-        
-            if (siteName != 'system')
-                privileges.roles = [...privileges.roles, ...await RoleService.getAllNamesForUsernameAndSiteName(username, 'system', {isEnabled: true})];
+            const rolesSiteName = siteName?
+                Array.isArray(siteName)?
+                    siteName:
+                    [siteName]:
+                [];
+
+            if (!rolesSiteName.includes('system'))
+                rolesSiteName.push('system');
+                
+            privileges.roles = [...privileges.roles, ...await RoleService.getAllNamesForUsernameAndSiteName(username, rolesSiteName, {isEnabled: true})];
         } else
             privileges.roles.push('anonymous');
 
@@ -75,9 +80,10 @@ export class PrivilegesService {
      * Get the privileges for a given username and session ID from the cache or from the DB. @see getForUsernameAndSiteName method.
      * @param {string} username - username for the privileges to get.
      * @param {integer} sessionId - value for the ID to get the site.
+     * @param {integer} oldSessionId - value for the ID for the old session when the session was created by autoLoginToken.
      * @returns {Promise{privileges}}
      */
-    static async getJSONForUsernameAndSessionIdCached(username, sessionId) {
+    static async getJSONForUsernameAndSessionIdCached(username, sessionId, oldSessionId) {
         let site;
         if (sessionId) {
             if (conf.privilegesCache && conf.privilegesCache[sessionId]) {
@@ -86,11 +92,27 @@ export class PrivilegesService {
                 return provilegeData.privileges;
             }
 
-            site = await conf.global.services.Site.getForSessionIdOrDefault(sessionId);
+            site = await conf.global.services.Site.getForSessionId(sessionId, {skipThroughAssociationAttributes: true, skipNoRowsError: true});
+            if (!site) {
+                if (oldSessionId)
+                    site = await conf.global.services.Site.getForSessionId(oldSessionId, {skipThroughAssociationAttributes: true, skipNoRowsError: true});
+
+                if (!site && conf.global.data.defaultSite)
+                    site = await conf.global.services.Site.getForName(conf.global.data.defaultSite, {skipThroughAssociationAttributes: true, skipNoRowsError: true});
+
+                if (site && conf.global.services.SessionSite?.createOrUpdate) {
+                    await conf.global.services.SessionSite?.createOrUpdate({
+                        sessionId: sessionId,
+                        siteId: site.id,
+                    });
+                }
+            }
         }
         
         const privileges = await PrivilegesService.getForUsernameAndSiteName(username, site?.name);
         privileges.site = site?.toJSON();
+
+        sessionId ||= privileges.site?.id;
 
         if (sessionId) {
             conf.privilegesCache[sessionId] = {

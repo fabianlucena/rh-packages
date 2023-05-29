@@ -185,9 +185,11 @@ export class RoleService {
      * @returns {Promise{RoleList}}
      */
     static async getAllIdsForUsernameAndSiteName(username, siteName, options) {
-        const site = await conf.global.services.Site.getForName(siteName);
-        if (!site || !site.isEnabled)
+        const site = await conf.global.services.Site.getForName(siteName, {isEnabled: true});
+        if (!site || (Array.isArray(site) && !site.length))
             return;
+
+        const siteId = site.map(site => site.id);
 
         const isEnabled = options?.isEnabled ?? true;
         const Op = conf.global.Sequelize.Op;
@@ -234,9 +236,7 @@ export class RoleService {
                     where: {isEnabled},
                 },
             ],
-            where: {
-                siteId: site.id,
-            }
+            where: {siteId}
         };
         
         let newRoleList = await RoleService.getForUsernameAndSiteName(username, siteName, {attributes: ['id'], skipThroughAssociationAttributes: true});
@@ -268,7 +268,7 @@ export class RoleService {
     static async getAllForUsernameAndSiteName(username, siteName, options) {
         const roleIdList = await RoleService.getAllIdsForUsernameAndSiteName(username, siteName, options);
         options ??= {};
-        options.where = {id:roleIdList, ...options.where};
+        options.where = {id:roleIdList ?? null, ...options.where};
         return RoleService.getList(options);
     }
 

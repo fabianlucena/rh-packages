@@ -16,102 +16,132 @@
     },
     "Privileges": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [45,69]",
+        "ref": "..\\rh-access\\conf.js [47,69]",
         "translation": "Privilegios"
     },
     "Owner": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [26,52]",
+        "ref": "..\\rh-access\\conf.js [28,52]",
         "translation": "Propietario"
     },
     "Editor": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [27,53]",
+        "ref": "..\\rh-access\\conf.js [29,53]",
         "translation": "Editor"
     },
     "Viewer": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [28,53]",
+        "ref": "..\\rh-access\\conf.js [30,53]",
         "translation": "Visor"
     },
     "Roles": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [312,48]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [350,48]",
         "translation": "Roles"
     },
     "Sites": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [294,48]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [332,48]",
         "translation": "Sitios"
     },
     "User access manager": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [22,77]",
+        "ref": "..\\rh-access\\conf.js [24,77]",
         "translation": "Administrador de accesos de usuarios"
     },
     "Get users accesses": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [41,77]",
+        "ref": "..\\rh-access\\conf.js [43,77]",
         "translation": "Obtener accesos de usuarios"
     },
     "Users accesses": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [239,49]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [277,49]",
         "translation": "Accesos de usuarios"
     },
     "Edit users accesses": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [42,78]",
+        "ref": "..\\rh-access\\conf.js [44,78]",
         "translation": "Modificar accesos de usuarios"
     },
     "Delete users accesses": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [43,80]",
+        "ref": "..\\rh-access\\conf.js [45,80]",
         "translation": "Eliminar accesos de usuarios"
     },
     "Add users accesses": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [40,77]",
+        "ref": "..\\rh-access\\conf.js [42,77]",
         "translation": "Agregar accesos de usuarios"
     },
     "User access": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [271,46]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [309,46]",
         "translation": "Acceso de usuario"
     },
     "User": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [433,71]",
+        "ref": "..\\rh-access\\controllers\\switch_site.js [143,39]",
         "translation": "Usuario"
     },
     "Site": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [434,71]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [475,71]",
         "translation": "Sitio"
     },
     "Site UUID param is missing.": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [424,79]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [465,79]",
         "translation": "Falta el parámetro UUID de sitio."
     },
     "User UUID param is missing.": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [426,75]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [467,75]",
         "translation": "Falta el parámetro UUID de usuario."
     },
     "UUID": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [428,125]",
+        "ref": "..\\rh-access\\controllers\\switch_site.js [83,124]",
         "translation": "UUID"
     },
     "Wrong UUID format.": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [431,70]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [472,70]",
         "translation": "UUID mal formado."
     },
     "User with UUID %s has not access to the site with UUID %s.": {
         "language": "es",
-        "ref": "..\\rh-access\\controllers\\user-access.js [439,106]",
+        "ref": "..\\rh-access\\controllers\\user-access.js [486,106]",
         "translation": "El usuario con el UUID %s no tiene acceso al sitio con el UUID %s."
+    },
+    "assignable roles": {
+        "language": "es",
+        "ref": "..\\rh-access\\services\\assignable_role_per_role.js [182,83]",
+        "translation": "roles asignables"
+    },
+    "Assignable roles per role": {
+        "language": "es",
+        "ref": "..\\rh-access\\services\\assignable_role_per_role.js [182,190]",
+        "translation": "Roles asignables por rol"
+    },
+    "Title": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\switch_site.js [153,48]",
+        "translation": "Título"
+    },
+    "Name": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\switch_site.js [158,47]",
+        "translation": "Nombre"
+    },
+    "Enabled": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\switch_site.js [163,50]",
+        "translation": "Habilitado"
+    },
+    "Description": {
+        "language": "es",
+        "ref": "..\\rh-access\\controllers\\switch_site.js [168,54]",
+        "translation": "Descripción"
     }
 }

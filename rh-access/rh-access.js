@@ -1,6 +1,7 @@
 import {RoleService} from './services/role.js';
 import {RoleParentSiteService} from './services/role_parent_site.js';
 import {PermissionService} from './services/permission.js';
+import {RolePermissionService} from './services/role_permission.js';
 import {UserSiteRoleService} from './services/user_site_role.js';
 import {UserGroupService} from './services/user_group.js';
 import {ShareTypeService} from './services/share_type.js';
@@ -56,6 +57,7 @@ async function afterConfigAsync(_, global) {
     const data = global?.data;
     await runSequentially(data?.roles,                   async data => await RoleService.                 createIfNotExists(data));
     await runSequentially(data?.permissions,             async data => await PermissionService.           createIfNotExists(data));
+    await runSequentially(data?.rolesPermissions,        async data => await RolePermissionService.       createIfNotExists(data));
     await runSequentially(data?.usersSitesRoles,         async data => await UserSiteRoleService.         createIfNotExists(data));
     await runSequentially(data?.rolesParentsSites,       async data => await RoleParentSiteService.       createIfNotExists(data));
     await runSequentially(data?.userGroups,              async data => await UserGroupService.            createIfNotExists(data));
