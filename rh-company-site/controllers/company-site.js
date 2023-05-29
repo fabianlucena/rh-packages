@@ -40,6 +40,11 @@ export class CompanySiteController {
             siteId: companySite.siteId,
         });
 
+        if (req.site?.id != companySite.siteId) {
+            conf.global.services.Session?.deleteFromCacheForSessionId(req.session.id);
+            conf.global.services.Privileges?.deleteFromCacheForSessionId(req.session.id);
+        }
+
         res.status(204).send();
     }
 
@@ -57,7 +62,6 @@ export class CompanySiteController {
         }
 
         options.includeCompany = true;
-        // options.includeSite = true;
 
         const result = await CompanySiteService.getListAndCount(options);
         
@@ -71,6 +75,7 @@ export class CompanySiteController {
             name: 'select',
             actionData: {
                 bodyParam: {companyUuid: 'Company.uuid'},
+                onSuccess: 'reloadMenu();',
             },
         }];
                 

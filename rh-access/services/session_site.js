@@ -135,7 +135,7 @@ export class SessionSiteService {
         
         const rowList = await conf.global.models.SessionSite.findAll({where: {sessionId: data.sessionId}});
         if (rowList.length)
-            return SessionSiteService.update(data, {where: {sessionId: data.sessionId}});
+            return SessionSiteService.update({siteId: data.siteId}, {where: {sessionId: data.sessionId}});
 
         return SessionSiteService.create(data);
     }

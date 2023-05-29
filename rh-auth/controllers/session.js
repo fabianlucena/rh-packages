@@ -17,9 +17,9 @@ export class SessionController {
                 return;
             }
 
-            SessionService.getForAuthTokenCached(req.authToken)
+            SessionService.getJSONForAuthTokenCached(req.authToken)
                 .then(session => {
-                    req.session = session.toJSON();
+                    req.session = session;
                     req.user = req.session.User;
                     next();
                 })

@@ -156,7 +156,7 @@ export class SessionService {
      * @param {string} authToken - value for the authToken to get the session.
      * @returns {Promise{Device}}
      */
-    static getForAuthTokenCached(authToken) {
+    static getJSONForAuthTokenCached(authToken) {
         if (conf.sessionCache && conf.sessionCache[authToken]) {
             const sessionData = conf.sessionCache[authToken];
             sessionData.lastUse = Date.now();
@@ -171,6 +171,8 @@ export class SessionService {
                 if (session.close)
                     return reject(new SessionClosedError());
 
+                session = session.toJSON();
+
                 conf.sessionCache[authToken] = {
                     session: session,
                     lastUse: Date.now(),
@@ -178,6 +180,15 @@ export class SessionService {
 
                 resolve(session);
             }));
+    }
+
+    static deleteFromCacheForSessionId(sessionId) {
+        for (const authToken in conf.sessionCache) {
+            if (conf.sessionCache[authToken].session.id === sessionId) {
+                delete conf.sessionCache[authToken];
+                break;
+            }
+        }
     }
 
     /**

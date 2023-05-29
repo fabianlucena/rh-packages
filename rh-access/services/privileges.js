@@ -123,4 +123,10 @@ export class PrivilegesService {
 
         return privileges;
     }
+
+    static deleteFromCacheForSessionId(sessionId) {
+        if (conf.privilegesCache[sessionId]) {
+            delete conf.privilegesCache[sessionId];
+        }
+    }
 }
