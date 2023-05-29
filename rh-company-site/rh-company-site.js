@@ -1,6 +1,6 @@
 'use strict';
 
-import {CompanySiteService} from './services/company_site.js';
+import {CompanySiteService} from './services/company-site.js';
 import {conf as localConf} from './conf.js';
 import {runSequentially} from 'rf-util';
 
