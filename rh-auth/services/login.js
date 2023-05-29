@@ -102,6 +102,7 @@ export class LoginService {
             authToken: session.authToken,
             deviceToken: device.token,
             autoLoginToken: session.autoLoginToken,
+            oldSessionId: oldSession.id,
         };
     }
 }

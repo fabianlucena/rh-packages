@@ -1,6 +1,6 @@
 import {MenuItemService} from '../services/menu_item.js';
 import {conf} from '../conf.js';
-import {runSequentially} from 'rf-util';
+import {runSequentially, deepMerge} from 'rf-util';
 
 /**
  * @swagger
@@ -82,15 +82,10 @@ export class MenuController {
             return mi;
         });
 
-        const result = {menu: mil};
-        if (conf.global.services.SessionData) {
-            const data = await conf.global.services.SessionData.getDataIfExistsForSessionId(req.session.id);
-            if (data) {
-                data.menu?.forEach(mi => result.menu.push(mi));
-                if (data.api)
-                    result.api = data.api;
-            }
-        }
+        let result = {menu: mil};
+        const dataList = await Promise.all(conf.global.eventBus?.$emit('menuGet', req.session?.id));
+
+        dataList.forEach(data => result = deepMerge(result, data));
 
         res.status(200).send(result);
     }

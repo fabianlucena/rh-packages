@@ -1,4 +1,5 @@
 import {LogoutService} from '../services/logout.js';
+import {conf} from '../conf.js';
 
 export class LogoutController {
     /** 
@@ -32,11 +33,11 @@ export class LogoutController {
         if (!req.session)
             return res.status(401).send({error: await req.loc._('No session')});
 
-        LogoutService.logout(req.session)
-            .then(() => {
-                delete req.session;
-                res.status(204).send();
-            })
-            .catch(error => res.status(500).send({error: error}));
+        await LogoutService.logout(req.session);
+
+        conf.global.eventBus?.$emit('logout', req.session.id);
+
+        delete req.session;
+        res.status(204).send();
     }
 }

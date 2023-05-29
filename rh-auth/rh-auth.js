@@ -1,10 +1,12 @@
+'use strict';
+
 import {UserService} from './services/user.js';
 import {UserTypeService} from './services/user_type.js';
 import {IdentityService} from './services/identity.js';
 import {IdentityTypeService} from './services/identity_type.js';
 import {conf as localConf} from './conf.js';
 import './services/device.js';
-import './services/session.js';
+import {SessionService} from './services/session.js';
 import {SessionController} from './controllers/session.js';
 import {loc} from 'rf-locale';
 import {UnauthorizedError, NoPermissionError} from 'http-util';
@@ -20,6 +22,8 @@ function configure (global) {
         global.router.use(SessionController.configureMiddleware());
 
     global.checkPermissionHandler = getCheckPermissionHandler(global.checkPermissionHandler);
+
+    global.eventBus?.$on('sessionUpdated', sessionUpdated);
 }
 
 function getCheckPermissionHandler(chain) {
@@ -46,4 +50,8 @@ async function afterConfigAsync(_, global) {
     await runSequentially(data?.identityTypes, async data => await IdentityTypeService.createIfNotExists(data));
     await runSequentially(data?.users,         async data => await UserService.        createIfNotExists(data));
     await runSequentially(data?.identities,    async data => await IdentityService.    createIfNotExists(data));
+}
+
+async function sessionUpdated(sessionId) {
+    SessionService.deleteFromCacheForSessionId(sessionId);
 }

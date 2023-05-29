@@ -6,6 +6,8 @@ import {UserSiteRoleService} from './services/user_site_role.js';
 import {UserGroupService} from './services/user_group.js';
 import {ShareTypeService} from './services/share_type.js';
 import {AssignableRolePerRoleService} from './services/assignable_role_per_role.js';
+import {PrivilegesService} from './services/privileges.js';
+import {SessionSiteService} from './services/session_site.js';
 import {PrivilegesController} from './controllers/privileges.js';
 import {NoPermissionError} from 'http-util';
 import {runSequentially} from 'rf-util';
@@ -21,6 +23,9 @@ function configure(global) {
         global.router.use(PrivilegesController.middleware());
 
     global.checkPermissionHandler = getCheckPermissionHandler(global.checkPermissionHandler);
+
+    global.eventBus?.$on('login', login);
+    global.eventBus?.$on('sessionUpdated', sessionUpdated);
 }
 
 function getCheckPermissionHandler(chain) {
@@ -64,3 +69,23 @@ async function afterConfigAsync(_, global) {
     await runSequentially(data?.shareTypes,              async data => await ShareTypeService.            createIfNotExists(data));
     await runSequentially(data?.assignableRolesPerRoles, async data => await AssignableRolePerRoleService.createIfNotExists(data));
 }
+
+async function login(session) {
+    if (!session?.id || !session?.oldSessionId)
+        return;
+
+    const currentSite = await SessionSiteService.getList({where: {sessionId: session.id}});
+    if (currentSite?.length) 
+        return;
+
+    const oldSite = await SessionSiteService.getList({where: {sessionId: session.oldSessionId}});
+    if (!oldSite?.length) 
+        return;
+
+    return SessionSiteService.createOrUpdate({sessionId: session.id, siteId: oldSite[0].siteId});
+}
+
+async function sessionUpdated(sessionId) {
+    return PrivilegesService.deleteFromCacheForSessionId(sessionId);
+}
+

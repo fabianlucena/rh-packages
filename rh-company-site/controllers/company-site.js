@@ -39,6 +39,13 @@ export class CompanySiteController {
 
         conf.global.services.SessionSite.createOrUpdate({sessionId, siteId});
 
+        if (companySite.Company.isTranslatable) {
+            companySite.Company.title = loc._(companySite.Company.title);
+            companySite.Company.description = loc._(companySite.Company.description);
+        }
+
+        delete companySite.Company.isTranslatable;
+
         const data = {
             api: {
                 fixedBodyParam: {
@@ -56,16 +63,8 @@ export class CompanySiteController {
         };
 
         await conf.global.services.SessionData?.addData(sessionId, data);
-
-        conf.global.services.Session?.deleteFromCacheForSessionId(sessionId);
-        conf.global.services.Privileges?.deleteFromCacheForSessionId(sessionId);
-
-        if (companySite.Company.isTranslatable) {
-            companySite.Company.title = loc._(companySite.Company.title);
-            companySite.Company.description = loc._(companySite.Company.description);
-        }
-
-        delete companySite.Company.isTranslatable;
+        
+        conf.global.eventBus?.$emit('sessionUpdated', sessionId);
 
         res.status(200).send({length: 1, rows: companySite, ...data});
     }

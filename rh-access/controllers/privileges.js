@@ -23,7 +23,7 @@ import {errorHandlerAsync} from 'rf-util';
 export class PrivilegesController {
     static middleware() {
         return (req, res, next) => {
-            PrivilegesService.getJSONForUsernameAndSessionIdCached(req?.user?.username, req?.session?.id, req?.session?.oldSessionId)
+            PrivilegesService.getJSONForUsernameAndSessionIdCached(req?.user?.username, req?.session?.id)
                 .then(privileges => {
                     if (privileges) {
                         req.sites = privileges.sites;

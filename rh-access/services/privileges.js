@@ -80,10 +80,9 @@ export class PrivilegesService {
      * Get the privileges for a given username and session ID from the cache or from the DB. @see getForUsernameAndSiteName method.
      * @param {string} username - username for the privileges to get.
      * @param {integer} sessionId - value for the ID to get the site.
-     * @param {integer} oldSessionId - value for the ID for the old session when the session was created by autoLoginToken.
      * @returns {Promise{privileges}}
      */
-    static async getJSONForUsernameAndSessionIdCached(username, sessionId, oldSessionId) {
+    static async getJSONForUsernameAndSessionIdCached(username, sessionId) {
         let site;
         if (sessionId) {
             if (conf.privilegesCache && conf.privilegesCache[sessionId]) {
@@ -94,9 +93,6 @@ export class PrivilegesService {
 
             site = await conf.global.services.Site.getForSessionId(sessionId, {skipThroughAssociationAttributes: true, skipNoRowsError: true});
             if (!site) {
-                if (oldSessionId)
-                    site = await conf.global.services.Site.getForSessionId(oldSessionId, {skipThroughAssociationAttributes: true, skipNoRowsError: true});
-
                 if (!site && conf.global.data.defaultSite)
                     site = await conf.global.services.Site.getForName(conf.global.data.defaultSite, {skipThroughAssociationAttributes: true, skipNoRowsError: true});
 

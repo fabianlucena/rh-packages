@@ -1,6 +1,7 @@
 'use strict';
 
 import {LoginService} from '../services/login.js';
+import {conf} from '../conf.js';
 import {_HttpError} from 'http-util';
 import {checkParameter} from 'rf-util';
 
@@ -120,6 +121,8 @@ export class LoginController {
                 session = await LoginService.forAutoLoginTokenAndSessionIndex(req.body.autoLoginToken, req.body.deviceToken, req.body?.sessionIndex ?? req.body.index, req.loc);
             else
                 session = await LoginService.forUsernamePasswordDeviceTokenAndSessionIndex(req.body.username, req.body.password, req.body.deviceToken, req.body.sessionIndex ?? req.body.index, req.loc);
+
+            conf.global.eventBus?.$emit('login', session);
 
             const now = new Date();
             const expires30  = new Date();
