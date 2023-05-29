@@ -1,12 +1,12 @@
 {
     "Title": {
         "language": "es",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [90,48]",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [103,48]",
         "translation": "Título"
     },
     "Name": {
         "language": "es",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [95,47]",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [108,47]",
         "translation": "Nombre"
     },
     "Spanish": {
@@ -21,7 +21,7 @@
     },
     "Description": {
         "language": "es",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [100,54]",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [113,54]",
         "translation": "Descripción"
     },
     "Switch company": {
@@ -46,7 +46,12 @@
     },
     "User": {
         "language": "es",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [80,39]",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [93,39]",
         "translation": "Usuario"
+    },
+    "Company: %s": {
+        "language": "es",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [56,132]",
+        "translation": "Empresa: %s"
     }
 }

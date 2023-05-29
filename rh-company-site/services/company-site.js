@@ -125,7 +125,7 @@ export class CompanySiteService {
 
             let attributes;
             if (options.includeCompany) {
-                attributes = ['uuid', 'name', 'title'];
+                attributes = ['uuid', 'name', 'title', 'isTranslatable'];
                 delete options.includeCompany;
             } else 
                 attributes = [];
@@ -160,7 +160,7 @@ export class CompanySiteService {
 
             let attributes;
             if (options.includeSite) {
-                attributes = ['uuid', 'name', 'title'];
+                attributes = ['uuid', 'name', 'title', 'isTranslatable'];
                 delete options.includeSite;
             } else 
                 attributes = [];
