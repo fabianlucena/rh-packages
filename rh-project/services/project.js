@@ -66,17 +66,28 @@ export class ProjectService {
                 options.attributes = ['uuid', 'isEnabled', 'name', 'title', 'description'];
         }
 
-        if (options.includeCompany) {
+        if (options.includeCompany || options.where?.companyUuid !== undefined) {
             let where;
+
             if (options.isEnabled !== undefined)
                 where = {isEnabled: options.isEnabled};
+
+            if (options.where?.companyUuid !== undefined) {
+                where ??= {};
+                where.uuid = options.where.companyUuid;
+                delete options.where.companyUuid;
+            }
+
+            const attributes = options.includeCompany?
+                ['uuid', 'name', 'title']:
+                [];
 
             completeIncludeOptions(
                 options,
                 'Company',
                 {
                     model: conf.global.models.Company,
-                    attributes: ['uuid', 'name', 'title'],
+                    attributes,
                     where,
                 }
             );

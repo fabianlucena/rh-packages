@@ -1,6 +1,6 @@
 import {conf} from '../conf.js';
 import {checkDataForMissingProperties, getSingle} from 'sql-util';
-import {merge} from 'rf-util';
+import {deepMerge} from 'rf-util';
 import {loc} from 'rf-locale';
 
 export class SessionDataService {
@@ -39,9 +39,9 @@ export class SessionDataService {
     static async updateForSessionIdOrcreate(sessionId, data) {
         const rows = await SessionDataService.getList({where: {...data?.where, sessionId}, limit: 1});
         if (rows?.length)
-            return SessionDataService.updateForSessionId(data, sessionId);
+            return SessionDataService.updateForSessionId({data}, sessionId);
         else
-            return SessionDataService.create({...data, sessionId});
+            return SessionDataService.create({data, sessionId});
     }
 
     /**
@@ -90,15 +90,13 @@ export class SessionDataService {
      * @param {object} sessionData - Data to add or replace.
      * @returns {Promise[Site]}
      */
-    static addData(sessionId, sessionData) {
+    static async addData(sessionId, sessionData) {
         return SessionDataService.updateForSessionIdOrcreate(
             sessionId,
-            {
-                data: merge(
-                    SessionDataService.getDataIfExistsForSessionId(sessionId) ?? {},
-                    sessionData
-                )
-            }
+            deepMerge(
+                await SessionDataService.getDataIfExistsForSessionId(sessionId) ?? {},
+                sessionData
+            )
         );
     }
 }

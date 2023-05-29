@@ -1,21 +1,18 @@
 'use strict';
 
-import {CompanySiteService} from '../services/company-site.js';
 import {conf} from '../conf.js';
 import {getOptionsFromParamsAndODataAsync, _HttpError} from 'http-util';
-import {checkParameter, checkParameterUuid, MissingParameterError} from 'rf-util';
+import {checkParameter, /*checkParameterUuid, */ MissingParameterError} from 'rf-util';
 
-export class CompanySiteController {
+export class ProjectSelectController {
     static async post(req, res) {
         const loc = req.loc;
 
-        const companyUuid = req.query?.companyUuid ?? req.params?.companyUuid ?? req.body?.companyUuid;
-        const siteUuid = req.query?.siteUuid ?? req.params?.siteUuid ?? req.body?.siteUuid;
+        const projectUuid = req.query?.projectUuid ?? req.params?.projectUuid ?? req.body?.projectUuid;
+        if (!projectUuid)
+            throw new MissingParameterError(loc._f('Project UUID'));
 
-        if (!companyUuid && !siteUuid)
-            throw new MissingParameterError(loc._f('Company UUID'), loc._f('Site UUID'));
-
-        const options = {attributes:['siteId'], view: true, includeCompany: true, where: {}};
+        /*const options = {attributes:['siteId'], view: true, includeCompany: true, where: {}};
         if (companyUuid) {
             await checkParameterUuid(companyUuid, loc._f('Company UUID'));
             options.where.companyUuid = companyUuid;
@@ -27,64 +24,66 @@ export class CompanySiteController {
         }
 
         if (!req.roles.includes('admin'))
-            options.where.siteName = req?.sites ?? null;
+            options.where.siteName = req?.sites ?? null;*/
 
-        const companySites = await CompanySiteService.getList(options);
-        if (!companySites?.length)
-            throw new _HttpError(loc._f('The selected object does not exist or you do not have permission.'), 400);
+        let project = await conf.global.services.Project.getForUuid(projectUuid, {skipNoRowsError: true});
+        if (!project)
+            throw new _HttpError(loc._f('The selected project does not exist or you do not have permission.'), 400);
 
-        const companySite = companySites[0].toJSON();
-        const sessionId = req.session.id;
-        const siteId = companySite.siteId;
+        project = project.toJSON();
 
-        conf.global.services.SessionSite.createOrUpdate({sessionId, siteId});
-
-        if (companySite.Company.isTranslatable) {
-            companySite.Company.title = loc._(companySite.Company.title);
-            companySite.Company.description = loc._(companySite.Company.description);
+        if (project.isTranslatable) {
+            project.title = loc._(project.title);
+            project.description = loc._(project.description);
         }
 
-        delete companySite.Company.isTranslatable;
+        delete project.isTranslatable;
 
         const data = {
             api: {
                 query: {
-                    companyUuid: companySite.Company.uuid,
+                    projectUuid: project.uuid,
                 },
             },
             menu: [
                 {
+                    name: 'project-select',
                     parent: 'breadcrumb',
                     action: 'object',
-                    service: 'company-site',
-                    label: await loc._('Company: %s', companySite.Company.title),
+                    service: 'project-select',
+                    label: await loc._('Project: %s', project.title),
                 }
             ],
         };
 
+        const sessionId = req.session.id;
         await conf.global.services.SessionData?.addData(sessionId, data);
-        
+
         conf.global.eventBus?.$emit('sessionUpdated', sessionId);
 
-        res.status(200).send({length: 1, rows: companySite, ...data});
+        res.status(200).send({length: 1, rows: project, ...data});
     }
 
     static async get(req, res) {
         if ('$object' in req.query)
-            return CompanySiteController.getObject(req, res);
+            return ProjectSelectController.getObject(req, res);
 
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {view: true, limit: 10, offset: 0};
 
         options = await getOptionsFromParamsAndODataAsync(req?.query, definitions, options);
-        if (!req.roles.includes('admin')) {
+        const companyUuid = req.query?.companyUuid ?? req.params?.companyUuid ?? req.body?.companyUuid;
+        if (!companyUuid) {
+            if (!req.roles.includes('admin'))
+                throw new MissingParameterError(req.loc._f('Company UUID'));
+        } else {
             options.where ??= {};
-            options.where.siteName = req?.sites ?? null;
+            options.where.companyUuid = companyUuid;
         }
 
         options.includeCompany = true;
 
-        const result = await CompanySiteService.getListAndCount(options);
+        const result = await conf.global.services.Project.getListAndCount(options);
         
         res.status(200).send(result);
     }
@@ -95,7 +94,7 @@ export class CompanySiteController {
         const actions = [{
             name: 'select',
             actionData: {
-                bodyParam: {companyUuid: 'Company.uuid'},
+                bodyParam: {projectUuid: 'uuid'},
                 onSuccess: 'reloadMenu();',
             },
         }];
@@ -105,23 +104,23 @@ export class CompanySiteController {
         res.status(200).send({
             title: await loc._('User'),
             load: {
-                service: 'company-site',
+                service: 'project-select',
                 method: 'get',
             },
             actions: actions,
             properties: [
                 {
-                    name: 'Company.title',
+                    name: 'title',
                     type: 'text',
                     label: await loc._('Title'),
                 },
                 {
-                    name: 'Company.name',
+                    name: 'name',
                     type: 'text',
                     label: await loc._('Name'),
                 },
                 {
-                    name: 'Company.description',
+                    name: 'description',
                     type: 'text',
                     label: await loc._('Description'),
                 },

@@ -136,7 +136,7 @@ export class ProjectController {
             return ProjectController.getForm(req, res);
             
         const definitions = {uuid: 'uuid', name: 'string'};
-        let options = {view: true, limit: 10, offset: 0, includeCompany: true, includeOwner: true};
+        let options = {view: true, limit: 10, offset: 0, includeCompany: true};
 
         options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
         const result = await ProjectService.getListAndCount(options);
