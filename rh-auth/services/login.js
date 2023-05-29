@@ -93,6 +93,7 @@ export class LoginService {
             userId: oldSession.userId,
             index: sessionIndex,
             open: Date.now(),
+            oldSessionId: oldSession.id,
         });
 
         return {

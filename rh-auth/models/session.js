@@ -5,8 +5,8 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class Session extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.User,   {foreignKey: 'userId'});
-            this.belongsTo(models.Device, {foreignKey: 'deviceId'});
+            this.belongsTo(models.User,    {foreignKey: 'userId'});
+            this.belongsTo(models.Device,  {foreignKey: 'deviceId'});
         }
     }
     Session.init({
@@ -41,6 +41,10 @@ export default (sequelize, DataTypes) => {
         autoLoginToken: {
             type: DataTypes.STRING,
             allowNull: false,
+        },
+        oldSessionId: {
+            type: DataTypes.BIGINT,
+            allowNull: true,
         },
     }, {
         sequelize,

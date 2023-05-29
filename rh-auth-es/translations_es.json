@@ -11,12 +11,12 @@
     },
     "HTTP error 401 unauthorized, no authorization header.": {
         "language": "es",
-        "ref": "..\\rh-auth\\index.js [30,108]",
+        "ref": "..\\rh-auth\\rh-auth.js [30,108]",
         "translation": "Error HTTP 401 no autorizado, no hay cabecera de autorización."
     },
     "HTTP error 401 unauthorized, authorization schema is no Bearer.": {
         "language": "es",
-        "ref": "..\\rh-auth\\index.js [33,118]",
+        "ref": "..\\rh-auth\\rh-auth.js [33,118]",
         "translation": "Error HTTP 401 no autorizado, el esquema de autorización no es Bearer."
     },
     "There is no id for session": {
@@ -101,12 +101,12 @@
     },
     "System administrator": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [41,72]",
+        "ref": "..\\rh-auth\\conf.js [37,72]",
         "translation": "Administrador del sistema."
     },
     "User manager": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [42,64]",
+        "ref": "..\\rh-auth\\conf.js [38,64]",
         "translation": "Administrador de usuarios"
     },
     "User": {
@@ -116,12 +116,12 @@
     },
     "Logout": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [51,61]",
+        "ref": "..\\rh-auth\\conf.js [49,66]",
         "translation": "Salir"
     },
     "Get user(s)": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [52,66]",
+        "ref": "..\\rh-auth\\conf.js [50,71]",
         "translation": "Obtener usuario(s)"
     },
     "Users": {
@@ -131,17 +131,17 @@
     },
     "Create user": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [53,66]",
+        "ref": "..\\rh-auth\\conf.js [51,71]",
         "translation": "Crear usuario"
     },
     "Delete user": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [55,66]",
+        "ref": "..\\rh-auth\\conf.js [53,71]",
         "translation": "Eliminar usuario"
     },
     "Get session(s)": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [56,69]",
+        "ref": "..\\rh-auth\\conf.js [54,74]",
         "translation": "Obtener sesion(es)"
     },
     "Sessions": {
@@ -151,22 +151,22 @@
     },
     "Delete session": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [57,69]",
+        "ref": "..\\rh-auth\\conf.js [55,74]",
         "translation": "Eliminar sesiones"
     },
     "Get own sessions only": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [58,76]",
+        "ref": "..\\rh-auth\\conf.js [56,81]",
         "translation": "Obtener únicamente la sesión propia"
     },
     "My sessions": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [58,180]",
+        "ref": "..\\rh-auth\\conf.js [56,185]",
         "translation": "Mis sesiones"
     },
     "Edit user": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [54,64]",
+        "ref": "..\\rh-auth\\conf.js [52,69]",
         "translation": "Modificar usuario"
     },
     "Display name": {
@@ -186,22 +186,22 @@
     },
     "Administrator": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [26,69]",
+        "ref": "..\\rh-auth\\conf.js [30,69]",
         "translation": "Administrador"
     },
     "Local": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [30,51]",
+        "ref": "..\\rh-auth\\conf.js [26,51]",
         "translation": "Local"
     },
     "Everybody": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [38,61]",
+        "ref": "..\\rh-auth\\conf.js [34,61]",
         "translation": "Todos"
     },
     "Anonymous": {
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [39,61]",
+        "ref": "..\\rh-auth\\conf.js [35,61]",
         "translation": "Anónimo"
     },
     "Open": {
@@ -231,12 +231,12 @@
     },
     "User \"%s\" does not exist": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\user.js [171,64]",
+        "ref": "..\\rh-auth\\services\\user.js [185,64]",
         "translation": "El usuario \"%s\" no existe"
     },
     "User \"%s\" is not enabled": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\user.js [174,64]",
+        "ref": "..\\rh-auth\\services\\user.js [188,64]",
         "translation": "El usuario \"%s no está habilitado"
     },
     "Error to get user to create session": {
@@ -258,5 +258,25 @@
         "language": "es",
         "ref": "..\\rh-auth\\services\\login.js [84,66]",
         "translation": "El dispositivo no es el mismo"
+    },
+    "Login menu": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [46,70]",
+        "translation": "Menú de acceso"
+    },
+    "Session menu": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [47,72]",
+        "translation": "Menú se sessión"
+    },
+    "Switch site": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [57,71]",
+        "translation": "Cambiar de sitio"
+    },
+    "Get current site": {
+        "language": "es",
+        "ref": "..\\rh-auth\\conf.js [58,76]",
+        "translation": "Obtener sitio actual"
     }
 }
