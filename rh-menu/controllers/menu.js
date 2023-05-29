@@ -39,7 +39,7 @@ export class MenuController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static get(req, res) {
+    static async get(req, res) {
         const permissions = req?.permissions;
         const options = {
             view: true,
@@ -51,35 +51,47 @@ export class MenuController {
             ]
         };
 
-        MenuItemService.getList(options)
-            .then(async rows => {
-                const loc = req.loc;
-                const mil = await runSequentially(rows, async mir => {
-                    let mi = mir.toJSON();
-                    if (mi.Parent) {
-                        mi.parent = mi.Parent?.name;
-                        delete mi.Parent;
-                    }
+        const rows = await MenuItemService.getList(options);
+        const loc = req.loc;
+        const mil = await runSequentially(rows, async mir => {
+            let mi = mir.toJSON();
+            if (mi.Parent) {
+                mi.parent = mi.Parent?.name;
+                delete mi.Parent;
+            }
 
-                    if (mi.jsonData) {
-                        if (mi.data)
-                            mi = {...mi, Parent: undefined, data: undefined, ...mi.data};
+            if (mi.jsonData) {
+                if (mi.data)
+                    mi = {...mi, Parent: undefined, data: undefined, ...mi.data};
 
-                        delete mi.jsonData;
-                    }
+                delete mi.jsonData;
+            }
 
-                    if (mi.isTranslatable && mi.label)
-                        mi.label = await loc._d('menu', mi.label);
+            if (mi.isTranslatable) {
+                if (mi.label)
+                    mi.label = await loc._d('menu', mi.label);
 
-                    if (mi.alias) {
-                        mi.name = mi.alias;
-                        delete mi.alias;
-                    }
+                delete mi.isTranslatable;
+            }
 
-                    return mi;
-                });
+            if (mi.alias) {
+                mi.name = mi.alias;
+                delete mi.alias;
+            }
 
-                res.status(200).send(mil);
-            });
+            return mi;
+        });
+
+        const result = {menu: mil};
+        if (conf.global.services.SessionData) {
+            const data = await conf.global.services.SessionData.getDataIfExistsForSessionId(req.session.id);
+            if (data) {
+                data.menu?.forEach(mi => result.menu.push(mi));
+                if (data.api)
+                    result.api = data.api;
+            }
+        }
+
+        res.status(200).send(result);
     }
 }
