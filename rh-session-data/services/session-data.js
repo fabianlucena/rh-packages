@@ -91,12 +91,21 @@ export class SessionDataService {
      * @returns {Promise[Site]}
      */
     static async addData(sessionId, sessionData) {
-        return SessionDataService.updateForSessionIdOrcreate(
-            sessionId,
-            deepMerge(
-                await SessionDataService.getDataIfExistsForSessionId(sessionId) ?? {},
-                sessionData
-            )
+        const mergedData = deepMerge(
+            await SessionDataService.getDataIfExistsForSessionId(sessionId) ?? {},
+            sessionData
         );
+
+        return SessionDataService.setData(sessionId, mergedData);
+    }
+    
+    /**
+    * Set the data to a session, warinign previus data will be erased..
+    * @param {string} sessionId - Session ID to wich add the data.
+    * @param {object} sessionData - Data to add or replace.
+    * @returns {Promise[Site]}
+    */
+    static async setData(sessionId, sessionData) {
+        return SessionDataService.updateForSessionIdOrcreate(sessionId, sessionData);
     }
 }

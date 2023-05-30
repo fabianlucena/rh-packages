@@ -46,23 +46,36 @@ export class CompanySiteController {
 
         delete companySite.Company.isTranslatable;
 
+        const menuItem = {
+            name: 'company-site',
+            parent: 'breadcrumb',
+            action: 'object',
+            service: 'company-site',
+            label: await loc._('Company: %s', companySite.Company.title),
+        };
+
         const data = {
             api: {
-                query: {
+                data: {
                     companyUuid: companySite.Company.uuid,
                 },
             },
-            menu: [
-                {
-                    parent: 'breadcrumb',
-                    action: 'object',
-                    service: 'company-site',
-                    label: await loc._('Company: %s', companySite.Company.title),
-                }
-            ],
+            menu: [menuItem],
         };
 
-        await conf.global.services.SessionData?.addData(sessionId, data);
+        const SessionDataService = conf.global.services.SessionData;
+        if (SessionDataService) {
+            const sessionData = await SessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
+            sessionData.api ??= {};
+            sessionData.api.data ??= {};
+            sessionData.api.data.companyUuid = companySite.Company.uuid;
+
+            sessionData.menu ??= [];
+            sessionData.menu = sessionData.menu.filter(item => item.parent != 'breadcrumb' && item.name != 'company-site');
+            sessionData.menu.push(menuItem);
+
+            await SessionDataService?.setData(sessionId, sessionData);
+        }
         
         conf.global.eventBus?.$emit('sessionUpdated', sessionId);
 
