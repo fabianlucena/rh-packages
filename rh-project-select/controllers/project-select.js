@@ -39,25 +39,38 @@ export class ProjectSelectController {
 
         delete project.isTranslatable;
 
+        const menuItem = {
+            name: 'project-select',
+            parent: 'breadcrumb',
+            action: 'object',
+            service: 'project-select',
+            label: await loc._('Project: %s', project.title),
+        };
         const data = {
             api: {
-                query: {
+                data: {
                     projectUuid: project.uuid,
                 },
             },
-            menu: [
-                {
-                    name: 'project-select',
-                    parent: 'breadcrumb',
-                    action: 'object',
-                    service: 'project-select',
-                    label: await loc._('Project: %s', project.title),
-                }
-            ],
+            menu: [menuItem],
         };
 
         const sessionId = req.session.id;
-        await conf.global.services.SessionData?.addData(sessionId, data);
+        const SessionDataService = conf.global.services.SessionData;
+        if (SessionDataService) {
+            const sessionData = await SessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
+            sessionData.api ??= {};
+            sessionData.api.data ??= {};
+            sessionData.api.data.projectUuid = project.uuid;
+
+            sessionData.menu ??= [];
+            sessionData.menu = sessionData.menu.filter(item => item.name != 'project-select');
+            sessionData.menu.push(menuItem);
+
+            console.log(sessionData.menu);
+
+            await SessionDataService?.setData(sessionId, sessionData);
+        }
 
         conf.global.eventBus?.$emit('sessionUpdated', sessionId);
 
@@ -106,6 +119,9 @@ export class ProjectSelectController {
             load: {
                 service: 'project-select',
                 method: 'get',
+                queryParam: {
+                    companyUuid: 'companyUuid',
+                },
             },
             actions: actions,
             properties: [
