@@ -142,7 +142,7 @@ export class ProjectController {
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
         if (conf.filter?.companyId) {
             options.where ??= {};
-            options.where.companyId = conf.filter.companyId();
+            options.where.companyId = await conf.filter.companyId(req) ?? null;
         }
 
         const result = await ProjectService.getListAndCount(options);

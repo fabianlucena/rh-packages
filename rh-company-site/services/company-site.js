@@ -1,5 +1,5 @@
 import {conf} from '../conf.js';
-import {checkDataForMissingProperties, completeIncludeOptions} from 'sql-util';
+import {checkDataForMissingProperties, completeIncludeOptions, getSingle} from 'sql-util';
 
 export class CompanySiteService {
     /**
@@ -220,5 +220,14 @@ export class CompanySiteService {
         }
 
         return item;
+    }
+
+    static async getForSiteId(siteId, options) {
+        const rows = await CompanySiteService.getList({...options, where: {...options?.where, siteId}, limit: 2});
+        return getSingle(rows, {params: ['company site', ['site ID = %s', siteId], 'CompanySite'], ...options});
+    }
+
+    static async getCompanyIdForSiteId(siteId, options) {
+        return (await CompanySiteService.getForSiteId(siteId, options))?.companyId;
     }
 }

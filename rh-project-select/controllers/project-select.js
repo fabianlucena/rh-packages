@@ -83,13 +83,16 @@ export class ProjectSelectController {
         let options = {view: true, limit: 10, offset: 0};
 
         options = await getOptionsFromParamsAndOData(req?.query, definitions, options);
+
         const companyUuid = req.query?.companyUuid ?? req.params?.companyUuid ?? req.body?.companyUuid;
-        if (!companyUuid) {
-            if (!req.roles.includes('admin'))
-                throw new MissingParameterError(req.loc._f('Company UUID'));
-        } else {
+        if (companyUuid) {
             options.where ??= {};
             options.where.companyUuid = companyUuid;
+        }
+        
+        if (conf.filter?.companyId) {
+            options.where ??= {};
+            options.where.companyId = await conf.filter.companyId(req);
         }
 
         options.includeCompany = true;

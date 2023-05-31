@@ -13,7 +13,6 @@ async function afterConfig(global) {
     await runSequentially(data?.companiesSites, async data => await CompanySiteService.createIfNotExists(data));
 }
 
-export function companyIdFilter() {
-    const companyId = 1;
-    return companyId;
+export function companyId(req) {
+    return CompanySiteService.getCompanyIdForSiteId(req.site.id, {skipNoRowsError: true});
 }
