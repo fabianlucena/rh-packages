@@ -90,9 +90,9 @@ export class ProjectSelectController {
             options.where.companyUuid = companyUuid;
         }
         
-        if (conf.filter?.companyId) {
+        if (conf.filters?.companyId) {
             options.where ??= {};
-            options.where.companyId = await conf.filter.companyId(req);
+            options.where.companyId = await conf.filters.companyId(req);
         }
 
         options.includeCompany = true;

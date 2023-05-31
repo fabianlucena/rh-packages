@@ -247,4 +247,13 @@ export class ProjectService {
 
         return ProjectService.create(data);
     }
+
+    static async getForCompanyId(companyId, options) {
+        return ProjectService.getList({...options, where: {companyId}});
+    }
+
+    static async getIdForCompanyId(companyId, options) {
+        const rows = await ProjectService.getForCompanyId(companyId, {...options, attributes:['id']});
+        return rows.map(row => row.id);
+    }
 }

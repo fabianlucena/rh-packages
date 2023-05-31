@@ -24,6 +24,36 @@ import {checkParameter, checkParameterUuid} from 'rf-util';
  */
     
 export class ProjectController {
+    static async checkData(req, data) {
+        if (conf.filters?.companyId) {
+            if (!data.companyId) {
+                if (data.companyUuid)
+                    data.companyId = await conf.global.services.Company.getIdForUuid(data.companyUuid);
+                else if (data.companyName)
+                    data.companyId = await conf.global.services.Company.getIdForName(data.companyName);
+                else
+                    return;
+            }
+
+            if (!data.companyId)
+                throw new _HttpError(req.loc._f('The company does not exist or you do not have permission to access.'), 404);
+
+            const companyId = await conf.filters.companyId(req) ?? null;
+            if (data.companyId != companyId)
+                throw new _HttpError(req.loc._f('The company does not exist or you do not have permission to access.'), 403);
+        }
+
+        return true;
+    }
+
+    static async checkUuid(req, uuid) {
+        const project = await ProjectService.getForUuid(uuid, {skipNoRowsError: true});
+        if (!project)
+            throw new _HttpError(req.loc._f('The project with UUID %s does not exists.'), 404, uuid);
+
+        await ProjectController.checkData(req, {companyId: project.companyId});
+    }
+
     /**
      * @swagger
      * /api/project:
@@ -64,10 +94,13 @@ export class ProjectController {
         checkParameter(req?.body, {name: loc._f('Name'), title: loc._f('Title'), companyUuid: loc._f('Company')});
         checkParameterUuid(req?.body.companyUuid, loc._f('Company'));
         
-        if (await ProjectService.getForName(req.body.name, {skipNoRowsError: true}))
+        const data = {...req.body};
+
+        await ProjectController.checkData(req, data);
+
+        if (await ProjectService.getForName(data.name, {skipNoRowsError: true}))
             throw new ConflictError();
 
-        const data = {...req.body};
         if (!data.owner && !data.ownerId) {
             data.ownerId = req.user.id;
             if (!data.ownerId)
@@ -140,14 +173,18 @@ export class ProjectController {
         let options = {view: true, limit: 10, offset: 0, includeCompany: true};
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
-        if (conf.filter?.companyId) {
+        if (conf.filters?.companyId) {
             options.where ??= {};
-            options.where.companyId = await conf.filter.companyId(req) ?? null;
+            options.where.companyId = await conf.filters.companyId(req) ?? null;
         }
 
         const result = await ProjectService.getListAndCount(options);
 
-        result.rows = result.rows.map(row => row.toJSON());
+        result.rows = result.rows.map(row => {
+            row = row.toJSON();
+            row.companyUuid = row.Company.uuid;
+            return row;
+        });
 
         res.status(200).send(result);
     }
@@ -228,7 +265,7 @@ export class ProjectController {
                     placeholder: await loc._('Company'),
                     required: true,
                     loadOptionsFrom: {
-                        service: 'company',
+                        service: 'project/company',
                         value: 'uuid',
                         text: 'title',
                         title: 'description',
@@ -292,6 +329,8 @@ export class ProjectController {
      */
     static async delete(req, res) {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
+        await ProjectController.checkUuid(req, uuid);
+
         const rowsDeleted = await ProjectService.deleteForUuid(uuid);
         if (!rowsDeleted)
             throw new _HttpError(req.loc._f('Project with UUID %s does not exists.'), 403, uuid);
@@ -340,6 +379,8 @@ export class ProjectController {
      */
     static async enablePost(req, res) {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
+        await ProjectController.checkUuid(req, uuid);
+
         const rowsUpdated = await ProjectService.enableForUuid(uuid);
         if (!rowsUpdated)
             throw new _HttpError(req.loc._f('Project with UUID %s does not exists.'), 403, uuid);
@@ -388,6 +429,8 @@ export class ProjectController {
      */
     static async disablePost(req, res) {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
+        await ProjectController.checkUuid(req, uuid);
+
         const rowsUpdated = await ProjectService.disableForUuid(uuid);
         if (!rowsUpdated)
             throw new _HttpError(req.loc._f('Project with UUID %s does not exists.'), 403, uuid);
@@ -434,10 +477,92 @@ export class ProjectController {
      */
     static async patch(req, res) {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
+        await ProjectController.checkUuid(req, uuid);
+
         const rowsUpdated = await ProjectService.updateForUuid(req.body, uuid);
         if (!rowsUpdated)
             throw new _HttpError(req.loc._f('Project with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
+    }
+
+    /**
+     * @swagger
+     * /api/project/company:
+     *  get:
+     *      tags:
+     *          - Project
+     *      summary: Get list of companies available to select in a project
+     *      description: If the UUID or name params is provided this endpoint returns a single company otherwise returns a list of companies
+     *      security:
+     *          -   bearerAuth: []
+     *      produces:
+     *          -   application/json
+     *      parameters:
+     *          -   name: uuid
+     *              in: query
+     *              type: string
+     *              format: UUID
+     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+     *          -   name: name
+     *              in: query
+     *              type: string
+     *              example: admin
+     *          -   name: limit
+     *              in: query
+     *              type: int
+     *          -   name: offset
+     *              in: query
+     *              type: int
+     *      responses:
+     *          '200':
+     *              description: Success
+     *              schema:
+     *                  $ref: '#/definitions/Company'
+     *          '204':
+     *              description: Success no company
+     *          '400':
+     *              description: Missing parameters or parameters error
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '401':
+     *              description: Unauthorized
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '403':
+     *              description: Forbidden
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     *          '500':
+     *              description: Internal server error
+     *              schema:
+     *                  $ref: '#/definitions/Error'
+     */
+    static async getCompany(req, res) {
+        const definitions = {uuid: 'uuid', name: 'string'};
+        let options = {view: true, limit: 10, offset: 0};
+
+        options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
+        if (conf.filters?.companyId) {
+            options.where ??= {};
+            options.where.id = await conf.filters.companyId(req) ?? null;
+        }
+
+        const result = await conf.global.services.Company.getListAndCount(options);
+
+        const loc = req.loc;
+        result.rows = result.rows.map(row => {
+            row = row.toJSON();
+
+            if (row.isTranslatable) {
+                row.title = loc._(row.title);
+                row.description = loc._(row.description);
+                delete row.isTranslatable;
+            }
+
+            return row;
+        });
+
+        res.status(200).send(result);
     }
 }

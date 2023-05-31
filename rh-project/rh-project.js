@@ -10,8 +10,8 @@ conf.configure = configure;
 conf.afterConfig = afterConfig;
 
 async function configure(global, options) {
-    if (options?.filter)
-        conf.filter = options.filter;
+    if (options?.filters)
+        conf.filters = options.filters;
 }
 
 async function afterConfig(global) {

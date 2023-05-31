@@ -3,6 +3,7 @@ import {methodNotAllowed, corsSimplePreflight, asyncHandler} from 'http-util';
 
 export default (app, checkPermission) => {
     app.options('/project', corsSimplePreflight('GET,HEAD,POST,PATCH,DELETE'));
+    app.options('/project/company', corsSimplePreflight('GET,HEAD'));
     app.options('/project/enable', corsSimplePreflight('POST'));
     app.options('/project/enable/:uuid', corsSimplePreflight('POST'));
     app.options('/project/disable', corsSimplePreflight('POST'));
@@ -11,6 +12,7 @@ export default (app, checkPermission) => {
 
     app.post('/project', checkPermission('project.create'), asyncHandler(ProjectController.post));
     app.get('/project', checkPermission('project.get'), asyncHandler(ProjectController.get));
+    app.get('/project/company', checkPermission('project.edit'), asyncHandler(ProjectController.getCompany));
 
     app.get('/project/:uuid', checkPermission('project.get'), asyncHandler(ProjectController.get));
 
