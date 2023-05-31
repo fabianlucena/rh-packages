@@ -16,7 +16,6 @@ export const conf = {
     modelsPath: dirname + '/models',
     servicesPath: dirname + '/services',
     apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
-    afterConfigAsync: null,
     data: {
         roles: [
             {name: 'companyManager', title: loc._f('Company manager'), isTranslatable: true, ownerModule: name},

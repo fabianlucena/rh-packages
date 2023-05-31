@@ -1,5 +1,5 @@
 import {UserService} from '../services/user.js';
-import {getOptionsFromParamsAndODataAsync, _HttpError, ConflictError} from 'http-util';
+import {getOptionsFromParamsAndOData, _HttpError, ConflictError} from 'http-util';
 import {checkParameter, checkParameterUuid} from 'rf-util';
 
 /**
@@ -128,7 +128,7 @@ export class UserController {
         const definitions = {uuid: 'uuid', username: 'string'};
         let options = {view: true, limit: 10, offset: 0};
 
-        options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
+        options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
         const result = await UserService.getListAndCount(options);
 
         res.status(200).send(result);

@@ -18,7 +18,6 @@ export const conf = {
     modelsPath: dirname + '/models',
     servicesPath: dirname + '/services',
     apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
-    afterConfigAsync: null,
     data: {
         languages: {
             'en': {title: loc._f('English')},

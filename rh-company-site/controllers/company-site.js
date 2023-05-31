@@ -2,7 +2,7 @@
 
 import {CompanySiteService} from '../services/company-site.js';
 import {conf} from '../conf.js';
-import {getOptionsFromParamsAndODataAsync, _HttpError} from 'http-util';
+import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
 import {checkParameter, checkParameterUuid, MissingParameterError} from 'rf-util';
 
 export class CompanySiteController {
@@ -92,7 +92,7 @@ export class CompanySiteController {
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {view: true, limit: 10, offset: 0};
 
-        options = await getOptionsFromParamsAndODataAsync(req?.query, definitions, options);
+        options = await getOptionsFromParamsAndOData(req?.query, definitions, options);
         if (!req.roles.includes('admin')) {
             options.where ??= {};
             options.where.siteName = req?.sites ?? null;

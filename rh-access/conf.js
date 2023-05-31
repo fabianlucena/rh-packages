@@ -18,7 +18,6 @@ export const conf = {
     modelsPath: dirname + '/models',
     servicesPath: dirname + '/services',
     apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
-    afterConfigAsync: null,
     data: {
         roles: [
             {name: 'userAccessManager', title: loc._f('User access manager'), isTranslatable: true, ownerModule: name},

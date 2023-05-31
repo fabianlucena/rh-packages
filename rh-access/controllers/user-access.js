@@ -2,7 +2,7 @@ import {RoleService} from '../services/role.js';
 import {UserSiteRoleService} from '../services/user_site_role.js';
 import {AssignableRolePerRoleService} from '../services/assignable_role_per_role.js';
 import {conf} from '../conf.js';
-import {getOptionsFromParamsAndODataAsync, _HttpError} from 'http-util';
+import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
 import {checkParameter, checkParameterUuid, checkParameterUuidList, checkNotNullOrEmpty} from 'rf-util';
 
 /**
@@ -193,7 +193,7 @@ export class UserAccessController {
         };
 
         const definitions = {uuid: 'string', username: 'string'};
-        options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
+        options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
 
         let assignableRolesId;
         if (!req.roles.includes('admin')) {
@@ -364,7 +364,7 @@ export class UserAccessController {
         const definitions = {uuid: 'uuid', title: 'string'};
         let options = {view: true, limit: 100, offset: 0, attributes: ['uuid', 'username', 'displayName'], isEnabled: true};
 
-        options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
+        options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
 
         const UserService = conf.global.services.User;
         const result = await UserService.getListAndCount(options);
@@ -376,7 +376,7 @@ export class UserAccessController {
         const definitions = {uuid: 'uuid', title: 'string'};
         let options = {view: true, limit: 100, offset: 0, attributes: ['uuid', 'name', 'title', 'description'], isEnabled: true};
 
-        options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
+        options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
 
         const SiteService = conf.global.services.Site;
         const result = await SiteService.getListAndCount(options);
@@ -395,7 +395,7 @@ export class UserAccessController {
             raw: true,
         };
 
-        options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
+        options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
 
         if (!req.roles.includes('admin'))
             options.where = {...options.where, id: await AssignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles)};

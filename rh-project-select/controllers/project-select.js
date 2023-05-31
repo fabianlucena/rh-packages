@@ -1,8 +1,8 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {getOptionsFromParamsAndODataAsync, _HttpError} from 'http-util';
-import {checkParameter, /*checkParameterUuid, */ MissingParameterError} from 'rf-util';
+import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
+import {checkParameter, MissingParameterError} from 'rf-util';
 
 export class ProjectSelectController {
     static async post(req, res) {
@@ -82,7 +82,7 @@ export class ProjectSelectController {
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {view: true, limit: 10, offset: 0};
 
-        options = await getOptionsFromParamsAndODataAsync(req?.query, definitions, options);
+        options = await getOptionsFromParamsAndOData(req?.query, definitions, options);
         const companyUuid = req.query?.companyUuid ?? req.params?.companyUuid ?? req.body?.companyUuid;
         if (!companyUuid) {
             if (!req.roles.includes('admin'))

@@ -1,6 +1,6 @@
 import {PrivilegesService} from '../services/privileges.js';
 import {loc} from 'rf-locale';
-import {errorHandlerAsync} from 'rf-util';
+import {errorHandler} from 'rf-util';
 
 /**
  * @swagger
@@ -36,7 +36,7 @@ export class PrivilegesController {
                     next();
                 })
                 .catch(err => {
-                    errorHandlerAsync(err, req.loc);
+                    errorHandler(err, req.loc);
                     next();
                 });
         };

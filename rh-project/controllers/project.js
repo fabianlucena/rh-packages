@@ -1,5 +1,6 @@
 import {ProjectService} from '../services/project.js';
-import {getOptionsFromParamsAndODataAsync, _HttpError, ConflictError} from 'http-util';
+import {conf} from '../conf.js';
+import {getOptionsFromParamsAndOData, _HttpError, ConflictError} from 'http-util';
 import {checkParameter, checkParameterUuid} from 'rf-util';
 
 /**
@@ -134,11 +135,16 @@ export class ProjectController {
             return ProjectController.getGrid(req, res);
         else if ('$form' in req.query)
             return ProjectController.getForm(req, res);
-            
+
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {view: true, limit: 10, offset: 0, includeCompany: true};
 
-        options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
+        options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
+        if (conf.filter?.companyId) {
+            options.where ??= {};
+            options.where.companyId = conf.filter.companyId();
+        }
+
         const result = await ProjectService.getListAndCount(options);
 
         result.rows = result.rows.map(row => row.toJSON());

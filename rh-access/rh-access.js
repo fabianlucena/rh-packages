@@ -16,7 +16,7 @@ import {conf as localConf} from './conf.js';
 export const conf = localConf;
 
 conf.configure = configure;
-conf.afterConfigAsync = afterConfigAsync;
+conf.afterConfig = afterConfig;
 
 function configure(global) {
     if (global.router)
@@ -58,7 +58,7 @@ async function checkPermissionForUsernameAndSiteName(privileges, ...requiredPerm
     return false;
 }
 
-async function afterConfigAsync(_, global) {
+async function afterConfig(global) {
     const data = global?.data;
     await runSequentially(data?.roles,                   async data => await RoleService.                 createIfNotExists(data));
     await runSequentially(data?.permissions,             async data => await PermissionService.           createIfNotExists(data));

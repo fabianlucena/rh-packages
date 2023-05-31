@@ -58,7 +58,7 @@ export class MissingPropertyError extends Error {
 
     _n() {return this.properties.length;}
 
-    async getMessageParamsAsync(loc) {
+    async getMessageParams(loc) {
         return [await loc._and(...this.properties), this.objectName];
     }
 }
@@ -66,7 +66,7 @@ export class MissingPropertyError extends Error {
 export const skipAssociationAttributes = {attributes: []};
 export const skipThroughAssociationAttributes = {attributes: [], through: {attributes: []}};
 
-export async function configureModelsAsync(modelsPath, sequelize) {
+export async function configureModels(modelsPath, sequelize) {
     if (!sequelize)
         return;
 
@@ -84,7 +84,7 @@ export async function configureModelsAsync(modelsPath, sequelize) {
     );
 }
 
-export async function posConfigureModelsAssociationsAsync(sequelize) {
+export async function posConfigureModelsAssociations(sequelize) {
     if (!sequelize)
         return;
         

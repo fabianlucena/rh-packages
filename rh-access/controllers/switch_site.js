@@ -3,7 +3,7 @@
 import {SwitchSiteService} from '../services/switch_site.js';
 import {SessionSiteService} from '../services/session_site.js';
 import {conf} from '../conf.js';
-import {getOptionsFromParamsAndODataAsync, httpErrorHandlerAsync} from 'http-util';
+import {getOptionsFromParamsAndOData, httpErrorHandler} from 'http-util';
 import {checkParameter, checkParameterUuid} from 'rf-util';
 
 /**
@@ -53,10 +53,10 @@ export class SwitchSiteController {
         const definitions = {uuid: 'uuid', name: 'string'},
             options = {view: true, limit: 10, offset: 0};
 
-        getOptionsFromParamsAndODataAsync(req?.query, definitions, options)
+        getOptionsFromParamsAndOData(req?.query, definitions, options)
             .then(options => SwitchSiteService.getForId(siteId, options))
             .then(element => res.status(200).send(element))
-            .catch(httpErrorHandlerAsync(req, res));
+            .catch(httpErrorHandler(req, res));
     }
 
     /** 
@@ -115,7 +115,7 @@ export class SwitchSiteController {
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {view: true, limit: 10, offset: 0};
 
-        options = getOptionsFromParamsAndODataAsync(req?.query, definitions, options);
+        options = getOptionsFromParamsAndOData(req?.query, definitions, options);
         if (!req.roles.includes('admin')) {
             options.where ??= {};
             options.where.name = req?.sites ?? null;

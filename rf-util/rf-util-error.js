@@ -73,7 +73,7 @@ export class MissingParameterError extends Error {
 
     _n() {return this.missingParameters.length;}
 
-    async getMessageParamsAsync(loc) {
+    async getMessageParams(loc) {
         return [await loc._and(...await loc._a(this.missingParameters))];
     }
 }
@@ -94,12 +94,12 @@ export class MergeTypeError extends Error {
         );
     }
 
-    async getMessageParamAsync(loc) {  // eslint-disable-line no-unused-vars
+    async getMessageParam(loc) {  // eslint-disable-line no-unused-vars
         return [this.dstType, this.srcType];
     }
 }
 
-export async function getTranslatedParamsAsync(params, all, loc) {
+export async function getTranslatedParams(params, all, loc) {
     if (all) {
         return Promise.all(await params.map(async param => {
             if (Array.isArray(param))
@@ -117,28 +117,28 @@ export async function getTranslatedParamsAsync(params, all, loc) {
     }
 }
 
-export async function getErrorMessageParamsAsync(error, loc) {
-    if (error.getMessageParamsAsync)
-        return await error.getMessageParamsAsync(loc) || [];
+export async function getErrorMessageParams(error, loc) {
+    if (error.getMessageParams)
+        return await error.getMessageParams(loc) || [];
 
     let _params = error._params;
     if (!_params) {
         let params = error.params;
         if (params)
-            return await getTranslatedParamsAsync(params, false, loc);
+            return await getTranslatedParams(params, false, loc);
 
         _params = error.constructor._params;
         if (!_params)
             return error.constructor.params || [];
     }
 
-    return await getTranslatedParamsAsync(_params, true, loc);
+    return await getTranslatedParams(_params, true, loc);
 }
 
-export async function getErrorMessageAsync(error, loc) {
+export async function getErrorMessage(error, loc) {
     let message;
-    if (error.getMessageAsync) {
-        message = await error.getMessageAsync(loc);
+    if (error.getMessage) {
+        message = await error.getMessage(loc);
         if (message)
             return message;
     }
@@ -158,10 +158,10 @@ export async function getErrorMessageAsync(error, loc) {
 
             let params;
             if (Array.isArray(error.message)) {
-                params = await getTranslatedParamsAsync(message.slice(1), false, loc);
+                params = await getTranslatedParams(message.slice(1), false, loc);
                 message = message[0];
             } else
-                params = await getErrorMessageParamsAsync(error, loc);
+                params = await getErrorMessageParams(error, loc);
 
             return util.format(message, params);
         }
@@ -175,10 +175,10 @@ export async function getErrorMessageAsync(error, loc) {
             _message = _message[0];
 
             if (_params)
-                params = await getTranslatedParamsAsync(_params, true, loc);
+                params = await getTranslatedParams(_params, true, loc);
         }
         else
-            params = await getErrorMessageParamsAsync(error, loc);
+            params = await getErrorMessageParams(error, loc);
 
         return await loc._(_message, ...params);
     }
@@ -202,20 +202,20 @@ export async function getErrorMessageAsync(error, loc) {
 
         if (_message) {
             if (Array.isArray(_message)) {
-                params = await getTranslatedParamsAsync(_message.slice(1), false, loc);
+                params = await getTranslatedParams(_message.slice(1), false, loc);
                 _message = message[0];
             } else
-                params = await getErrorMessageParamsAsync(error, loc);
+                params = await getErrorMessageParams(error, loc);
 
             return await loc._(_message, params);
         }
 
         if (message) {
             if (Array.isArray(message)) {
-                params = await getTranslatedParamsAsync(message.slice(1), false, loc);
+                params = await getTranslatedParams(message.slice(1), false, loc);
                 message = message[0];
             } else
-                params = await getErrorMessageParamsAsync(error, loc);
+                params = await getErrorMessageParams(error, loc);
 
             return util.format(message, params);
         }
@@ -229,16 +229,16 @@ export async function getErrorMessageAsync(error, loc) {
         params;
 
     if (_params && _params.length > 0)
-        params = await getTranslatedParamsAsync(_params, true, loc);
-    else if (error.getMessageParamsAsync)
-        params = await error.getMessageParamsAsync(loc) || [];
+        params = await getTranslatedParams(_params, true, loc);
+    else if (error.getMessageParams)
+        params = await error.getMessageParams(loc) || [];
     else
-        params = await getErrorMessageParamsAsync(error, loc);
+        params = await getErrorMessageParams(error, loc);
 
     return loc._n(_n, _singular, _plural, ...params);
 }
 
-export async function getErrorDataAsync(error, loc) {
+export async function getErrorData(error, loc) {
     let data = {};
     if (error instanceof Error) {
         data.name = error.constructor.name;
@@ -251,7 +251,7 @@ export async function getErrorDataAsync(error, loc) {
         if (error.statusCode)
             data.statusCode = error.statusCode;
 
-        data.message = await getErrorMessageAsync(error, loc);
+        data.message = await getErrorMessage(error, loc);
     } else
         data.message = error;
 
@@ -261,8 +261,8 @@ export async function getErrorDataAsync(error, loc) {
     return data;
 }
 
-export async function errorHandlerAsync(error, loc, showInConsole) {
-    const data = await getErrorDataAsync(error, loc);
+export async function errorHandler(error, loc, showInConsole) {
+    const data = await getErrorData(error, loc);
     const logTitle = data.name? data.name + ': ': '';
 
     if (showInConsole || showInConsole === undefined) {

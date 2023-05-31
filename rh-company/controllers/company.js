@@ -1,5 +1,5 @@
 import {CompanyService} from '../services/company.js';
-import {getOptionsFromParamsAndODataAsync, _HttpError, ConflictError} from 'http-util';
+import {getOptionsFromParamsAndOData, _HttpError, ConflictError} from 'http-util';
 import {checkParameter, checkParameterUuid} from 'rf-util';
 
 /**
@@ -136,7 +136,7 @@ export class CompanyController {
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {view: true, limit: 10, offset: 0, includeOwner: true};
 
-        options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
+        options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
         const result = await CompanyService.getListAndCount(options);
 
         result.rows = result.rows.map(row => {

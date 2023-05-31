@@ -1,3 +1,5 @@
+'use strict';
+
 import {conf} from '../conf.js';
 import {checkDataForMissingProperties, completeIncludeOptions} from 'sql-util';
 

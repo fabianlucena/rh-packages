@@ -1,4 +1,4 @@
-import {setUpError, errorHandlerAsync, deepComplete} from 'rf-util';
+import {setUpError, errorHandler, deepComplete} from 'rf-util';
 import {loc} from 'rf-locale';
 import {runSequentially} from 'rf-util';
 import * as uuid from 'uuid';
@@ -74,7 +74,7 @@ export class NoPermissionError extends Error {
 
     _n() {return this.permissions.length;}
 
-    async getMessageParamsAsync(loc) {
+    async getMessageParams(loc) {
         return [await loc._or(...this.permissions)];
     }
 }
@@ -99,7 +99,7 @@ export class MethodNotAllowedError extends Error {
     }
 
     // eslint-disable-next-line no-unused-vars
-    async getMessageParamsAsync(loc) {
+    async getMessageParams(loc) {
         return [this.method];
     }
 }
@@ -137,10 +137,10 @@ export const defaultGlobal = {
     router: null,
     sequelize: null,
     beforeConfig: [],
-    afterConfigAsync: []
+    afterConfig: []
 };
 
-export async function httpUtilConfigureAsync(global, ...modules) {
+export async function httpUtilConfigure(global, ...modules) {
     if (!global)
         global = {...defaultGlobal};
 
@@ -164,14 +164,14 @@ export async function httpUtilConfigureAsync(global, ...modules) {
             global.models = {};
     }
 
-    await beforeConfigAsync(global);
-    await configureModulesAsync(global, modules);
-    await beforeSyncAsync(global);
-    await syncDBAsync(global);
+    await beforeConfig(global);
+    await configureModules(global, modules);
+    await beforeSync(global);
+    await syncDB(global);
     if (global.postConfigureModels)
         global.postConfigureModels(global.sequelize);
-    await afterSyncAsync(global);
-    await afterConfigAsync(global);
+    await afterSync(global);
+    await afterConfig(global);
     
     configureSwagger(global);
 }
@@ -242,15 +242,15 @@ export function configureControllers(controllers, controllersPath, options) {
         });
 }
 
-export async function sendErrorAsync(req, res, error) {
-    const data = await errorHandlerAsync(error, req.loc, req.showErrorInConsole);
+export async function sendError(req, res, error) {
+    const data = await errorHandler(error, req.loc, req.showErrorInConsole);
     if (data.stack)
         delete data.stack;
     res.status(data.statusCode ?? 500).send(data);
 }
 
-export function httpErrorHandlerAsync(req, res) {
-    return async error => await sendErrorAsync(req, res, error);
+export function httpErrorHandler(req, res) {
+    return async error => await sendError(req, res, error);
 }
 
 export function asyncHandler(method) {
@@ -264,7 +264,7 @@ export function asyncHandler(method) {
     };
 }
 
-export async function getOptionsFromODataAsync(params, options) {
+export async function getOptionsFromOData(params, options) {
     if (!options)
         options = {};
 
@@ -319,7 +319,7 @@ export async function getOptionsFromODataAsync(params, options) {
     return options;
 }
 
-export async function getWhereOptionsFromParamsAsync(params, definitions, options) {
+export async function getWhereOptionsFromParams(params, definitions, options) {
     if (!options)
         options = {};
 
@@ -345,12 +345,12 @@ export async function getWhereOptionsFromParamsAsync(params, definitions, option
     return options;
 }
 
-export async function getOptionsFromParamsAndODataAsync(params, definitions, options) {
-    options = await getOptionsFromODataAsync(params, options);
-    return await getWhereOptionsFromParamsAsync(params, definitions, options);
+export async function getOptionsFromParamsAndOData(params, definitions, options) {
+    options = await getOptionsFromOData(params, options);
+    return await getWhereOptionsFromParams(params, definitions, options);
 }
 
-export async function deleteHandlerAsync(req, res, rowCount) {
+export async function deleteHandler(req, res, rowCount) {
     if (!rowCount)
         res.status(200).send({msg: await req.loc._('Nothing to delete.')});
     else if (rowCount != 1)
@@ -360,10 +360,10 @@ export async function deleteHandlerAsync(req, res, rowCount) {
 }
 
 export function getDeleteHandler(req, res) {
-    return async rowCount => deleteHandlerAsync(req, res, rowCount);
+    return async rowCount => deleteHandler(req, res, rowCount);
 }
 
-export async function execAsyncMethodListAsync(asyncMethodList, singleItemName, ...params) {
+export async function execAsyncMethodList(asyncMethodList, singleItemName, ...params) {
     let method,
         isEmpty,
         itemName;
@@ -400,42 +400,50 @@ export async function execAsyncMethodListAsync(asyncMethodList, singleItemName, 
     if (!method)
         return;
 
-    await method(asyncMethodList, ...params);
+    await method(...params);
     if (isEmpty || (singleItemName !== undefined && singleItemName !== null))
         return;
             
-    return await execAsyncMethodListAsync(asyncMethodList, null, ...params);
+    return await execAsyncMethodList(asyncMethodList, null, ...params);
 }
 
-export async function configureModuleAsync(global, theModule) {
-    if (typeof theModule === 'string')
-        theModule = (await import(theModule)).conf;
+export async function configureModule(global, module) {
+    let params = [];
+    if (Array.isArray(module)) {
+        if (module.length > 1)
+            params = module.slice(1);
 
-    if (!theModule.name)
+        module = module[0];
+    }
+
+    if (typeof module === 'string')
+        module = (await import(module)).conf;
+
+    if (!module.name)
         throw new Error('Module does not have a name.');
 
-    global.modules[theModule.name] = theModule;
-    theModule.global = global;
+    global.modules[module.name] = module;
+    module.global = global;
 
-    if (theModule.configure)
-        await theModule.configure(global);
+    if (module.configure)
+        await module.configure(global, ...params);
 
-    if (theModule.modelsPath && global.configureModelsAsync)
-        await global.configureModelsAsync(theModule.modelsPath, global.sequelize);
+    if (module.modelsPath && global.configureModels)
+        await global.configureModels(module.modelsPath, global.sequelize);
 
-    if (theModule.servicesPath)
-        await configureServices(global.services, theModule.servicesPath);
+    if (module.servicesPath)
+        await configureServices(global.services, module.servicesPath);
 
-    if (theModule.controllersPath)
-        await configureControllers(global.controllers, theModule.controllersPath);
+    if (module.controllersPath)
+        await configureControllers(global.controllers, module.controllersPath);
 
-    if (theModule.schema && global.createSchema)
-        await global.createSchema(theModule.schema);
+    if (module.schema && global.createSchema)
+        await global.createSchema(module.schema);
 
-    if (theModule.data) {
+    if (module.data) {
         const moduleData = {};
-        for (let type in theModule.data) {
-            let data = theModule.data[type];
+        for (let type in module.data) {
+            let data = module.data[type];
             if (typeof data === 'function')
                 data = await data();
 
@@ -445,40 +453,40 @@ export async function configureModuleAsync(global, theModule) {
         deepComplete(global.data, moduleData);
     }
 
-    return theModule;
+    return module;
 }
 
-export async function installModuleAsync(global, theModule) {
-    theModule.global = global;
-    if (theModule.routesPath)
-        await configureRouter(theModule.routesPath, global.router, global.checkRoutePermission, theModule.routesPathOptions);
+export async function installModule(global, module) {
+    module.global = global;
+    if (module.routesPath)
+        await configureRouter(module.routesPath, global.router, global.checkRoutePermission, module.routesPathOptions);
 
-    if (theModule.init)
-        await runSequentially(theModule.init, async method => await method());
+    if (module.init)
+        await runSequentially(module.init, async method => await method());
 
-    if (theModule.afterConfigAsync) {
-        const afterConfigAsync = Array.isArray(theModule.afterConfigAsync)?
-            theModule.afterConfigAsync:
-            [theModule.afterConfigAsync];
+    if (module.afterConfig) {
+        const afterConfig = Array.isArray(module.afterConfig)?
+            module.afterConfig:
+            [module.afterConfig];
         
-        global.afterConfigAsync.push(...afterConfigAsync);
+        global.afterConfig.push(...afterConfig);
     }
 }
 
-export async function configureModulesAsync(global, modules) {
+export async function configureModules(global, modules) {
     global.modules ||= {};
     global.services ||= {};
     global.controllers ||= {};
     global.data ||= {};
 
-    for (let i = 0, e = modules.length; i < e; i++)
-        modules[i] = await configureModuleAsync(global, modules[i]);
+    for (const i in modules)
+        modules[i] = await configureModule(global, modules[i]);
 
-    if (global.posConfigureModelsAssociationsAsync)
-        await global.posConfigureModelsAssociationsAsync(global.sequelize);
+    if (global.posConfigureModelsAssociations)
+        await global.posConfigureModelsAssociations(global.sequelize);
     
-    for (let i = 0, e = modules.length; i < e; i++)
-        await installModuleAsync(global, modules[i]);
+    for (const module of modules)
+        await installModule(global, module);
 }
 
 export function getPropertyFromItems(propertyName, list) {
@@ -504,35 +512,35 @@ export function getPropertyFromItems(propertyName, list) {
     }
 }
 
-export async function beforeConfigAsync(global) {
-    await execAsyncMethodListAsync(global.beforeConfigAsync);
+export async function beforeConfig(global) {
+    await execAsyncMethodList(global.beforeConfig);
 }
 
-export async function afterConfigAsync(global) {
-    await execAsyncMethodListAsync(global.afterConfigAsync, null, global);
+export async function afterConfig(global) {
+    await execAsyncMethodList(global.afterConfig, null, global);
 }
 
-export async function beforeSyncAsync(global) {
+export async function beforeSync(global) {
     if (global.sequelize) {
-        const list = getPropertyFromItems('beforeSyncAsync', global.modules);
-        await execAsyncMethodListAsync(list);
+        const list = getPropertyFromItems('beforeSync', global.modules);
+        await execAsyncMethodList(list);
     }
 }
 
-export async function afterSyncAsync(global) {
+export async function afterSync(global) {
     if (global.sequelize) {
-        const list = getPropertyFromItems('afterSyncAsync', global.modules);
-        await execAsyncMethodListAsync(list);
+        const list = getPropertyFromItems('afterSync', global.modules);
+        await execAsyncMethodList(list);
     }
 }
 
-export async function syncDBAsync(global) {
+export async function syncDB(global) {
     if (!global.sequelize)
         return;
 
     await global.sequelize.sync(global?.config?.db?.sync);
     const asyncMethodList = getPropertyFromItems('check', global.sequelize.models);
-    await execAsyncMethodListAsync(asyncMethodList);
+    await execAsyncMethodList(asyncMethodList);
 }
 
 export function configureSwagger(global) {

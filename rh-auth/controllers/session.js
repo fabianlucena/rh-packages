@@ -1,6 +1,6 @@
 import {SessionService, SessionClosedError, NoSessionForAuthTokenError} from '../services/session.js';
-import {getOptionsFromParamsAndODataAsync, deleteHandlerAsync} from 'http-util';
-import {getErrorMessageAsync, checkParameter, checkParameterUuid} from 'rf-util';
+import {getOptionsFromParamsAndOData, deleteHandler} from 'http-util';
+import {getErrorMessage, checkParameter, checkParameterUuid} from 'rf-util';
 
 export class SessionController {
     static configureMiddleware() {
@@ -31,7 +31,7 @@ export class SessionController {
                     else {
                         let msg;
                         if (err instanceof Error)
-                            msg = await getErrorMessageAsync(err, req.loc);
+                            msg = await getErrorMessage(err, req.loc);
                         else
                             msg = err;
 
@@ -125,7 +125,7 @@ export class SessionController {
         const definitions = {uuid: 'uuid', open: 'date', close: 'date', authToken: 'string', index: 'int'};
         let options = {view: true, limit: 10, offset: 0};
 
-        options = await getOptionsFromParamsAndODataAsync({...req.query, ...req.params}, definitions, options);
+        options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
         try {
             await req.checkPermission('session.get');
         } catch(_) {
@@ -219,6 +219,6 @@ export class SessionController {
     static async delete(req, res) {
         const uuid = checkParameterUuid(req?.query?.uuid, req.loc._f('UUID'));
         const rowCount = await SessionService.deleteForUuid(uuid);
-        await deleteHandlerAsync(req, res, rowCount);
+        await deleteHandler(req, res, rowCount);
     }
 }
