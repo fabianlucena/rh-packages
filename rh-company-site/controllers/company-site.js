@@ -15,7 +15,7 @@ export class CompanySiteController {
         if (!companyUuid && !siteUuid)
             throw new MissingParameterError(loc._f('Company UUID'), loc._f('Site UUID'));
 
-        const options = {attributes:['siteId'], view: true, includeCompany: true, where: {}};
+        const options = {attributes:['companyId', 'siteId'], view: true, includeCompany: true, where: {}};
         if (companyUuid) {
             await checkParameterUuid(companyUuid, loc._f('Company UUID'));
             options.where.companyUuid = companyUuid;
@@ -66,6 +66,9 @@ export class CompanySiteController {
         const SessionDataService = conf.global.services.SessionData;
         if (SessionDataService) {
             const sessionData = await SessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
+
+            sessionData.companyId = companySite.companyId;
+
             sessionData.api ??= {};
             sessionData.api.data ??= {};
             sessionData.api.data.companyUuid = companySite.Company.uuid;

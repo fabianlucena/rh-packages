@@ -12,25 +12,24 @@ export class ProjectSelectController {
         if (!projectUuid)
             throw new MissingParameterError(loc._f('Project UUID'));
 
-        /*const options = {attributes:['siteId'], view: true, includeCompany: true, where: {}};
-        if (companyUuid) {
-            await checkParameterUuid(companyUuid, loc._f('Company UUID'));
-            options.where.companyUuid = companyUuid;
-        }
-
-        if (siteUuid) {
-            await checkParameterUuid(companyUuid, loc._f('Site UUID'));
-            options.where.siteUuid = siteUuid;
-        }
-
-        if (!req.roles.includes('admin'))
-            options.where.siteName = req?.sites ?? null;*/
-
-        let project = await conf.global.services.Project.getForUuid(projectUuid, {skipNoRowsError: true});
+        const options = {skipNoRowsError: true};
+        let project = await conf.global.services.Project.getForUuid(projectUuid, options);
         if (!project)
             throw new _HttpError(loc._f('The selected project does not exist or you do not have permission.'), 400);
 
         project = project.toJSON();
+
+        const SessionDataService = conf.global.services.SessionData;
+        if (!SessionDataService)
+            throw new _HttpError(loc._f('You do not have permission to select this project.'), 400);
+
+        const sessionId = req.session.id;
+
+        if (!req.roles.includes('admin')) {
+            const sessionData = await SessionDataService.getDataIfExistsForSessionId(sessionId);
+            if (sessionData?.companyId != project.companyId)
+                throw new _HttpError(loc._f('You do not have permission to select this project.'), 400);
+        }
 
         if (project.isTranslatable) {
             project.title = loc._(project.title);
@@ -55,23 +54,22 @@ export class ProjectSelectController {
             menu: [menuItem],
         };
 
-        const sessionId = req.session.id;
-        const SessionDataService = conf.global.services.SessionData;
-        if (SessionDataService) {
-            const sessionData = await SessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
-            sessionData.api ??= {};
-            sessionData.api.data ??= {};
-            sessionData.api.data.projectUuid = project.uuid;
+        const sessionData = await SessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
 
-            sessionData.menu ??= [];
-            sessionData.menu = sessionData.menu.filter(item => item.name != 'project-select');
-            sessionData.menu.push(menuItem);
+        sessionData.projectId = project.id;
+        
+        sessionData.api ??= {};
+        sessionData.api.data ??= {};
+        sessionData.api.data.projectUuid = project.uuid;
 
-            console.log(sessionData.menu);
+        sessionData.menu ??= [];
+        sessionData.menu = sessionData.menu.filter(item => item.name != 'project-select');
+        sessionData.menu.push(menuItem);
 
-            await SessionDataService?.setData(sessionId, sessionData);
-        }
+        console.log(sessionData.menu);
 
+        await SessionDataService?.setData(sessionId, sessionData);
+        
         conf.global.eventBus?.$emit('sessionUpdated', sessionId);
 
         res.status(200).send({length: 1, rows: project, ...data});
