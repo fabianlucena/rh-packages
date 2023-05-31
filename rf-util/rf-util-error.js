@@ -1,7 +1,7 @@
 'use strict';
 
 import {loc} from 'rf-locale';
-import * as util from 'util';
+import {format} from './rf-util-string.js';
 
 export function setUpError(error, options) {
     let arranged = {};
@@ -163,7 +163,7 @@ export async function getErrorMessage(error, loc) {
             } else
                 params = await getErrorMessageParams(error, loc);
 
-            return util.format(message, params);
+            return format(message, ...params);
         }
     }
 
@@ -217,7 +217,7 @@ export async function getErrorMessage(error, loc) {
             } else
                 params = await getErrorMessageParams(error, loc);
 
-            return util.format(message, params);
+            return format(message, params);
         }
 
         return;
@@ -238,14 +238,14 @@ export async function getErrorMessage(error, loc) {
     return loc._n(_n, _singular, _plural, ...params);
 }
 
-export async function getErrorData(error, loc) {
+export async function getErrorData(error, loc, options) {
     let data = {};
     if (error instanceof Error) {
         data.name = error.constructor.name;
         if (data.name[0] == '_')
             data.name = data.name.substring(1);
 
-        const visibleProperties = error.constructor?.VisibleProperties ?? ['message', 'length', 'fileName', 'lineNumber', 'columnNumber', 'stack'];
+        const visibleProperties = options?.properties ?? error.constructor?.VisibleProperties ?? ['message', 'length', 'fileName', 'lineNumber', 'columnNumber', 'stack'];
         visibleProperties.forEach(n => data[n] = error[n]);
 
         if (error.statusCode)
@@ -254,6 +254,9 @@ export async function getErrorData(error, loc) {
         data.message = await getErrorMessage(error, loc);
     } else
         data.message = error;
+
+    if (data.stack && typeof data.stack === 'string')
+        data.stack = data.stack.split('\n');
 
     if (!data.error)
         data.error = data.name || data.message || 'Error';

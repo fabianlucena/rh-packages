@@ -32,3 +32,14 @@ export function stripQuotes(text, quotes) {
 
     return text.substring(1, text.length - 1);
 }
+
+export function format(text, ...params) {
+    let i = 0;
+    let end = params?.length ?? 0;
+    while (text.match('%s') && i < end) {
+        text = text.replace('%s', params[i]);
+        i++;
+    }
+
+    return text;
+}
