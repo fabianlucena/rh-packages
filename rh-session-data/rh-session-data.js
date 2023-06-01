@@ -20,7 +20,9 @@ async function login(session) {
     if (!oldData)
         return;
 
-    return SessionDataService.addData(session.id, oldData);
+    await SessionDataService.addData(session.id, oldData);
+
+    return SessionDataService.getDataIfExistsForSessionId(session.id);
 }
 
 async function menuGet(sessionId) {

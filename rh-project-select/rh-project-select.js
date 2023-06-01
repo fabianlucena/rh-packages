@@ -11,11 +11,13 @@ async function configure(global, options) {
         conf.filters = options.filters;
 }
 
-export async function projectId(req) {
-    if (!conf.filters.companyId)
+export async function getAvailableProjectsId(req) {
+    if (!conf.filters.getCurrentCompanyId)
         return null;
 
-    const companyId = await conf.filters.companyId(req);
+    const companyId = await conf.filters.getCurrentCompanyId(req);
+    if (!companyId)
+        return;
 
     return conf.global.services.Project.getIdForCompanyId(companyId, {skipNoRowsError: true});
 }

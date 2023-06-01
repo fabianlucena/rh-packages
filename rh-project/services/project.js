@@ -143,9 +143,9 @@ export class ProjectService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Project}}
      */
-    static getForUuid(uuid, options) {
-        return ProjectService.getList(deepComplete(options, {where: {uuid}, limit: 2}))
-            .then(rowList => getSingle(rowList, complete(options, {params: ['project', ['UUID = %s', uuid], 'Project']})));
+    static async getForUuid(uuid, options) {
+        const rows = await ProjectService.getList(deepComplete(options, {where: {uuid}, limit: 2}));
+        return getSingle(rows, {params: ['project', ['UUID = %s', uuid], 'Project'], ...options});
     }
 
     /**
@@ -155,7 +155,7 @@ export class ProjectService {
      * @returns {ID}
      */
     static async getIdForUuid(uuid, options) {
-        return (await ProjectService.getForUuid(uuid, deepComplete(options, {attributes: ['id']}))).id;
+        return (await ProjectService.getForUuid(uuid, {...options, attributes: [...options?.attributes ?? [], 'id']})).id;
     }
 
     /**

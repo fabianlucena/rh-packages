@@ -82,10 +82,10 @@ async function login(session) {
     if (!oldSite?.length) 
         return;
 
-    return SessionSiteService.createOrUpdate({sessionId: session.id, siteId: oldSite[0].siteId});
+    await SessionSiteService.createOrUpdate({sessionId: session.id, siteId: oldSite[0].siteId});
 }
 
 async function sessionUpdated(sessionId) {
-    return PrivilegesService.deleteFromCacheForSessionId(sessionId);
+    await PrivilegesService.deleteFromCacheForSessionId(sessionId);
 }
 

@@ -25,7 +25,7 @@ import {checkParameter, checkParameterUuid} from 'rf-util';
     
 export class CompanyController {
     static async checkData(req, data) {
-        if (conf.filters?.companyId) {
+        if (conf.filters?.getCurrentCompanyId) {
             if (!data.id) {
                 if (data.uuid)
                     data.id = await conf.global.services.Company.getIdForUuid(data.uuid);
@@ -38,7 +38,7 @@ export class CompanyController {
             if (!data.id)
                 throw new _HttpError(req.loc._f('The company does not exist or you do not have permission to access.'), 404);
 
-            const companyId = await conf.filters.companyId(req) ?? null;
+            const companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
             if (data.id != companyId)
                 throw new _HttpError(req.loc._f('The company does not exist or you do not have permission to access.'), 403);
         }
@@ -169,9 +169,9 @@ export class CompanyController {
         let options = {view: true, limit: 10, offset: 0, includeOwner: true};
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
-        if (conf.filters?.companyId) {
+        if (conf.filters?.getCurrentCompanyId) {
             options.where ??= {};
-            options.where.id = await conf.filters.companyId(req) ?? null;
+            options.where.id = await conf.filters.getCurrentCompanyId(req) ?? null;
         }
 
         const result = await CompanyService.getListAndCount(options);

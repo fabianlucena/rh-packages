@@ -90,9 +90,9 @@ export class ProjectSelectController {
             options.where.companyUuid = companyUuid;
         }
         
-        if (conf.filters?.companyId) {
+        if (conf.filters?.getCurrentCompanyId) {
             options.where ??= {};
-            options.where.companyId = await conf.filters.companyId(req);
+            options.where.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
         }
 
         options.includeCompany = true;
@@ -120,7 +120,7 @@ export class ProjectSelectController {
             load: {
                 service: 'project-select',
                 method: 'get',
-                queryParam: {
+                queryParams: {
                     companyUuid: 'companyUuid',
                 },
             },

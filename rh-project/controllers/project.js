@@ -38,7 +38,7 @@ export class ProjectController {
             if (!data.companyId)
                 throw new _HttpError(req.loc._f('The company does not exist or you do not have permission to access.'), 404);
 
-            const companyId = await conf.filters.companyId(req) ?? null;
+            const companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
             if (data.companyId != companyId)
                 throw new _HttpError(req.loc._f('The company does not exist or you do not have permission to access.'), 403);
         }
@@ -173,9 +173,9 @@ export class ProjectController {
         let options = {view: true, limit: 10, offset: 0, includeCompany: true};
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
-        if (conf.filters?.companyId) {
+        if (conf.filters?.getCurrentCompanyId) {
             options.where ??= {};
-            options.where.companyId = await conf.filters.companyId(req) ?? null;
+            options.where.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
         }
 
         const result = await ProjectService.getListAndCount(options);
@@ -543,9 +543,9 @@ export class ProjectController {
         let options = {view: true, limit: 10, offset: 0};
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
-        if (conf.filters?.companyId) {
+        if (conf.filters?.getCurrentCompanyId) {
             options.where ??= {};
-            options.where.id = await conf.filters.companyId(req) ?? null;
+            options.where.id = await conf.filters.getCurrentCompanyId(req) ?? null;
         }
 
         const result = await conf.global.services.Company.getListAndCount(options);

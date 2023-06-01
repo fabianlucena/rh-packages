@@ -847,7 +847,7 @@ export const rt = {
     /**
      * Perform a HTTP not allowed method testa on an end point expect errors. This method uses the @see rt.testEndPoint with get: {noParametersError: true} options.
      * @param {*} options options for the method @see rt.testEndPoint method.
-     * @param  {...srting} notAllowedMethods method names to check not alloed.
+     * @param  {...srting} notAllowedMethods method names to check not allwoed.
      * @returns 
      */
     testNotAllowedMethod(options, ...notAllowedMethods) {

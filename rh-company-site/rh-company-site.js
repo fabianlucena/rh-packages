@@ -13,6 +13,9 @@ async function afterConfig(global) {
     await runSequentially(data?.companiesSites, async data => await CompanySiteService.createIfNotExists(data));
 }
 
-export function companyId(req) {
+export function getCurrentCompanyId(req) {
+    if (!req?.site?.id)
+        return;
+        
     return CompanySiteService.getCompanyIdForSiteId(req.site.id, {skipNoRowsError: true});
 }

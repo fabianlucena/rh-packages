@@ -3,7 +3,7 @@
 import {LoginService} from '../services/login.js';
 import {conf} from '../conf.js';
 import {_HttpError} from 'http-util';
-import {checkParameter} from 'rf-util';
+import {checkParameter, deepMerge} from 'rf-util';
 
 export class LoginController {
     /**
@@ -122,19 +122,13 @@ export class LoginController {
             else
                 session = await LoginService.forUsernamePasswordDeviceTokenAndSessionIndex(req.body.username, req.body.password, req.body.deviceToken, req.body.sessionIndex ?? req.body.index, req.loc);
 
-            conf.global.eventBus?.$emit('login', session);
-
             const now = new Date();
             const expires30  = new Date();
             const expires365 = new Date();
             expires30. setDate(now.getDate() + 30);
             expires365.setDate(now.getDate() + 365);
-
-            req.session = session;
-            res.header('Authorization', 'Bearer ' + session.authToken);
-            res.cookie('deviceToken',  session.deviceToken,  {expire: expires365, path: '/'});
-            res.cookie('autoLoginToken', session.autoLoginToken, {expire: expires30});
-            res.status(201).send({
+            
+            let result = {
                 index: session.index,
                 authToken: session.authToken,
                 setCookies: {
@@ -150,7 +144,17 @@ export class LoginController {
                         sameSite: 'strict',
                     },
                 },
-            });
+            };
+
+            const dataList = await Promise.all(await conf.global.eventBus?.$emit('login', session));
+            
+            dataList.forEach(data => result = deepMerge(result, data));
+
+            req.session = session;
+            res.header('Authorization', 'Bearer ' + session.authToken);
+            res.cookie('deviceToken',  session.deviceToken,  {expire: expires365, path: '/'});
+            res.cookie('autoLoginToken', session.autoLoginToken, {expire: expires30});
+            res.status(201).send(result);
         } catch (err) {
             throw new _HttpError(req.loc._f('Invalid login'), 403);
         }
