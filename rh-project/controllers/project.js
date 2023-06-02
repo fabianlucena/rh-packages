@@ -39,12 +39,12 @@ export class ProjectController {
             }
         
             if (!data.companyId)
-                throw new _HttpError(req.loc._f('The company does not exist or you do not have permission to access.'), 404);
+                throw new _HttpError(req.loc._f('The company does not exist or you do not have permission to access it.'), 404);
         }
 
         const companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
         if (data.companyId != companyId)
-            throw new _HttpError(req.loc._f('The company does not exist or you do not have permission to access.'), 403);
+            throw new _HttpError(req.loc._f('The company does not exist or you do not have permission to access it.'), 403);
 
         return data.companyId;
     }

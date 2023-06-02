@@ -11,17 +11,17 @@
     },
     "System": {
         "language": "es",
-        "ref": "..\\rh-site\\conf.js [24,53]",
+        "ref": "..\\rh-site\\conf.js [23,53]",
         "translation": "Sistema"
     },
     "Get sites": {
         "language": "es",
-        "ref": "..\\rh-site\\conf.js [32,69]",
+        "ref": "..\\rh-site\\conf.js [31,69]",
         "translation": "Obtener sitios"
     },
     "Sites manager": {
         "language": "es",
-        "ref": "..\\rh-site\\conf.js [28,66]",
+        "ref": "..\\rh-site\\conf.js [27,66]",
         "translation": "Administrador de sitios"
     }
 }

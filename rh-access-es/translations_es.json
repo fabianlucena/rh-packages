@@ -16,22 +16,22 @@
     },
     "Privileges": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [47,69]",
+        "ref": "..\\rh-access\\conf.js [46,69]",
         "translation": "Privilegios"
     },
     "Owner": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [28,52]",
+        "ref": "..\\rh-access\\conf.js [27,52]",
         "translation": "Propietario"
     },
     "Editor": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [29,53]",
+        "ref": "..\\rh-access\\conf.js [28,53]",
         "translation": "Editor"
     },
     "Viewer": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [30,53]",
+        "ref": "..\\rh-access\\conf.js [29,53]",
         "translation": "Visor"
     },
     "Roles": {
@@ -46,12 +46,12 @@
     },
     "User access manager": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [24,77]",
+        "ref": "..\\rh-access\\conf.js [23,77]",
         "translation": "Administrador de accesos de usuarios"
     },
     "Get users accesses": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [43,77]",
+        "ref": "..\\rh-access\\conf.js [42,77]",
         "translation": "Obtener accesos de usuarios"
     },
     "Users accesses": {
@@ -61,17 +61,17 @@
     },
     "Edit users accesses": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [44,78]",
+        "ref": "..\\rh-access\\conf.js [43,78]",
         "translation": "Modificar accesos de usuarios"
     },
     "Delete users accesses": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [45,80]",
+        "ref": "..\\rh-access\\conf.js [44,80]",
         "translation": "Eliminar accesos de usuarios"
     },
     "Add users accesses": {
         "language": "es",
-        "ref": "..\\rh-access\\conf.js [42,77]",
+        "ref": "..\\rh-access\\conf.js [41,77]",
         "translation": "Agregar accesos de usuarios"
     },
     "User access": {

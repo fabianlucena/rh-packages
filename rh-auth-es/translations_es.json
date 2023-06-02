@@ -11,22 +11,22 @@
     },
     "HTTP error 401 unauthorized, no authorization header.": {
         "language": "es",
-        "ref": "..\\rh-auth\\rh-auth.js [30,108]",
+        "ref": "..\\rh-auth\\rh-auth.js [34,108]",
         "translation": "Error HTTP 401 no autorizado, no hay cabecera de autorización."
     },
     "HTTP error 401 unauthorized, authorization schema is no Bearer.": {
         "language": "es",
-        "ref": "..\\rh-auth\\rh-auth.js [33,118]",
+        "ref": "..\\rh-auth\\rh-auth.js [37,118]",
         "translation": "Error HTTP 401 no autorizado, el esquema de autorización no es Bearer."
     },
     "There is no id for session": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\session.js [189,66]",
+        "ref": "..\\rh-auth\\services\\session.js [200,66]",
         "translation": "No hay id para la sesión."
     },
     "Row for UUID %s does not exist": {
         "language": "es",
-        "ref": "..\\rh-auth\\services\\session.js [210,124]",
+        "ref": "..\\rh-auth\\services\\session.js [221,124]",
         "translation": "La fila UUID %s no existe."
     },
     "User \"%s\" does not have local identity": {
@@ -76,27 +76,27 @@
     },
     "No session": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\logout.js [33,78]",
+        "ref": "..\\rh-auth\\controllers\\logout.js [34,78]",
         "translation": "No hay sesión"
     },
     "Login": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\login.js [57,40]",
+        "ref": "..\\rh-auth\\controllers\\login.js [58,40]",
         "translation": "Ingresar"
     },
     "Username": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\login.js [115,68]",
+        "ref": "..\\rh-auth\\controllers\\login.js [116,68]",
         "translation": "Nombre de usuario"
     },
     "Password": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\login.js [115,98]",
+        "ref": "..\\rh-auth\\controllers\\login.js [116,98]",
         "translation": "Contraseña"
     },
     "Invalid login": {
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\login.js [152,61]",
+        "ref": "..\\rh-auth\\controllers\\login.js [159,61]",
         "translation": "Ingreso inválido"
     },
     "System administrator": {

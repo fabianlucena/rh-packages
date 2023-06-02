@@ -1,12 +1,12 @@
 {
     "Title": {
         "language": "es",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [103,48]",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [132,48]",
         "translation": "Título"
     },
     "Name": {
         "language": "es",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [108,47]",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [137,47]",
         "translation": "Nombre"
     },
     "Spanish": {
@@ -21,13 +21,8 @@
     },
     "Description": {
         "language": "es",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [113,54]",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [142,54]",
         "translation": "Descripción"
-    },
-    "Switch company": {
-        "language": "es",
-        "ref": "..\\rh-company-site\\conf.js [21,74]",
-        "translation": "Cambiar de empresa"
     },
     "Company UUID": {
         "language": "es",
@@ -46,12 +41,17 @@
     },
     "User": {
         "language": "es",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [93,39]",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [122,39]",
         "translation": "Usuario"
     },
     "Company: %s": {
         "language": "es",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [56,132]",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [54,73]",
         "translation": "Empresa: %s"
+    },
+    "Select company": {
+        "language": "es",
+        "ref": "..\\rh-company-site\\conf.js [21,74]",
+        "translation": "Seleccionar empresa"
     }
 }

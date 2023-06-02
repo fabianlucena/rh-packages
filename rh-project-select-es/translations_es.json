@@ -1,12 +1,12 @@
 {
     "Title": {
         "language": "es",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [116,48]",
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [132,48]",
         "translation": "Título"
     },
     "Name": {
         "language": "es",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [121,47]",
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [137,47]",
         "translation": "Nombre"
     },
     "Spanish": {
@@ -21,37 +21,37 @@
     },
     "Description": {
         "language": "es",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [126,54]",
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [142,54]",
         "translation": "Descripción"
-    },
-    "Company UUID": {
-        "language": "es",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [19,73]",
-        "translation": "UUID de empresa"
-    },
-    "Site UUID": {
-        "language": "es",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [24,70]",
-        "translation": "UUID de sitio"
-    },
-    "The selected object does not exist or you do not have permission.": {
-        "language": "es",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [33,109]",
-        "translation": "El objeto seleccionado no existe o no tiene permiso"
     },
     "User": {
         "language": "es",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [106,39]",
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [119,39]",
         "translation": "Usuario"
-    },
-    "Company: %s": {
-        "language": "es",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [52,81]",
-        "translation": "Empresa: %s"
     },
     "Select project": {
         "language": "es",
         "ref": "..\\rh-project-select\\conf.js [20,76]",
         "translation": "Seleccionar proyecto"
+    },
+    "Project UUID": {
+        "language": "es",
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [13,67]",
+        "translation": "UUID de proyecto"
+    },
+    "You do not have permission to select this project.": {
+        "language": "es",
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [31,98]",
+        "translation": "Usted no tiene permiso para seleccionar este proyecto."
+    },
+    "Project: %s": {
+        "language": "es",
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [46,61]",
+        "translation": "Proyecto %s"
+    },
+    "The selected project does not exist or you do not have permission to access it.": {
+        "language": "es",
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [18,123]",
+        "translation": "El proyecto seleccionado no existe o ustd no tiene permiso para accederlo."
     }
 }

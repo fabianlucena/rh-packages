@@ -1,47 +1,47 @@
 {
     "Company manager": {
         "language": "es",
-        "ref": "..\\rh-company\\conf.js [22,70]",
+        "ref": "..\\rh-company\\conf.js [21,70]",
         "translation": "Administrador de empresas"
     },
     "Get companies": {
         "language": "es",
-        "ref": "..\\rh-company\\conf.js [30,68]",
+        "ref": "..\\rh-company\\conf.js [29,68]",
         "translation": "Obtener empresas"
     },
     "Companies": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [196,44]",
+        "ref": "..\\rh-company\\controllers\\company.js [233,44]",
         "translation": "Empresas"
     },
     "Create companies": {
         "language": "es",
-        "ref": "..\\rh-company\\conf.js [31,71]",
+        "ref": "..\\rh-company\\conf.js [30,71]",
         "translation": "Crear empresas"
     },
     "Edit companies": {
         "language": "es",
-        "ref": "..\\rh-company\\conf.js [32,69]",
+        "ref": "..\\rh-company\\conf.js [31,69]",
         "translation": "Modificar empresas"
     },
     "Delete companies": {
         "language": "es",
-        "ref": "..\\rh-company\\conf.js [33,71]",
+        "ref": "..\\rh-company\\conf.js [32,71]",
         "translation": "Eliminar empresas"
     },
     "Title": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [203,54]",
+        "ref": "..\\rh-company\\controllers\\company.js [240,54]",
         "translation": "Título"
     },
     "Name": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [209,53]",
+        "ref": "..\\rh-company\\controllers\\company.js [246,53]",
         "translation": "Nombre"
     },
     "Enabled": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [219,56]",
+        "ref": "..\\rh-company\\controllers\\company.js [256,56]",
         "translation": "Habilitado"
     },
     "Spanish": {
@@ -56,27 +56,27 @@
     },
     "The company data does not have a owner.": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [71,91]",
+        "ref": "..\\rh-company\\controllers\\company.js [102,91]",
         "translation": "La empresa no tiene un propietario."
     },
     "Owner": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [185,48]",
+        "ref": "..\\rh-company\\controllers\\company.js [222,48]",
         "translation": "Propietario"
     },
     "Description": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [226,60]",
+        "ref": "..\\rh-company\\controllers\\company.js [263,60]",
         "translation": "Descripción"
     },
     "UUID": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [414,120]",
+        "ref": "..\\rh-company\\controllers\\company.js [457,120]",
         "translation": "UUID"
     },
     "Company with UUID %s does not exists.": {
         "language": "es",
-        "ref": "..\\rh-company\\controllers\\company.js [417,85]",
+        "ref": "..\\rh-company\\controllers\\company.js [462,85]",
         "translation": "La empresa con el UUID %s no existe."
     },
     "Company \"%s\" does not exist": {
@@ -88,5 +88,15 @@
         "language": "es",
         "ref": "..\\rh-company\\services\\company.js [146,67]",
         "translation": "La empresa \"%s\" no está habilitada"
+    },
+    "The company with UUID %s does not exists.": {
+        "language": "es",
+        "ref": "..\\rh-company\\controllers\\company.js [52,89]",
+        "translation": "La empresa con el UUID %s no existe."
+    },
+    "The company does not exist or you do not have permission to access it.": {
+        "language": "es",
+        "ref": "..\\rh-company\\controllers\\company.js [43,122]",
+        "translation": "La empresa no existe o usted no tiene permiso para accederla."
     }
 }

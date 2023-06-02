@@ -15,7 +15,7 @@ export class ProjectSelectController {
         const options = {skipNoRowsError: true};
         let project = await conf.global.services.Project.getForUuid(projectUuid, options);
         if (!project)
-            throw new _HttpError(loc._f('The selected project does not exist or you do not have permission.'), 400);
+            throw new _HttpError(loc._f('The selected project does not exist or you do not have permission to access it.'), 400);
 
         project = project.toJSON();
 
