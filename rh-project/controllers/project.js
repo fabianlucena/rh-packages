@@ -233,7 +233,7 @@ export class ProjectController {
                 method: 'get',
             },
             actions,
-            columns: await filterVisualItemsByAliasName(columns, conf, {loc, entity: 'Project', interface: 'grid'}),
+            columns: await filterVisualItemsByAliasName(columns, conf?.project, {loc, entity: 'Project', interface: 'grid'}),
         });
     }
 
@@ -292,7 +292,7 @@ export class ProjectController {
         res.status(200).send({
             title: await loc._('Projects'),
             action: 'project',
-            fields: await filterVisualItemsByAliasName(fields, conf, {loc, entity: 'Project', interface: 'form'}),
+            fields: await filterVisualItemsByAliasName(fields, conf?.project, {loc, entity: 'Project', interface: 'form'}),
         });
     }
 

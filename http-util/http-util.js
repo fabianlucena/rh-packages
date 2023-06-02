@@ -124,9 +124,9 @@ export class ConflictError extends Error {
 
     statusCode = 409;
 
-    constructor() {
+    constructor(message) {
         super();
-        setUpError(this);
+        setUpError(this, {message});
     }
 }
 
