@@ -10,8 +10,8 @@ conf.configure = configure;
 conf.afterConfig = afterConfig;
 
 async function configure(global, options) {
-    if (options?.filters)
-        conf.filters = options.filters;
+    for (const k in options)
+        conf[k] = options[k];
 }
 
 async function afterConfig(global) {

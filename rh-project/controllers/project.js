@@ -1,7 +1,7 @@
 import {ProjectService} from '../services/project.js';
 import {conf} from '../conf.js';
 import {getOptionsFromParamsAndOData, _HttpError, ConflictError} from 'http-util';
-import {checkParameter, checkParameterUuid} from 'rf-util';
+import {checkParameter, checkParameterUuid, filterVisualItemsByAliasName} from 'rf-util';
 
 /**
  * @swagger
@@ -24,26 +24,29 @@ import {checkParameter, checkParameterUuid} from 'rf-util';
  */
     
 export class ProjectController {
-    static async checkData(req, data) {
-        if (conf.filters?.companyId) {
-            if (!data.companyId) {
-                if (data.companyUuid)
-                    data.companyId = await conf.global.services.Company.getIdForUuid(data.companyUuid);
-                else if (data.companyName)
-                    data.companyId = await conf.global.services.Company.getIdForName(data.companyName);
-                else
-                    return;
+    static async checkDataForCompanyId(req, data) {
+        if (!conf.filters?.getCurrentCompanyId)
+            return;
+            
+        if (!data.companyId) {
+            if (data.companyUuid)
+                data.companyId = await conf.global.services.Company.getIdForUuid(data.companyUuid);
+            else if (data.companyName)
+                data.companyId = await conf.global.services.Company.getIdForName(data.companyName);
+            else {
+                data.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
+                return data.companyId;
             }
-
+        
             if (!data.companyId)
                 throw new _HttpError(req.loc._f('The company does not exist or you do not have permission to access.'), 404);
-
-            const companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
-            if (data.companyId != companyId)
-                throw new _HttpError(req.loc._f('The company does not exist or you do not have permission to access.'), 403);
         }
 
-        return true;
+        const companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
+        if (data.companyId != companyId)
+            throw new _HttpError(req.loc._f('The company does not exist or you do not have permission to access.'), 403);
+
+        return data.companyId;
     }
 
     static async checkUuid(req, uuid) {
@@ -51,7 +54,7 @@ export class ProjectController {
         if (!project)
             throw new _HttpError(req.loc._f('The project with UUID %s does not exists.'), 404, uuid);
 
-        await ProjectController.checkData(req, {companyId: project.companyId});
+        return await ProjectController.checkDataForCompanyId(req, {companyId: project.companyId});
     }
 
     /**
@@ -91,12 +94,11 @@ export class ProjectController {
      */
     static async post(req, res) {
         const loc = req.loc;
-        checkParameter(req?.body, {name: loc._f('Name'), title: loc._f('Title'), companyUuid: loc._f('Company')});
-        checkParameterUuid(req?.body.companyUuid, loc._f('Company'));
+        checkParameter(req?.body, {name: loc._f('Name'), title: loc._f('Title')});
         
         const data = {...req.body};
 
-        await ProjectController.checkData(req, data);
+        await ProjectController.checkDataForCompanyId(req, data);
 
         if (await ProjectService.getForName(data.name, {skipNoRowsError: true}))
             throw new ConflictError();
@@ -198,7 +200,31 @@ export class ProjectController {
         if (req.permissions.includes('project.delete')) actions.push('delete');
         actions.push('search', 'paginate');
         
-        let loc = req.loc;
+        const loc = req.loc;
+        const columns = [
+            {
+                name: 'title',
+                type: 'text',
+                label: await loc._f('Title'),
+            },
+            {
+                name: 'name',
+                type: 'text',
+                label: await loc._f('Name'),
+            },
+            {
+                alias: 'company',
+                name: 'Company.title',
+                type: 'text',
+                label: await loc._f('Company'),
+            },
+            {
+                alias: 'owner',
+                name: 'Collaborators[0].User.displayName',
+                type: 'text',
+                label: await loc._f('Owner'),
+            }
+        ];
 
         res.status(200).send({
             title: await loc._('Projects'),
@@ -206,85 +232,67 @@ export class ProjectController {
                 service: 'project',
                 method: 'get',
             },
-            actions: actions,
-            columns: [
-                {
-                    name: 'title',
-                    type: 'text',
-                    label: await loc._('Title'),
-                },
-                {
-                    name: 'name',
-                    type: 'text',
-                    label: await loc._('Name'),
-                },
-                {
-                    name: 'Company.title',
-                    type: 'text',
-                    label: await loc._('Company'),
-                },
-                {
-                    name: 'Collaborators[0].User.displayName',
-                    type: 'text',
-                    label: await loc._('Owner'),
-                },
-            ]
+            actions,
+            columns: await filterVisualItemsByAliasName(columns, conf, {loc, entity: 'Project', interface: 'grid'}),
         });
     }
 
     static async getForm(req, res) {
         checkParameter(req.query, '$form');
 
-        let loc = req.loc;
+        const loc = req.loc;
+        const fields = [
+            {
+                name: 'title',
+                type: 'text',
+                label: await loc._f('Title'),
+                placeholder: await loc._f('Title'),
+                required: true,
+            },
+            {
+                name: 'name',
+                type: 'text',
+                label: await loc._f('Name'),
+                placeholder: await loc._f('Name'),
+                required: true,
+                readonly: {
+                    create: false,
+                    defaultValue: true,
+                },
+            },
+            {
+                alias: 'company',
+                name: 'companyUuid',
+                type: 'select',
+                label: await loc._f('Company'),
+                placeholder: await loc._f('Company'),
+                required: true,
+                loadOptionsFrom: {
+                    service: 'project/company',
+                    value: 'uuid',
+                    text: 'title',
+                    title: 'description',
+                },
+            },
+            {
+                name: 'isEnabled',
+                type: 'checkbox',
+                label: await loc._f('Enabled'),
+                placeholder: await loc._f('Enabled'),
+                value: true,
+            },
+            {
+                name: 'description',
+                type: 'textArea',
+                label: await loc._f('Description'),
+                placeholder: await loc._f('Description'),
+            },
+        ];
+        
         res.status(200).send({
             title: await loc._('Projects'),
             action: 'project',
-            fields: [
-                {
-                    name: 'title',
-                    type: 'text',
-                    label: await loc._('Title'),
-                    placeholder: await loc._('Title'),
-                    required: true,
-                },
-                {
-                    name: 'name',
-                    type: 'text',
-                    label: await loc._('Name'),
-                    placeholder: await loc._('Name'),
-                    required: true,
-                    readonly: {
-                        create: false,
-                        defaultValue: true,
-                    },
-                },
-                {
-                    name: 'companyUuid',
-                    type: 'select',
-                    label: await loc._('Company'),
-                    placeholder: await loc._('Company'),
-                    required: true,
-                    loadOptionsFrom: {
-                        service: 'project/company',
-                        value: 'uuid',
-                        text: 'title',
-                        title: 'description',
-                    },
-                },
-                {
-                    name: 'isEnabled',
-                    type: 'checkbox',
-                    label: await loc._('Enabled'),
-                    placeholder: await loc._('Enabled'),
-                    value: true,
-                },
-                {
-                    name: 'description',
-                    type: 'textArea',
-                    label: await loc._('Description'),
-                    placeholder: await loc._('Description'),
-                },
-            ],
+            fields: await filterVisualItemsByAliasName(fields, conf, {loc, entity: 'Project', interface: 'form'}),
         });
     }
 
