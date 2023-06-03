@@ -256,6 +256,9 @@ export function httpErrorHandler(req, res) {
 export function asyncHandler(method) {
     return async (req, res, next) => {
         try {
+            if (!method)
+                throw new _HttpError(loc._f('Method is not defined.'));
+
             await method(req, res, next);
         }
         catch(err) {
