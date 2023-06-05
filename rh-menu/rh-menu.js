@@ -4,7 +4,7 @@ import {runSequentially} from 'rf-util';
 
 export const conf = localConf;
 
-conf.afterConfig = async function(global) {
+conf.updateData = async function(global) {
     await runSequentially(global?.data?.permissions, async permissionData => {
         let menuItemData = permissionData.menuItem;
         if (!menuItemData)

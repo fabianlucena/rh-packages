@@ -15,7 +15,7 @@ import {runSequentially} from 'rf-util';
 export const conf = localConf;
 
 conf.configure = configure;
-conf.afterConfig = afterConfig;
+conf.updateData = updateData;
 
 function configure (global) {
     if (global.router)
@@ -44,7 +44,7 @@ function getCheckPermissionHandler(chain) {
     };
 }
 
-async function afterConfig(global) {
+async function updateData(global) {
     const data = global?.data;
     await runSequentially(data?.userTypes,     async data => await UserTypeService.    createIfNotExists(data));
     await runSequentially(data?.identityTypes, async data => await IdentityTypeService.createIfNotExists(data));

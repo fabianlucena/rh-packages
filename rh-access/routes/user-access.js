@@ -1,5 +1,4 @@
 import {UserAccessController} from '../controllers/user-access.js';
-//import {conf} from '../conf.js';
 import {methodNotAllowed, corsSimplePreflight, asyncHandler} from 'http-util';
 
 export default (app, checkPermission) => {

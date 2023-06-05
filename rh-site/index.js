@@ -4,8 +4,8 @@ import {runSequentially} from 'rf-util';
 
 export const conf = localConf;
 
-conf.afterConfig = afterConfig;
+conf.updateData = updateData;
 
-async function afterConfig(global) {
+async function updateData(global) {
     await runSequentially(global?.data?.sites, async data => await SiteService.createIfNotExists(data));
 }

@@ -44,9 +44,9 @@ export class ObjectNameService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{ObjectName}}
      */
-    static getForName(name, options) {
-        return ObjectNameService.getList(deepComplete(options, {where:{name}, limit: 2}))
-            .then(rowList => getSingle(rowList, deepComplete(options, {params: ['object name', 'name', name, 'ObjectName']})));
+    static async getForName(name, options) {
+        const rows = await ObjectNameService.getList({where: {name, ...options?.where}, ...options, limit: 2});
+        return getSingle(rows, deepComplete(options, {params: ['object name', 'name', name, 'ObjectName']}));
     }
 
     /**

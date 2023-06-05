@@ -1,4 +1,4 @@
-import {setUpError, errorHandler, deepComplete} from 'rf-util';
+import {setUpError, errorHandler, deepComplete, deepMerge} from 'rf-util';
 import {loc} from 'rf-locale';
 import {runSequentially} from 'rf-util';
 import * as uuid from 'uuid';
@@ -167,10 +167,14 @@ export async function httpUtilConfigure(global, ...modules) {
     await beforeConfig(global);
     await configureModules(global, modules);
     await beforeSync(global);
-    await syncDB(global);
+    if (global.config.db.sync)
+        await syncDB(global);
     if (global.postConfigureModels)
         global.postConfigureModels(global.sequelize);
     await afterSync(global);
+    if (global.config.db.updateData)
+        await updateData(global);
+    
     await afterConfig(global);
     
     configureSwagger(global);
@@ -425,6 +429,14 @@ export async function configureModule(global, module) {
     if (!module.name)
         throw new Error('Module does not have a name.');
 
+    if (module.path && global?.config?.env) {
+        for (const sep of ['_', '-']) {
+            let path = module.path + `/conf${sep}${global.config.env}.js`;
+            if (fs.existsSync(path))
+                deepMerge(module, (await import('file://' + path)).conf);
+        }
+    }
+
     global.modules[module.name] = module;
     module.global = global;
 
@@ -526,14 +538,14 @@ export async function afterConfig(global) {
 export async function beforeSync(global) {
     if (global.sequelize) {
         const list = getPropertyFromItems('beforeSync', global.modules);
-        await execAsyncMethodList(list);
+        await execAsyncMethodList(list, null, global);
     }
 }
 
 export async function afterSync(global) {
     if (global.sequelize) {
         const list = getPropertyFromItems('afterSync', global.modules);
-        await execAsyncMethodList(list);
+        await execAsyncMethodList(list, null, global);
     }
 }
 
@@ -544,6 +556,14 @@ export async function syncDB(global) {
     await global.sequelize.sync(global?.config?.db?.sync);
     const asyncMethodList = getPropertyFromItems('check', global.sequelize.models);
     await execAsyncMethodList(asyncMethodList);
+}
+
+export async function updateData(global) {
+    if (!global.sequelize)
+        return;
+
+    const list = getPropertyFromItems('updateData', global.modules);
+    await execAsyncMethodList(list, null, global);
 }
 
 export function configureSwagger(global) {

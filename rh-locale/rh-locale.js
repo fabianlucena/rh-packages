@@ -8,14 +8,14 @@ import {TranslationService} from './services/translation.js';
 export const conf = localConf;
 
 conf.configure = configure;
-conf.afterConfig = afterConfig;
+conf.updateData = updateData;
 
 function configure(global) {
     if (global.router)
         global.router.use(LocaleController.middleware());
 }
 
-async function afterConfig(global) {
+async function updateData(global) {
     const languages = global?.data?.languages;
     for (const name in languages) {
         const data = languages[name];
