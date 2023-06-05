@@ -15,7 +15,7 @@ export class CompanySiteController {
         if (!companyUuid && !siteUuid)
             throw new MissingParameterError(loc._f('Company UUID'), loc._f('Site UUID'));
 
-        const options = {attributes:['companyId', 'siteId'], view: true, includeCompany: true, where: {}};
+        const options = {attributes:['companyId', 'siteId'], view: true, includeCompany: true, includeSite: true, where: {}};
         if (companyUuid) {
             await checkParameterUuid(companyUuid, loc._f('Company UUID'));
             options.where.companyUuid = companyUuid;
@@ -34,6 +34,9 @@ export class CompanySiteController {
             throw new _HttpError(loc._f('The selected object does not exist or you do not have permission.'), 400);
 
         const companySite = companySites[0].toJSON();
+        if (!companySite.Company.isEnabled || !companySite.Site.isEnabled)
+            throw new _HttpError(loc._f('The selected company is disabled.'), 403);
+
         const sessionId = req.session.id;
         const siteId = companySite.siteId;
 
@@ -66,8 +69,6 @@ export class CompanySiteController {
         const SessionDataService = conf.global.services.SessionData;
         if (SessionDataService) {
             const sessionData = await SessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
-
-            sessionData.companyId = companySite.companyId;
 
             sessionData.api ??= {};
             sessionData.api.data ??= {};
