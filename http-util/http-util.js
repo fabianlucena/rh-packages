@@ -1,4 +1,4 @@
-import {setUpError, errorHandler, deepComplete, deepMerge} from 'rf-util';
+import {setUpError, errorHandler, deepComplete} from 'rf-util';
 import {loc} from 'rf-locale';
 import {runSequentially} from 'rf-util';
 import * as uuid from 'uuid';
@@ -433,7 +433,7 @@ export async function configureModule(global, module) {
         for (const sep of ['_', '-']) {
             let path = module.path + `/conf${sep}${global.config.env}.js`;
             if (fs.existsSync(path))
-                deepMerge(module, (await import('file://' + path)).conf);
+                deepComplete(module, (await import('file://' + path)).conf);
         }
     }
 
