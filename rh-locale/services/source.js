@@ -49,7 +49,7 @@ export class SourceService {
      */
     static getForTextAndIsJson(text, isJson, options) {
         options = {...options, limit: 2};
-        options.where = {...options.where, text, isJson: isJson ?? false};
+        options.where = {...options?.where, text, isJson: isJson ?? false};
         return this.getList(options)
             .then(rowList => getSingle(rowList, deepComplete(options, {params: ['source', 'text', text, 'Source']})));
     }

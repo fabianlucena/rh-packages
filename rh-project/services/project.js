@@ -21,7 +21,7 @@ export class ProjectService {
     }
     
     /**
-     * Creates a new project row into DB. If no typeId provided or type, 'project' type is used. If a password is provided also a local @ref Identity is created.
+     * Creates a new project row into DB.
      * @param {{isEnabled: boolean, name: string, title: string}} data - data for the new Project.
      *  - name: must be unique.
      * @returns {Promise{Project}}

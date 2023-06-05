@@ -398,7 +398,7 @@ export class UserAccessController {
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
 
         if (!req.roles.includes('admin'))
-            options.where = {...options.where, id: await AssignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles)};
+            options.where = {...options?.where, id: await AssignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles)};
 
         const RoleService = conf.global.services.Role;
         const result = await RoleService.getListAndCount(options);

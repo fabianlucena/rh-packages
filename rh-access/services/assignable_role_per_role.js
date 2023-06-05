@@ -178,12 +178,12 @@ export class AssignableRolePerRoleService {
      * @returns {Promise[AssignableRolePerRole]}
      */
     static async getForAssignableRoleIdAndRoleId(assignableRoleId, roleId, options) {
-        const rowList = await AssignableRolePerRoleService.getList({...options, where:{...options.where, assignableRoleId, roleId}, limit: 2});
+        const rowList = await AssignableRolePerRoleService.getList({...options, where:{...options?.where, assignableRoleId, roleId}, limit: 2});
         return getSingle(rowList, {...options, params: [loc._f('assignable roles'), ['assignableRoleId = %s, and roleId = %s', assignableRoleId, roleId], loc._f('Assignable roles per role')]});
     }
 
     static async getAssignableRolesIdForRoleId(roleId, options) {
-        return AssignableRolePerRoleService.getList({attributes: ['assignableRoleId'], ...options, where:{...options.where, roleId}});
+        return AssignableRolePerRoleService.getList({attributes: ['assignableRoleId'], ...options, where:{...options?.where, roleId}});
     }
 
     static async getAssignableRolesIdForRoleName(roleName, options) {

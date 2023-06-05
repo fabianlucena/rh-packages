@@ -268,7 +268,7 @@ export class RoleService {
     static async getAllForUsernameAndSiteName(username, siteName, options) {
         const roleIdList = await RoleService.getAllIdsForUsernameAndSiteName(username, siteName, options);
         options ??= {};
-        options.where = {id:roleIdList ?? null, ...options.where};
+        options.where = {id:roleIdList ?? null, ...options?.where};
         return RoleService.getList(options);
     }
 

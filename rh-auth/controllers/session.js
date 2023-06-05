@@ -129,7 +129,7 @@ export class SessionController {
         try {
             await req.checkPermission('session.get');
         } catch(_) {
-            options.where = {...options.where, id: req.session.id};
+            options.where = {...options?.where, id: req.session.id};
         }
 
         const data = await SessionService.getListAndCount(options);

@@ -5,7 +5,7 @@ import {loc} from 'rf-locale';
 
 export class CompanyService {
     /**
-     * Creates a new company row into DB. If no typeId provided or type, 'company' type is used. If a password is provided also a local @ref Identity is created.
+     * Creates a new company row into DB.
      * @param {{isEnabled: boolean, name: string, title: string}} data - data for the new Company.
      *  - name: must be unique.
      * @returns {Promise{Company}}
