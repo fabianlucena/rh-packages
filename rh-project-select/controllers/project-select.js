@@ -17,6 +17,9 @@ export class ProjectSelectController {
         if (!project)
             throw new _HttpError(loc._f('The selected project does not exist or you do not have permission to access it.'), 400);
 
+        if (!project.isEnabled)
+            throw new _HttpError(loc._f('The selected project is disabled.'), 403);
+
         project = project.toJSON();
 
         const SessionDataService = conf.global.services.SessionData;
@@ -26,8 +29,11 @@ export class ProjectSelectController {
         const sessionId = req.session.id;
 
         if (!req.roles.includes('admin')) {
-            const sessionData = await SessionDataService.getDataIfExistsForSessionId(sessionId);
-            if (sessionData?.companyId != project.companyId)
+            let companyId;
+            if (conf.filters?.getCurrentCompanyId)
+                companyId = await conf.filters.getCurrentCompanyId(req);
+
+            if (companyId != project.companyId)
                 throw new _HttpError(loc._f('You do not have permission to select this project.'), 400);
         }
 
@@ -56,8 +62,6 @@ export class ProjectSelectController {
 
         const sessionData = await SessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
 
-        sessionData.projectId = project.id;
-        
         sessionData.api ??= {};
         sessionData.api.data ??= {};
         sessionData.api.data.projectUuid = project.uuid;
@@ -65,8 +69,6 @@ export class ProjectSelectController {
         sessionData.menu ??= [];
         sessionData.menu = sessionData.menu.filter(item => item.name != 'project-select');
         sessionData.menu.push(menuItem);
-
-        console.log(sessionData.menu);
 
         await SessionDataService?.setData(sessionId, sessionData);
         

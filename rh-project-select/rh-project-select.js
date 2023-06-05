@@ -19,5 +19,5 @@ export async function getAvailableProjectsId(req) {
     if (!companyId)
         return;
 
-    return conf.global.services.Project.getIdForCompanyId(companyId, {skipNoRowsError: true});
+    return conf.global.services.Project.getIdForCompanyId(companyId, {isEnabled: true, skipNoRowsError: true});
 }

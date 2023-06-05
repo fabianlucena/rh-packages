@@ -138,6 +138,17 @@ export class ProjectService {
     }
 
     /**
+     * Gets a project for its ID. For many coincidences and for no rows this method fails.
+     * @param {integer} id - ID for the project to get.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {Promise[Project]}
+     */
+    static async get(id, options) {
+        const rows = await ProjectService.getList(deepComplete(options, {where: {id}, limit: 2}));
+        return getSingle(rows, {params: ['project', ['ID = %s', id], 'Project'], ...options});
+    }
+
+    /**
      * Gets a project for its UUID. For many coincidences and for no rows this method fails.
      * @param {string} uuid - UUID for the project to get.
      * @param {Options} options - Options for the @ref getList method.
