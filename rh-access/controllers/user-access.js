@@ -316,7 +316,6 @@ export class UserAccessController {
                     label: await loc._('User'),
                     loadOptionsFrom: {
                         service: 'user-access-user',
-                        valueProperty: 'uuid',
                         value: 'uuid',
                         text: 'displayName',
                         title: 'username',
@@ -332,7 +331,6 @@ export class UserAccessController {
                     label: await loc._('Sites'),
                     loadOptionsFrom: {
                         service: 'user-access-site',
-                        valueProperty: 'uuid',
                         value: 'uuid',
                         text: 'title',
                         title: 'description',
@@ -350,7 +348,6 @@ export class UserAccessController {
                     label: await loc._('Roles'),
                     loadOptionsFrom: {
                         service: 'user-access-role',
-                        valueProperty: 'uuid',
                         value: 'uuid',
                         text: 'title',
                         title: 'description',

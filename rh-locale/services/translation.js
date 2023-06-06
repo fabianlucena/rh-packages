@@ -118,6 +118,11 @@ export class TranslationService {
                     arrangedText = text;
 
                 domain ??= null;
+
+                if (arrangedText === null || arrangedText === undefined) {
+                    translations[arrangedText] = arrangedText;
+                    continue;
+                }
                 
                 arrangedText = arrangedText.trim();
                 let translationObject = await conf.global.models.TranslationCache.findOne({where: {language, domain, source: arrangedText, isJson}});
