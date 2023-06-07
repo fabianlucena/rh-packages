@@ -172,10 +172,9 @@ export async function httpUtilConfigure(global, ...modules) {
     if (global.postConfigureModels)
         global.postConfigureModels(global.sequelize);
     await afterSync(global);
+    await afterConfig(global);
     if (global.config.db.updateData)
         await updateData(global);
-    
-    await afterConfig(global);
     
     configureSwagger(global);
 }
@@ -257,13 +256,22 @@ export function httpErrorHandler(req, res) {
     return async error => await sendError(req, res, error);
 }
 
-export function asyncHandler(method) {
+export function asyncHandler(methodContainer, method) {
     return async (req, res, next) => {
         try {
-            if (!method)
-                throw new _HttpError(loc._f('Method is not defined.'));
+            if (!methodContainer)
+                throw new _HttpError(loc._f('No method defined.'));
 
-            await method(req, res, next);
+            if (method) {
+                if (typeof method === 'string')
+                    await methodContainer[method](req, res, next);
+                else if (typeof method === 'function')
+                    await methodContainer.call(method, req, res, next);
+                else
+                    throw new _HttpError(loc._f('Error in method definition.'));
+            }
+            else
+                await methodContainer(req, res, next);
         }
         catch(err) {
             next(err);
