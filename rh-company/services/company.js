@@ -49,7 +49,7 @@ export class CompanyService {
         }
 
         if (options.includeOwner) {
-            includeCollaborators(options, 'Company', conf.global.models, 'owner');
+            includeCollaborators(options, 'Company', conf.global.models, {filterType: 'owner'});
             delete options.includeOwner;
         }
 

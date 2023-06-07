@@ -96,7 +96,7 @@ export class ProjectService {
         }
 
         if (options.includeOwner) {
-            includeCollaborators(options, 'Project', conf.global.models, 'owner');
+            includeCollaborators(options, 'Project', conf.global.models, {filterType: 'owner'});
             delete options.includeOwner;
         }
 

@@ -318,10 +318,30 @@ export function addEnabledWithOnerModuleFilter(options, ownerModule) {
  * @param {string|array} type - type of collabortion can be one or a list of: owner, editor, viewer, or others.
  * @return {Options}
  */
-export function includeCollaborators(options, object, models, type) {
-    let where;
-    if (options.isEnabled !== undefined)
-        where = {isEnabled: options.isEnabled};
+export function includeCollaborators(options, object, models, collaboratorOptions) {
+    collaboratorOptions ??= {};
+
+    const objectName = {
+        model: models.ObjectName,
+        attributes: [],
+        where: {name: object},
+    };
+    
+    const shareType = {
+        model: models.ShareType,
+        attributes: ['name', 'title'],
+    };
+
+    if (collaboratorOptions.typeFilter !== undefined)
+        user.where = {isEnnameabled: collaboratorOptions.typeFilter};
+
+    const user = {
+        model: models.User,
+        attributes: ['uuid', 'userName', 'displayName'],
+    };
+
+    if (collaboratorOptions.isEnabled !== undefined)
+        user.where = {isEnabled: collaboratorOptions.isEnabled};
 
     return completeIncludeOptions(
         options,
@@ -331,23 +351,7 @@ export function includeCollaborators(options, object, models, type) {
             as: 'Collaborators',
             attributes: ['isEnabled'], // A column is needed because a Sequelize bug
             // where, // Cannot use this where because a Sequelize bug
-            include: [
-                {
-                    model: models.ObjectName,
-                    attributes: [],
-                    where: {name: object},
-                },
-                {
-                    model: models.ShareType,
-                    attributes: ['name', 'title'],
-                    where: {name: type},
-                },
-                {
-                    model: models.User,
-                    attributes: ['uuid', 'userName', 'displayName'],
-                    where,
-                },
-            ],
+            include: [objectName, shareType, user],
         }
     );
 }
