@@ -1,6 +1,6 @@
 import {MenuItemService} from '../services/menu_item.js';
 import {conf} from '../conf.js';
-import {runSequentially, deepMerge} from 'rf-util';
+import {runSequentially} from 'rf-util';
 
 /**
  * @swagger
@@ -53,7 +53,7 @@ export class MenuController {
 
         const rows = await MenuItemService.getList(options);
         const loc = req.loc;
-        const mil = await runSequentially(rows, async mir => {
+        let menu = await runSequentially(rows, async mir => {
             let mi = mir.toJSON();
             if (mi.Parent) {
                 mi.parent = mi.Parent?.name;
@@ -82,11 +82,11 @@ export class MenuController {
             return mi;
         });
 
-        let result = {menu: mil};
-        const dataList = await Promise.all(conf.global.eventBus?.$emit('menuGet', req.session?.id));
+        const data = {menu};
+        await Promise.all(conf.global.eventBus?.$emit('menuGet', data, {sessionId: req.session?.id, params: req.query}));
 
-        dataList.forEach(data => result = deepMerge(result, data));
+        await Promise.all(conf.global.eventBus?.$emit('menuValidate', data, {sessionId: req.session?.id, params: req.query}));
 
-        res.status(200).send(result);
+        res.status(200).send(data);
     }
 }

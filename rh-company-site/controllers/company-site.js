@@ -59,6 +59,7 @@ export class CompanySiteController {
 
         const data = {
             api: {
+                clear: true,
                 data: {
                     companyUuid: companySite.Company.uuid,
                 },
@@ -80,10 +81,15 @@ export class CompanySiteController {
 
             await SessionDataService?.setData(sessionId, sessionData);
         }
+
+        data.count = 1;
+        data.rows = companySite;
+
+        await conf.global.eventBus?.$emit('companySwitch', data, {sessionId});
         
         conf.global.eventBus?.$emit('sessionUpdated', sessionId);
 
-        res.status(200).send({length: 1, rows: companySite, ...data});
+        res.status(200).send(data);
     }
 
     static async get(req, res) {
@@ -120,7 +126,7 @@ export class CompanySiteController {
         let loc = req.loc;
 
         res.status(200).send({
-            title: await loc._('User'),
+            title: await loc._('Select company'),
             load: {
                 service: 'company-site',
                 method: 'get',

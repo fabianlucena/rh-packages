@@ -70,19 +70,20 @@ async function updateData(global) {
     await runSequentially(data?.assignableRolesPerRoles, async data => await AssignableRolePerRoleService.createIfNotExists(data));
 }
 
-async function login(session) {
-    if (!session?.id || !session?.oldSessionId)
+async function login(data, options) {
+    if (!options?.sessionId || !options?.oldSessionId)
         return;
 
-    const currentSite = await SessionSiteService.getList({where: {sessionId: session.id}});
+    const sessionId = options?.sessionId;
+    const currentSite = await SessionSiteService.getList({where: {sessionId}});
     if (currentSite?.length) 
         return;
 
-    const oldSite = await SessionSiteService.getList({where: {sessionId: session.oldSessionId}});
+    const oldSite = await SessionSiteService.getList({where: {sessionId: options.oldSessionId}});
     if (!oldSite?.length) 
         return;
 
-    await SessionSiteService.createOrUpdate({sessionId: session.id, siteId: oldSite[0].siteId});
+    await SessionSiteService.createOrUpdate({sessionId, siteId: oldSite[0].siteId});
 }
 
 async function sessionUpdated(sessionId) {

@@ -3,7 +3,7 @@
 import {LoginService} from '../services/login.js';
 import {conf} from '../conf.js';
 import {_HttpError} from 'http-util';
-import {checkParameter, deepMerge} from 'rf-util';
+import {checkParameter} from 'rf-util';
 
 export class LoginController {
     /**
@@ -146,9 +146,15 @@ export class LoginController {
                 },
             };
 
-            const dataList = await Promise.all(await conf.global.eventBus?.$emit('login', session));
-            
-            dataList.forEach(data => result = deepMerge(result, data));
+            await Promise.all(await conf.global.eventBus?.$emit(
+                'login',
+                result,
+                {
+                    sessionId: session.id,
+                    oldSessionId: session.oldSessionId,
+                    autoLogin: !!req.body.autoLoginToken
+                }
+            ));
 
             req.session = session;
             res.header('Authorization', 'Bearer ' + session.authToken);

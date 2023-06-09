@@ -52,6 +52,8 @@ export class ProjectSelectController {
             label: await loc._('Project: %s', project.title),
         };
         const data = {
+            count: 1,
+            rows: project,
             api: {
                 data: {
                     projectUuid: project.uuid,
@@ -70,11 +72,13 @@ export class ProjectSelectController {
         sessionData.menu = sessionData.menu.filter(item => item.name != 'project-select');
         sessionData.menu.push(menuItem);
 
-        await SessionDataService?.setData(sessionId, sessionData);
+        await SessionDataService.setData(sessionId, sessionData);
+
+        await Promise.all(conf.global.eventBus?.$emit('projectSwitch', data, {sessionId}));
         
         conf.global.eventBus?.$emit('sessionUpdated', sessionId);
 
-        res.status(200).send({length: 1, rows: project, ...data});
+        res.status(200).send(data);
     }
 
     static async get(req, res) {
@@ -118,7 +122,7 @@ export class ProjectSelectController {
         let loc = req.loc;
 
         res.status(200).send({
-            title: await loc._('User'),
+            title: await loc._('Select project'),
             load: {
                 service: 'project-select',
                 method: 'get',
