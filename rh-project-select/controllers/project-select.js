@@ -111,13 +111,18 @@ export class ProjectSelectController {
     static async getObject(req, res) {
         checkParameter(req.query, '$object');
 
-        const actions = [{
-            name: 'select',
-            actionData: {
-                bodyParam: {projectUuid: 'uuid'},
-                onSuccess: 'reloadMenu();',
+        const actions = [
+            {
+                name: 'select',
+                icon: 'get-into',
+                actionData: {
+                    bodyParam: {projectUuid: 'uuid'},
+                    onSuccess: 'reloadMenu();',
+                },
             },
-        }];
+            'create',
+            'edit',
+        ];
                 
         let loc = req.loc;
 
