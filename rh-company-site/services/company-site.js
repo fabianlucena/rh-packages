@@ -111,16 +111,18 @@ export class CompanySiteService {
             if (options.isEnabled !== undefined)
                 where = {isEnabled: options.isEnabled};
 
-            if (options.where.companyName) {
-                where ??= {};
-                where.name = options.where.companyName;
-                delete options.where.companyName;
-            }
+            if (options.where) {
+                if (options.where.companyName) {
+                    where ??= {};
+                    where.name = options.where.companyName;
+                    delete options.where.companyName;
+                }
 
-            if (options.where.companyUuid) {
-                where ??= {};
-                where.uuid = options.where.companyUuid;
-                delete options.where.companyUuid;
+                if (options.where.companyUuid) {
+                    where ??= {};
+                    where.uuid = options.where.companyUuid;
+                    delete options.where.companyUuid;
+                }
             }
 
             let attributes;

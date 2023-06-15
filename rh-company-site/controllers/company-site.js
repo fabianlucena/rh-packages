@@ -117,6 +117,7 @@ export class CompanySiteController {
 
         const actions = [{
             name: 'select',
+            icon: 'get-into',
             actionData: {
                 bodyParam: {companyUuid: 'Company.uuid'},
                 onSuccess: 'reloadMenu();',
