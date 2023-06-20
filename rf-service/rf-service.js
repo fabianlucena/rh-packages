@@ -14,17 +14,32 @@ export class Service {
     }
     
     async completeReferences(data, clean) {
-        for (const name in this.references)
-            await this.completeEntityId(data, this.references[name], name, clean);
+        for (const name in this.references) {
+            const reference = this.references[name];
+            if (reference.function) {
+                await reference.function(data);
+                continue;
+            }
+            const service = reference.service?
+                reference.service:
+                reference;
+
+            await this.completeEntityId(data, {service, name, clean});
+        }
 
         return data;
     }
 
-    async completeEntityId(data, service, name, clean) {
+    async completeEntityId(data, options) {
+        const name = options.name;
+        const Name = ucfirst(name);
         const idParamName = name + 'Id';
         const uuidParamName = name + 'Uuid';
-        const Name = ucfirst(name);
         if (!data[idParamName]) {
+            const service = options.service.singleton?
+                options.service.singleton():
+                options.service;
+
             if (data[uuidParamName])
                 data[idParamName] = await service.getIdForUuid(data[uuidParamName]);
             else if (typeof data[name] === 'string' && data[name])
@@ -40,9 +55,13 @@ export class Service {
                 }
             }
         
+            if (!data[idParamName] && options.createIfNotExists) {
+                const object = await service.createIfNotExists(data);
+                data[idParamName] = object?.id;
+            }
         }
 
-        if (clean) {
+        if (options.clean) {
             delete data[uuidParamName];
             delete data[Name];
             delete data[name];
@@ -89,6 +108,13 @@ export class Service {
             return;
 
         return this.shareService.create(data, {transaction});
+    }    
+
+    async getListOptions(options) {
+        if (!options)
+            options = {};
+
+        return options;
     }
 
     /**
@@ -101,9 +127,9 @@ export class Service {
         options = await this.getListOptions(options);
         let result;
         if (options.withCount)
-            result = this.model.findAndCountAll(await this.getListOptions(options));
+            result = this.model.findAndCountAll(options);
         else
-            result = this.model.findAll(await this.getListOptions(options));
+            result = this.model.findAll(options);
 
         let loc;
         if (options.translate !== false)
@@ -265,9 +291,9 @@ export class Service {
         if (Array.isArray(name))
             return this.getList({...options, where: {name, ...options?.where}});
             
-        const rows = this.getList({limit: 2, ...options, where: {name, ...options?.where}});
+        const rows = await this.getList({limit: 2, ...options, where: {name, ...options?.where}});
 
-        return this.getSingle(rows, options);
+        return await this.getSingle(rows, options);
     }
 
     /**
@@ -334,6 +360,24 @@ export class Service {
             return row;
 
         return this.create(data);
+    }
+
+    /**
+    * Gets a row ID for its name. For many coincidences this method fails, for no rows this method will creates a newone.
+    * @param {string} name - name for the source to get.
+    * @param {Options} options - Options for the @ref getList method.
+    * @returns {Promise[ID]}
+    */
+    async getIdOrCreateForName(name, options) {
+        if (Array.isArray(name)) {
+            const ids = [];
+            for (const thisName of name)
+                ids.push((await this.createIfNotExists({name: thisName, title: thisName}, {...options, attributes: ['id']})).id);
+
+            return ids;
+        }
+        else
+            return (await this.createIfNotExists({name, title: name}, {...options, attributes: ['id']})).id;
     }
 
     /**
