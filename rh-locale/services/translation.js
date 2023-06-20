@@ -1,64 +1,50 @@
 'use strict';
 
 import {conf} from '../conf.js';
+import {Service} from 'rf-service';
 import {SourceService} from './source.js';
 import {LanguageService} from './language.js';
+import {ContextService} from './context.js';
 import {DomainService} from './domain.js';
 import {checkDataForMissingProperties, getSingle} from 'sql-util';
 import {deepComplete} from 'rf-util';
 
-export class TranslationService {
+export class TranslationService extends Service {
+    sequelize = conf.global.sequelize;
+    model = conf.global.models.Translation;
+    references = {
+        source: {
+            service: conf.global.services.Source,
+            createIfNotExists: true,
+            function: this.completeSourceId,
+        },
+        language: conf.global.services.Language,
+        domain: {
+            service: conf.global.services.Domain,
+            createIfNotExists: true,
+        },
+        context: {
+            service: conf.global.services.Context,
+            createIfNotExists: true,
+        },
+    };
+
     /**
      * Complete the data object with the sourceId property if not exists. 
      * @param {{source: string, sourceId: integer, ...}} data 
      * @returns {Promise{data}}
      */
-    static async completeSourceId(data) {
+    async completeSourceId(data) {
         if (!data.sourceId && data.source)
-            data.sourceId = await conf.global.services.Source.getIdOrCreateForTextAndIsJson(data.source, data.isJson, {data: {ref: data.ref}});
+            data.sourceId = await conf.global.services.Source.singleton().getIdOrCreateForTextAndIsJson(data.source, data.isJson, {data: {ref: data.ref}});
 
         return data;
     }
 
-    /**
-     * Complete the data object with the languageId property if not exists. 
-     * @param {{language: string, languageId: integer, ...}} data 
-     * @returns {Promise{data}}
-     */
-    static async completeLanguageId(data) {
-        if (!data.languageId && data.language)
-            data.languageId = await conf.global.services.Language.getIdForName(data.language);
-
-        return data;
-    }
-
-    /**
-     * Complete the data object with the domainId property if not exists. 
-     * @param {{domain: string, domainId: integer, ...}} data 
-     * @returns {Promise{data}}
-     */
-    static async completeDomainId(data) {
-        if (!data.domainId && data.domain)
-            data.domainId = (await conf.global.services.Domain.getIdForName(data.domain)) ?? null;
-
-        return data;
-    }
-
-    /**
-     * Creates a new translation row into DB.
-     * @param {{sourceId: string, title: string, description: string}} data - data for the new domain.
-     *  - name: must be unique.
-     *  - title: must be unique.
-     * @returns {Promise{Domain}}
-     */
-    static async create(data) {
-        await this.completeSourceId(data);
-        await this.completeLanguageId(data);
-        await this.completeDomainId(data);
-
+    async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'Translation', 'sourceId', 'languageId');
 
-        return conf.global.models.Translation.create(data);
+        return true;
     }
 
     /**
@@ -67,31 +53,19 @@ export class TranslationService {
      *  - view: show visible peoperties.
      * @returns {options}
      */
-    static async getListOptions(options) {
-        await this.completeSourceId(options.where);
-        await this.completeLanguageId(options.where);
-        await this.completeDomainId(options.where);
-
-        delete options.where.source;
-        delete options.where.language;
-        delete options.where.domain;
+    async getListOptions(options) {
+        await this.completeReferences(options.where, true);
 
         if (options.where.domainId === undefined && Object.prototype.hasOwnProperty.call(options.where, 'domainId'))
             options.where.domainId = null;
 
+        if (options.where.contextId === undefined && Object.prototype.hasOwnProperty.call(options.where, 'contextId'))
+            options.where.contextId = null;
+
         return options;
     }
-    
-    /**
-     * Gets a list of translations.
-     * @param {Options} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{LanguageList}}
-     */
-    static async getList(options) {
-        return conf.global.models.Translation.findAll(await TranslationService.getListOptions(options));
-    }
 
-    static async _gt(language, texts, domain, isJson) {
+    async _gt(language, texts, options) {
         if (!texts?.length)
             return {};
 
@@ -103,6 +77,8 @@ export class TranslationService {
             return translations;
         }
 
+        options ??= {};
+        
         for (const text of texts) {
             let translation;
 
@@ -110,14 +86,14 @@ export class TranslationService {
                 translation = text();
             } else {
                 let arrangedText;
-                isJson ??= false;
+                options.isJson ??= false;
                 if (Array.isArray(text)) {
-                    isJson = true;
+                    options.isJson = true;
                     arrangedText = JSON.stringify(text);
                 } else
                     arrangedText = text;
 
-                domain ??= null;
+                options.domain ??= null;
 
                 if (arrangedText === null || arrangedText === undefined) {
                     translations[arrangedText] = arrangedText;
@@ -125,12 +101,22 @@ export class TranslationService {
                 }
                 
                 arrangedText = arrangedText.trim();
-                let translationObject = await conf.global.models.TranslationCache.findOne({where: {language, domain, source: arrangedText, isJson}});
+                let translationObject = await conf.global.models.TranslationCache.findOne({where: {language, context: options.context ?? null, domain: options.domain ?? null, source: arrangedText, isJson: options.isJson}});
                 if (!translationObject) {
-                    const bestTranslation = await TranslationService.getBestMatchForLanguageTextIsJsonAndDomains(language, arrangedText, isJson, domain);
+                    const bestTranslation = await TranslationService.singleton().getBestMatchForLanguageTextIsJsonContextsAndDomains(language, arrangedText, options.isJson, options.context, options.domain);
                     if (bestTranslation) {
-                        const source = await SourceService.getForTextAndIsJson(arrangedText, isJson);
-                        translationObject = await conf.global.models.TranslationCache.create({language, domain, source: arrangedText, isJson, translation: bestTranslation, ref: source.ref});
+                        const source = await SourceService.singleton().getForTextAndIsJson(arrangedText, options.isJson);
+                        translationObject = await conf.global.models.TranslationCache.create({
+                            language,
+                            domain: options.domain,
+                            context: options.context,
+                            source: arrangedText,
+                            isJson: options.isJson,
+                            translation: bestTranslation.translation,
+                            ref: source.ref,
+                            isTranslated: bestTranslation.isTranslated,
+                            isDraft: bestTranslation.isDraft
+                        });
                     }
                 }
 
@@ -146,29 +132,30 @@ export class TranslationService {
         return translations;
     }
 
-    static async getBestMatchForLanguageTextIsJsonAndDomains(language, text, isJson, domains) {
+    async getBestMatchForLanguageTextIsJsonContextsAndDomains(language, text, isJson, contexts, domains) {
         if (!language)
-            return text;
+            return {translation: text, isTranslated: false, isDraft: true};
 
-        const sourceId = await SourceService.getIdOrCreateForTextAndIsJson(text, isJson);
-        const domainsId = [];
+        const sourceId = await SourceService.singleton().getIdOrCreateForTextAndIsJson(text, isJson);
+        let contextsId = [];
+        let domainsId = [];
+        
+        if (contexts) {
+            if (!Array.isArray(contexts))
+                contexts = contexts.split(',').map(t => t.trim());
+            
+            contextsId = await ContextService.singleton().getIdOrCreateForName(contexts);
+            if (!contextsId.length && contexts.some(c => !c))
+                contextsId.push(null);
+        } else 
+            contextsId.push(null);
+
         if (domains) {
             if (!Array.isArray(domains))
-                domains = domains.split(',');
+                domains = domains.split(',').map(t => t.trim());
             
-            let useNoDomain = true;
-            await Promise.all(
-                await domains.map(
-                    async domain => {
-                        if (domain)
-                            domainsId.push(await DomainService.getIdOrCreateForName(domain.trim()));
-                        else
-                            useNoDomain = true;
-                    }
-                )
-            );
-
-            if (useNoDomain || !domainsId.length)
+            domainsId = await DomainService.singleton().getIdOrCreateForName(domains);
+            if (!domainsId.length && domains.some(c => !c))
                 domainsId.push(null);
         } else 
             domainsId.push(null);
@@ -181,16 +168,18 @@ export class TranslationService {
             };
 
             let translation;
-            for (const i in domainsId) {
-                const options = {
-                    where: {...data,  domainId: domainsId[i]},
-                    limit: 1
-                };
-                translation = await conf.global.models.Translation.findAll(options);
+            for (const domainId of domainsId) {
+                for (const contextId of contextsId) {
+                    const options = {
+                        where: {...data,  domainId, contextId},
+                        limit: 1
+                    };
+                    translation = await conf.global.models.Translation.findAll(options);
 
-                if (translation.length) {
-                    if (translation[0].text)
-                        return translation[0].text;
+                    if (translation.length) {
+                        if (translation[0].text)
+                            return {translation: translation[0].text, isTranslated: true, isDraft: translation[0].isDraft};
+                    }
                 }
             }
 
@@ -200,7 +189,7 @@ export class TranslationService {
             languageData = await LanguageService.get(languageData.parentId);
         }
 
-        return text;
+        return {translation: text, isTranslated: false, isDraft: true};
     }
 
     /**
@@ -211,7 +200,7 @@ export class TranslationService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Language}}
      */
-    static async getForLanguageSourceAndDomain(language, source, domain, options) {
+    async getForLanguageSourceAndDomain(language, source, domain, options) {
         return this.getList(deepComplete(options, {where:{language, source, domain: domain ?? null}, limit: 2}))
             .then(rowList => getSingle(rowList, deepComplete(options, {params: ['translation', 'source', source, 'translation']})));
     }
@@ -221,19 +210,15 @@ export class TranslationService {
      * @param {data} data - data for the new Language @see create.
      * @returns {Promise{Language}}
      */
-    static async createIfNotExists(data, options) {
-        await this.completeSourceId(data);
-        await this.completeLanguageId(data);
-        await this.completeDomainId(data);
+    async createIfNotExists(data, options) {
+        await this.completeReferences(data);
 
-        this.getList(deepComplete(options, {where:{languageId: data.languageId, sourceId: data.sourceId, domainId: data.domainId}, limit: 1}))
-            .then(result => {
-                if (result.length)
-                    return result[0];
+        const rows = await this.getList({where:{languageId: data.languageId, sourceId: data.sourceId, domainId: data.domainId, ...options?.where}, limit: 1, ...options});
+        if (rows.length)
+            return rows[0];
 
-                data.text = data.translation;
+        data.text = data.translation;
 
-                return this.create(data);
-            });
+        return this.create(data);
     }
 }

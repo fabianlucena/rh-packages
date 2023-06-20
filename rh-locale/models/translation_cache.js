@@ -14,6 +14,10 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
+        context: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
         source: {
             type: DataTypes.STRING,
             allowNull: false
@@ -29,6 +33,14 @@ export default (sequelize, DataTypes) => {
         },
         ref: {
             type: DataTypes.STRING,
+            allowNull: true
+        },
+        isTranslated: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true
+        },
+        isDraft: {
+            type: DataTypes.BOOLEAN,
             allowNull: true
         },
     }, {

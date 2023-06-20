@@ -1,43 +1,25 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {MissingPropertyError, getSingle} from 'sql-util';
+import {Service} from 'rf-service';
+import {checkDataForMissingProperties, getSingle} from 'sql-util';
 import {deepComplete} from 'rf-util';
 
-export class SourceService {
-    /**
-     * Creates a new source row into DB.
-     * @param {{text: string}} data - data for the new source.
-     *  - text: must be unique.
-     * @returns {Promise{Source}}
-     */
-    static async create(data) {
-        if (!data.text)
-            throw new MissingPropertyError('Source', 'text');
+export class SourceService extends Service {
+    sequelize = conf.global.sequelize;
+    model = conf.global.models.Source;
+    
+    async validateForCreation(data) {
+        await checkDataForMissingProperties(data, 'Source', 'text');
 
-        return conf.global.models.Source.create(data);
+        return true;
     }
 
-    /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {options}
-     */
-    static async getListOptions(options) {
+    async getListOptions(options) {
         if (!options)
             options = {};
 
         return options;
-    }
-
-    /**
-     * Gets a list of sources.
-     * @param {Options} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{SourceList}}
-     */
-    static async getList(options) {
-        return conf.global.models.Source.findAll(await SourceService.getListOptions(options));
     }
 
     /**
@@ -47,11 +29,9 @@ export class SourceService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Source}}
      */
-    static getForTextAndIsJson(text, isJson, options) {
-        options = {...options, limit: 2};
-        options.where = {...options?.where, text, isJson: isJson ?? false};
-        return this.getList(options)
-            .then(rowList => getSingle(rowList, deepComplete(options, {params: ['source', 'text', text, 'Source']})));
+    async getForTextAndIsJson(text, isJson, options) {
+        const rows = await this.getList({where: {text, isJson: isJson ?? false, ...options?.where}, limit: 2, ...options});
+        return getSingle(rows, deepComplete(options, {params: ['source', 'text', text, 'Source']}));
     }
     
     /**
@@ -61,7 +41,7 @@ export class SourceService {
     * @param {Options} options - Options for the @ref getList method.
     * @returns {Promise{ID}}
     */
-    static async getIdForTextAndIsJson(text, isJson, options) {
+    async getIdForTextAndIsJson(text, isJson, options) {
         return (await this.getForTextIsJson(text, isJson, {...options, attributes: ['id']}))?.id;
     }
 
@@ -70,16 +50,14 @@ export class SourceService {
      * @param {data} data - data for the new source @see create.
      * @returns {Promise{Source}}
      */
-    static createIfNotExists(data, options) {
+    async createIfNotExists(data, options) {
         data.text = data.text.trim();
         data.isJson ??= false;
-        return this.getForTextAndIsJson(data.text, data.isJson, {attributes: ['id'], skipNoRowsError: true, ...options})
-            .then(element => {
-                if (element)
-                    return element;
+        const row = await this.getForTextAndIsJson(data.text, data.isJson, {attributes: ['id'], skipNoRowsError: true, ...options});
+        if (row)
+            return row;
 
-                return this.create(data);
-            });
+        return this.create(data);
     }
 
     /**
@@ -89,7 +67,7 @@ export class SourceService {
     * @param {Options} options - Options for the @ref getList method.
     * @returns {Promise{ID}}
     */
-    static async getIdOrCreateForTextAndIsJson(text, isJson, options) {
+    async getIdOrCreateForTextAndIsJson(text, isJson, options) {
         return (await this.createIfNotExists({text, isJson, ref: options?.data?.ref}, {...options, attributes: ['id']})).id;
     }
 }

@@ -3,15 +3,9 @@
 import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-    class Translation extends sequelize.Sequelize.Model {
-        static associate(models) {
-            this.belongsTo(models.Source,   {foreignKey: 'sourceId',   allowNull: false });
-            this.belongsTo(models.Language, {foreignKey: 'languageId', allowNull: false });
-            this.belongsTo(models.Context,  {foreignKey: 'domainId',   allowNull: true });
-            this.belongsTo(models.Domain,   {foreignKey: 'contextId',  allowNull: true });
-        }
+    class Context extends sequelize.Sequelize.Model {
     }
-    Translation.init({
+    Context.init({
         id: {
             type: DataTypes.BIGINT,
             autoIncrement: true,
@@ -29,17 +23,22 @@ export default (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: true
         },
-        isDraft: {
+        name: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true
+        },
+        title: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true
+        },
+        isTranslatable: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false
         },
-        isJson: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false
-        },
-        text: {
+        description: {
             type: DataTypes.STRING,
             allowNull: true
         },
@@ -49,5 +48,5 @@ export default (sequelize, DataTypes) => {
         freezeTableName: true,
         schema: conf.schema
     });
-    return Translation;
+    return Context;
 };

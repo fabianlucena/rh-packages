@@ -3,12 +3,7 @@
 import {TranslationService} from '../services/translation.js';
 import {Locale} from 'rf-locale';
 
-const loc = new Locale({
-    driver: TranslationService._gt,
-});
-
-await loc.init();
-
+let loc;
 const languageCache = {};
 
 export class LocaleController {
@@ -18,6 +13,14 @@ export class LocaleController {
             if (languageCache[acceptLanguage])
                 req.loc = languageCache[acceptLanguage];
             else {
+                if (!loc) {
+                    loc = new Locale({
+                        driver: TranslationService.singleton()._gt,
+                    });
+                    
+                    await loc.init();
+                }
+
                 const newLoc = loc.clone();
                 newLoc.language = null;
                 await newLoc.loadLanguageFromAcceptLanguage(acceptLanguage);

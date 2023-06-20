@@ -25,6 +25,6 @@ async function updateData(global) {
     const translations = global?.data?.translations;
     for (const source in translations) {
         const data = translations[source];
-        await TranslationService.createIfNotExists({...data, source});
+        await (new TranslationService).createIfNotExists({...data, source});
     }
 }
