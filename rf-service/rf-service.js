@@ -172,11 +172,12 @@ export class Service {
             row.updatedAt = await loc.strftime('%x %R', row.updatedAt);
 
         if (row.isTranslatable) {
+            const translationContext = row.translationContext ?? this.defaultTranslationContext ?? null;
             if (row.title)
-                row.title = await loc._(row.title);
+                row.title = await loc._c(translationContext, row.title);
 
             if (row.description)
-                row.description = await loc._(row.description);
+                row.description = await loc._c(translationContext, row.description);
         }
         delete row.isTranslatable;
 

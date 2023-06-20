@@ -12,6 +12,7 @@ export class MenuItemService extends Service {
         permission: conf.global.services.Permission,
         parent: conf.global.services.MenuItem,
     };
+    defaultTranslationContext = 'menu';
 
     async validateForCreation(data) {
         if (data.id)
