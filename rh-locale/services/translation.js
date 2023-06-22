@@ -145,9 +145,8 @@ export class TranslationService extends Service {
                 contexts = contexts.split(',').map(t => t.trim());
             
             contextsId = await ContextService.singleton().getIdOrCreateForName(contexts);
-            if (!contextsId.length && contexts.some(c => !c))
-                contextsId.push(null);
-        } else 
+        }
+        if (!contextsId.length || !contextsId.some(context => context === null))
             contextsId.push(null);
 
         if (domains) {
@@ -157,7 +156,8 @@ export class TranslationService extends Service {
             domainsId = await DomainService.singleton().getIdOrCreateForName(domains);
             if (!domainsId.length && domains.some(c => !c))
                 domainsId.push(null);
-        } else 
+        }
+        if (!domainsId.length || !domainsId.some(domian => domian === null))
             domainsId.push(null);
         
         let languageData = await LanguageService.singleton().createIfNotExists({name: language.trim(), title: language.trim()});
