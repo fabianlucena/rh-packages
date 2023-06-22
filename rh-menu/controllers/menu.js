@@ -51,7 +51,7 @@ export class MenuController {
             ]
         };
 
-        const rows = await MenuItemService.getList(options);
+        const rows = await MenuItemService.singleton().getList(options);
         const loc = req.loc;
         let menu = await runSequentially(rows, async mir => {
             let mi = mir.toJSON();

@@ -41,6 +41,6 @@ conf.updateData = async function(global) {
 
         menuItemData.data = resData;
 
-        await MenuItemService.createIfNotExists(menuItemData);
+        await MenuItemService.singleton().createIfNotExists(menuItemData);
     });
 };

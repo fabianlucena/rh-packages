@@ -19,7 +19,6 @@ export class MenuItemService extends Service {
             throw new CheckError(loc._cf('menuItem', 'ID parameter is forbiden for creation.'));
 
         checkParameterStringNotNullOrEmpty(data.name, loc._cf('menuItem', 'Name'));
-        checkParameterStringNotNullOrEmpty(data.title, loc._cf('menuItem', 'Title'));
 
         checkValidUuidOrNull(data.uuid);
 
@@ -27,7 +26,7 @@ export class MenuItemService extends Service {
             throw new ConflictError(loc._cf('menuItem', 'Exists another test scenary with that name.'));
 
         if (!data.parentId && data.parent) {
-            const parentMenuItem = await MenuItemService.create({
+            const parentMenuItem = await MenuItemService.singleton().create({
                 isEnabled: true,
                 name: data.parent,
                 label: ucfirst(spacialize(data.parent)),
