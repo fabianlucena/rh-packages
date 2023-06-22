@@ -1,6 +1,9 @@
+'use strict';
+
 import {conf} from '../conf.js';
+import {Service} from 'rf-service';
 import {checkViewOptions, getSingle} from 'sql-util';
-import {complete, deepComplete, check} from 'rf-util';
+import {check} from 'rf-util';
 import {loc} from 'rf-locale';
 import crypto from 'crypto';
 
@@ -12,66 +15,53 @@ export class NoSessionForAuthTokenError extends Error {
     statusCode = 403;
 }
 
-complete(
-    conf,
-    {
-        sessionCache: {},
-        sessionCacheValidityTime: 60000,
-        sessionCacheMaxLength: 10000,
-        sessionCacheMaintenanceInterval: 1000,
-        sessionCacheMaintenanceMethod: () => {
-            const expiration = new Date(Date.now() - conf.sessionCacheValidityTime);
-            const list = [];
-            for (const authToken in conf.sessionCache) {
-                const item = conf.sessionCache[authToken];
-                if (item.lastUse < expiration) {
-                    delete conf.sessionCache[authToken];
-                } else {
-                    list.push({
-                        authToken,
-                        lastUse: conf.sessionCache[authToken].lastUse,
-                    });
-                }
-            }
-
-            list.sort((a, b) => a.lastUse - b.lastUse);
-            list.slice(conf.sessionCacheMaxLength).forEach(item => delete conf.sessionCache[item.authToken]);
-        },
+conf.sessionCache ??= {};
+conf.sessionCacheValidityTime ??= 60000;
+conf.sessionCacheMaxLength ??= 10000;
+conf.sessionCacheMaintenanceInterval ??= 1000;
+conf.sessionCacheMaintenanceMethod ??= () => {
+    const expiration = new Date(Date.now() - conf.sessionCacheValidityTime);
+    const list = [];
+    for (const authToken in conf.sessionCache) {
+        const item = conf.sessionCache[authToken];
+        if (item.lastUse < expiration) {
+            delete conf.sessionCache[authToken];
+        } else {
+            list.push({
+                authToken,
+                lastUse: conf.sessionCache[authToken].lastUse,
+            });
+        }
     }
-);
+
+    list.sort((a, b) => a.lastUse - b.lastUse);
+    list.slice(conf.sessionCacheMaxLength).forEach(item => delete conf.sessionCache[item.authToken]);
+};
 
 conf.init.push(() => conf.sessionCacheMaintenance = setInterval(conf.sessionCacheMaintenanceMethod, conf.sessionCacheMaintenanceInterval));
 
-export class SessionService {
-    /**
-     * Creates a new session row into DB.
-     * @param {{
-     *  authToken: string,
-     *  index: string,
-     *  open: DateTime,
-     *  close: DateTime,
-     *  userId: integer,
-     *  deviceId: integer,
-     * }} data - data of the new session. Close property could be null.
-     * @returns {Promise{Device}}
-     */
-    static create(data) {
+export class SessionService extends Service {
+    sequelize = conf.global.sequelize;
+    model = conf.global.models.Session;
+    defaultTranslationContext = 'session';
+
+    async validateForCreation(data) {
         if (!data.authToken)
             data.authToken = crypto.randomBytes(64).toString('hex');
 
         if (!data.autoLoginToken)
             data.autoLoginToken = crypto.randomBytes(64).toString('hex');
         
-        return conf.global.models.Session.create(data);
+        return true;
     }
 
     /**
      * Gets the options for use in the getList and getListAndCount methods.
-     * @param {Options} options - options for the @see sequelize.findAll method.
+     * @param {object} options - options for the @see sequelize.findAll method.
      *  - view: show visible peoperties.
-     * @returns {options}
+     * @returns {t}
      */
-    static async getListOptions(options) {
+    async getListOptions(options) {
         if (!options)
             options = {};
 
@@ -99,90 +89,47 @@ export class SessionService {
     }
 
     /**
-     * Gets a list of sessions.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {Promise{SessionList}]
-     */
-    static async getList(options) {
-        return conf.global.models.Session.findAll(await SessionService.getListOptions(options));
-    }
-
-    /**
-     * Gets a list of sessions and its rows count.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {Promise{SessionList}]
-     */
-    static async getListAndCount(options) {
-        return conf.global.models.Session.findAndCountAll(await SessionService.getListOptions(options));
-    }
-
-    /**
-     * Gets a session for its name. For many coincidences and for no rows this method fails.
-     * @param {string} name - name for the session to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Session}}
-     */
-    static getForId(id, options) {
-        return SessionService.getList(deepComplete(options, {where: {id}, limit: 2}))
-            .then(rowList => getSingle(rowList, complete(options, {params: ['session', ['id = %s', id], 'Session']})));
-    }
-
-    /**
-     * Gets a session for its UUID. For many coincidences and for no rows this method fails.
-     * @param {string} uuid - UUID for the session to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Session}}
-     */
-    static getForUuid(uuid, options) {
-        return SessionService.getList(deepComplete(options, {where: {uuid}, limit: 2}))
-            .then(rowList => getSingle(rowList, complete(options, {params: ['session', ['UUID = %s', uuid], 'Session']})));
-    }
-
-    /**
      * Gets a session for its authToken. For many coincidences and for no rows this method fails.
      * @param {string} authToken - Auth token for the session to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Session}}
+     * @param {object} options - Options for the @ref getList method.
+     * @returns {Promise[Session]}
      */
-    static getForAuthToken(authToken, options) {
-        return SessionService.getList(deepComplete(options, {where: {authToken}, limit: 2}))
-            .then(rowList => getSingle(rowList, complete(options, {params: ['session', ['authToken = %s', authToken], 'Session']})));
+    async getForAuthToken(authToken, options) {
+        const rows = await this.getList({...options, where: {...options?.where, authToken}, limit: 2});
+        return getSingle(rows, {...options, params: ['session', ['authToken = %s', authToken], 'Session']});
     }
 
     /**
      * Get a session for a given authToken from the cache or from the DB. @see getForAuthToken method.
      * @param {string} authToken - value for the authToken to get the session.
-     * @returns {Promise{Device}}
+     * @returns {Promise[Device]}
      */
-    static getJSONForAuthTokenCached(authToken) {
+    async getJSONForAuthTokenCached(authToken) {
         if (conf.sessionCache && conf.sessionCache[authToken]) {
             const sessionData = conf.sessionCache[authToken];
             sessionData.lastUse = Date.now();
-            return new Promise(resolve => resolve(sessionData.session));
+
+            return sessionData.session;
         }
 
-        return SessionService.getForAuthToken(authToken, {skipNoRowsError: true, include: [{model: conf.global.models.User}]})
-            .then(session => new Promise((resolve, reject) => {
-                if (!session)
-                    return reject(new NoSessionForAuthTokenError());
-                    
-                if (session.close)
-                    return reject(new SessionClosedError());
+        let session = await this.getForAuthToken(authToken, {skipNoRowsError: true, include: [{model: conf.global.models.User}]});
+        if (!session)
+            throw new NoSessionForAuthTokenError();
+            
+        if (session.close)
+            throw new SessionClosedError();
 
-                session = session.toJSON();
+        session = session.toJSON();
 
-                conf.sessionCache[authToken] = {
-                    session: session,
-                    lastUse: Date.now(),
-                };
+        conf.sessionCache[authToken] = {
+            session: session,
+            lastUse: Date.now(),
+        };
 
-                resolve(session);
-            }));
+        return session;
     }
 
-    static deleteFromCacheForSessionId(sessionId) {
+    async deleteFromCacheForSessionId(sessionId) {
         for (const authToken in conf.sessionCache) {
             if (conf.sessionCache[authToken].session.id === sessionId) {
                 delete conf.sessionCache[authToken];
@@ -194,47 +141,42 @@ export class SessionService {
     /**
      * Closes a session for a given ID.
      * @param {number} id - ID for the session o close.
-     * @returns {Promise{Session}}
+     * @returns {Promise[Session]}
      */
-    static async closeForId(id) {
+    async closeForId(id) {
         check(id, {_message: loc._cf('session', 'There is no id for session')});
 
-        return SessionService.getForId(id)
-            .then(session => {
-                const authToken = session.authToken;
-                if (conf.sessionCache[authToken])
-                    delete conf.sessionCache[authToken];
+        const session = await this.getForId(id);
+        const authToken = session.authToken;
+        if (conf.sessionCache[authToken])
+            delete conf.sessionCache[authToken];
 
-                return conf.global.models.Session.update(
-                    {close: Date.now()},
-                    {where: {id}}
-                );
-            });
+        return this.updateForId({close: Date.now()}, id);
     }
 
     /**
      * Deletes a session for a given UUID.
      * @param {string} uuid - UUID for the session o delete.
-     * @returns {Promise{Result}}
+     * @returns {Promise[integer]}
      */
-    static async deleteForUuid(uuid) {
-        const session = await SessionService.getForUuid(uuid, {_noRowsError: loc._cf('session', 'Row for UUID %s does not exist', uuid)});
+    async deleteForUuid(uuid) {
+        const session = await this.getForUuid(uuid, {_noRowsError: loc._cf('session', 'Row for UUID %s does not exist', uuid)});
         if (session) {
             if (conf.sessionCache[session.authToken])
                 delete conf.sessionCache[session.authToken];
 
-            return conf.global.models.Session.destroy({where:{uuid}});
+            return this.deleteForUuid(uuid);
         }
     }
 
     /**
      * Gets a session for its autoLoginToken. For many coincidences and for no rows this method fails.
      * @param {string} autoLoginToken - auto login token for the session to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Session}}
+     * @param {object} options - Options for the @ref getList method.
+     * @returns {Promise[Session]}
      */
-    static getForAutoLoginToken(autoLoginToken, options) {
-        return SessionService.getList(deepComplete(options, {where: {autoLoginToken}, limit: 2}))
-            .then(rowList => getSingle(rowList, complete(options, {params: ['session', ['autoLoginToken = %s', autoLoginToken], 'Session']})));
+    async getForAutoLoginToken(autoLoginToken, options) {
+        const rows = await this.getList({...options, where: {...options?.where, autoLoginToken}, limit: 2});
+        return getSingle(rows, {params: ['session', ['autoLoginToken = %s', autoLoginToken], 'Session'], ...options});
     }
 }

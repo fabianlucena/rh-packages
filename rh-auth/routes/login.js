@@ -1,3 +1,5 @@
+'use strict';
+
 import {LoginController} from '../controllers/login.js';
 import {corsSimplePreflight, methodNotAllowed, asyncHandler} from 'http-util';
 

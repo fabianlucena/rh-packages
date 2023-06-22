@@ -1,16 +1,31 @@
-import {IdentityTypeService} from '../services/identity_type.js';
-import {UserService} from '../services/user.js';
+'use strict';
+
 import {conf} from '../conf.js';
+import {Service} from 'rf-service';
 import {checkDataForMissingProperties, MissingPropertyError, completeAssociationOptions, addEnabledFilter, getSingle} from 'sql-util';
 import crypto from 'crypto';
 
-export class IdentityService {
+export class IdentityService extends Service {
+    sequelize = conf.global.sequelize;
+    model = conf.global.models.Identity;
+    references = {
+        type: conf.global.services.IdentityType,
+        username: {
+            service: conf.global.services.User,
+            name: 'username',
+            Name: 'User',
+            idParamName: 'userId',
+            uuidParamName: 'userUuid',
+        },
+    };
+    defaultTranslationContext = 'identity';
+
     /**
      * Hash the password with a randomic salt
      * @param {string} password - the plain passwor to be hashed 
-     * @returns {Promise{string}} - hashed password in hex text format
+     * @returns {Promise[string]} - hashed password in hex text format
      */
-    static hashPassword(password) {
+    async hashPassword(password) {
         return new Promise((resolve, reject) => {
             const salt = crypto.randomBytes(8).toString('hex');
             crypto.scrypt(password, salt, 64, (err, derivedKey) => {
@@ -23,11 +38,12 @@ export class IdentityService {
     }
 
     /**
-     * Completes, if not exists, the data property of data object with the hashed JSON password data, taked from the password property.
+     * Completes, if not exists, the data property of data object with the hashed JSON password data, 
+     * taked from the password property.
      * @param {{data: string, password: JSON}} data - data to pass to create method.
-     * @returns {Promise{data}}
+     * @returns {Promise[data]}
      */
-    static async completeDataFromPassword(data) {
+    async completeDataFromPassword(data) {
         if (!data.password)
             return data;
 
@@ -37,63 +53,32 @@ export class IdentityService {
         else
             jsonData = {};
 
-        jsonData.password = await IdentityService.hashPassword(data.password);
+        jsonData.password = await this.hashPassword(data.password);
         data.data = JSON.stringify(jsonData);
 
         return data;
     }
 
-    /**
-     * Completes, if not exists, the typeId property of the data object with the ID of the type taken from the type property,
-     * @param {{typeId: integer, type: string}} data - data to pass to create method.
-     * @returns {Promise{data}}
-     */
-    static async completeTypeId(data) {
-        if (!data.typeId && data.type)
-            data.typeId = await IdentityTypeService.getIdForName(data.type);
-
-        return data;
-    }
-
-    /**
-     * Completes, if not exists, the userId property of the data object with the ID of the user taken from the user property,
-     * @param {{userId: integer, user: string}}
-     * @returns {Promise{data}}
-     */
-    static async completeUserId(data) {
-        if (!data.userId && data.username)
-            data.userId = await UserService.getIdForUsername(data.username);
-
-        return data;
-    }
-
-    /**
-     * Creates a new Identity in the database, but before hash the password and get the typeId. If both properties data and password are defined password property is ignored. Also for both typeId and type, type is ignored.
-     * @param {{isEnabled: boolean, data: JSON, userId: integer, typeId: integer, password: string, type: string}} data - data to pass to create method.
-     * @returns {Promise{data}}
-     */
-    static async create(data) {
-        await IdentityService.completeUserId(data);
-        await IdentityService.completeTypeId(data);
-        await IdentityService.completeDataFromPassword(data);
+    async validateForCreation(data) {
+        await this.completeDataFromPassword(data);
 
         if (!data.data)
             throw new MissingPropertyError('Identity', 'password');
 
         checkDataForMissingProperties(data, 'Identity', 'typeId', 'userId');
 
-        return conf.global.models.Identity.create(data);
+        return true;
     }
 
     /**
      * Creates a local identity, this method set the type property of data to 'local' and then calls create method.
      * @param {{isEnabled: boolean, data: JSON, userId: integer}} data - data to pass to create method.
-     * @returns {Promise{data}}
+     * @returns {Promise[data]}
      */
-    static createLocal(data) {
+    async createLocal(data) {
         delete data.typeId;
         data.type = 'local';
-        return IdentityService.create(data);
+        return this.create(data);
     }
 
     /**
@@ -102,7 +87,7 @@ export class IdentityService {
      *  - view: show visible peoperties.
      * @returns {options}
      */
-    static async getListOptions(options) {
+    async getListOptions(options) {
         if (options.isEnabled !== undefined)
             options = addEnabledFilter(options);
 
@@ -110,51 +95,18 @@ export class IdentityService {
     }
 
     /**
-     * Gets a list of identities. If not isEnabled filter provided returns only the enabled identities.
-     * @param {Options} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{DeviceList}]
-     */
-    static async getList(options) {
-        return conf.global.models.Identity.findAll(await IdentityService.getListOptions(options));
-    }
-
-    /**
-     * Get the identity for its UUID. If not exists or exist many cohincidences the method fails.
-     * @param {string} uuid - the uuid to search.
-     * @param {OptionsObject} options - For valid options see: sqlUtil.completeAssociationOptions method, and sqlUtil.getSingle.
-     * @returns {Promise{Identity}}
-     */
-    static async getForId(id, options) {
-        options = {include: [], limit: 2, where:{id}, ...options};
-        const rowList = await IdentityService.getList(options);
-        return getSingle(rowList, options);
-    }
-
-    /**
-     * Get the identity for its UUID. If not exists or exist many cohincidences the method fails.
-     * @param {string} uuid - the uuid to search.
-     * @param {OptionsObject} options - For valid options see: sqlUtil.completeAssociationOptions method, and sqlUtil.getSingle.
-     * @returns {Promise{Identity}}
-     */
-    static async getForUuid(uuid, options) {
-        options = {include: [], limit: 2, where:{uuid}, ...options};
-        const rowList = await IdentityService.getList(options);
-        return getSingle(rowList, options);
-    }
-
-    /**
      * Get the identity for a given username and type name. If not exists or exist many cohincidences the method fails. If the isEnabled value is not defined this value is setted to true.
      * @param {string} username - the username to search.
      * @param {string} typeName - the typename to search.
      * @param {OptionsObject} options - For valid options see: sqlUtil.completeAssociationOptions method, and sqlUtil.getSingle.
-     * @returns {Promise{Identity}}
+     * @returns {Promise[Identity]}
      */
-    static async getForUsernameTypeName(username, typeName, options) {
+    async getForUsernameTypeName(username, typeName, options) {
         options = {include: [], limit: 2, ...options};
         options.include.push(completeAssociationOptions({model: conf.global.models.IdentityType, where: {name: typeName}, required: true}, options));
         options.include.push(completeAssociationOptions({model: conf.global.models.User,         where: {username},       required: true}, options));
 
-        const rowList = await IdentityService.getList(options);
+        const rowList = await this.getList(options);
         return getSingle(rowList, options);
     }
 
@@ -162,83 +114,84 @@ export class IdentityService {
      * Get the 'local' type identity for a given username. See getForUsernameTypeName for more details.
      * @param {string} username - the username to search. 
      * @param {OptionsObject} options - For valid options see: sqlUtil.getForUsernameTypeName method.
-     * @returns {Promise{Identity}}
+     * @returns {Promise[Identity]}
      */
-    static getLocalForUsername(username, options) {
-        return IdentityService.getForUsernameTypeName(username, 'local', options);
+    async getLocalForUsername(username, options) {
+        return this.getForUsernameTypeName(username, 'local', options);
     }
 
     /**
      * Checks the password for a local identity of the username user.
      * @param {string} username - the username for check password.
      * @param {string} password - the plain password to check.
-     * @returns {Promise{bool}}
+     * @returns {Promise[bool|errorMessage]}
      */
-    static checkLocalPasswordForUsername(username, password, loc) {
-        return new Promise((resolve, reject) => {
-            IdentityService.getLocalForUsername(username)
-                .then(async identity => {
-                    if (!identity)
-                        return reject(await loc._('User "%s" does not have local identity', username));
+    async checkLocalPasswordForUsername(username, rawPassword, loc) {
+        const identity = await this.getLocalForUsername(username);
 
-                    if (!identity.isEnabled)
-                        return reject(await loc._('User "%s" local entity is not enabled', username));
-                    
-                    if (!identity.data)
-                        return reject(await loc._('User "%s" does not have local identity data', username));
-                    
-                    const data = JSON.parse(identity.data);
-                    if (!data || !data.password)
-                        return reject(await loc._('User "%s" does not have local password', username));
+        if (!identity)
+            return loc._c('identity', 'User "%s" does not have local identity', username);
 
-                    const [salt, key] = data.password.split(':');
-                    crypto.scrypt(password, salt, 64, (err, derivedKey) => {
-                        if (err)
-                            reject(err);
-                        
-                        resolve(key == derivedKey.toString('hex'));
-                    });
-                })
-                .catch(async err => 
-                    reject(await loc._('Can\'t get the identity for: "%s", %s', username, err))
-                );
+        if (!identity.isEnabled)
+            return loc._c('identity', 'User "%s" local identity is not enabled', username);
+        
+        if (!identity.data)
+            return loc._c('identity', 'User "%s" does not have local identity data', username);
+            
+        const data = JSON.parse(identity.data);
+        if (!data || !data.password)
+            return loc._c('identity', 'User "%s" does not have local password', username);
+
+        return this.checkRawPasswordAndEncryptedPassword(rawPassword, data.password);
+    }
+
+    /**
+     * Checks if the password match with the encripted password.
+     * @param {string} rawPassword - the username for check password.
+     * @param {string} encriptedPassword - the plain password to check.
+     * @returns {Promise[bool|errorMessage]}
+     */
+    async checkRawPasswordAndEncryptedPassword(rawPassword, encriptedPassword) {
+        return new Promise(resolve => {
+            const [salt, key] = encriptedPassword.split(':');
+            crypto.scrypt(rawPassword, salt, 64, (err, derivedKey) => {
+                if (err)
+                    resolve(err);
+                
+                resolve(key == derivedKey.toString('hex'));
+            });
         });
     }
     
     /**
      * Creates a new identity row into DB if not exists.
      * @param {data} data - data for the new identity @see create.
-     * @returns {Promise{Identity}}
+     * @returns {Promise[Identity]}
      */
-    static createIfNotExists(data, options) {
-        return IdentityService.getForUsernameTypeName(data.username, data.type, {attributes: ['id'], skipNoRowsError: true, ...options})
-            .then(row => {
-                if (row)
-                    return row;
+    async createIfNotExists(data, options) {
+        const row = this.getForUsernameTypeName(data.username, data.type, {attributes: ['id'], skipNoRowsError: true, ...options});
+        if (row)
+            return row;
 
-                return IdentityService.create(data);
-            });
+        return this.create(data);
     }
 
     /**
      * Updates an identity.
      * @param {object} data - Data to update.
-     * @param {object} uuid - UUID of the uer to update.
-     * @returns {Promise{Result}} updated rows count.
+     * @param {object} where - Where object with the criteria to update.
+     * @returns {Promise[integer]} updated rows count.
      */
-    static async updateForId(data, id) {
-        await IdentityService.completeUserId(data);
-        await IdentityService.completeTypeId(data);
-
+    async update(data, where) {
         if (data.password) {
             if (!data.data) {
-                const identity = await this.getForId(id);
+                const identity = await this.getFor(where);
                 data.data = identity.data;
             }
 
-            await IdentityService.completeDataFromPassword(data);
+            await this.completeDataFromPassword(data);
         }
 
-        return conf.global.models.Identity.update(data, {where:{id}});
+        return super.update(data, where);
     }
 }

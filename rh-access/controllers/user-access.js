@@ -67,7 +67,7 @@ export class UserAccessController {
         const siteUuid = checkParameterUuid(req.body.Site, loc._cf('userAccess', 'Site'));
         const roleUuidList = checkParameterUuidList(req.body.Roles, loc._cf('userAccess', 'Roles'));
 
-        const userId = await conf.global.services.User.getIdForUuid(userUuid);
+        const userId = await conf.global.services.User.singleton().getIdForUuid(userUuid);
         const siteId = await conf.global.services.Site.getIdForUuid(siteUuid);
 
         const options = {
@@ -363,8 +363,8 @@ export class UserAccessController {
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
 
-        const UserService = conf.global.services.User;
-        const result = await UserService.getListAndCount(options);
+        const userService = conf.global.services.User;
+        const result = await userService.getListAndCount(options);
 
         res.status(200).send(result);
     }

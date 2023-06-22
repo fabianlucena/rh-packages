@@ -55,7 +55,7 @@ export class LoginController {
         let loc = req.loc;
 
         res.status(200).send({
-            title: await loc._('Login'),
+            title: await loc._c('login', 'Login'),
             action: 'login',
             method: 'post',
             onSuccess: 'setBearerAuthorizationFromResponseProperty("authToken"); reloadMenu();',
@@ -64,14 +64,14 @@ export class LoginController {
                 {
                     name: 'username',
                     type: 'text',
-                    label: await loc._('Username'),
-                    placeholder: await loc._('Username'),
+                    label: await loc._c('login', 'Username'),
+                    placeholder: await loc._c('login', 'Type the username here'),
                 },
                 {
                     name: 'password',
                     type: 'password',
-                    label: await loc._('Password'),
-                    placeholder: await loc._('Password'),
+                    label: await loc._c('login', 'Password'),
+                    placeholder: await loc._c('login', 'Type the password here'),
                 }
             ]
         });
@@ -116,11 +116,12 @@ export class LoginController {
             checkParameter(req?.body, {username: loc._cf('login', 'Username'), password: loc._cf('login', 'Password')});
 
         try {
+            const loginService = LoginService.singleton();
             let session;
             if (req.body.autoLoginToken)
-                session = await LoginService.forAutoLoginTokenAndSessionIndex(req.body.autoLoginToken, req.body.deviceToken, req.body?.sessionIndex ?? req.body.index, req.loc);
+                session = await loginService.forAutoLoginTokenAndSessionIndex(req.body.autoLoginToken, req.body.deviceToken, req.body?.sessionIndex ?? req.body.index, req.loc);
             else
-                session = await LoginService.forUsernamePasswordDeviceTokenAndSessionIndex(req.body.username, req.body.password, req.body.deviceToken, req.body.sessionIndex ?? req.body.index, req.loc);
+                session = await loginService.forUsernamePasswordDeviceTokenAndSessionIndex(req.body.username, req.body.password, req.body.deviceToken, req.body.sessionIndex ?? req.body.index, req.loc);
 
             const now = new Date();
             const expires30  = new Date();

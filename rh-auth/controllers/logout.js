@@ -1,3 +1,5 @@
+'use strict';
+
 import {LogoutService} from '../services/logout.js';
 import {conf} from '../conf.js';
 
@@ -31,9 +33,9 @@ export class LogoutController {
      */
     static async post(req, res) {
         if (!req.session)
-            return res.status(401).send({error: await req.loc._('No session')});
+            return res.status(401).send({error: await req.loc._c('logout', 'No session')});
 
-        await LogoutService.logout(req.session);
+        await LogoutService.singleton().logout(req.session);
 
         conf.global.eventBus?.$emit('logout', req.session.id);
 

@@ -1,6 +1,9 @@
+'use strict';
+
 import {conf} from '../conf.js';
+import {Service} from 'rf-service';
 import {getSingle} from 'sql-util';
-import {complete, deepComplete} from 'rf-util';
+import {complete} from 'rf-util';
 import crypto from 'crypto';
 
 complete(
@@ -33,76 +36,52 @@ complete(
 
 conf.init.push(() => conf.deviceCacheMaintenance = setInterval(conf.deviceCacheMaintenanceMethod, conf.deviceCacheMaintenanceInterval));
 
-export class DeviceService {
-    /**
-     * Creates a new device into DB.
-     * @param {{token: string, data: JSON}} data - data of the new device.
-     * @returns {Promise{Device}}
-     */
-    static create(data) {
-        if (!data)
-            data = {};
+export class DeviceService extends Service {
+    sequelize = conf.global.sequelize;
+    model = conf.global.models.Device;
+    defaultTranslationContext = 'device';
 
+    async validateForCreation(data) {
         if (!data.token)
             data.token = crypto.randomBytes(64).toString('hex');
 
-        return conf.global.models.Device.create(data);
-    }
-    
-    /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {options}
-     */
-    static async getListOptions(options) {
-        if (!options)
-            options = {};
-
-        return options;
-    }
-
-    /**
-     * Gets a list of devices.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     * @returns {Promise{DeviceList}]
-     */
-    static async getList(options) {
-        return conf.global.models.Device.findAll(await DeviceService.getListOptions(options));
+        return true;
     }
 
     /**
      * Gets a device for a given token value. For many coincidences and for no rows this method fails.
      * @param {string} token - value for the token to get the device.
      * @param {Options} options - Options for the @see getList method.
-     * @returns {Promise{Device}}
+     * @returns {Promise[Device]}
      */
-    static getForToken(token, options) {
-        return this.getList(deepComplete(options, {where:{token: token}, limit: 2}))
-            .then(rowList => getSingle(rowList, deepComplete(options, {params: ['devices', 'token', token, 'Device']})));
+    async getForToken(token, options) {
+        if (Array.isArray(token))
+            return this.getList({...options, where: {...options?.where, token}});
+            
+        const rows = await this.getList({...options, where: {...options?.where, token}, limit: 2});
+
+        return getSingle(rows, {params: ['devices', 'token', token, 'Device'], ...options});
     }
 
     /**
      * Get a device for a given token value from the cache or from the DB. @see getForToken method.
      * @param {string} token - value for the token to get the device.
-     * @returns {Promise{Device}}
+     * @returns {Promise[Device]}
      */
-    static getForTokenCached(token) {
+    async getForTokenCached(token) {
         if (conf.deviceCache && conf.deviceCache[token]) {
             const deviceData = conf.deviceCache[token];
             deviceData.lastUse = Date.now();
-            return new Promise(resolve => resolve(deviceData.device));
+            return deviceData.device;
         }
 
-        return this.getForToken(token)
-            .then(device => new Promise(resolve => {
-                conf.deviceCache[token] = {
-                    device: device,
-                    lastUse: Date.now(),
-                };
+        const device = this.getForToken(token);
+        conf.deviceCache[token] = {
+            device: device,
+            lastUse: Date.now(),
+        };
 
-                resolve(device);
-            }));
+        return device;
     }
 }
     

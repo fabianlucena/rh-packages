@@ -1,3 +1,5 @@
+'use strict';
+
 import {UserService} from '../services/user.js';
 import {getOptionsFromParamsAndOData, _HttpError, ConflictError} from 'http-util';
 import {checkParameter, checkParameterUuid} from 'rf-util';
@@ -60,10 +62,10 @@ export class UserController {
      */
     static async post(req, res) {
         checkParameter(req?.body, 'username', 'displayName');
-        if (await UserService.getForUsername(req.body.username, {skipNoRowsError: true}))
+        if (await UserService.singleton().getForUsername(req.body.username, {skipNoRowsError: true}))
             throw new ConflictError();
 
-        await UserService.create(req.body);
+        await UserService.singleton().create(req.body);
         res.status(204).send();
     }
 
@@ -129,7 +131,7 @@ export class UserController {
         let options = {view: true, limit: 10, offset: 0};
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
-        const result = await UserService.getListAndCount(options);
+        const result = await UserService.singleton().getListAndCount(options);
 
         res.status(200).send(result);
     }
@@ -146,7 +148,7 @@ export class UserController {
         let loc = req.loc;
 
         res.status(200).send({
-            title: await loc._('User'),
+            title: await loc._c('user', 'User'),
             load: {
                 service: 'user',
                 method: 'get',
@@ -156,12 +158,12 @@ export class UserController {
                 {
                     name: 'displayName',
                     type: 'text',
-                    label: await loc._('Display name'),
+                    label: await loc._c('user', 'Display name'),
                 },
                 {
                     name: 'username',
                     type: 'text',
-                    label: await loc._('Username'),
+                    label: await loc._c('user', 'Username'),
                 },
             ]
         });
@@ -172,21 +174,21 @@ export class UserController {
 
         let loc = req.loc;
         res.status(200).send({
-            title: await loc._('Users'),
+            title: await loc._c('user', 'Users'),
             action: 'user',
             fields: [
                 {
                     name: 'displayName',
                     type: 'text',
-                    label: await loc._('Display name'),
-                    placeholder: await loc._('Display name'),
+                    label: await loc._c('user', 'Display name'),
+                    placeholder: await loc._c('user', 'Type the display name here'),
                     autocomplete: 'off',
                 },
                 {
                     name: 'username',
                     type: 'text',
-                    label: await loc._('Username'),
-                    placeholder: await loc._('Username'),
+                    label: await loc._c('user', 'Username'),
+                    placeholder: await loc._c('user', 'Username'),
                     autocomplete: 'off',
                     readonly: {
                         create: false,
@@ -196,15 +198,15 @@ export class UserController {
                 {
                     name: 'isEnabled',
                     type: 'checkbox',
-                    label: await loc._('Enabled'),
-                    placeholder: await loc._('Enabled'),
+                    label: await loc._c('user', 'Enabled'),
+                    placeholder: await loc._c('user', 'Enabled'),
                     value: true,
                 },
                 {
                     name: 'password',
                     type: 'password',
-                    label: await loc._('Password'),
-                    placeholder: await loc._('Type here the new password for user'),
+                    label: await loc._c('user', 'Password'),
+                    placeholder: await loc._c('user', 'Type here the new password for user'),
                     autocomplete: 'off',
                 },
             ],
@@ -252,7 +254,7 @@ export class UserController {
      */
     static async delete(req, res) {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('user', 'UUID'));
-        const rowsDeleted = await UserService.deleteForUuid(uuid);
+        const rowsDeleted = await UserService.singleton().deleteForUuid(uuid);
         if (!rowsDeleted)
             throw new _HttpError(req.loc._cf('user', 'User with UUID %s does not exists.'), 403, uuid);
 
@@ -300,7 +302,7 @@ export class UserController {
      */
     static async enablePost(req, res) {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('user', 'UUID'));
-        const rowsUpdated = await UserService.enableForUuid(uuid);
+        const rowsUpdated = await UserService.singleton().enableForUuid(uuid);
         if (!rowsUpdated)
             throw new _HttpError(req.loc._cf('user', 'User with UUID %s does not exists.'), 403, uuid);
 
@@ -348,7 +350,7 @@ export class UserController {
      */
     static async disablePost(req, res) {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('user', 'UUID'));
-        const rowsUpdated = await UserService.disableForUuid(uuid);
+        const rowsUpdated = await UserService.singleton().disableForUuid(uuid);
         if (!rowsUpdated)
             throw new _HttpError(req.loc._cf('user', 'User with UUID %s does not exists.'), 403, uuid);
 
@@ -394,7 +396,7 @@ export class UserController {
      */
     static async patch(req, res) {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('user', 'UUID'));
-        const rowsUpdated = await UserService.updateForUuid(req.body, uuid);
+        const rowsUpdated = await UserService.singleton().updateForUuid(req.body, uuid);
         if (!rowsUpdated)
             throw new _HttpError(req.loc._cf('user', 'User with UUID %s does not exists.'), 403, uuid);
 

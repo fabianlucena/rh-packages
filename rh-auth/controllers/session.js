@@ -1,3 +1,5 @@
+'use strict';
+
 import {SessionService, SessionClosedError, NoSessionForAuthTokenError} from '../services/session.js';
 import {getOptionsFromParamsAndOData, deleteHandler} from 'http-util';
 import {getErrorMessage, checkParameter, checkParameterUuid} from 'rf-util';
@@ -17,7 +19,7 @@ export class SessionController {
                 return;
             }
 
-            SessionService.getJSONForAuthTokenCached(req.authToken)
+            SessionService.singleton().getJSONForAuthTokenCached(req.authToken)
                 .then(session => {
                     req.session = session;
                     req.user = req.session.User;
@@ -25,9 +27,9 @@ export class SessionController {
                 })
                 .catch(async err => {
                     if (err instanceof SessionClosedError)
-                        res.status(401).send({error: await req.loc._('HTTP error 403 forbiden, session is closed.')});
+                        res.status(401).send({error: await req.loc._c('session', 'HTTP error 403 forbiden, session is closed.')});
                     else if (err instanceof NoSessionForAuthTokenError)
-                        res.status(401).send({error: await req.loc._('HTTP error 403 forbiden, authorization token error.')});
+                        res.status(401).send({error: await req.loc._c('session', 'HTTP error 403 forbiden, authorization token error.')});
                     else {
                         let msg;
                         if (err instanceof Error)
@@ -36,9 +38,9 @@ export class SessionController {
                             msg = err;
 
                         if (msg)
-                            res.status(401).send({error: 'Unauthorized', message: await req.loc._('HTTP error 401 unauthorized: %s', msg)});
+                            res.status(401).send({error: 'Unauthorized', message: await req.loc._c('session', 'HTTP error 401 unauthorized: %s', msg)});
                         else
-                            res.status(401).send({error: 'Unauthorized', message: await req.loc._('HTTP error 401 unauthorized')});
+                            res.status(401).send({error: 'Unauthorized', message: await req.loc._c('session', 'HTTP error 401 unauthorized')});
                     }
                 });
         };
@@ -132,7 +134,7 @@ export class SessionController {
             options.where = {...options?.where, id: req.session.id};
         }
 
-        const data = await SessionService.getListAndCount(options);
+        const data = await SessionService.singleton().getListAndCount(options);
         data.rows = await Promise.all(data.rows.map(async row => {
             row = row.toJSON();
             row.open = await req.loc.strftime('%x %X', row.open);
@@ -156,7 +158,7 @@ export class SessionController {
         let loc = req.loc;
 
         res.status(200).send({
-            title: await loc._('Sessions'),
+            title: await loc._c('session', 'Sessions'),
             load: {
                 service: 'session',
                 method: 'get',
@@ -166,12 +168,12 @@ export class SessionController {
                 {
                     name: 'open',
                     type: 'text',
-                    label: await loc._('Open'),
+                    label: await loc._c('session', 'Open'),
                 },
                 {
                     name: 'close',
                     type: 'text',
-                    label: await loc._('Close'),
+                    label: await loc._c('session', 'Close'),
                 },
             ]
         });
@@ -218,7 +220,7 @@ export class SessionController {
      */
     static async delete(req, res) {
         const uuid = checkParameterUuid(req?.query?.uuid, req.loc._cf('session', 'UUID'));
-        const rowCount = await SessionService.deleteForUuid(uuid);
+        const rowCount = await SessionService.singleton().deleteForUuid(uuid);
         await deleteHandler(req, res, rowCount);
     }
 }

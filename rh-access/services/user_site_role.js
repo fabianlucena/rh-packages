@@ -12,9 +12,9 @@ export class UserSiteRoleService {
     static async completeUserId(data) {
         if (!data.userId) {
             if (data.userUuid)
-                data.userId = await conf.global.services.User.getIdForUuid(data.userUuid);
+                data.userId = await conf.global.services.User.singleton().getIdForUuid(data.userUuid);
             else if (data.user || data.username || data.name) 
-                data.userId = await conf.global.services.User.getIdForUsername(data.user ?? data.username ?? data.name);
+                data.userId = await conf.global.services.User.singleton().getIdForUsername(data.user ?? data.username ?? data.name);
         }
 
         return data;
@@ -192,7 +192,7 @@ export class UserSiteRoleService {
         const Op = conf.global.Sequelize.Op;
 
         if (where?.userUuid && !where.userId) {
-            where.userId = await conf.global.services.User.getIdForUuid(where.userUuid);
+            where.userId = await conf.global.services.User.singleton().getIdForUuid(where.userUuid);
             delete where.userUuid;
         }
 

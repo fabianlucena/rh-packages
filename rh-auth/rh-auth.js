@@ -46,12 +46,20 @@ function getCheckPermissionHandler(chain) {
 
 async function updateData(global) {
     const data = global?.data;
-    await runSequentially(data?.userTypes,     async data => await UserTypeService.    createIfNotExists(data));
-    await runSequentially(data?.identityTypes, async data => await IdentityTypeService.createIfNotExists(data));
-    await runSequentially(data?.users,         async data => await UserService.        createIfNotExists(data));
-    await runSequentially(data?.identities,    async data => await IdentityService.    createIfNotExists(data));
+    if (!data)
+        return;
+
+    const userTypeService = UserTypeService.singleton();
+    const identityTypeService = IdentityTypeService.singleton();
+    const userService = UserService.singleton();
+    const identityService = IdentityService.singleton();
+
+    await runSequentially(data?.userTypes,     async data => await userTypeService.    createIfNotExists(data));
+    await runSequentially(data?.identityTypes, async data => await identityTypeService.createIfNotExists(data));
+    await runSequentially(data?.users,         async data => await userService.        createIfNotExists(data));
+    await runSequentially(data?.identities,    async data => await identityService.    createIfNotExists(data));
 }
 
 async function sessionUpdated(sessionId) {
-    SessionService.deleteFromCacheForSessionId(sessionId);
+    SessionService.singleton().deleteFromCacheForSessionId(sessionId);
 }

@@ -21,7 +21,7 @@ export class ShareService {
      */
     static async completeUserId(data) {
         if (!data.userId && (data.username || data.user))
-            data.userId = await conf.global.services.User.getIdForUsername(data.username ?? data.user);
+            data.userId = await conf.global.services.User.singleton().getIdForUsername(data.username ?? data.user);
 
         return data;
     }
