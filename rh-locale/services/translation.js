@@ -160,7 +160,7 @@ export class TranslationService extends Service {
         } else 
             domainsId.push(null);
         
-        let languageData = await LanguageService.createIfNotExists({name: language.trim(), title: language.trim()});
+        let languageData = await LanguageService.singleton().createIfNotExists({name: language.trim(), title: language.trim()});
         while (languageData.id) {
             const data = {
                 sourceId,
@@ -186,7 +186,7 @@ export class TranslationService extends Service {
             if (!languageData.parentId) 
                 break;
 
-            languageData = await LanguageService.get(languageData.parentId);
+            languageData = await LanguageService.singleton().getForId(languageData.parentId);
         }
 
         return {translation: text, isTranslated: false, isDraft: true};
@@ -213,7 +213,7 @@ export class TranslationService extends Service {
     async createIfNotExists(data, options) {
         await this.completeReferences(data);
 
-        const rows = await this.getList({where:{languageId: data.languageId, sourceId: data.sourceId, domainId: data.domainId, ...options?.where}, limit: 1, ...options});
+        const rows = await this.getList({where:{languageId: data.languageId, sourceId: data.sourceId, domainId: data.domainId, contextId: data.contextId, ...options?.where}, limit: 1, ...options});
         if (rows.length)
             return rows[0];
 

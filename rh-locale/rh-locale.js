@@ -4,6 +4,7 @@ import {LocaleController} from './controllers/locale.js';
 import {conf as localConf} from './conf.js';
 import {LanguageService} from './services/language.js';
 import {TranslationService} from './services/translation.js';
+import {runSequentially} from 'rf-util';
 
 export const conf = localConf;
 
@@ -16,15 +17,9 @@ function configure(global) {
 }
 
 async function updateData(global) {
-    const languages = global?.data?.languages;
-    for (const name in languages) {
-        const data = languages[name];
-        await LanguageService.createIfNotExists({...data, name});
-    }
-
-    const translations = global?.data?.translations;
-    for (const source in translations) {
-        const data = translations[source];
-        await (new TranslationService).createIfNotExists({...data, source});
-    }
+    const languageService = LanguageService.singleton();
+    const translationService = TranslationService.singleton();
+    const data = global?.data;
+    await runSequentially(data?.languages,    async data => await languageService.   createIfNotExists(data));
+    await runSequentially(data?.translations, async data => await translationService.createIfNotExists(data));
 }

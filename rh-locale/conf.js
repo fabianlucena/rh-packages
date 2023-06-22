@@ -19,8 +19,11 @@ export const conf = {
     servicesPath: dirname + '/services',
     apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
     data: {
-        languages: {
-            'en': {title: loc._f('English')},
-        },
+        languages: [
+            {
+                name: 'en',
+                title: loc._f('English'),
+            },
+        ],
     },
 };

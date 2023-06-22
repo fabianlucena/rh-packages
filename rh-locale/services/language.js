@@ -23,11 +23,11 @@ export class LanguageService extends Service {
         if (!data.parentId) {
             const nameParts = data.name.split('-');
             if (nameParts.length === 2) {
-                const parent = await LanguageService.createIfNotExists({name: nameParts[0].trim(), title: nameParts[0].trim()});
+                const parent = await this.createIfNotExists({name: nameParts[0].trim(), title: nameParts[0].trim()});
                 data.parentId = parent.id;
             }
         }
 
-        return super.create(data);
+        return true;
     }
 }

@@ -7,8 +7,8 @@ export default (sequelize, DataTypes) => {
         static associate(models) {
             this.belongsTo(models.Source,   {foreignKey: 'sourceId',   allowNull: false });
             this.belongsTo(models.Language, {foreignKey: 'languageId', allowNull: false });
-            this.belongsTo(models.Context,  {foreignKey: 'domainId',   allowNull: true });
-            this.belongsTo(models.Domain,   {foreignKey: 'contextId',  allowNull: true });
+            this.belongsTo(models.Domain,   {foreignKey: 'domainId',   allowNull: true });
+            this.belongsTo(models.Context,  {foreignKey: 'contextId',  allowNull: true });
         }
     }
     Translation.init({
