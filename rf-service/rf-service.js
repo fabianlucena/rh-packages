@@ -43,7 +43,7 @@ export class Service {
             if (data[uuidParamName])
                 data[idParamName] = await service.getIdForUuid(data[uuidParamName]);
             else if (typeof data[name] === 'string' && data[name])
-                data[idParamName] = await service.getIdForName(data[name]);
+                data[idParamName] = await service.getIdForName(data[name], {skipNoRowsError: true});
             else {
                 if (data[Name] && typeof data[Name] === 'object') {
                     if (data[Name].id)
@@ -80,11 +80,11 @@ export class Service {
         await this.validateForCreation(data);
         
         return await this.sequelize.transaction(async transaction => {
-            const testCase = await this.model.create(data, {transaction});
+            const row = await this.model.create(data, {transaction});
             if (this.shareObject && this.shareService && (data.userId || data.user)) {
                 await this.addCollaborator(
                     {
-                        objectId: testCase.id,
+                        objectId: row.id,
                         userId: data.ownerId,
                         user: data.owner,
                         type: 'owner',
@@ -93,7 +93,7 @@ export class Service {
                 );
             }
 
-            return testCase;
+            return row;
         });
     }
 
@@ -347,7 +347,11 @@ export class Service {
         if (Array.isArray(name))
             return (await this.getForName(name, {attributes: ['id'], ...options})).map(row => row.id);
         
-        return (await this.getForName(name, {attributes: ['id'], ...options})).id;
+        const row = await this.getForName(name, {attributes: ['id'], ...options});
+        if (!row)
+            return;
+
+        return row.id;
     }
 
     /**
