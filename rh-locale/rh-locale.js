@@ -17,9 +17,12 @@ function configure(global) {
 }
 
 async function updateData(global) {
+    const data = global?.data;
+    if (!data)
+        return;
+        
     const languageService = LanguageService.singleton();
     const translationService = TranslationService.singleton();
-    const data = global?.data;
     await runSequentially(data?.languages,    async data => await languageService.   createIfNotExists(data));
     await runSequentially(data?.translations, async data => await translationService.createIfNotExists(data));
 }

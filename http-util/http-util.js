@@ -437,11 +437,27 @@ export async function configureModule(global, module) {
     if (!module.name)
         throw new Error('Module does not have a name.');
 
-    if (module.path && global?.config?.env) {
-        for (const sep of ['_', '-']) {
-            let path = module.path + `/conf${sep}${global.config.env}.js`;
-            if (fs.existsSync(path))
-                deepComplete(module, (await import('file://' + path)).conf);
+    if (module.path) {
+        if (global?.config?.env) {
+            for (const sep of ['_', '-']) {
+                let path = module.path + `/conf${sep}${global.config.env}.js`;
+                if (fs.existsSync(path))
+                    deepComplete(module, (await import('file://' + path)).conf);
+            }
+        }
+
+        if (global?.config?.db?.updateData) {
+            module.data ??= {};
+            
+            for (const sep of ['_', '-']) {
+                let path = module.path + `/conf${sep}data.js`;
+                if (fs.existsSync(path))
+                    deepComplete(module.data, (await import('file://' + path)).data);
+
+                path = module.path + `/conf${sep}data${sep}${global.config.env}.js`;
+                if (fs.existsSync(path))
+                    deepComplete(module.data, (await import('file://' + path)).data);
+            }
         }
     }
 
