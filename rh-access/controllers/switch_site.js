@@ -80,7 +80,7 @@ export class SwitchSiteController {
      *                  $ref: '#/definitions/Error'
      */
     static async post(req, res) {
-        const siteUuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
+        const siteUuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('switchSite', 'UUID'));
         await SessionSiteService.createOrUpdate({
             sessionId: req?.session?.id,
             siteUuid,

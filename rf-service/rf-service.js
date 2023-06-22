@@ -24,7 +24,7 @@ export class Service {
                 reference.service:
                 reference;
 
-            await this.completeEntityId(data, {service, name, clean});
+            await this.completeEntityId(data, {service, name, clean, createIfNotExists: reference.createIfNotExists});
         }
 
         return data;
@@ -55,8 +55,8 @@ export class Service {
                 }
             }
         
-            if (!data[idParamName] && options.createIfNotExists) {
-                const object = await service.createIfNotExists(data);
+            if (!data[idParamName] && options.createIfNotExists && data[name]) {
+                const object = await service.createIfNotExists({name: data[name]});
                 data[idParamName] = object?.id;
             }
         }
@@ -289,6 +289,9 @@ export class Service {
      * function can be specified.
      */
     async getForName(name, options) {
+        if (name === undefined)
+            throw new Error('Ho no');
+
         if (Array.isArray(name))
             return this.getList({...options, where: {name, ...options?.where}});
             

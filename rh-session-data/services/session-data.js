@@ -68,7 +68,7 @@ export class SessionDataService {
 
     static async getForSessionId(sessionId, options) {
         const rows = await SessionDataService.getList({...options, where: {...options?.where, sessionId}, limit: 2});
-        return getSingle(rows, {...options, params: ['SessionData', [loc._f('Session ID = %s'), sessionId], 'SessionData']});
+        return getSingle(rows, {...options, params: ['SessionData', [loc._cf('sessionData', 'Session ID = %s'), sessionId], 'SessionData']});
     }
 
     /**

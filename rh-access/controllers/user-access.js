@@ -63,9 +63,9 @@ export class UserAccessController {
      */
     static async post(req, res) {
         const loc = req.loc;
-        const userUuid = checkParameterUuid(req.body.User, loc._f('User'));
-        const siteUuid = checkParameterUuid(req.body.Site, loc._f('Site'));
-        const roleUuidList = checkParameterUuidList(req.body.Roles, loc._f('Roles'));
+        const userUuid = checkParameterUuid(req.body.User, loc._cf('userAccess', 'User'));
+        const siteUuid = checkParameterUuid(req.body.Site, loc._cf('userAccess', 'Site'));
+        const roleUuidList = checkParameterUuidList(req.body.Roles, loc._cf('userAccess', 'Roles'));
 
         const userId = await conf.global.services.User.getIdForUuid(userUuid);
         const siteId = await conf.global.services.Site.getIdForUuid(siteUuid);
@@ -455,21 +455,21 @@ export class UserAccessController {
     static async delete(req, res) {
         const loc = req.loc;
 
-        let userUuid = checkParameterUuid(req.body.User, {paramTitle: loc._f('User'), allowNull: true, allowUndefined: true});
-        let siteUuid = checkParameterUuid(req.body.Site, {paramTitle: loc._f('Site'), allowNull: true, allowUndefined: true});
+        let userUuid = checkParameterUuid(req.body.User, {paramTitle: loc._cf('userAccess', 'User'), allowNull: true, allowUndefined: true});
+        let siteUuid = checkParameterUuid(req.body.Site, {paramTitle: loc._cf('userAccess', 'Site'), allowNull: true, allowUndefined: true});
         if (userUuid) {
             if (!siteUuid)
-                throw new _HttpError(req.loc._f('Site UUID param is missing.'), 403);
+                throw new _HttpError(req.loc._cf('userAccess', 'Site UUID param is missing.'), 403);
         } else if (siteUuid)
-            throw new _HttpError(req.loc._f('User UUID param is missing.'), 403);
+            throw new _HttpError(req.loc._cf('userAccess', 'User UUID param is missing.'), 403);
         else {
-            const uuid = await checkNotNullOrEmpty(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
+            const uuid = await checkNotNullOrEmpty(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('userAccess', 'UUID'));
             const uuidParts = uuid.split(',');
             if (uuidParts.length !== 2)
-                throw new _HttpError(req.loc._f('Wrong UUID format.'), 403);
+                throw new _HttpError(req.loc._cf('userAccess', 'Wrong UUID format.'), 403);
 
-            userUuid = checkParameterUuid(uuidParts[0], loc._f('User'));
-            siteUuid = checkParameterUuid(uuidParts[1], loc._f('Site'));
+            userUuid = checkParameterUuid(uuidParts[0], loc._cf('userAccess', 'User'));
+            siteUuid = checkParameterUuid(uuidParts[1], loc._cf('userAccess', 'Site'));
         }
 
         let rowsDeleted;
@@ -480,7 +480,7 @@ export class UserAccessController {
         rowsDeleted = await UserSiteRoleService.delete(deleteWhere);
 
         if (!rowsDeleted)
-            throw new _HttpError(req.loc._f('User with UUID %s has not access to the site with UUID %s.'), 403, userUuid, siteUuid);
+            throw new _HttpError(req.loc._cf('userAccess', 'User with UUID %s has not access to the site with UUID %s.'), 403, userUuid, siteUuid);
 
         res.sendStatus(204);
     }

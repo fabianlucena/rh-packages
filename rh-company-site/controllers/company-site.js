@@ -13,16 +13,16 @@ export class CompanySiteController {
         const siteUuid = req.query?.siteUuid ?? req.params?.siteUuid ?? req.body?.siteUuid;
 
         if (!companyUuid && !siteUuid)
-            throw new MissingParameterError(loc._f('Company UUID'), loc._f('Site UUID'));
+            throw new MissingParameterError(loc._cf('companySite', 'Company UUID'), loc._cf('companySite', 'Site UUID'));
 
         const options = {attributes:['companyId', 'siteId'], view: true, includeCompany: true, includeSite: true, where: {}};
         if (companyUuid) {
-            await checkParameterUuid(companyUuid, loc._f('Company UUID'));
+            await checkParameterUuid(companyUuid, loc._cf('companySite', 'Company UUID'));
             options.where.companyUuid = companyUuid;
         }
 
         if (siteUuid) {
-            await checkParameterUuid(companyUuid, loc._f('Site UUID'));
+            await checkParameterUuid(companyUuid, loc._cf('companySite', 'Site UUID'));
             options.where.siteUuid = siteUuid;
         }
 
@@ -31,11 +31,11 @@ export class CompanySiteController {
 
         const companySites = await CompanySiteService.getList(options);
         if (!companySites?.length)
-            throw new _HttpError(loc._f('The selected object does not exist or you do not have permission.'), 400);
+            throw new _HttpError(loc._cf('companySite', 'The selected object does not exist or you do not have permission.'), 400);
 
         const companySite = companySites[0].toJSON();
         if (!companySite.Company.isEnabled || !companySite.Site.isEnabled)
-            throw new _HttpError(loc._f('The selected company is disabled.'), 403);
+            throw new _HttpError(loc._cf('companySite', 'The selected company is disabled.'), 403);
 
         const sessionId = req.session.id;
         const siteId = companySite.siteId;

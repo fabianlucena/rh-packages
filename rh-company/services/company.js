@@ -140,10 +140,10 @@ export class CompanyService {
      */
     static async checkEnabledCompany(company, name) {
         if (!company)
-            throw new _Error(loc._f('Company "%s" does not exist'), name);
+            throw new _Error(loc._cf('company', 'Company "%s" does not exist'), name);
 
         if (!company.isEnabled)
-            throw new _Error(loc._f('Company "%s" is not enabled'), name);
+            throw new _Error(loc._cf('company', 'Company "%s" is not enabled'), name);
     }
 
     /**

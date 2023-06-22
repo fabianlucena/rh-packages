@@ -251,10 +251,10 @@ export class UserController {
      *                  $ref: '#/definitions/Error'
      */
     static async delete(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
+        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('user', 'UUID'));
         const rowsDeleted = await UserService.deleteForUuid(uuid);
         if (!rowsDeleted)
-            throw new _HttpError(req.loc._f('User with UUID %s does not exists.'), 403, uuid);
+            throw new _HttpError(req.loc._cf('user', 'User with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
     }
@@ -299,10 +299,10 @@ export class UserController {
      *                  $ref: '#/definitions/Error'
      */
     static async enablePost(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
+        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('user', 'UUID'));
         const rowsUpdated = await UserService.enableForUuid(uuid);
         if (!rowsUpdated)
-            throw new _HttpError(req.loc._f('User with UUID %s does not exists.'), 403, uuid);
+            throw new _HttpError(req.loc._cf('user', 'User with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
     }
@@ -347,10 +347,10 @@ export class UserController {
      *                  $ref: '#/definitions/Error'
      */
     static async disablePost(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
+        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('user', 'UUID'));
         const rowsUpdated = await UserService.disableForUuid(uuid);
         if (!rowsUpdated)
-            throw new _HttpError(req.loc._f('User with UUID %s does not exists.'), 403, uuid);
+            throw new _HttpError(req.loc._cf('user', 'User with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
     }
@@ -393,10 +393,10 @@ export class UserController {
      *                  $ref: '#/definitions/Error'
      */
     static async patch(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
+        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('user', 'UUID'));
         const rowsUpdated = await UserService.updateForUuid(req.body, uuid);
         if (!rowsUpdated)
-            throw new _HttpError(req.loc._f('User with UUID %s does not exists.'), 403, uuid);
+            throw new _HttpError(req.loc._cf('user', 'User with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
     }

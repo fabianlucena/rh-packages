@@ -39,12 +39,12 @@ export class ProjectController {
             }
         
             if (!data.companyId)
-                throw new _HttpError(req.loc._f('The company does not exist or you do not have permission to access it.'), 404);
+                throw new _HttpError(req.loc._cf('project', 'The company does not exist or you do not have permission to access it.'), 404);
         }
 
         const companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
         if (data.companyId != companyId)
-            throw new _HttpError(req.loc._f('The company does not exist or you do not have permission to access it.'), 403);
+            throw new _HttpError(req.loc._cf('project', 'The company does not exist or you do not have permission to access it.'), 403);
 
         return data.companyId;
     }
@@ -52,7 +52,7 @@ export class ProjectController {
     static async checkUuid(req, uuid) {
         const project = await ProjectService.getForUuid(uuid, {skipNoRowsError: true});
         if (!project)
-            throw new _HttpError(req.loc._f('The project with UUID %s does not exists.'), 404, uuid);
+            throw new _HttpError(req.loc._cf('project', 'The project with UUID %s does not exists.'), 404, uuid);
 
         return await ProjectController.checkDataForCompanyId(req, {companyId: project.companyId});
     }
@@ -94,7 +94,7 @@ export class ProjectController {
      */
     static async post(req, res) {
         const loc = req.loc;
-        checkParameter(req?.body, {name: loc._f('Name'), title: loc._f('Title')});
+        checkParameter(req?.body, {name: loc._cf('project', 'Name'), title: loc._cf('project', 'Title')});
         
         const data = {...req.body};
 
@@ -106,7 +106,7 @@ export class ProjectController {
         if (!data.owner && !data.ownerId) {
             data.ownerId = req.user.id;
             if (!data.ownerId)
-                throw new _HttpError(req.loc._f('The project data does not have a owner.'));
+                throw new _HttpError(req.loc._cf('project', 'The project data does not have a owner.'));
         }
 
         await ProjectService.create(data);
@@ -205,24 +205,24 @@ export class ProjectController {
             {
                 name: 'title',
                 type: 'text',
-                label: await loc._f('Title'),
+                label: await loc._cf('project', 'Title'),
             },
             {
                 name: 'name',
                 type: 'text',
-                label: await loc._f('Name'),
+                label: await loc._cf('project', 'Name'),
             },
             {
                 alias: 'company',
                 name: 'Company.title',
                 type: 'text',
-                label: await loc._f('Company'),
+                label: await loc._cf('project', 'Company'),
             },
             {
                 alias: 'owner',
                 name: 'Collaborators[0].User.displayName',
                 type: 'text',
-                label: await loc._f('Owner'),
+                label: await loc._cf('project', 'Owner'),
             }
         ];
 
@@ -245,15 +245,15 @@ export class ProjectController {
             {
                 name: 'title',
                 type: 'text',
-                label: await loc._f('Title'),
-                placeholder: await loc._f('Title'),
+                label: await loc._cf('project', 'Title'),
+                placeholder: await loc._cf('project', 'Title'),
                 required: true,
             },
             {
                 name: 'name',
                 type: 'text',
-                label: await loc._f('Name'),
-                placeholder: await loc._f('Name'),
+                label: await loc._cf('project', 'Name'),
+                placeholder: await loc._cf('project', 'Name'),
                 required: true,
                 readonly: {
                     create: false,
@@ -264,8 +264,8 @@ export class ProjectController {
                 alias: 'company',
                 name: 'companyUuid',
                 type: 'select',
-                label: await loc._f('Company'),
-                placeholder: await loc._f('Company'),
+                label: await loc._cf('project', 'Company'),
+                placeholder: await loc._cf('project', 'Company'),
                 required: true,
                 loadOptionsFrom: {
                     service: 'project/company',
@@ -277,15 +277,15 @@ export class ProjectController {
             {
                 name: 'isEnabled',
                 type: 'checkbox',
-                label: await loc._f('Enabled'),
-                placeholder: await loc._f('Enabled'),
+                label: await loc._cf('project', 'Enabled'),
+                placeholder: await loc._cf('project', 'Enabled'),
                 value: true,
             },
             {
                 name: 'description',
                 type: 'textArea',
-                label: await loc._f('Description'),
-                placeholder: await loc._f('Description'),
+                label: await loc._cf('project', 'Description'),
+                placeholder: await loc._cf('project', 'Description'),
             },
         ];
         
@@ -336,12 +336,12 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async delete(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
+        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('project', 'UUID'));
         await ProjectController.checkUuid(req, uuid);
 
         const rowsDeleted = await ProjectService.deleteForUuid(uuid);
         if (!rowsDeleted)
-            throw new _HttpError(req.loc._f('Project with UUID %s does not exists.'), 403, uuid);
+            throw new _HttpError(req.loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
     }
@@ -386,12 +386,12 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async enablePost(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
+        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('project', 'UUID'));
         await ProjectController.checkUuid(req, uuid);
 
         const rowsUpdated = await ProjectService.enableForUuid(uuid);
         if (!rowsUpdated)
-            throw new _HttpError(req.loc._f('Project with UUID %s does not exists.'), 403, uuid);
+            throw new _HttpError(req.loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
     }
@@ -436,12 +436,12 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async disablePost(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
+        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('project', 'UUID'));
         await ProjectController.checkUuid(req, uuid);
 
         const rowsUpdated = await ProjectService.disableForUuid(uuid);
         if (!rowsUpdated)
-            throw new _HttpError(req.loc._f('Project with UUID %s does not exists.'), 403, uuid);
+            throw new _HttpError(req.loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
     }
@@ -484,12 +484,12 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async patch(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._f('UUID'));
+        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('project', 'UUID'));
         await ProjectController.checkUuid(req, uuid);
 
         const rowsUpdated = await ProjectService.updateForUuid(req.body, uuid);
         if (!rowsUpdated)
-            throw new _HttpError(req.loc._f('Project with UUID %s does not exists.'), 403, uuid);
+            throw new _HttpError(req.loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
     }

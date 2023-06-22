@@ -197,7 +197,7 @@ export class SessionService {
      * @returns {Promise{Session}}
      */
     static async closeForId(id) {
-        check(id, {_message: loc._f('There is no id for session')});
+        check(id, {_message: loc._cf('session', 'There is no id for session')});
 
         return SessionService.getForId(id)
             .then(session => {
@@ -218,7 +218,7 @@ export class SessionService {
      * @returns {Promise{Result}}
      */
     static async deleteForUuid(uuid) {
-        const session = await SessionService.getForUuid(uuid, {_noRowsError: loc._f('Row for UUID %s does not exist', uuid)});
+        const session = await SessionService.getForUuid(uuid, {_noRowsError: loc._cf('session', 'Row for UUID %s does not exist', uuid)});
         if (session) {
             if (conf.sessionCache[session.authToken])
                 delete conf.sessionCache[session.authToken];

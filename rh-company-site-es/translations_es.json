@@ -26,8 +26,26 @@
     {
         "source": "Select company",
         "language": "es",
+        "context": "companySite",
+        "isDraft": false,
         "translation": "Seleccionar empresa",
-        "ref": "..\\rh-company-site\\conf.js [21,74]\n..\\rh-company-site\\controllers\\company-site.js [130,49]"
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [130,65]"
+    },
+    {
+        "source": "Select company",
+        "language": "es",
+        "context": "menu",
+        "isDraft": false,
+        "translation": "Seleccionar empresa ",
+        "ref": "..\\rh-company-site\\conf.js [21,183]"
+    },
+    {
+        "source": "Select company",
+        "language": "es",
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Seleccionar empresa ",
+        "ref": "..\\rh-company-site\\conf.js [21,89]"
     },
     {
         "source": "Site UUID",
@@ -50,8 +68,8 @@
     {
         "source": "The selected company is disabled.",
         "language": "es",
-        "isDraft": true,
-        "translation": null,
+        "isDraft": false,
+        "translation": " ",
         "ref": "..\\rh-company-site\\controllers\\company-site.js [38,77]"
     },
     {

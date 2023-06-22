@@ -3,7 +3,6 @@
         "source": "Administrator",
         "language": "es",
         "context": "user",
-        "isDraft": false,
         "translation": "Administrador",
         "ref": "..\\rh-auth\\conf.js [30,78]"
     },
@@ -11,7 +10,6 @@
         "source": "Anonymous",
         "language": "es",
         "context": "role",
-        "isDraft": false,
         "translation": "Anónimo",
         "ref": "..\\rh-auth\\conf.js [35,70]"
     },
@@ -31,7 +29,6 @@
         "source": "Create user",
         "language": "es",
         "context": "premission",
-        "isDraft": false,
         "translation": "Crear usuario",
         "ref": "..\\rh-auth\\conf.js [51,86]"
     },
@@ -39,7 +36,6 @@
         "source": "Delete session",
         "language": "es",
         "context": "premission",
-        "isDraft": false,
         "translation": "Eliminar sesiones",
         "ref": "..\\rh-auth\\conf.js [55,89]"
     },
@@ -47,7 +43,6 @@
         "source": "Delete user",
         "language": "es",
         "context": "premission",
-        "isDraft": false,
         "translation": "Eliminar usuario",
         "ref": "..\\rh-auth\\conf.js [53,86]"
     },
@@ -61,7 +56,6 @@
         "source": "Edit user",
         "language": "es",
         "context": "premission",
-        "isDraft": false,
         "translation": "Modificar usuario",
         "ref": "..\\rh-auth\\conf.js [52,84]"
     },
@@ -87,7 +81,6 @@
         "source": "Everybody",
         "language": "es",
         "context": "role",
-        "isDraft": false,
         "translation": "Todos",
         "ref": "..\\rh-auth\\conf.js [34,70]"
     },
@@ -95,7 +88,6 @@
         "source": "Get current site",
         "language": "es",
         "context": "premission",
-        "isDraft": false,
         "translation": "Obtener sitio actual",
         "ref": "..\\rh-auth\\conf.js [58,91]"
     },
@@ -103,7 +95,6 @@
         "source": "Get own sessions only",
         "language": "es",
         "context": "premission",
-        "isDraft": false,
         "translation": "Obtener únicamente la sesión propia",
         "ref": "..\\rh-auth\\conf.js [56,96]"
     },
@@ -111,7 +102,6 @@
         "source": "Get session(s)",
         "language": "es",
         "context": "premission",
-        "isDraft": false,
         "translation": "Obtener sesion(es)",
         "ref": "..\\rh-auth\\conf.js [54,89]"
     },
@@ -119,7 +109,6 @@
         "source": "Get user(s)",
         "language": "es",
         "context": "premission",
-        "isDraft": false,
         "translation": "Obtener usuario(s)",
         "ref": "..\\rh-auth\\conf.js [50,86]"
     },
@@ -127,7 +116,6 @@
         "source": "Group",
         "language": "es",
         "context": "userType",
-        "isDraft": false,
         "translation": "Grupo",
         "ref": "..\\rh-auth\\conf.js [22,64]"
     },
@@ -177,7 +165,6 @@
         "source": "Local",
         "language": "es",
         "context": "identityType",
-        "isDraft": false,
         "translation": "Local",
         "ref": "..\\rh-auth\\conf.js [26,68]"
     },
@@ -191,15 +178,21 @@
         "source": "Login menu",
         "language": "es",
         "context": "premission",
-        "isDraft": false,
         "translation": "Menú de acceso",
         "ref": "..\\rh-auth\\conf.js [46,85]"
     },
     {
         "source": "Logout",
         "language": "es",
-        "context": "premission",
+        "context": "menu",
         "isDraft": false,
+        "translation": "Salir",
+        "ref": "..\\rh-auth\\conf.js [49,204]"
+    },
+    {
+        "source": "Logout",
+        "language": "es",
+        "context": "premission",
         "translation": "Salir",
         "ref": "..\\rh-auth\\conf.js [49,81]"
     },
@@ -207,7 +200,6 @@
         "source": "My sessions",
         "language": "es",
         "context": "menu",
-        "isDraft": false,
         "translation": "Mis sesiones",
         "ref": "..\\rh-auth\\conf.js [56,209]"
     },
@@ -239,7 +231,6 @@
         "source": "Session menu",
         "language": "es",
         "context": "premission",
-        "isDraft": false,
         "translation": "Menú se sessión",
         "ref": "..\\rh-auth\\conf.js [47,87]"
     },
@@ -247,7 +238,6 @@
         "source": "Sessions",
         "language": "es",
         "context": "menu",
-        "isDraft": false,
         "translation": "Sesiones",
         "ref": "..\\rh-auth\\conf.js [54,206]"
     },
@@ -273,7 +263,6 @@
         "source": "Switch site",
         "language": "es",
         "context": "premission",
-        "isDraft": false,
         "translation": "Cambiar de sitio",
         "ref": "..\\rh-auth\\conf.js [57,86]"
     },
@@ -281,7 +270,6 @@
         "source": "System administrator",
         "language": "es",
         "context": "role",
-        "isDraft": false,
         "translation": "Administrador del sistema.",
         "ref": "..\\rh-auth\\conf.js [37,81]"
     },
@@ -319,7 +307,6 @@
         "source": "User",
         "language": "es",
         "context": "role",
-        "isDraft": false,
         "translation": "Usuario",
         "ref": "..\\rh-auth\\conf.js [36,65]"
     },
@@ -327,7 +314,6 @@
         "source": "User",
         "language": "es",
         "context": "userType",
-        "isDraft": false,
         "translation": "Usuario",
         "ref": "..\\rh-auth\\conf.js [21,63]"
     },
@@ -377,7 +363,6 @@
         "source": "User manager",
         "language": "es",
         "context": "role",
-        "isDraft": false,
         "translation": "Administrador de usuarios",
         "ref": "..\\rh-auth\\conf.js [38,73]"
     },
@@ -397,7 +382,6 @@
         "source": "Users",
         "language": "es",
         "context": "menu",
-        "isDraft": false,
         "translation": "Usuarios",
         "ref": "..\\rh-auth\\conf.js [50,203]"
     },

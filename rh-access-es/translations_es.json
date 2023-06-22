@@ -2,8 +2,10 @@
     {
         "source": "Add users accesses",
         "language": "es",
+        "context": "permission",
+        "isDraft": false,
         "translation": "Agregar accesos de usuarios",
-        "ref": "..\\rh-access\\conf.js [41,77]"
+        "ref": "..\\rh-access\\conf.js [41,92]"
     },
     {
         "source": "Assignable roles per role",
@@ -14,8 +16,10 @@
     {
         "source": "Delete users accesses",
         "language": "es",
-        "translation": "Eliminar accesos de usuarios",
-        "ref": "..\\rh-access\\conf.js [44,80]"
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Eliminar accesos de usuarios ",
+        "ref": "..\\rh-access\\conf.js [44,95]"
     },
     {
         "source": "Description",
@@ -26,14 +30,18 @@
     {
         "source": "Edit users accesses",
         "language": "es",
-        "translation": "Modificar accesos de usuarios",
-        "ref": "..\\rh-access\\conf.js [43,78]"
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Modificar accesos de usuarios ",
+        "ref": "..\\rh-access\\conf.js [43,93]"
     },
     {
         "source": "Editor",
         "language": "es",
-        "translation": "Editor",
-        "ref": "..\\rh-access\\conf.js [28,53]"
+        "context": "shareType",
+        "isDraft": false,
+        "translation": "Editor ",
+        "ref": "..\\rh-access\\conf.js [28,67]"
     },
     {
         "source": "Enabled",
@@ -44,8 +52,10 @@
     {
         "source": "Get users accesses",
         "language": "es",
-        "translation": "Obtener accesos de usuarios",
-        "ref": "..\\rh-access\\conf.js [42,77]"
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Obtener accesos de usuarios ",
+        "ref": "..\\rh-access\\conf.js [42,92]"
     },
     {
         "source": "Name",
@@ -62,14 +72,26 @@
     {
         "source": "Owner",
         "language": "es",
-        "translation": "Propietario",
-        "ref": "..\\rh-access\\conf.js [27,52]"
+        "context": "shareType",
+        "isDraft": false,
+        "translation": "Propietario ",
+        "ref": "..\\rh-access\\conf.js [27,66]"
     },
     {
         "source": "Privileges",
         "language": "es",
-        "translation": "Privilegios",
-        "ref": "..\\rh-access\\conf.js [46,69]"
+        "context": "menu",
+        "isDraft": false,
+        "translation": "Privilegios ",
+        "ref": "..\\rh-access\\conf.js [46,213]"
+    },
+    {
+        "source": "Privileges",
+        "language": "es",
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Privilegios ",
+        "ref": "..\\rh-access\\conf.js [46,84]"
     },
     {
         "source": "Roles",
@@ -140,8 +162,10 @@
     {
         "source": "User access manager",
         "language": "es",
-        "translation": "Administrador de accesos de usuarios",
-        "ref": "..\\rh-access\\conf.js [23,77]"
+        "context": "role",
+        "isDraft": false,
+        "translation": "Administrador de accesos de usuarios ",
+        "ref": "..\\rh-access\\conf.js [23,86]"
     },
     {
         "source": "User with UUID %s has not access to the site with UUID %s.",
@@ -152,14 +176,24 @@
     {
         "source": "Users accesses",
         "language": "es",
+        "context": "menu",
+        "isDraft": false,
+        "translation": "Accesos de usuarios ",
+        "ref": "..\\rh-access\\conf.js [42,217]"
+    },
+    {
+        "source": "Users accesses",
+        "language": "es",
         "translation": "Accesos de usuarios",
-        "ref": "..\\rh-access\\conf.js [42,193]\n..\\rh-access\\controllers\\user-access.js [277,49]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [277,49]"
     },
     {
         "source": "Viewer",
         "language": "es",
-        "translation": "Visor",
-        "ref": "..\\rh-access\\conf.js [29,53]"
+        "context": "shareType",
+        "isDraft": false,
+        "translation": "Visor ",
+        "ref": "..\\rh-access\\conf.js [29,67]"
     },
     {
         "source": "Wrong UUID format.",

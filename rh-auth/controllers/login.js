@@ -113,7 +113,7 @@ export class LoginController {
         if (req?.body?.autoLoginToken)
             checkParameter(req?.body, 'autoLoginToken', 'deviceToken');
         else
-            checkParameter(req?.body, {username: loc._f('Username'), password: loc._f('Password')});
+            checkParameter(req?.body, {username: loc._cf('login', 'Username'), password: loc._cf('login', 'Password')});
 
         try {
             let session;
@@ -162,7 +162,7 @@ export class LoginController {
             res.cookie('autoLoginToken', session.autoLoginToken, {expire: expires30});
             res.status(201).send(result);
         } catch (err) {
-            throw new _HttpError(req.loc._f('Invalid login'), 403);
+            throw new _HttpError(req.loc._cf('login', 'Invalid login'), 403);
         }
     }
 }

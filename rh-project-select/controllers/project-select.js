@@ -10,21 +10,21 @@ export class ProjectSelectController {
 
         const projectUuid = req.query?.projectUuid ?? req.params?.projectUuid ?? req.body?.projectUuid;
         if (!projectUuid)
-            throw new MissingParameterError(loc._f('Project UUID'));
+            throw new MissingParameterError(loc._cf('projectSelect', 'Project UUID'));
 
         const options = {skipNoRowsError: true};
         let project = await conf.global.services.Project.getForUuid(projectUuid, options);
         if (!project)
-            throw new _HttpError(loc._f('The selected project does not exist or you do not have permission to access it.'), 400);
+            throw new _HttpError(loc._cf('projectSelect', 'The selected project does not exist or you do not have permission to access it.'), 400);
 
         if (!project.isEnabled)
-            throw new _HttpError(loc._f('The selected project is disabled.'), 403);
+            throw new _HttpError(loc._cf('projectSelect', 'The selected project is disabled.'), 403);
 
         project = project.toJSON();
 
         const SessionDataService = conf.global.services.SessionData;
         if (!SessionDataService)
-            throw new _HttpError(loc._f('You do not have permission to select this project.'), 400);
+            throw new _HttpError(loc._cf('projectSelect', 'You do not have permission to select this project.'), 400);
 
         const sessionId = req.session.id;
 
@@ -34,7 +34,7 @@ export class ProjectSelectController {
                 companyId = await conf.filters.getCurrentCompanyId(req);
 
             if (companyId != project.companyId)
-                throw new _HttpError(loc._f('You do not have permission to select this project.'), 400);
+                throw new _HttpError(loc._cf('projectSelect', 'You do not have permission to select this project.'), 400);
         }
 
         if (project.isTranslatable) {

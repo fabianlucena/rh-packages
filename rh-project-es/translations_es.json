@@ -2,56 +2,74 @@
     {
         "source": "Company",
         "language": "es",
+        "context": "project",
+        "isDraft": false,
         "translation": "Empresa",
-        "ref": "..\\rh-project\\controllers\\project.js [219,47]\n..\\rh-project\\controllers\\project.js [267,47]\n..\\rh-project\\controllers\\project.js [268,53]"
+        "ref": "..\\rh-project\\controllers\\project.js [219,59]\n..\\rh-project\\controllers\\project.js [267,59]\n..\\rh-project\\controllers\\project.js [268,65]"
     },
     {
         "source": "Create projects",
         "language": "es",
-        "translation": "Crear proyectos",
-        "ref": "..\\rh-project\\conf.js [30,70]"
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Crear proyectos ",
+        "ref": "..\\rh-project\\conf.js [30,85]"
     },
     {
         "source": "Delete projects",
         "language": "es",
-        "translation": "Eliminar proyectos",
-        "ref": "..\\rh-project\\conf.js [32,70]"
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Eliminar proyectos ",
+        "ref": "..\\rh-project\\conf.js [32,85]"
     },
     {
         "source": "Description",
         "language": "es",
-        "translation": "Descripción",
-        "ref": "..\\rh-project\\controllers\\project.js [287,51]\n..\\rh-project\\controllers\\project.js [288,57]"
+        "context": "project",
+        "isDraft": false,
+        "translation": "Descripción ",
+        "ref": "..\\rh-project\\controllers\\project.js [287,63]\n..\\rh-project\\controllers\\project.js [288,69]"
     },
     {
         "source": "Edit projects",
         "language": "es",
-        "translation": "Modificar proyectos",
-        "ref": "..\\rh-project\\conf.js [31,68]"
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Modificar proyectos ",
+        "ref": "..\\rh-project\\conf.js [31,83]"
     },
     {
         "source": "Enabled",
         "language": "es",
-        "translation": "Habilitado",
-        "ref": "..\\rh-project\\controllers\\project.js [280,47]\n..\\rh-project\\controllers\\project.js [281,53]"
+        "context": "project",
+        "isDraft": false,
+        "translation": "Habilitado ",
+        "ref": "..\\rh-project\\controllers\\project.js [280,59]\n..\\rh-project\\controllers\\project.js [281,65]"
     },
     {
         "source": "Get projects",
         "language": "es",
-        "translation": "Obtener proyectos",
-        "ref": "..\\rh-project\\conf.js [29,67]"
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Obtener proyectos ",
+        "ref": "..\\rh-project\\conf.js [29,82]"
     },
     {
         "source": "Name",
         "language": "es",
-        "translation": "Nombre",
-        "ref": "..\\rh-project\\controllers\\project.js [97,56]\n..\\rh-project\\controllers\\project.js [213,44]\n..\\rh-project\\controllers\\project.js [255,44]\n..\\rh-project\\controllers\\project.js [256,50]"
+        "context": "project",
+        "isDraft": false,
+        "translation": "Nombre ",
+        "ref": "..\\rh-project\\controllers\\project.js [97,68]\n..\\rh-project\\controllers\\project.js [213,56]\n..\\rh-project\\controllers\\project.js [255,56]\n..\\rh-project\\controllers\\project.js [256,62]"
     },
     {
         "source": "Owner",
         "language": "es",
-        "translation": "Propietario",
-        "ref": "..\\rh-project\\controllers\\project.js [225,45]"
+        "context": "project",
+        "isDraft": false,
+        "translation": "Propietario ",
+        "ref": "..\\rh-project\\controllers\\project.js [225,57]"
     },
     {
         "source": "Project \"%s\" does not exist",
@@ -68,20 +86,32 @@
     {
         "source": "Project manager",
         "language": "es",
-        "translation": "Administrador de proyectos",
-        "ref": "..\\rh-project\\conf.js [21,70]"
+        "context": "role",
+        "isDraft": false,
+        "translation": "Administrador de proyectos ",
+        "ref": "..\\rh-project\\conf.js [21,79]"
     },
     {
         "source": "Project with UUID %s does not exists.",
         "language": "es",
-        "translation": "El proyecto con el UUID %s no existe.",
-        "ref": "..\\rh-project\\controllers\\project.js [344,85]\n..\\rh-project\\controllers\\project.js [394,85]\n..\\rh-project\\controllers\\project.js [444,85]\n..\\rh-project\\controllers\\project.js [492,85]"
+        "context": "project",
+        "isDraft": false,
+        "translation": "El proyecto con el UUID %s no existe. ",
+        "ref": "..\\rh-project\\controllers\\project.js [344,97]\n..\\rh-project\\controllers\\project.js [394,97]\n..\\rh-project\\controllers\\project.js [444,97]\n..\\rh-project\\controllers\\project.js [492,97]"
+    },
+    {
+        "source": "Projects",
+        "language": "es",
+        "context": "menu",
+        "isDraft": false,
+        "translation": "Proyectos ",
+        "ref": "..\\rh-project\\conf.js [29,198]"
     },
     {
         "source": "Projects",
         "language": "es",
         "translation": "Proyectos",
-        "ref": "..\\rh-project\\conf.js [29,174]\n..\\rh-project\\controllers\\project.js [230,43]\n..\\rh-project\\controllers\\project.js [293,43]"
+        "ref": "..\\rh-project\\controllers\\project.js [230,43]\n..\\rh-project\\controllers\\project.js [293,43]"
     },
     {
         "source": "Spanish",
@@ -98,31 +128,41 @@
     {
         "source": "The company does not exist or you do not have permission to access it.",
         "language": "es",
-        "translation": "La empresa no existe o usted no tiene permiso para accederla.",
-        "ref": "..\\rh-project\\controllers\\project.js [42,122]\n..\\rh-project\\controllers\\project.js [47,118]"
+        "context": "project",
+        "isDraft": false,
+        "translation": "La empresa no existe o usted no tiene permiso para accederla. ",
+        "ref": "..\\rh-project\\controllers\\project.js [42,134]\n..\\rh-project\\controllers\\project.js [47,130]"
     },
     {
         "source": "The project data does not have a owner.",
         "language": "es",
-        "translation": "Los datos del proyecto no tienen un propietario.",
-        "ref": "..\\rh-project\\controllers\\project.js [109,91]"
+        "context": "project",
+        "isDraft": false,
+        "translation": "Los datos del proyecto no tienen un propietario. ",
+        "ref": "..\\rh-project\\controllers\\project.js [109,103]"
     },
     {
         "source": "The project with UUID %s does not exists.",
         "language": "es",
-        "translation": "El proyecto con el UUID %s no existe.",
-        "ref": "..\\rh-project\\controllers\\project.js [55,89]"
+        "context": "project",
+        "isDraft": false,
+        "translation": "El proyecto con el UUID %s no existe. ",
+        "ref": "..\\rh-project\\controllers\\project.js [55,101]"
     },
     {
         "source": "Title",
         "language": "es",
-        "translation": "Título",
-        "ref": "..\\rh-project\\controllers\\project.js [97,80]\n..\\rh-project\\controllers\\project.js [208,45]\n..\\rh-project\\controllers\\project.js [248,45]\n..\\rh-project\\controllers\\project.js [249,51]"
+        "context": "project",
+        "isDraft": false,
+        "translation": "Título ",
+        "ref": "..\\rh-project\\controllers\\project.js [97,104]\n..\\rh-project\\controllers\\project.js [208,57]\n..\\rh-project\\controllers\\project.js [248,57]\n..\\rh-project\\controllers\\project.js [249,63]"
     },
     {
         "source": "UUID",
         "language": "es",
-        "translation": "UUID",
-        "ref": "..\\rh-project\\controllers\\project.js [339,120]\n..\\rh-project\\controllers\\project.js [389,120]\n..\\rh-project\\controllers\\project.js [439,120]\n..\\rh-project\\controllers\\project.js [487,120]"
+        "context": "project",
+        "isDraft": false,
+        "translation": "UUID ",
+        "ref": "..\\rh-project\\controllers\\project.js [339,132]\n..\\rh-project\\controllers\\project.js [389,132]\n..\\rh-project\\controllers\\project.js [439,132]\n..\\rh-project\\controllers\\project.js [487,132]"
     }
 ]

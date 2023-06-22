@@ -20,15 +20,15 @@ export const conf = {
     apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
     data: {
         sites: [
-            {name: 'system', title: loc._f('System'), isTranslatable: true, ownerModule: name},
+            {name: 'system', title: loc._cf('site', 'System'), isTranslatable: true, ownerModule: name},
         ],
 
         roles: [
-            {name: 'sitesManager', title: loc._f('Sites manager'), isTranslatable: true, ownerModule: name},
+            {name: 'sitesManager', title: loc._cf('role', 'Sites manager'), isTranslatable: true, ownerModule: name},
         ],
 
         permissions: [
-            {name: 'site.get',            title: loc._f('Get sites'),        isTranslatable: true, roles: 'sitesManager', ownerModule: name, menuItem: {action: 'grid', service: 'site'}},
+            {name: 'site.get',            title: loc._cf('permission', 'Get sites'),        isTranslatable: true, roles: 'sitesManager', ownerModule: name, menuItem: {action: 'grid', service: 'site'}},
         ],
     },
 };

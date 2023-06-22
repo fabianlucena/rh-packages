@@ -217,7 +217,7 @@ export class SessionController {
      *                  $ref: '#/definitions/Error'
      */
     static async delete(req, res) {
-        const uuid = checkParameterUuid(req?.query?.uuid, req.loc._f('UUID'));
+        const uuid = checkParameterUuid(req?.query?.uuid, req.loc._cf('session', 'UUID'));
         const rowCount = await SessionService.deleteForUuid(uuid);
         await deleteHandler(req, res, rowCount);
     }

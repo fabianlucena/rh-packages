@@ -182,10 +182,10 @@ export class UserService {
      */
     static async checkEnabledUser(user, username) {
         if (!user)
-            throw new _Error(loc._f('User "%s" does not exist'), username);
+            throw new _Error(loc._cf('user', 'User "%s" does not exist'), username);
 
         if (!user.isEnabled)
-            throw new _Error(loc._f('User "%s" is not enabled'), username);
+            throw new _Error(loc._cf('user', 'User "%s" is not enabled'), username);
     }
 
     /**
