@@ -18,7 +18,7 @@ export const conf = {
     apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
     data: {
         roles: [
-            {name: 'companyManager', title: loc._f('Company manager'), isTranslatable: true, ownerModule: name},
+            {name: 'companyManager', title: loc._cf('role', 'Company manager'), isTranslatable: true, ownerModule: name},
         ],
 
         rolesParentsSites: [
@@ -26,10 +26,10 @@ export const conf = {
         ],
 
         permissions: [
-            {name: 'company.get',    title: loc._f('Get companies'),    isTranslatable: true, roles: 'companyManager', ownerModule: name, menuItem: {label: loc._f('Companies'), isTranslatable: true, action: 'grid', service: 'company'}},
-            {name: 'company.create', title: loc._f('Create companies'), isTranslatable: true, roles: 'companyManager', ownerModule: name,},
-            {name: 'company.edit',   title: loc._f('Edit companies'),   isTranslatable: true, roles: 'companyManager', ownerModule: name,},
-            {name: 'company.delete', title: loc._f('Delete companies'), isTranslatable: true, roles: 'companyManager', ownerModule: name,},
+            {name: 'company.get',    title: loc._cf('permission', 'Get companies'),    isTranslatable: true, roles: 'companyManager', ownerModule: name, menuItem: {label: loc._cf('menu', 'Companies'), isTranslatable: true, action: 'grid', service: 'company'}},
+            {name: 'company.create', title: loc._cf('permission', 'Create companies'), isTranslatable: true, roles: 'companyManager', ownerModule: name,},
+            {name: 'company.edit',   title: loc._cf('permission', 'Edit companies'),   isTranslatable: true, roles: 'companyManager', ownerModule: name,},
+            {name: 'company.delete', title: loc._cf('permission', 'Delete companies'), isTranslatable: true, roles: 'companyManager', ownerModule: name,},
         ],
     },
 };

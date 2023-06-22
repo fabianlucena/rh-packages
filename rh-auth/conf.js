@@ -18,24 +18,24 @@ export const conf = {
     apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
     data: {
         userTypes: [
-            {name: 'user',  title: loc._f('User'),  isTranslatable: true, ownerModule: name},
-            {name: 'group', title: loc._f('Group'), isTranslatable: true, ownerModule: name},
+            {name: 'user',  title: loc._cf('userType', 'User'),  isTranslatable: true, ownerModule: name},
+            {name: 'group', title: loc._cf('userType', 'Group'), isTranslatable: true, ownerModule: name},
         ],
 
         identityTypes: [
-            {name: 'local', title: loc._f('Local'), isTranslatable: true},
+            {name: 'local', title: loc._cf('identityType', 'Local'), isTranslatable: true},
         ],
         
         users: [
-            {username: 'admin', displayName: loc._f('Administrator'), isTranslatable: true, password: '1234', ownerModule: name},
+            {username: 'admin', displayName: loc._cf('user', 'Administrator'), isTranslatable: true, password: '1234', ownerModule: name},
         ],
 
         roles: [
-            {name: 'everybody',   title: loc._f('Everybody'),            isTranslatable: true, ownerModule: name},
-            {name: 'anonymous',   title: loc._f('Anonymous'),            isTranslatable: true, ownerModule: name},
-            {name: 'user',        title: loc._f('User'),                 isTranslatable: true, ownerModule: name},
-            {name: 'admin',       title: loc._f('System administrator'), isTranslatable: true, ownerModule: name},
-            {name: 'userManager', title: loc._f('User manager'),         isTranslatable: true, ownerModule: name},
+            {name: 'everybody',   title: loc._cf('role', 'Everybody'),            isTranslatable: true, ownerModule: name},
+            {name: 'anonymous',   title: loc._cf('role', 'Anonymous'),            isTranslatable: true, ownerModule: name},
+            {name: 'user',        title: loc._cf('role', 'User'),                 isTranslatable: true, ownerModule: name},
+            {name: 'admin',       title: loc._cf('role', 'System administrator'), isTranslatable: true, ownerModule: name},
+            {name: 'userManager', title: loc._cf('role', 'User manager'),         isTranslatable: true, ownerModule: name},
         ],
 
         rolesParentsSites: [
@@ -43,19 +43,19 @@ export const conf = {
         ],
 
         permissions: [
-            {name: 'login-menu',          title: loc._f('Login menu'),            isTranslatable: true, roles: 'anonymous',   ownerModule: name, menuItem: {alias: 'session-menu', icon: 'login',                                       action: 'form',    service: 'login'}},
-            {name: 'session-menu',        title: loc._f('Session menu'),          isTranslatable: true, roles: 'user',        ownerModule: name, menuItem: {alias: 'session-menu', icon: 'session'}},
+            {name: 'login-menu',          title: loc._cf('premission', 'Login menu'),            isTranslatable: true, roles: 'anonymous',   ownerModule: name, menuItem: {alias: 'session-menu', icon: 'login',                                       action: 'form',    service: 'login'}},
+            {name: 'session-menu',        title: loc._cf('premission', 'Session menu'),          isTranslatable: true, roles: 'user',        ownerModule: name, menuItem: {alias: 'session-menu', icon: 'session'}},
             
-            {name: 'logout',              title: loc._f('Logout'),                isTranslatable: true, roles: 'user',        ownerModule: name, menuItem: {                                                    parent: 'session-menu', action: 'apiCall', service: 'logout', method: 'post', onSuccess: 'clearBearerAuthorization(); clearApiData(); reloadMenu();', redirectTo: '/'}},
-            {name: 'user.get',            title: loc._f('Get user(s)'),           isTranslatable: true, roles: 'userManager', ownerModule: name, menuItem: {label: loc._f('Users'),       isTranslatable: true,                         action: 'grid',    service: 'user'}},
-            {name: 'user.create',         title: loc._f('Create user'),           isTranslatable: true, roles: 'userManager', ownerModule: name},
-            {name: 'user.edit',           title: loc._f('Edit user'),             isTranslatable: true, roles: 'userManager', ownerModule: name},
-            {name: 'user.delete',         title: loc._f('Delete user'),           isTranslatable: true, roles: 'userManager', ownerModule: name},
-            {name: 'session.get',         title: loc._f('Get session(s)'),        isTranslatable: true, roles: 'userManager', ownerModule: name, menuItem: {label: loc._f('Sessions'),    isTranslatable: true,                         action: 'grid',    service: 'session'}},
-            {name: 'session.delete',      title: loc._f('Delete session'),        isTranslatable: true, roles: 'userManager', ownerModule: name},
-            {name: 'ownsession.get',      title: loc._f('Get own sessions only'), isTranslatable: true, roles: 'user',        ownerModule: name, menuItem: {label: loc._f('My sessions'), isTranslatable: true, parent: 'session-menu', action: 'grid',    service: 'session'}},
-            {name: 'current-site.switch', title: loc._f('Switch site'),           isTranslatable: true, roles: 'everybody',   ownerModule: name},
-            {name: 'current-site.get',    title: loc._f('Get current site'),      isTranslatable: true, roles: 'everybody',   ownerModule: name},
+            {name: 'logout',              title: loc._cf('premission', 'Logout'),                isTranslatable: true, roles: 'user',        ownerModule: name, menuItem: {label: loc._cf('menu', 'Logout'),                            parent: 'session-menu', action: 'apiCall', service: 'logout', method: 'post', onSuccess: 'clearBearerAuthorization(); clearApiData(); reloadMenu();', redirectTo: '/'}},
+            {name: 'user.get',            title: loc._cf('premission', 'Get user(s)'),           isTranslatable: true, roles: 'userManager', ownerModule: name, menuItem: {label: loc._cf('menu', 'Users'),       isTranslatable: true,                         action: 'grid',    service: 'user'}},
+            {name: 'user.create',         title: loc._cf('premission', 'Create user'),           isTranslatable: true, roles: 'userManager', ownerModule: name},
+            {name: 'user.edit',           title: loc._cf('premission', 'Edit user'),             isTranslatable: true, roles: 'userManager', ownerModule: name},
+            {name: 'user.delete',         title: loc._cf('premission', 'Delete user'),           isTranslatable: true, roles: 'userManager', ownerModule: name},
+            {name: 'session.get',         title: loc._cf('premission', 'Get session(s)'),        isTranslatable: true, roles: 'userManager', ownerModule: name, menuItem: {label: loc._cf('menu', 'Sessions'),    isTranslatable: true,                         action: 'grid',    service: 'session'}},
+            {name: 'session.delete',      title: loc._cf('premission', 'Delete session'),        isTranslatable: true, roles: 'userManager', ownerModule: name},
+            {name: 'ownsession.get',      title: loc._cf('premission', 'Get own sessions only'), isTranslatable: true, roles: 'user',        ownerModule: name, menuItem: {label: loc._cf('menu', 'My sessions'), isTranslatable: true, parent: 'session-menu', action: 'grid',    service: 'session'}},
+            {name: 'current-site.switch', title: loc._cf('premission', 'Switch site'),           isTranslatable: true, roles: 'everybody',   ownerModule: name},
+            {name: 'current-site.get',    title: loc._cf('premission', 'Get current site'),      isTranslatable: true, roles: 'everybody',   ownerModule: name},
         ],
     },
 };

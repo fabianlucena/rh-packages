@@ -18,7 +18,7 @@ export const conf = {
 
     data: {
         permissions: [
-            {name: 'company-site.switch', title: loc._f('Select company'), isTranslatable: true, ownerModule: name, menuItem: {isTranslatable: true, action: 'object', service: 'company-site'}},
+            {name: 'company-site.switch', title: loc._cf('permission', 'Select company'), isTranslatable: true, ownerModule: name, menuItem: {label: loc._cf('menu', 'Select company'), isTranslatable: true, action: 'object', service: 'company-site'}},
         ],
     },
 };

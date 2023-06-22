@@ -1,57 +1,68 @@
-{
-    "Title": {
+[
+    {
+        "source": "Description",
         "language": "es",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [132,48]",
-        "translation": "Título"
+        "translation": "Descripción",
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [153,54]"
     },
-    "Name": {
+    {
+        "source": "Name",
         "language": "es",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [137,47]",
-        "translation": "Nombre"
+        "translation": "Nombre",
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [148,47]"
     },
-    "Spanish": {
+    {
+        "source": "Project UUID",
         "language": "es",
-        "ref": "rh-project-select-es.js [19,41]",
-        "translation": "Español"
+        "translation": "UUID de proyecto",
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [13,67]"
     },
-    "Spanish language.": {
+    {
+        "source": "Project: %s",
         "language": "es",
-        "ref": "rh-project-select-es.js [20,57]",
-        "translation": "Idioma español."
+        "translation": "Proyecto %s",
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [52,61]"
     },
-    "Description": {
+    {
+        "source": "Select project",
         "language": "es",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [142,54]",
-        "translation": "Descripción"
+        "translation": "Seleccionar proyecto",
+        "ref": "..\\rh-project-select\\conf.js [20,76]\n..\\rh-project-select\\controllers\\project-select.js [130,49]"
     },
-    "User": {
+    {
+        "source": "Spanish",
         "language": "es",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [119,39]",
-        "translation": "Usuario"
+        "translation": "Español",
+        "ref": "rh-project-select-es.js [20,41]"
     },
-    "Select project": {
+    {
+        "source": "Spanish language.",
         "language": "es",
-        "ref": "..\\rh-project-select\\conf.js [20,76]",
-        "translation": "Seleccionar proyecto"
+        "translation": "Idioma español.",
+        "ref": "rh-project-select-es.js [21,57]"
     },
-    "Project UUID": {
+    {
+        "source": "The selected project does not exist or you do not have permission to access it.",
         "language": "es",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [13,67]",
-        "translation": "UUID de proyecto"
+        "translation": "El proyecto seleccionado no existe o ustd no tiene permiso para accederlo.",
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [18,123]"
     },
-    "You do not have permission to select this project.": {
+    {
+        "source": "The selected project is disabled.",
         "language": "es",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [31,98]",
-        "translation": "Usted no tiene permiso para seleccionar este proyecto."
+        "translation": "El proyecto seleccionado está deshabilitado.",
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [21,77]"
     },
-    "Project: %s": {
+    {
+        "source": "Title",
         "language": "es",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [46,61]",
-        "translation": "Proyecto %s"
+        "translation": "Título",
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [143,48]"
     },
-    "The selected project does not exist or you do not have permission to access it.": {
+    {
+        "source": "You do not have permission to select this project.",
         "language": "es",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [18,123]",
-        "translation": "El proyecto seleccionado no existe o ustd no tiene permiso para accederlo."
+        "translation": "Usted no tiene permiso para seleccionar este proyecto.",
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [27,94]\n..\\rh-project-select\\controllers\\project-select.js [37,98]"
     }
-}
+]

@@ -1,107 +1,128 @@
-{
-    "Project manager": {
+[
+    {
+        "source": "Company",
         "language": "es",
-        "ref": "..\\rh-project\\conf.js [21,70]",
-        "translation": "Administrador de proyectos"
+        "translation": "Empresa",
+        "ref": "..\\rh-project\\controllers\\project.js [219,47]\n..\\rh-project\\controllers\\project.js [267,47]\n..\\rh-project\\controllers\\project.js [268,53]"
     },
-    "Get projects": {
+    {
+        "source": "Create projects",
         "language": "es",
-        "ref": "..\\rh-project\\conf.js [29,67]",
-        "translation": "Obtener proyectos"
+        "translation": "Crear proyectos",
+        "ref": "..\\rh-project\\conf.js [30,70]"
     },
-    "Projects": {
+    {
+        "source": "Delete projects",
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [293,43]",
-        "translation": "Proyectos"
+        "translation": "Eliminar proyectos",
+        "ref": "..\\rh-project\\conf.js [32,70]"
     },
-    "Create projects": {
+    {
+        "source": "Description",
         "language": "es",
-        "ref": "..\\rh-project\\conf.js [30,70]",
-        "translation": "Crear proyectos"
+        "translation": "Descripción",
+        "ref": "..\\rh-project\\controllers\\project.js [287,51]\n..\\rh-project\\controllers\\project.js [288,57]"
     },
-    "Edit projects": {
+    {
+        "source": "Edit projects",
         "language": "es",
-        "ref": "..\\rh-project\\conf.js [31,68]",
-        "translation": "Modificar proyectos"
+        "translation": "Modificar proyectos",
+        "ref": "..\\rh-project\\conf.js [31,68]"
     },
-    "Delete projects": {
+    {
+        "source": "Enabled",
         "language": "es",
-        "ref": "..\\rh-project\\conf.js [32,70]",
-        "translation": "Eliminar proyectos"
+        "translation": "Habilitado",
+        "ref": "..\\rh-project\\controllers\\project.js [280,47]\n..\\rh-project\\controllers\\project.js [281,53]"
     },
-    "Title": {
+    {
+        "source": "Get projects",
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [249,51]",
-        "translation": "Título"
+        "translation": "Obtener proyectos",
+        "ref": "..\\rh-project\\conf.js [29,67]"
     },
-    "Name": {
+    {
+        "source": "Name",
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [256,50]",
-        "translation": "Nombre"
+        "translation": "Nombre",
+        "ref": "..\\rh-project\\controllers\\project.js [97,56]\n..\\rh-project\\controllers\\project.js [213,44]\n..\\rh-project\\controllers\\project.js [255,44]\n..\\rh-project\\controllers\\project.js [256,50]"
     },
-    "Enabled": {
+    {
+        "source": "Owner",
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [281,53]",
-        "translation": "Habilitado"
+        "translation": "Propietario",
+        "ref": "..\\rh-project\\controllers\\project.js [225,45]"
     },
-    "Spanish": {
+    {
+        "source": "Project \"%s\" does not exist",
         "language": "es",
-        "ref": "rh-project-es.js [19,41]",
-        "translation": "Español"
+        "translation": "El proyecto \"%s\" no existe",
+        "ref": "..\\rh-project\\services\\project.js [201,67]"
     },
-    "Spanish language.": {
+    {
+        "source": "Project \"%s\" is not enabled",
         "language": "es",
-        "ref": "rh-project-es.js [20,57]",
-        "translation": "Idioma español."
+        "translation": "El proyecto \"%s\" no está habilitado",
+        "ref": "..\\rh-project\\services\\project.js [204,67]"
     },
-    "The project data does not have a owner.": {
+    {
+        "source": "Project manager",
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [109,91]",
-        "translation": "Los datos del proyecto no tienen un propietario."
+        "translation": "Administrador de proyectos",
+        "ref": "..\\rh-project\\conf.js [21,70]"
     },
-    "Company": {
+    {
+        "source": "Project with UUID %s does not exists.",
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [268,53]",
-        "translation": "Empresa"
+        "translation": "El proyecto con el UUID %s no existe.",
+        "ref": "..\\rh-project\\controllers\\project.js [344,85]\n..\\rh-project\\controllers\\project.js [394,85]\n..\\rh-project\\controllers\\project.js [444,85]\n..\\rh-project\\controllers\\project.js [492,85]"
     },
-    "Owner": {
+    {
+        "source": "Projects",
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [225,45]",
-        "translation": "Propietario"
+        "translation": "Proyectos",
+        "ref": "..\\rh-project\\conf.js [29,174]\n..\\rh-project\\controllers\\project.js [230,43]\n..\\rh-project\\controllers\\project.js [293,43]"
     },
-    "Description": {
+    {
+        "source": "Spanish",
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [288,57]",
-        "translation": "Descripción"
+        "translation": "Español",
+        "ref": "rh-project-es.js [20,41]"
     },
-    "UUID": {
+    {
+        "source": "Spanish language.",
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [487,120]",
-        "translation": "UUID"
+        "translation": "Idioma español.",
+        "ref": "rh-project-es.js [21,57]"
     },
-    "Project with UUID %s does not exists.": {
+    {
+        "source": "The company does not exist or you do not have permission to access it.",
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [492,85]",
-        "translation": "El proyecto con el UUID %s no existe."
+        "translation": "La empresa no existe o usted no tiene permiso para accederla.",
+        "ref": "..\\rh-project\\controllers\\project.js [42,122]\n..\\rh-project\\controllers\\project.js [47,118]"
     },
-    "Project \"%s\" does not exist": {
+    {
+        "source": "The project data does not have a owner.",
         "language": "es",
-        "ref": "..\\rh-project\\services\\project.js [190,67]",
-        "translation": "El proyecto \"%s\" no existe"
+        "translation": "Los datos del proyecto no tienen un propietario.",
+        "ref": "..\\rh-project\\controllers\\project.js [109,91]"
     },
-    "Project \"%s\" is not enabled": {
+    {
+        "source": "The project with UUID %s does not exists.",
         "language": "es",
-        "ref": "..\\rh-project\\services\\project.js [193,67]",
-        "translation": "El proyecto \"%s\" no está habilitado"
+        "translation": "El proyecto con el UUID %s no existe.",
+        "ref": "..\\rh-project\\controllers\\project.js [55,89]"
     },
-    "The company does not exist or you do not have permission to access it.": {
+    {
+        "source": "Title",
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [47,118]",
-        "translation": "La empresa no existe o usted no tiene permiso para accederla."
+        "translation": "Título",
+        "ref": "..\\rh-project\\controllers\\project.js [97,80]\n..\\rh-project\\controllers\\project.js [208,45]\n..\\rh-project\\controllers\\project.js [248,45]\n..\\rh-project\\controllers\\project.js [249,51]"
     },
-    "The project with UUID %s does not exists.": {
+    {
+        "source": "UUID",
         "language": "es",
-        "ref": "..\\rh-project\\controllers\\project.js [55,89]",
-        "translation": "El proyecto con el UUID %s no existe."
+        "translation": "UUID",
+        "ref": "..\\rh-project\\controllers\\project.js [339,120]\n..\\rh-project\\controllers\\project.js [389,120]\n..\\rh-project\\controllers\\project.js [439,120]\n..\\rh-project\\controllers\\project.js [487,120]"
     }
-}
+]

@@ -1,27 +1,32 @@
-{
-    "Spanish": {
+[
+    {
+        "source": "Get sites",
         "language": "es",
-        "ref": "rh-site-es.js [19,41]",
-        "translation": "Español"
+        "translation": "Obtener sitios",
+        "ref": "..\\rh-site\\conf.js [31,69]"
     },
-    "Spanish language.": {
+    {
+        "source": "Sites manager",
         "language": "es",
-        "ref": "rh-site-es.js [20,57]",
-        "translation": "Idioma español."
+        "translation": "Administrador de sitios",
+        "ref": "..\\rh-site\\conf.js [27,66]"
     },
-    "System": {
+    {
+        "source": "Spanish",
         "language": "es",
-        "ref": "..\\rh-site\\conf.js [23,53]",
-        "translation": "Sistema"
+        "translation": "Español",
+        "ref": "rh-site-es.js [20,41]"
     },
-    "Get sites": {
+    {
+        "source": "Spanish language.",
         "language": "es",
-        "ref": "..\\rh-site\\conf.js [31,69]",
-        "translation": "Obtener sitios"
+        "translation": "Idioma español.",
+        "ref": "rh-site-es.js [21,57]"
     },
-    "Sites manager": {
+    {
+        "source": "System",
         "language": "es",
-        "ref": "..\\rh-site\\conf.js [27,66]",
-        "translation": "Administrador de sitios"
+        "translation": "Sistema",
+        "ref": "..\\rh-site\\conf.js [23,53]"
     }
-}
+]

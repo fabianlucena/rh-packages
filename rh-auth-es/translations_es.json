@@ -1,282 +1,410 @@
-{
-    "Spanish": {
+[
+    {
+        "source": "Administrator",
         "language": "es",
-        "ref": "rh-auth-es.js [19,41]",
-        "translation": "Español"
+        "context": "user",
+        "isDraft": false,
+        "translation": "Administrador",
+        "ref": "..\\rh-auth\\conf.js [30,78]"
     },
-    "Spanish language.": {
+    {
+        "source": "Anonymous",
         "language": "es",
-        "ref": "rh-auth-es.js [20,57]",
-        "translation": "Idioma español."
+        "context": "role",
+        "isDraft": false,
+        "translation": "Anónimo",
+        "ref": "..\\rh-auth\\conf.js [35,70]"
     },
-    "HTTP error 401 unauthorized, no authorization header.": {
+    {
+        "source": "Can\\'t get the identity for: \"%s\", %s",
         "language": "es",
-        "ref": "..\\rh-auth\\rh-auth.js [34,108]",
-        "translation": "Error HTTP 401 no autorizado, no hay cabecera de autorización."
+        "translation": "No se pude obtener la identidad para: \"%s\", %s",
+        "ref": "..\\rh-auth\\services\\identity.js [203,95]"
     },
-    "HTTP error 401 unauthorized, authorization schema is no Bearer.": {
+    {
+        "source": "Close",
         "language": "es",
-        "ref": "..\\rh-auth\\rh-auth.js [37,118]",
-        "translation": "Error HTTP 401 no autorizado, el esquema de autorización no es Bearer."
+        "translation": "Cerrado",
+        "ref": "..\\rh-auth\\controllers\\session.js [174,48]"
     },
-    "There is no id for session": {
+    {
+        "source": "Create user",
         "language": "es",
-        "ref": "..\\rh-auth\\services\\session.js [200,66]",
-        "translation": "No hay id para la sesión."
+        "context": "premission",
+        "isDraft": false,
+        "translation": "Crear usuario",
+        "ref": "..\\rh-auth\\conf.js [51,86]"
     },
-    "Row for UUID %s does not exist": {
+    {
+        "source": "Delete session",
         "language": "es",
-        "ref": "..\\rh-auth\\services\\session.js [221,124]",
-        "translation": "La fila UUID %s no existe."
+        "context": "premission",
+        "isDraft": false,
+        "translation": "Eliminar sesiones",
+        "ref": "..\\rh-auth\\conf.js [55,89]"
     },
-    "User \"%s\" does not have local identity": {
+    {
+        "source": "Delete user",
         "language": "es",
-        "ref": "..\\rh-auth\\services\\identity.js [182,102]",
-        "translation": "El usuario \"%s\" no tiene identidad local."
+        "context": "premission",
+        "isDraft": false,
+        "translation": "Eliminar usuario",
+        "ref": "..\\rh-auth\\conf.js [53,86]"
     },
-    "User \"%s\" local entity is not enabled": {
+    {
+        "source": "Display name",
         "language": "es",
-        "ref": "..\\rh-auth\\services\\identity.js [185,101]",
-        "translation": "La identidad local del usuario \"%s\" no está habilitada."
+        "translation": "Nombre mostrado",
+        "ref": "..\\rh-auth\\controllers\\user.js [159,55]\n..\\rh-auth\\controllers\\user.js [181,55]\n..\\rh-auth\\controllers\\user.js [182,61]"
     },
-    "User \"%s\" does not have local identity data": {
+    {
+        "source": "Edit user",
         "language": "es",
-        "ref": "..\\rh-auth\\services\\identity.js [188,107]",
-        "translation": "El usuario \"%s\" no tiene datos de identidad local."
+        "context": "premission",
+        "isDraft": false,
+        "translation": "Modificar usuario",
+        "ref": "..\\rh-auth\\conf.js [52,84]"
     },
-    "User \"%s\" does not have local password": {
+    {
+        "source": "Enabled",
         "language": "es",
-        "ref": "..\\rh-auth\\services\\identity.js [192,102]",
-        "translation": "El usuario \"%s\" no tiene contraseña local."
+        "translation": "Habilitado",
+        "ref": "..\\rh-auth\\controllers\\user.js [199,50]\n..\\rh-auth\\controllers\\user.js [200,56]"
     },
-    "Can\\'t get the identity for: \"%s\", %s": {
+    {
+        "source": "Error to get old session to create session",
         "language": "es",
-        "ref": "..\\rh-auth\\services\\identity.js [203,95]",
-        "translation": "No se pude obtener la identidad para: \"%s\", %s"
+        "translation": "Error al obtener la sesión anterior para crear la sesión",
+        "ref": "..\\rh-auth\\services\\login.js [74,82]"
     },
-    "HTTP error 403 forbiden, session is closed.": {
+    {
+        "source": "Error to get user to create session",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\session.js [28,116]",
-        "translation": "Error HTTP 403 prohibido, la sesión está cerrada."
+        "translation": "Error al obtener el usuario para crear la sesión",
+        "ref": "..\\rh-auth\\services\\login.js [26,75]"
     },
-    "HTTP error 403 forbiden, authorization token error.": {
+    {
+        "source": "Everybody",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\session.js [30,124]",
-        "translation": "Error HTTP 403 prohibido, error el token de autorización."
+        "context": "role",
+        "isDraft": false,
+        "translation": "Todos",
+        "ref": "..\\rh-auth\\conf.js [34,70]"
     },
-    "HTTP error 401 unauthorized: %s": {
+    {
+        "source": "Get current site",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\session.js [39,138]",
-        "translation": "Error HTTP 401 no autorizado: %s"
+        "context": "premission",
+        "isDraft": false,
+        "translation": "Obtener sitio actual",
+        "ref": "..\\rh-auth\\conf.js [58,91]"
     },
-    "HTTP error 401 unauthorized": {
+    {
+        "source": "Get own sessions only",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\session.js [41,129]",
-        "translation": "Error HTTP 401 no autorizado"
+        "context": "premission",
+        "isDraft": false,
+        "translation": "Obtener únicamente la sesión propia",
+        "ref": "..\\rh-auth\\conf.js [56,96]"
     },
-    "No session": {
+    {
+        "source": "Get session(s)",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\logout.js [34,78]",
-        "translation": "No hay sesión"
+        "context": "premission",
+        "isDraft": false,
+        "translation": "Obtener sesion(es)",
+        "ref": "..\\rh-auth\\conf.js [54,89]"
     },
-    "Login": {
+    {
+        "source": "Get user(s)",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\login.js [58,40]",
-        "translation": "Ingresar"
+        "context": "premission",
+        "isDraft": false,
+        "translation": "Obtener usuario(s)",
+        "ref": "..\\rh-auth\\conf.js [50,86]"
     },
-    "Username": {
+    {
+        "source": "Group",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\login.js [116,68]",
-        "translation": "Nombre de usuario"
+        "context": "userType",
+        "isDraft": false,
+        "translation": "Grupo",
+        "ref": "..\\rh-auth\\conf.js [22,64]"
     },
-    "Password": {
+    {
+        "source": "HTTP error 401 unauthorized",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\login.js [116,98]",
-        "translation": "Contraseña"
+        "translation": "Error HTTP 401 no autorizado",
+        "ref": "..\\rh-auth\\controllers\\session.js [41,129]"
     },
-    "Invalid login": {
+    {
+        "source": "HTTP error 401 unauthorized, authorization schema is no Bearer.",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\login.js [159,61]",
-        "translation": "Ingreso inválido"
+        "translation": "Error HTTP 401 no autorizado, el esquema de autorización no es Bearer.",
+        "ref": "..\\rh-auth\\rh-auth.js [37,118]"
     },
-    "System administrator": {
+    {
+        "source": "HTTP error 401 unauthorized, no authorization header.",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [37,72]",
-        "translation": "Administrador del sistema."
+        "translation": "Error HTTP 401 no autorizado, no hay cabecera de autorización.",
+        "ref": "..\\rh-auth\\rh-auth.js [34,108]"
     },
-    "User manager": {
+    {
+        "source": "HTTP error 401 unauthorized: %s",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [38,64]",
-        "translation": "Administrador de usuarios"
+        "translation": "Error HTTP 401 no autorizado: %s",
+        "ref": "..\\rh-auth\\controllers\\session.js [39,138]"
     },
-    "User": {
+    {
+        "source": "HTTP error 403 forbiden, authorization token error.",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\user.js [149,39]",
-        "translation": "Usuario"
+        "translation": "Error HTTP 403 prohibido, error el token de autorización.",
+        "ref": "..\\rh-auth\\controllers\\session.js [30,124]"
     },
-    "Logout": {
+    {
+        "source": "HTTP error 403 forbiden, session is closed.",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [49,66]",
-        "translation": "Salir"
+        "translation": "Error HTTP 403 prohibido, la sesión está cerrada.",
+        "ref": "..\\rh-auth\\controllers\\session.js [28,116]"
     },
-    "Get user(s)": {
+    {
+        "source": "Invalid login",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [50,71]",
-        "translation": "Obtener usuario(s)"
+        "translation": "Ingreso inválido",
+        "ref": "..\\rh-auth\\controllers\\login.js [165,61]"
     },
-    "Users": {
+    {
+        "source": "Local",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\user.js [175,40]",
-        "translation": "Usuarios"
+        "context": "identityType",
+        "isDraft": false,
+        "translation": "Local",
+        "ref": "..\\rh-auth\\conf.js [26,68]"
     },
-    "Create user": {
+    {
+        "source": "Login",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [51,71]",
-        "translation": "Crear usuario"
+        "translation": "Ingresar",
+        "ref": "..\\rh-auth\\controllers\\login.js [58,40]"
     },
-    "Delete user": {
+    {
+        "source": "Login menu",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [53,71]",
-        "translation": "Eliminar usuario"
+        "context": "premission",
+        "isDraft": false,
+        "translation": "Menú de acceso",
+        "ref": "..\\rh-auth\\conf.js [46,85]"
     },
-    "Get session(s)": {
+    {
+        "source": "Logout",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [54,74]",
-        "translation": "Obtener sesion(es)"
+        "context": "premission",
+        "isDraft": false,
+        "translation": "Salir",
+        "ref": "..\\rh-auth\\conf.js [49,81]"
     },
-    "Sessions": {
+    {
+        "source": "My sessions",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\session.js [159,43]",
-        "translation": "Sesiones"
+        "context": "menu",
+        "isDraft": false,
+        "translation": "Mis sesiones",
+        "ref": "..\\rh-auth\\conf.js [56,209]"
     },
-    "Delete session": {
+    {
+        "source": "No session",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [55,74]",
-        "translation": "Eliminar sesiones"
+        "translation": "No hay sesión",
+        "ref": "..\\rh-auth\\controllers\\logout.js [34,78]"
     },
-    "Get own sessions only": {
+    {
+        "source": "Open",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [56,81]",
-        "translation": "Obtener únicamente la sesión propia"
+        "translation": "Abierto",
+        "ref": "..\\rh-auth\\controllers\\session.js [169,47]"
     },
-    "My sessions": {
+    {
+        "source": "Password",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [56,185]",
-        "translation": "Mis sesiones"
+        "translation": "Contraseña",
+        "ref": "..\\rh-auth\\controllers\\user.js [206,51]\n..\\rh-auth\\controllers\\login.js [73,51]\n..\\rh-auth\\controllers\\login.js [74,57]\n..\\rh-auth\\controllers\\login.js [116,98]"
     },
-    "Edit user": {
+    {
+        "source": "Row for UUID %s does not exist",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [52,69]",
-        "translation": "Modificar usuario"
+        "translation": "La fila UUID %s no existe.",
+        "ref": "..\\rh-auth\\services\\session.js [221,124]"
     },
-    "Display name": {
+    {
+        "source": "Session menu",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\user.js [182,61]",
-        "translation": "Nombre mostrado"
+        "context": "premission",
+        "isDraft": false,
+        "translation": "Menú se sessión",
+        "ref": "..\\rh-auth\\conf.js [47,87]"
     },
-    "Enabled": {
+    {
+        "source": "Sessions",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\user.js [200,56]",
-        "translation": "Habilitado"
+        "context": "menu",
+        "isDraft": false,
+        "translation": "Sesiones",
+        "ref": "..\\rh-auth\\conf.js [54,206]"
     },
-    "Group": {
+    {
+        "source": "Sessions",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [22,51]",
-        "translation": "Grupo"
+        "translation": "Sesiones",
+        "ref": "..\\rh-auth\\controllers\\session.js [159,43]"
     },
-    "Administrator": {
+    {
+        "source": "Spanish",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [30,69]",
-        "translation": "Administrador"
+        "translation": "Español",
+        "ref": "rh-auth-es.js [20,41]"
     },
-    "Local": {
+    {
+        "source": "Spanish language.",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [26,51]",
-        "translation": "Local"
+        "translation": "Idioma español.",
+        "ref": "rh-auth-es.js [21,57]"
     },
-    "Everybody": {
+    {
+        "source": "Switch site",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [34,61]",
-        "translation": "Todos"
+        "context": "premission",
+        "isDraft": false,
+        "translation": "Cambiar de sitio",
+        "ref": "..\\rh-auth\\conf.js [57,86]"
     },
-    "Anonymous": {
+    {
+        "source": "System administrator",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [35,61]",
-        "translation": "Anónimo"
+        "context": "role",
+        "isDraft": false,
+        "translation": "Administrador del sistema.",
+        "ref": "..\\rh-auth\\conf.js [37,81]"
     },
-    "Open": {
+    {
+        "source": "The auto login token is invalid becasuse the session is closed",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\session.js [169,47]",
-        "translation": "Abierto"
+        "translation": "La seña (token) de ingreso automático es inválida porque la sesión está cerrada",
+        "ref": "..\\rh-auth\\services\\login.js [77,102]"
     },
-    "Close": {
+    {
+        "source": "The device is not the same",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\session.js [174,48]",
-        "translation": "Cerrado"
+        "translation": "El dispositivo no es el mismo",
+        "ref": "..\\rh-auth\\services\\login.js [84,66]"
     },
-    "Type here the new password for user": {
+    {
+        "source": "There is no id for session",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\user.js [207,84]",
-        "translation": "Escriba aquí la nueva contraseña para el usuario"
+        "translation": "No hay id para la sesión.",
+        "ref": "..\\rh-auth\\services\\session.js [200,66]"
     },
-    "UUID": {
+    {
+        "source": "Type here the new password for user",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\session.js [220,77]",
-        "translation": "UUID"
+        "translation": "Escriba aquí la nueva contraseña para el usuario",
+        "ref": "..\\rh-auth\\controllers\\user.js [207,84]"
     },
-    "User with UUID %s does not exists.": {
+    {
+        "source": "UUID",
         "language": "es",
-        "ref": "..\\rh-auth\\controllers\\user.js [399,82]",
-        "translation": "No existe el usuario con el UUID %s."
+        "translation": "UUID",
+        "ref": "..\\rh-auth\\controllers\\user.js [254,120]\n..\\rh-auth\\controllers\\user.js [302,120]\n..\\rh-auth\\controllers\\user.js [350,120]\n..\\rh-auth\\controllers\\user.js [396,120]\n..\\rh-auth\\controllers\\session.js [220,77]"
     },
-    "User \"%s\" does not exist": {
+    {
+        "source": "User",
         "language": "es",
-        "ref": "..\\rh-auth\\services\\user.js [185,64]",
-        "translation": "El usuario \"%s\" no existe"
+        "context": "role",
+        "isDraft": false,
+        "translation": "Usuario",
+        "ref": "..\\rh-auth\\conf.js [36,65]"
     },
-    "User \"%s\" is not enabled": {
+    {
+        "source": "User",
         "language": "es",
-        "ref": "..\\rh-auth\\services\\user.js [188,64]",
-        "translation": "El usuario \"%s no está habilitado"
+        "context": "userType",
+        "isDraft": false,
+        "translation": "Usuario",
+        "ref": "..\\rh-auth\\conf.js [21,63]"
     },
-    "Error to get user to create session": {
+    {
+        "source": "User",
         "language": "es",
-        "ref": "..\\rh-auth\\services\\login.js [26,75]",
-        "translation": "Error al obtener el usuario para crear la sesión"
+        "translation": "Usuario",
+        "ref": "..\\rh-auth\\controllers\\user.js [149,39]"
     },
-    "Error to get old session to create session": {
+    {
+        "source": "User \"%s\" does not exist",
         "language": "es",
-        "ref": "..\\rh-auth\\services\\login.js [74,82]",
-        "translation": "Error al obtener la sesión anterior para crear la sesión"
+        "translation": "El usuario \"%s\" no existe",
+        "ref": "..\\rh-auth\\services\\user.js [185,64]"
     },
-    "The auto login token is invalid becasuse the session is closed": {
+    {
+        "source": "User \"%s\" does not have local identity",
         "language": "es",
-        "ref": "..\\rh-auth\\services\\login.js [77,102]",
-        "translation": "La seña (token) de ingreso automático es inválida porque la sesión está cerrada"
+        "translation": "El usuario \"%s\" no tiene identidad local.",
+        "ref": "..\\rh-auth\\services\\identity.js [182,102]"
     },
-    "The device is not the same": {
+    {
+        "source": "User \"%s\" does not have local identity data",
         "language": "es",
-        "ref": "..\\rh-auth\\services\\login.js [84,66]",
-        "translation": "El dispositivo no es el mismo"
+        "translation": "El usuario \"%s\" no tiene datos de identidad local.",
+        "ref": "..\\rh-auth\\services\\identity.js [188,107]"
     },
-    "Login menu": {
+    {
+        "source": "User \"%s\" does not have local password",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [46,70]",
-        "translation": "Menú de acceso"
+        "translation": "El usuario \"%s\" no tiene contraseña local.",
+        "ref": "..\\rh-auth\\services\\identity.js [192,102]"
     },
-    "Session menu": {
+    {
+        "source": "User \"%s\" is not enabled",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [47,72]",
-        "translation": "Menú se sessión"
+        "translation": "El usuario \"%s no está habilitado",
+        "ref": "..\\rh-auth\\services\\user.js [188,64]"
     },
-    "Switch site": {
+    {
+        "source": "User \"%s\" local entity is not enabled",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [57,71]",
-        "translation": "Cambiar de sitio"
+        "translation": "La identidad local del usuario \"%s\" no está habilitada.",
+        "ref": "..\\rh-auth\\services\\identity.js [185,101]"
     },
-    "Get current site": {
+    {
+        "source": "User manager",
         "language": "es",
-        "ref": "..\\rh-auth\\conf.js [58,76]",
-        "translation": "Obtener sitio actual"
+        "context": "role",
+        "isDraft": false,
+        "translation": "Administrador de usuarios",
+        "ref": "..\\rh-auth\\conf.js [38,73]"
+    },
+    {
+        "source": "User with UUID %s does not exists.",
+        "language": "es",
+        "translation": "No existe el usuario con el UUID %s.",
+        "ref": "..\\rh-auth\\controllers\\user.js [257,82]\n..\\rh-auth\\controllers\\user.js [305,82]\n..\\rh-auth\\controllers\\user.js [353,82]\n..\\rh-auth\\controllers\\user.js [399,82]"
+    },
+    {
+        "source": "Username",
+        "language": "es",
+        "translation": "Nombre de usuario",
+        "ref": "..\\rh-auth\\controllers\\user.js [164,51]\n..\\rh-auth\\controllers\\user.js [188,51]\n..\\rh-auth\\controllers\\user.js [189,57]\n..\\rh-auth\\controllers\\login.js [67,51]\n..\\rh-auth\\controllers\\login.js [68,57]\n..\\rh-auth\\controllers\\login.js [116,68]"
+    },
+    {
+        "source": "Users",
+        "language": "es",
+        "context": "menu",
+        "isDraft": false,
+        "translation": "Usuarios",
+        "ref": "..\\rh-auth\\conf.js [50,203]"
+    },
+    {
+        "source": "Users",
+        "language": "es",
+        "translation": "Usuarios",
+        "ref": "..\\rh-auth\\controllers\\user.js [175,40]"
     }
-}
+]

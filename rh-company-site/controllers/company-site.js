@@ -127,7 +127,7 @@ export class CompanySiteController {
         let loc = req.loc;
 
         res.status(200).send({
-            title: await loc._('Select company'),
+            title: await loc._c('companySite', 'Select company'),
             load: {
                 service: 'company-site',
                 method: 'get',

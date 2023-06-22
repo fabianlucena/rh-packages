@@ -1,57 +1,69 @@
-{
-    "Title": {
+[
+    {
+        "source": "Company UUID",
         "language": "es",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [132,48]",
-        "translation": "Título"
+        "translation": "UUID de empresa",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [16,67]\n..\\rh-company-site\\controllers\\company-site.js [20,73]"
     },
-    "Name": {
+    {
+        "source": "Company: %s",
         "language": "es",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [137,47]",
-        "translation": "Nombre"
+        "translation": "Empresa: %s",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [57,73]"
     },
-    "Spanish": {
+    {
+        "source": "Description",
         "language": "es",
-        "ref": "rh-company-site-es.js [19,41]",
-        "translation": "Español"
+        "translation": "Descripción",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [150,54]"
     },
-    "Spanish language.": {
+    {
+        "source": "Name",
         "language": "es",
-        "ref": "rh-company-site-es.js [20,57]",
-        "translation": "Idioma español."
+        "translation": "Nombre",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [145,47]"
     },
-    "Description": {
+    {
+        "source": "Select company",
         "language": "es",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [142,54]",
-        "translation": "Descripción"
+        "translation": "Seleccionar empresa",
+        "ref": "..\\rh-company-site\\conf.js [21,74]\n..\\rh-company-site\\controllers\\company-site.js [130,49]"
     },
-    "Company UUID": {
+    {
+        "source": "Site UUID",
         "language": "es",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [20,73]",
-        "translation": "UUID de empresa"
+        "translation": "UUID de sitio",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [16,88]\n..\\rh-company-site\\controllers\\company-site.js [25,70]"
     },
-    "Site UUID": {
+    {
+        "source": "Spanish",
         "language": "es",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [25,70]",
-        "translation": "UUID de sitio"
+        "translation": "Español",
+        "ref": "rh-company-site-es.js [20,41]"
     },
-    "The selected object does not exist or you do not have permission.": {
+    {
+        "source": "Spanish language.",
         "language": "es",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [34,109]",
-        "translation": "El objeto seleccionado no existe o no tiene permiso"
+        "translation": "Idioma español.",
+        "ref": "rh-company-site-es.js [21,57]"
     },
-    "User": {
+    {
+        "source": "The selected company is disabled.",
         "language": "es",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [122,39]",
-        "translation": "Usuario"
+        "isDraft": true,
+        "translation": null,
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [38,77]"
     },
-    "Company: %s": {
+    {
+        "source": "The selected object does not exist or you do not have permission.",
         "language": "es",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [54,73]",
-        "translation": "Empresa: %s"
+        "translation": "El objeto seleccionado no existe o no tiene permiso",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [34,109]"
     },
-    "Select company": {
+    {
+        "source": "Title",
         "language": "es",
-        "ref": "..\\rh-company-site\\conf.js [21,74]",
-        "translation": "Seleccionar empresa"
+        "translation": "Título",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [140,48]"
     }
-}
+]

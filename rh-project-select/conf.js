@@ -17,7 +17,7 @@ export const conf = {
 
     data: {
         permissions: [
-            {name: 'project-select.switch', title: loc._f('Select project'), isTranslatable: true, ownerModule: name, menuItem: {isTranslatable: true, action: 'object', service: 'project-select'}},
+            {name: 'project-select.switch', title: loc._cf('permission', 'Select project'), isTranslatable: true, ownerModule: name, menuItem: {title: loc._cf('menu', 'Select project'), isTranslatable: true, action: 'object', service: 'project-select'}},
         ],
     },
 };
