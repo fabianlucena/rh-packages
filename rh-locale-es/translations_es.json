@@ -1,147 +1,183 @@
-{
-    "Create": {
+[
+    {
+        "source": "-- Select an option --",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [11,17]",
-        "translation": "Crear"
+        "translation": "-- Seleccione una opción --",
+        "ref": "..\\rh-locale\\texts.js [31,33]"
     },
-    "Search": {
+    {
+        "source": "Actions",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [25,17]",
-        "translation": "Buscar"
+        "translation": "Acciones",
+        "ref": "..\\rh-locale\\texts.js [5,18]"
     },
-    "First": {
+    {
+        "source": "Add",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [19,16]",
-        "translation": "Primero"
+        "translation": "Agregar",
+        "ref": "..\\rh-locale\\texts.js [6,14]"
     },
-    "Next": {
+    {
+        "source": "Available",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [21,15]",
-        "translation": "Siguiente"
+        "translation": "Disponible",
+        "ref": "..\\rh-locale\\texts.js [7,20]"
     },
-    "Prior": {
+    {
+        "source": "Cancel",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [22,16]",
-        "translation": "Anterior"
+        "translation": "Cancelar",
+        "ref": "..\\rh-locale\\texts.js [8,17]"
     },
-    "Last": {
+    {
+        "source": "Cannot create the language because already exists.",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [20,15]",
-        "translation": "Último"
+        "isDraft": false,
+        "translation": "No se puede crear el idioma porque ya existe.",
+        "ref": "..\\rh-locale\\services\\language.js [21,97]"
     },
-    "Delete": {
+    {
+        "source": "Click to hide details",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [13,17]",
-        "translation": "Eliminar"
+        "translation": "Haga click para ocultar detalles",
+        "ref": "..\\rh-locale\\texts.js [9,32]"
     },
-    "Edit": {
+    {
+        "source": "Click to show details",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [16,15]",
-        "translation": "Modificar"
+        "translation": "Haga click para mostrar detalles",
+        "ref": "..\\rh-locale\\texts.js [10,32]"
     },
-    "Enable": {
+    {
+        "source": "Collapse",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [17,17]",
-        "translation": "Habilitar"
+        "translation": "Colapsar",
+        "ref": "..\\rh-locale\\texts.js [12,19]"
     },
-    "Disable": {
+    {
+        "source": "Create",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [15,18]",
-        "translation": "Deshabilitar"
+        "translation": "Crear",
+        "ref": "..\\rh-locale\\texts.js [11,17]"
     },
-    "English": {
+    {
+        "source": "Delete",
         "language": "es",
-        "ref": "..\\rh-locale\\conf.js [23,44]",
-        "translation": "Inglés"
+        "translation": "Eliminar",
+        "ref": "..\\rh-locale\\texts.js [13,17]"
     },
-    "Spanish": {
+    {
+        "source": "Detail",
         "language": "es",
-        "ref": "rh-locale-es.js [19,41]",
-        "translation": "Español"
+        "translation": "Detalle",
+        "ref": "..\\rh-locale\\texts.js [14,17]"
     },
-    "Spanish language.": {
+    {
+        "source": "Disable",
         "language": "es",
-        "ref": "rh-locale-es.js [20,57]",
-        "translation": "Idioma español."
+        "translation": "Deshabilitar",
+        "ref": "..\\rh-locale\\texts.js [15,18]"
     },
-    "Add": {
+    {
+        "source": "Edit",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [6,14]",
-        "translation": "Agregar"
+        "translation": "Modificar",
+        "ref": "..\\rh-locale\\texts.js [16,15]"
     },
-    "Actions": {
+    {
+        "source": "Enable",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [5,18]",
-        "translation": "Acciones"
+        "translation": "Habilitar",
+        "ref": "..\\rh-locale\\texts.js [17,17]"
     },
-    "Total pages %s\\nTotal rows founded %s\\nShowing %s rows from %s to %s": {
+    {
+        "source": "English",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [29,79]",
-        "translation": "Páginas en total %s\\nFilas en total encontradas %s\\nMostrando %s filas desde %s al %s"
+        "translation": "Inglés",
+        "ref": "..\\rh-locale\\conf.js [23,44]"
     },
-    "Cancel": {
+    {
+        "source": "Expand",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [8,17]",
-        "translation": "Cancelar"
+        "translation": "Expandir",
+        "ref": "..\\rh-locale\\texts.js [18,17]"
     },
-    "Reset": {
+    {
+        "source": "First",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [24,16]",
-        "translation": "Reiniciar"
+        "translation": "Primero",
+        "ref": "..\\rh-locale\\texts.js [19,16]"
     },
-    "Submit": {
+    {
+        "source": "Last",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [28,17]",
-        "translation": "Enviar"
+        "translation": "Último",
+        "ref": "..\\rh-locale\\texts.js [20,15]"
     },
-    "-- Select an option --": {
+    {
+        "source": "Next",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [31,33]",
-        "translation": "-- Seleccione una opción --"
+        "translation": "Siguiente",
+        "ref": "..\\rh-locale\\texts.js [21,15]"
     },
-    "Available": {
+    {
+        "source": "Prior",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [7,20]",
-        "translation": "Disponible"
+        "translation": "Anterior",
+        "ref": "..\\rh-locale\\texts.js [22,16]"
     },
-    "Remove": {
+    {
+        "source": "Remove",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [23,17]",
-        "translation": "Remover"
+        "translation": "Remover",
+        "ref": "..\\rh-locale\\texts.js [23,17]"
     },
-    "Select": {
+    {
+        "source": "Reset",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [26,17]",
-        "translation": "Seleccionar"
+        "translation": "Reiniciar",
+        "ref": "..\\rh-locale\\texts.js [24,16]"
     },
-    "Selected": {
+    {
+        "source": "Search",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [27,19]",
-        "translation": "Seleccionado"
+        "translation": "Buscar",
+        "ref": "..\\rh-locale\\texts.js [25,17]"
     },
-    "Click to hide details": {
+    {
+        "source": "Select",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [9,32]",
-        "translation": "Haga click para ocultar detalles"
+        "translation": "Seleccionar",
+        "ref": "..\\rh-locale\\texts.js [26,17]"
     },
-    "Click to show details": {
+    {
+        "source": "Selected",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [10,32]",
-        "translation": "Haga click para mostrar detalles"
+        "translation": "Seleccionado",
+        "ref": "..\\rh-locale\\texts.js [27,19]"
     },
-    "Collapse": {
+    {
+        "source": "Spanish",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [12,19]",
-        "translation": "Colapsar"
+        "translation": "Español",
+        "ref": "rh-locale-es.js [20,41]"
     },
-    "Detail": {
+    {
+        "source": "Spanish language.",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [14,17]",
-        "translation": "Detalle"
+        "translation": "Idioma español.",
+        "ref": "rh-locale-es.js [21,57]"
     },
-    "Expand": {
+    {
+        "source": "Submit",
         "language": "es",
-        "ref": "..\\rh-locale\\texts.js [18,17]",
-        "translation": "Expandir"
+        "translation": "Enviar",
+        "ref": "..\\rh-locale\\texts.js [28,17]"
+    },
+    {
+        "source": "Total pages %s\\nTotal rows founded %s\\nShowing %s rows from %s to %s",
+        "language": "es",
+        "translation": "Páginas en total %s\\nFilas en total encontradas %s\\nMostrando %s filas desde %s al %s",
+        "ref": "..\\rh-locale\\texts.js [29,79]"
     }
-}
+]
