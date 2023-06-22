@@ -15,16 +15,19 @@ export class Service {
     
     async completeReferences(data, clean) {
         for (const name in this.references) {
-            const reference = this.references[name];
+            let reference = this.references[name];
             if (reference.function) {
                 await reference.function(data);
                 continue;
             }
-            const service = reference.service?
-                reference.service:
-                reference;
 
-            await this.completeEntityId(data, {service, name, clean, createIfNotExists: reference.createIfNotExists});
+            if (!reference.service)
+                reference = {service: reference};
+                
+            if (typeof reference !== 'object')
+                reference = {};
+
+            await this.completeEntityId(data, {name, ...reference, clean});
         }
 
         return data;
@@ -32,9 +35,9 @@ export class Service {
 
     async completeEntityId(data, options) {
         const name = options.name;
-        const Name = ucfirst(name);
-        const idParamName = name + 'Id';
-        const uuidParamName = name + 'Uuid';
+        const Name = options.Name ?? ucfirst(name);
+        const idParamName = options.idParamName ?? (name + 'Id');
+        const uuidParamName = options.uuidParamName ?? (name + 'Uuid');
         if (!data[idParamName]) {
             const service = options.service.singleton?
                 options.service.singleton():
@@ -228,7 +231,7 @@ export class Service {
      * @returns {Promise[Array[row]]}
      */
     async getFor(where, options) {
-        return this.getList({...options, where: {...where, ...options?.where}, });
+        return this.getList({...options, where: {...options?.where, ...where?.where}});
     }
 
     /**
@@ -246,9 +249,9 @@ export class Service {
      */
     async getForId(id, options) {
         if (Array.isArray(id))
-            return this.getList({...options, where: {id, ...options?.where}, });
+            return this.getList({...options, where: {...options?.where, id}});
             
-        const rows = this.getList({limit: 2, ...options, where: {id, ...options?.where}, });
+        const rows = await this.getList({limit: 2, ...options, where: {...options?.where, id}});
 
         return this.getSingle(rows, options);
     }
@@ -268,9 +271,9 @@ export class Service {
      */
     async getForUuid(uuid, options) {
         if (Array.isArray(uuid))
-            return this.getList({...options, where: {uuid, ...options?.where}, });
+            return this.getList({...options, where: {...options?.where, uuid}});
             
-        const rows = this.getList({limit: 2, ...options, where: {uuid, ...options?.where}, });
+        const rows = await this.getList({limit: 2, ...options, where: {...options?.where, uuid}});
 
         return this.getSingle(rows, options);
     }
@@ -293,9 +296,9 @@ export class Service {
             throw new Error('Ho no');
 
         if (Array.isArray(name))
-            return this.getList({...options, where: {name, ...options?.where}});
+            return this.getList({...options, where: {...options?.where, name}});
             
-        const rows = await this.getList({limit: 2, ...options, where: {name, ...options?.where}});
+        const rows = await this.getList({limit: 2, ...options, where: {...options?.where, name}});
 
         return await this.getSingle(rows, options);
     }
@@ -310,7 +313,7 @@ export class Service {
      * function can be specified.
      */
     async getIdFor(where, options) {
-        return (await this.getForName(where, {attributes: ['id'], ...options})).map(row => row.id);
+        return (await this.getFor(where, {attributes: ['id'], ...options})).map(row => row.id);
     }
 
     /**
@@ -391,7 +394,7 @@ export class Service {
     /**
      * Updates a row for a given criteria.
      * @param {object} data - Data to update.
-     * @param {object} where - Where objct with the criteria to update.
+     * @param {object} where - Where object with the criteria to update.
      * @returns {Promise[integer]} updated rows count.
      */
     async update(data, where) {
@@ -401,9 +404,19 @@ export class Service {
     }
 
     /**
+     * Updates a row for a given ID.
+     * @param {object} data - Data to update.
+     * @param {object} id - ID of the row to update.
+     * @returns {Promise[integer]} updated rows count.
+     */
+    async updateForId(data, id) {
+        return this.update(data, {where: {id}});
+    }
+
+    /**
      * Updates a row for a given UUID.
      * @param {object} data - Data to update.
-     * @param {object} uuid - UUID of the uer to update.
+     * @param {object} uuid - UUID of the row to update.
      * @returns {Promise[integer]} updated rows count.
      */
     async updateForUuid(data, uuid) {
@@ -412,7 +425,7 @@ export class Service {
 
     /**
      * Deletes a row for a given criteria.
-     * @param {object} where - Where objct with the criteria to delete.
+     * @param {object} where - Where object with the criteria to delete.
      * @returns {Promise[integer]} deleted rows count.
      */
     async delete(where) {        
