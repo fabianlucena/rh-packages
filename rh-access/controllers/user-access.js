@@ -363,7 +363,7 @@ export class UserAccessController {
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
 
-        const userService = conf.global.services.User;
+        const userService = conf.global.services.User.singleton();
         const result = await userService.getListAndCount(options);
 
         res.status(200).send(result);
