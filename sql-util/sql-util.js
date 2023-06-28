@@ -333,7 +333,7 @@ export function includeCollaborators(options, object, models, collaboratorOption
     };
 
     if (collaboratorOptions.typeFilter !== undefined)
-        user.where = {isEnnameabled: collaboratorOptions.typeFilter};
+        user.where = {name: collaboratorOptions.typeFilter};
 
     const user = {
         model: models.User,
