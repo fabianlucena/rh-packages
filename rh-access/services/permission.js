@@ -100,7 +100,7 @@ export class PermissionService {
                 data.roles:
                 data.roles.split(',');
 
-            await runSequentially(roles, async roleName => await RolePermissionService.createIfNotExists({role: roleName, permission: data.name}));
+            await runSequentially(roles, async roleName => await RolePermissionService.createIfNotExists({role: roleName, permission: data.name, ownerModule: data.ownerModule}));
         }
 
         return permission;
