@@ -12,7 +12,6 @@ export const conf = {
     title: 'RH Locale',
     version: '0.1',
     schema: 'locale',
-    init: [],
     configure: null,
     routesPath: dirname + '/routes',
     modelsPath: dirname + '/models',
