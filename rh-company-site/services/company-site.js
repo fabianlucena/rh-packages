@@ -143,7 +143,7 @@ export class CompanySiteService {
             );
         }
 
-        if (options.includeSite || options.where.siteName || options.where.siteUuid) {
+        if (options.includeSite || options.where?.siteName || options.where?.siteUuid) {
             let where;
             if (options.isEnabled !== undefined)
                 where = {isEnabled: options.isEnabled};
