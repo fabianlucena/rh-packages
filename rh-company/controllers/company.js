@@ -169,7 +169,7 @@ export class CompanyController {
         let options = {view: true, limit: 10, offset: 0, includeOwner: true};
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
-        if (conf.filters?.getCurrentCompanyId) {
+        if (!req.roles.includes('admin') && conf.filters?.getCurrentCompanyId) {
             options.where ??= {};
             options.where.id = await conf.filters.getCurrentCompanyId(req) ?? null;
         }
