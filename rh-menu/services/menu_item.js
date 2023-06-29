@@ -1,3 +1,5 @@
+'use strict';
+
 import {conf} from '../conf.js';
 import {Service} from 'rf-service';
 import {completeIncludeOptions, addEnabledFilter, checkViewOptions} from 'sql-util';
@@ -16,7 +18,7 @@ export class MenuItemService extends Service {
 
     async validateForCreation(data) {
         if (data.id)
-            throw new CheckError(loc._cf('menuItem', 'ID parameter is forbiden for creation.'));
+            throw new CheckError(loc._cf('menuItem', 'ID parameter is forbidden for creation.'));
 
         checkParameterStringNotNullOrEmpty(data.name, loc._cf('menuItem', 'Name'));
 
