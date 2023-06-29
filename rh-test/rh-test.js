@@ -959,7 +959,7 @@ export const rt = {
      *  - POST create object with missing params
      *  - POST create object with the right params
      *  - GET objects
-     *  - POST forbiden double creation of object
+     *  - POST forbidden double creation of object
      *  - GET the created object
      *  - GET single object using query parameters
      *  - GET single object using URL parameters
@@ -991,7 +991,7 @@ export const rt = {
      *          ['username', 'displayName'],
      *      ],
      *      id: 'uuid'                                                                      // name for the object id by default is uuid
-     *      forbiddenDoubleCreation: true,                                                  // Test for forbiden double creation of the same object
+     *      forbiddenDoubleCreation: true,                                                  // Test for forbidden double creation of the same object
      *      getProperties: ['uuid', 'isEnabled', 'username', 'displayName', 'UserType'],    // Properties to check the GET method.
      *      getCreated: {query:{username:'test1'}},                                         // Options to get the created object to perform the rest of the tests.
      *      getByQuery: [                                                                   // Test to get objects using the query params, each item is a separated test
