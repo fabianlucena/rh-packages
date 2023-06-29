@@ -1,3 +1,5 @@
+'use strict';
+
 import {RoleService} from './role.js';
 import {conf} from '../conf.js';
 import {addEnabledOnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes, completeIncludeOptions, arrangeOptions} from 'sql-util';
@@ -27,10 +29,11 @@ export class UserSiteRoleService {
      */
     static async completeSiteId(data) {
         if (!data.siteId) {
+            const siteService = conf.global.services.Site.singleton();
             if (data.siteUuid)
-                data.siteId = await conf.global.services.Site.getIdForUuid(data.siteUuid);
+                data.siteId = await siteService.getIdForUuid(data.siteUuid);
             else if (data.site)
-                data.siteId = await conf.global.services.Site.getIdForName(data.site);
+                data.siteId = await siteService.getIdForName(data.site);
         }
 
         return data;
@@ -197,7 +200,7 @@ export class UserSiteRoleService {
         }
 
         if (where?.siteUuid && !where.siteId) {
-            where.siteId = await conf.global.services.Site.getIdForUuid(where.siteUuid);
+            where.siteId = await conf.global.services.Site.singleton().getIdForUuid(where.siteUuid);
             delete where.siteUuid;
         }
 

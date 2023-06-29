@@ -1,3 +1,5 @@
+'use strict';
+
 import {GroupService} from './group.js';
 import {RoleService} from './role.js';
 import {PermissionService} from './permission.js';
@@ -45,7 +47,7 @@ export class PrivilegesService {
         const privileges = {};
 
         if (username)
-            privileges.sites = await conf.global.services.Site.getNameForUsername(username, {isEnabled: true});
+            privileges.sites = await conf.global.services.Site.singleton().getNameForUsername(username, {isEnabled: true});
         else
             privileges.sites = [];
 
@@ -91,10 +93,11 @@ export class PrivilegesService {
                 return provilegeData.privileges;
             }
 
-            site = await conf.global.services.Site.getForSessionId(sessionId, {skipThroughAssociationAttributes: true, skipNoRowsError: true});
+            const siteService = conf.global.services.Site.singleton();
+            site = await siteService.getForSessionId(sessionId, {skipThroughAssociationAttributes: true, skipNoRowsError: true});
             if (!site) {
                 if (!site && conf.global.data.defaultSite)
-                    site = await conf.global.services.Site.getForName(conf.global.data.defaultSite, {skipThroughAssociationAttributes: true, skipNoRowsError: true});
+                    site = await siteService.getForName(conf.global.data.defaultSite, {skipThroughAssociationAttributes: true, skipNoRowsError: true});
 
                 if (site && conf.global.services.SessionSite?.createOrUpdate) {
                     await conf.global.services.SessionSite?.createOrUpdate({

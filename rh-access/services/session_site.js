@@ -1,3 +1,5 @@
+'use strict';
+
 import {conf} from '../conf.js';
 import {checkDataForMissingProperties, addEnabledFilter} from 'sql-util';
 
@@ -25,10 +27,11 @@ export class SessionSiteService {
      */
     static async completeSiteId(data) {
         if (!data.siteId) {
+            const siteService = conf.global.services.Site.singleton();
             if (data.siteUuid)
-                data.siteId = await conf.global.services.Site.getIdForUuid(data.siteUuid, {foreign: {module: false}});
+                data.siteId = await siteService.getIdForUuid(data.siteUuid, {foreign: {module: false}});
             else if (data.site)
-                data.siteId = await conf.global.services.Site.getIdForName(data.site, {foreign: {module: false}});
+                data.siteId = await siteService.getIdForName(data.site, {foreign: {module: false}});
         }
 
         return data;

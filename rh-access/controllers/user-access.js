@@ -1,3 +1,5 @@
+'use strict';
+
 import {RoleService} from '../services/role.js';
 import {UserSiteRoleService} from '../services/user_site_role.js';
 import {AssignableRolePerRoleService} from '../services/assignable_role_per_role.js';
@@ -68,7 +70,7 @@ export class UserAccessController {
         const roleUuidList = checkParameterUuidList(req.body.Roles, loc._cf('userAccess', 'Roles'));
 
         const userId = await conf.global.services.User.singleton().getIdForUuid(userUuid);
-        const siteId = await conf.global.services.Site.getIdForUuid(siteUuid);
+        const siteId = await conf.global.services.Site.singleton().getIdForUuid(siteUuid);
 
         const options = {
             attributes: ['userId'],
@@ -375,8 +377,8 @@ export class UserAccessController {
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
 
-        const SiteService = conf.global.services.Site;
-        const result = await SiteService.getListAndCount(options);
+        const siteService = conf.global.services.Site.singleton();
+        const result = await siteService.getListAndCount(options);
 
         res.status(200).send(result);
     }

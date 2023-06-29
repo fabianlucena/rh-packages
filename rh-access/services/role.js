@@ -1,3 +1,5 @@
+'use strict';
+
 import {RoleParentSiteService} from './role_parent_site.js';
 import {conf} from '../conf.js';
 import {addEnabledFilter, addEnabledOnerModuleFilter, checkDataForMissingProperties, getSingle, completeAssociationOptions} from 'sql-util';
@@ -185,7 +187,7 @@ export class RoleService {
      * @returns {Promise{RoleList}}
      */
     static async getAllIdsForUsernameAndSiteName(username, siteName, options) {
-        const site = await conf.global.services.Site.getForName(siteName, {isEnabled: true});
+        const site = await conf.global.services.Site.singleton().getForName(siteName, {isEnabled: true});
         if (!site || (Array.isArray(site) && !site.length))
             return;
 

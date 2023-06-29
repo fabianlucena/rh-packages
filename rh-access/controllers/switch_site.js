@@ -121,7 +121,7 @@ export class SwitchSiteController {
             options.where.name = req?.sites ?? null;
         }
 
-        const result = await conf.global.services.Site.getListAndCount(options);
+        const result = await conf.global.services.Site.singleton().getListAndCount(options);
         
         res.status(200).send(result);
     }

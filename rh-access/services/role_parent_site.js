@@ -1,3 +1,5 @@
+'use strict';
+
 import {RoleService} from './role.js';
 import {conf} from '../conf.js';
 import {addEnabledOnerModuleFilter, checkDataForMissingProperties} from 'sql-util';
@@ -35,7 +37,7 @@ export class RoleParentSiteService {
      */
     static async completeSiteId(data) {
         if (!data.siteId && data.site)
-            data.siteId = await conf.global.services.Site.getIdForName(data.site);
+            data.siteId = await conf.global.services.Site.singleton().getIdForName(data.site);
 
         return data;
     }
