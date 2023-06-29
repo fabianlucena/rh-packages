@@ -37,9 +37,6 @@ export class SiteService extends Service {
         if (await this.getForName(data.name, {skipNoRowsError: true}))
             throw new ConflictError(loc._cf('site', 'Exists another test site with that name.'));
 
-        if (!data.owner && !data.ownerId)
-            throw new CheckError(loc._cf('site', 'No owner specified.'));
-
         return true;
     }
 
