@@ -1,3 +1,5 @@
+'use strict';
+
 import {conf} from '../conf.js';
 import {getSingle, addEnabledFilter, includeCollaborators, completeIncludeOptions} from 'sql-util';
 import {complete, deepComplete, _Error} from 'rf-util';
@@ -12,9 +14,9 @@ export class ProjectService {
     static async completeCompanyId(data) {
         if (!data.companyId) {
             if (data.companyUuid)
-                data.companyId = await conf.global.services.Company.getIdForUuid(data.companyUuid);
+                data.companyId = await conf.global.services.Company.singleton().getIdForUuid(data.companyUuid);
             else if (data.company)
-                data.companyId = await conf.global.services.Company.getIdForName(data.company);
+                data.companyId = await conf.global.services.Company.singleton().getIdForName(data.company);
         }
         
         return data;

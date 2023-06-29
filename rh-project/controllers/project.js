@@ -1,3 +1,5 @@
+'use strict';
+
 import {ProjectService} from '../services/project.js';
 import {conf} from '../conf.js';
 import {getOptionsFromParamsAndOData, _HttpError, ConflictError} from 'http-util';
@@ -30,9 +32,9 @@ export class ProjectController {
             
         if (!data.companyId) {
             if (data.companyUuid)
-                data.companyId = await conf.global.services.Company.getIdForUuid(data.companyUuid);
+                data.companyId = await conf.global.services.Company.singleton().getIdForUuid(data.companyUuid);
             else if (data.companyName)
-                data.companyId = await conf.global.services.Company.getIdForName(data.companyName);
+                data.companyId = await conf.global.services.Company.singleton().getIdForName(data.companyName);
             else {
                 data.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
                 return data.companyId;
@@ -556,7 +558,7 @@ export class ProjectController {
             options.where.id = await conf.filters.getCurrentCompanyId(req) ?? null;
         }
 
-        const result = await conf.global.services.Company.getListAndCount(options);
+        const result = await conf.global.services.Company.singleton().getListAndCount(options);
 
         const loc = req.loc;
         result.rows = result.rows.map(row => {
