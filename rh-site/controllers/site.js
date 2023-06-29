@@ -45,7 +45,7 @@ export class SiteController {
         let options = {view: true, limit: 10, offset: 0};
 
         options = getOptionsFromParamsAndOData(req?.query, definitions, options);
-        const rows = await SiteService.getList(options);
+        const rows = await SiteService.singleton().getList(options);
 
         res.status(200).send(rows);
     }

@@ -1,15 +1,46 @@
 [
     {
+        "source": "Exists another test site with that name.",
+        "language": "es",
+        "context": "site",
+        "isDraft": false,
+        "translation": "Existe otro sitio con ese nombre.",
+        "ref": "..\\rh-site\\services\\site.js [38,96]"
+    },
+    {
         "source": "Get sites",
         "language": "es",
+        "context": "permission",
         "translation": "Obtener sitios",
-        "ref": "..\\rh-site\\conf.js [31,69]"
+        "ref": "..\\rh-site\\conf.js [31,84]"
+    },
+    {
+        "source": "ID parameter is forbidden for creation.",
+        "language": "es",
+        "context": "site",
+        "translation": "El parámetro ID está prohibido durante la creación.",
+        "ref": "..\\rh-site\\services\\site.js [27,92]"
+    },
+    {
+        "source": "Name",
+        "language": "es",
+        "context": "site",
+        "translation": "Nombre",
+        "ref": "..\\rh-site\\services\\site.js [32,78]"
+    },
+    {
+        "source": "No owner specified.",
+        "language": "es",
+        "context": "site",
+        "translation": "Se hay propietario especificado.",
+        "ref": "..\\rh-site\\services\\site.js [41,72]"
     },
     {
         "source": "Sites manager",
         "language": "es",
+        "context": "role",
         "translation": "Administrador de sitios",
-        "ref": "..\\rh-site\\conf.js [27,66]"
+        "ref": "..\\rh-site\\conf.js [27,75]"
     },
     {
         "source": "Spanish",
@@ -26,7 +57,15 @@
     {
         "source": "System",
         "language": "es",
+        "context": "site",
         "translation": "Sistema",
-        "ref": "..\\rh-site\\conf.js [23,53]"
+        "ref": "..\\rh-site\\conf.js [23,62]"
+    },
+    {
+        "source": "Title",
+        "language": "es",
+        "context": "site",
+        "translation": "Título",
+        "ref": "..\\rh-site\\services\\site.js [33,80]"
     }
 ]
