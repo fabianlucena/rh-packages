@@ -2,6 +2,7 @@
 
 import {NoRowsError, ManyRowsError, NoRowError, DisabledRowError} from './rf-service-errors.js';
 import {ucfirst} from 'rf-util/rf-util-string.js';
+import {loc} from 'rf-locale';
 
 export class Service {
     references = {};
@@ -57,10 +58,21 @@ export class Service {
                         data[idParamName] = await service.getIdForName(data[Name].name);
                 }
             }
-        
-            if (!data[idParamName] && options.createIfNotExists && data[name]) {
-                const object = await service.createIfNotExists({name: data[name]});
-                data[idParamName] = object?.id;
+
+            if (!data[idParamName]) {
+                const otherName = options.otherName;
+                if (otherName && typeof data[otherName] === 'string' && data[otherName])
+                    data[idParamName] = await service.getIdForName(data[otherName], {skipNoRowsError: true});
+
+                if (!data[idParamName] && options.createIfNotExists) {
+                    if (typeof data[name] === 'string' && data[name]) {
+                        const object = await service.createIfNotExists({name: data[name]});
+                        data[idParamName] = object?.id;
+                    } else if (typeof data[otherName] === 'string' && data[otherName]) {
+                        const object = await service.createIfNotExists({name: data[otherName]});
+                        data[idParamName] = object?.id;
+                    }
+                }
             }
         }
 
@@ -204,7 +216,7 @@ export class Service {
      * - skipNoRowsError: if is true the exception NoRowsError will be omitted.
      * - skipManyRowsError: if is true the exception ManyRowsError will be omitted.
      */
-    async getSingle(rows, options) {
+    async getSingleFromRows(rows, options) {
         if (rows.then)
             rows = await rows;
 
@@ -231,7 +243,27 @@ export class Service {
      * @returns {Promise[Array[row]]}
      */
     async getFor(where, options) {
-        return this.getList({...options, where: {...options?.where, ...where?.where}});
+        return this.getList({...options, where: {...options?.where, ...where}});
+    }
+
+    /**
+     * Gets a single row for a given criteria in options.
+     * @param {object} options - Options for the @ref getList function.
+     * @returns {Promise[Array[row]]}
+     */
+    async getSingle(options) {
+        const rows = this.getList({limit: 2, ...options});
+        return this.getSingleFromRows(rows, options);
+    }
+
+    /**
+     * Gets a single row for a given criteria.
+     * @param {object} where - criteria to get the row list.
+     * @param {object} options - Options for the @ref getList function.
+     * @returns {Promise[Array[row]]}
+     */
+    async getSingleFor(where, options) {
+        return this.getSingle({...options, where: {...options?.where, ...where}});
     }
 
     /**
@@ -253,7 +285,7 @@ export class Service {
             
         const rows = await this.getList({limit: 2, ...options, where: {...options?.where, id}});
 
-        return this.getSingle(rows, options);
+        return this.getSingleFromRows(rows, options);
     }
 
     /**
@@ -273,9 +305,7 @@ export class Service {
         if (Array.isArray(uuid))
             return this.getList({...options, where: {...options?.where, uuid}});
             
-        const rows = await this.getList({limit: 2, ...options, where: {...options?.where, uuid}});
-
-        return this.getSingle(rows, options);
+        return this.getSingleFor({uuid}, options);
     }
 
     /**
@@ -293,14 +323,12 @@ export class Service {
      */
     async getForName(name, options) {
         if (name === undefined)
-            throw new Error('Ho no');
+            throw new Error(loc._f('Invalid value for name to get row'));
 
         if (Array.isArray(name))
             return this.getList({...options, where: {...options?.where, name}});
             
-        const rows = await this.getList({limit: 2, ...options, where: {...options?.where, name}});
-
-        return await this.getSingle(rows, options);
+        return await this.getSingleFor({name}, options);
     }
 
     /**
@@ -397,10 +425,22 @@ export class Service {
      * @param {object} where - Where object with the criteria to update.
      * @returns {Promise[integer]} updated rows count.
      */
-    async update(data, where) {
+    async update(data, options) {
         await this.completeReferences(data);
 
-        return this.model.update(data, where);
+        return this.model.update(data, options);
+    }
+
+    /**
+     * Updates a row for a given criteria.
+     * @param {object} data - Data to update.
+     * @param {object} where - Where object with the criteria to update.
+     * @returns {Promise[integer]} updated rows count.
+     */
+    async updateFor(data, where, options) {
+        await this.completeReferences(data);
+
+        return this.model.update(data, {...options, where: {...options?.where, ...where}});
     }
 
     /**
@@ -409,8 +449,8 @@ export class Service {
      * @param {object} id - ID of the row to update.
      * @returns {Promise[integer]} updated rows count.
      */
-    async updateForId(data, id) {
-        return this.update(data, {where: {id}});
+    async updateForId(data, id, options) {
+        return this.updateFor(data, {id}, options);
     }
 
     /**
@@ -419,8 +459,8 @@ export class Service {
      * @param {object} uuid - UUID of the row to update.
      * @returns {Promise[integer]} updated rows count.
      */
-    async updateForUuid(data, uuid) {
-        return this.update(data, {where: {uuid}});
+    async updateForUuid(data, uuid, options) {
+        return this.updateFor(data, {uuid}, options);
     }
 
     /**
@@ -428,16 +468,35 @@ export class Service {
      * @param {object} where - Where object with the criteria to delete.
      * @returns {Promise[integer]} deleted rows count.
      */
-    async delete(where) {        
-        await this.completeReferences(where, true);
+    async delete(options) {        
+        await this.completeReferences(options.where, true);
 
         if (this.shareService && this.shareObject) {
-            const id = await this.getIdFor(where);
+            const id = await this.getIdFor(options.where);
             await this.shareService.deleteForObjectNameAndId(this.shareObject, id);
         }
 
-        return this.model.destroy({where});
+        return this.model.destroy(options);
     }
+
+    /**
+     * Deletes a row for a given criteria.
+     * @param {object} where - Where object with the criteria to delete.
+     * @returns {Promise[integer]} deleted rows count.
+     */
+    async deleteFor(where, options) {        
+        return this.delete({...options, where: {...options?.where, ...where}});
+    }
+
+    /**
+     * Deletes a rows for a given ID.
+     * @param {string} id - ID for the test case o delete.
+     * @returns {Promise[integer]} deleted rows count.
+     */
+    async deleteForId(id) {
+        return this.deleteFor({id});
+    }
+    
 
     /**
      * Deletes a rows for a given UUID.
@@ -445,7 +504,7 @@ export class Service {
      * @returns {Promise[integer]} deleted rows count.
      */
     async deleteForUuid(uuid) {
-        return this.delete({where: {uuid}});
+        return this.deleteFor({uuid});
     }
 
     /**
