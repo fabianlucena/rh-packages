@@ -2,8 +2,10 @@
     {
         "source": "Company UUID",
         "language": "es",
+        "context": "companySite",
+        "isDraft": false,
         "translation": "UUID de empresa",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [16,67]\n..\\rh-company-site\\controllers\\company-site.js [20,73]"
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [16,83]\n..\\rh-company-site\\controllers\\company-site.js [20,89]"
     },
     {
         "source": "Company: %s",
@@ -27,7 +29,6 @@
         "source": "Select company",
         "language": "es",
         "context": "companySite",
-        "isDraft": false,
         "translation": "Seleccionar empresa",
         "ref": "..\\rh-company-site\\controllers\\company-site.js [130,65]"
     },
@@ -35,23 +36,23 @@
         "source": "Select company",
         "language": "es",
         "context": "menu",
-        "isDraft": false,
         "translation": "Seleccionar empresa ",
-        "ref": "..\\rh-company-site\\conf.js [21,183]"
+        "ref": "..\\rh-company-site\\conf_data.js [9,179]"
     },
     {
         "source": "Select company",
         "language": "es",
         "context": "permission",
-        "isDraft": false,
         "translation": "Seleccionar empresa ",
-        "ref": "..\\rh-company-site\\conf.js [21,89]"
+        "ref": "..\\rh-company-site\\conf_data.js [9,85]"
     },
     {
         "source": "Site UUID",
         "language": "es",
+        "context": "companySite",
+        "isDraft": false,
         "translation": "UUID de sitio",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [16,88]\n..\\rh-company-site\\controllers\\company-site.js [25,70]"
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [16,120]\n..\\rh-company-site\\controllers\\company-site.js [25,86]"
     },
     {
         "source": "Spanish",
@@ -68,15 +69,18 @@
     {
         "source": "The selected company is disabled.",
         "language": "es",
+        "context": "companySite",
         "isDraft": false,
-        "translation": " ",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [38,77]"
+        "translation": "La empresa seleccionada está deshabilitada.",
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [38,93]"
     },
     {
         "source": "The selected object does not exist or you do not have permission.",
         "language": "es",
+        "context": "companySite",
+        "isDraft": false,
         "translation": "El objeto seleccionado no existe o no tiene permiso",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [34,109]"
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [34,125]"
     },
     {
         "source": "Title",

@@ -29,7 +29,7 @@ export class CompanySiteController {
         if (!req.roles.includes('admin'))
             options.where.siteName = req?.sites ?? null;
 
-        const companySites = await CompanySiteService.getList(options);
+        const companySites = await CompanySiteService.singleton().getList(options);
         if (!companySites?.length)
             throw new _HttpError(loc._cf('companySite', 'The selected object does not exist or you do not have permission.'), 400);
 
@@ -107,7 +107,7 @@ export class CompanySiteController {
 
         options.includeCompany = true;
 
-        const result = await CompanySiteService.getListAndCount(options);
+        const result = await CompanySiteService.singleton().getListAndCount(options);
         
         res.status(200).send(result);
     }
