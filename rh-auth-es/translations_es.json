@@ -101,7 +101,6 @@
         "source": "Error to change the password",
         "language": "es",
         "context": "changeMyPassword",
-        "isDraft": false,
         "translation": "Error al cambiar la contraseña",
         "ref": "..\\rh-auth\\controllers\\change-my-password.js [75,104]"
     },
@@ -109,7 +108,6 @@
         "source": "Error to get local identity",
         "language": "es",
         "context": "changeMyPassword",
-        "isDraft": false,
         "translation": "Error al obtener la identidad local",
         "ref": "..\\rh-auth\\controllers\\change-my-password.js [69,107]"
     },
@@ -198,18 +196,20 @@
         "ref": "..\\rh-auth\\controllers\\session.js [41,150]"
     },
     {
-        "source": "HTTP error 403 forbiden, authorization token error.",
+        "source": "HTTP error 403 forbidden, authorization token error.",
         "language": "es",
         "context": "session",
-        "translation": "Error HTTP 403 prohibido, error el token de autorización.",
-        "ref": "..\\rh-auth\\controllers\\session.js [32,136]"
+        "isDraft": false,
+        "translation": "Error HTTP 403 prohibido, error en el identificador de autorización.\n\n",
+        "ref": "..\\rh-auth\\controllers\\session.js [32,137]"
     },
     {
-        "source": "HTTP error 403 forbiden, session is closed.",
+        "source": "HTTP error 403 forbidden, session is closed.",
         "language": "es",
         "context": "session",
+        "isDraft": false,
         "translation": "Error HTTP 403 prohibido, la sesión está cerrada.",
-        "ref": "..\\rh-auth\\controllers\\session.js [30,128]"
+        "ref": "..\\rh-auth\\controllers\\session.js [30,129]"
     },
     {
         "source": "Invalid login",
@@ -374,7 +374,6 @@
         "source": "The new password and the current password are the same",
         "language": "es",
         "context": "changeMyPassword",
-        "isDraft": false,
         "translation": "La nueva contraseña y la contraseña actual son la misma",
         "ref": "..\\rh-auth\\controllers\\change-my-password.js [60,119]"
     },

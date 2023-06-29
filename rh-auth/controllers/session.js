@@ -27,9 +27,9 @@ export class SessionController {
                 })
                 .catch(async err => {
                     if (err instanceof SessionClosedError)
-                        res.status(401).send({error: await req.loc._c('session', 'HTTP error 403 forbiden, session is closed.')});
+                        res.status(401).send({error: await req.loc._c('session', 'HTTP error 403 forbidden, session is closed.')});
                     else if (err instanceof NoSessionForAuthTokenError)
-                        res.status(401).send({error: await req.loc._c('session', 'HTTP error 403 forbiden, authorization token error.')});
+                        res.status(401).send({error: await req.loc._c('session', 'HTTP error 403 forbidden, authorization token error.')});
                     else {
                         let msg;
                         if (err instanceof Error)
