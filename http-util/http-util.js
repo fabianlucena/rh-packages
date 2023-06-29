@@ -438,25 +438,46 @@ export async function configureModule(global, module) {
         throw new Error('Module does not have a name.');
 
     if (module.path) {
-        if (global?.config?.env) {
-            for (const sep of ['_', '-']) {
-                let path = module.path + `/conf${sep}${global.config.env}.js`;
-                if (fs.existsSync(path))
-                    deepComplete(module, (await import('file://' + path)).conf);
+        const config = global?.config;
+        if (config) {
+            const env = config.env;
+            if (env) {
+                for (const sep of ['_', '-']) {
+                    let path = module.path + `/conf${sep}${env}.js`;
+                    if (fs.existsSync(path))
+                        deepComplete(module, (await import('file://' + path)).conf);
+                }
             }
-        }
 
-        if (global?.config?.db?.updateData) {
-            module.data ??= {};
-            
-            for (const sep of ['_', '-']) {
-                let path = module.path + `/conf${sep}data.js`;
-                if (fs.existsSync(path))
-                    deepComplete(module.data, (await import('file://' + path)).data);
+            const suffix = config.suffix;
+            if (suffix) {
+                for (const sep of ['_', '-']) {
+                    let path = module.path + `/conf${sep}${suffix}.js`;
+                    if (fs.existsSync(path))
+                        deepComplete(module, (await import('file://' + path)).conf);
+                }
+            }
 
-                path = module.path + `/conf${sep}data${sep}${global.config.env}.js`;
-                if (fs.existsSync(path))
-                    deepComplete(module.data, (await import('file://' + path)).data);
+            if (config.db?.updateData) {
+                module.data ??= {};
+                
+                for (const sep of ['_', '-']) {
+                    let path = module.path + `/conf${sep}data.js`;
+                    if (fs.existsSync(path))
+                        deepComplete(module.data, (await import('file://' + path)).data);
+
+                    if (env) {
+                        path = module.path + `/conf${sep}data${sep}${env}.js`;
+                        if (fs.existsSync(path))
+                            deepComplete(module.data, (await import('file://' + path)).data);
+                    }
+
+                    if (suffix) {
+                        path = module.path + `/conf${sep}data${sep}${suffix}.js`;
+                        if (fs.existsSync(path))
+                            deepComplete(module.data, (await import('file://' + path)).data);
+                    }
+                }
             }
         }
     }
