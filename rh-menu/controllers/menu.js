@@ -79,9 +79,6 @@ export class MenuController {
                 delete mi.alias;
             }
 
-            if (mi.disabled === undefined)
-                mi.disabled = false;
-
             return mi;
         });
 
