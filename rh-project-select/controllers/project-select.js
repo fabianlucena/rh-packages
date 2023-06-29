@@ -120,10 +120,8 @@ export class ProjectSelectController {
                     onSuccess: 'reloadMenu();',
                 },
             },
-            'create',
-            'edit',
         ];
-                
+
         let loc = req.loc;
 
         res.status(200).send({
