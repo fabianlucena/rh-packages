@@ -1,45 +1,49 @@
+'use strict';
+
 import {conf} from '../conf.js';
-import {getSingle, addEnabledFilter, includeCollaborators} from 'sql-util';
-import {complete, deepComplete, _Error} from 'rf-util';
+import {Service} from 'rf-service';
+import {addEnabledFilter, includeCollaborators} from 'sql-util';
+import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull} from 'rf-util';
+import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
-export class CompanyService {
-    /**
-     * Creates a new company row into DB.
-     * @param {{isEnabled: boolean, name: string, title: string}} data - data for the new Company.
-     *  - name: must be unique.
-     * @returns {Promise{Company}}
-     */
-    static async create(data) {
-        try {
-            return await conf.global.sequelize.transaction(async t => {
-                const company = await conf.global.models.Company.create(data, { transaction: t });
-                if (data.owner || data.ownerId)
-                    await conf.global.services.Share.create(
-                        {
-                            objectName: 'Company',
-                            objectId: company.id,
-                            userId: data.ownerId,
-                            user: data.owner,
-                            type: 'owner'
-                        },
-                        { transaction: t }
-                    );
+export class CompanyService extends Service {
+    sequelize = conf.global.sequelize;
+    model = conf.global.models.Company;
+    shareObject = 'Company';
+    shareService = conf.global.services.Share;
+    references = {
+        company: {
+            service: conf.global.services.Company,
+            otherName: 'name',
+        },
+        site: {
+            service: conf.global.services.Site,
+            otherName: 'name',
+        },
+        ownerModule: conf.global.services.Module,
+    };
+    defaultTranslationContext = 'company';
 
-                return company;
-            });
-        } catch (error) {
-            return null;
-        }
+    async validateForCreation(data) {
+        if (data.id)
+            throw new CheckError(loc._cf('company', 'ID parameter is forbidden for creation.'));
+
+        checkParameterStringNotNullOrEmpty(data.name, loc._cf('company', 'Name'));
+        checkParameterStringNotNullOrEmpty(data.title, loc._cf('company', 'Title'));
+
+        checkValidUuidOrNull(data.uuid);
+
+        if (await this.getForName(data.name, {skipNoRowsError: true}))
+            throw new ConflictError(loc._cf('company', 'Exists another test scenary with that name.'));
+
+        if (!data.owner && !data.ownerId)
+            throw new CheckError(loc._cf('company', 'No owner specified.'));
+
+        return true;
     }
 
-    /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {options}
-     */
-    static async getListOptions(options) {
+    async getListOptions(options) {
         if (!options)
             options = {};
 
@@ -68,134 +72,5 @@ export class CompanyService {
             options = addEnabledFilter(options);
 
         return options;
-    }
-
-    /**
-     * Gets a list of companies.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {Promise{CompanyList}}
-     */
-    static async getList(options) {
-        return conf.global.models.Company.findAll(await CompanyService.getListOptions(options));
-    }
-
-    /**
-     * Gets a list of companies and the rows count.
-     * @param {Options} options - options for the @see sequelize.findAndCountAll method.
-     *  - view: show visible peoperties.
-     * @returns {Promise{CompanyList, count}}
-     */
-    static async getListAndCount(options) {
-        return conf.global.models.Company.findAndCountAll(await CompanyService.getListOptions(options));
-    }
-
-    /**
-     * Gets a company for its UUID. For many coincidences and for no rows this method fails.
-     * @param {string} uuid - UUID for the company to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Company}}
-     */
-    static getForUuid(uuid, options) {
-        return CompanyService.getList(deepComplete(options, {where: {uuid}, limit: 2}))
-            .then(rowList => getSingle(rowList, complete(options, {params: ['company', ['UUID = %s', uuid], 'Company']})));
-    }
-
-    /**
-     * Gets a company ID for its UUID. For many coincidences and for no rows this method fails.
-     * @param {string} uuid - UUID for the company to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {ID}
-     */
-    static async getIdForUuid(uuid, options) {
-        return (await CompanyService.getForUuid(uuid, deepComplete(options, {attributes: ['id']}))).id;
-    }
-
-    /**
-     * Gets a company for its name. For many coincidences and for no rows this method fails.
-     * @param {string} name - name for the company to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Company}}
-     */
-    static getForName(name, options) {
-        return CompanyService.getList(deepComplete(options, {where: {name}, limit: 2}))
-            .then(rowList => getSingle(rowList, complete(options, {params: ['company', ['name = %s', name], 'Company']})));
-    }
-
-    /**
-     * Gets a company ID for its name. For many coincidences and for no rows this method fails.
-     * @param {string} name - name for the company to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {ID}
-     */
-    static async getIdForName(name, options) {
-        return (await CompanyService.getForName(name, deepComplete(options, {attributes: ['id']})))?.id;
-    }
-
-    /**
-     * Checks for an existent and enabled company. If the company exists and is enabled resolve, otherwise fail.
-     * @param {Company} company - company model object to check.
-     * @param {*string} name - name only for result message purpuose.
-     * @returns 
-     */
-    static async checkEnabledCompany(company, name) {
-        if (!company)
-            throw new _Error(loc._cf('company', 'Company "%s" does not exist'), name);
-
-        if (!company.isEnabled)
-            throw new _Error(loc._cf('company', 'Company "%s" is not enabled'), name);
-    }
-
-    /**
-     * Deletes a company for a given UUID.
-     * @param {string} uuid - UUID for the company o delete.
-     * @returns {Promise{Result}} deleted rows count.
-     */
-    static async deleteForUuid(uuid) {
-        const id = await CompanyService.getIdForUuid(uuid);
-        await conf.global.services.Share.deleteForObjectNameAndId('Company', id);
-
-        return conf.global.models.Company.destroy({where:{id}});
-    }
-
-    /**
-     * Updates a company.
-     * @param {object} data - Data to update.
-     * @param {object} uuid - UUID of the uer to update.
-     * @returns {Promise{Result}} updated rows count.
-     */
-    static async updateForUuid(data, uuid) {
-        return await conf.global.models.Company.update(data, {where:{uuid}});
-    }
-
-    /**
-     * Enables a company for a given UUID.
-     * @param {string} uuid - UUID for the company o enable.
-     * @returns {Promise{Result}} enabled rows count.
-     */
-    static async enableForUuid(uuid) {
-        return await CompanyService.updateForUuid({isEnabled: true}, uuid);
-    }
-
-    /**
-     * Disables a company for a given UUID.
-     * @param {string} uuid - UUID for the company o disable.
-     * @returns {Promise{Result}} disabled rows count.
-     */
-    static async disableForUuid(uuid) {
-        return await CompanyService.updateForUuid({isEnabled: false}, uuid);
-    }
-    
-    /**
-     * Creates a new Company row into DB if not exists.
-     * @param {data} data - data for the new Role @see create.
-     * @returns {Promise{Role}}
-     */
-    static async createIfNotExists(data, options) {
-        const row = await CompanyService.getForName(data.name, {attributes: ['id'], foreign: {module: {attributes:[]}}, skipNoRowsError: true, ...options});
-        if (row)
-            return row;
-
-        return CompanyService.create(data);
     }
 }

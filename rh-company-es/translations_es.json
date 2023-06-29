@@ -2,80 +2,120 @@
     {
         "source": "Companies",
         "language": "es",
+        "context": "menu",
+        "isDraft": false,
         "translation": "Empresas",
-        "ref": "..\\rh-company\\conf.js [29,176]\n..\\rh-company\\controllers\\company.js [202,44]\n..\\rh-company\\controllers\\company.js [233,44]"
+        "ref": "..\\rh-company\\conf.js [29,200]"
     },
     {
-        "source": "Company \"%s\" does not exist",
+        "source": "Companies",
         "language": "es",
-        "translation": "La empresa \"%s\" no existe",
-        "ref": "..\\rh-company\\services\\company.js [143,67]"
-    },
-    {
-        "source": "Company \"%s\" is not enabled",
-        "language": "es",
-        "translation": "La empresa \"%s\" no está habilitada",
-        "ref": "..\\rh-company\\services\\company.js [146,67]"
+        "translation": "Empresas",
+        "ref": "..\\rh-company\\controllers\\company.js [204,44]\n..\\rh-company\\controllers\\company.js [235,44]"
     },
     {
         "source": "Company manager",
         "language": "es",
+        "context": "role",
+        "isDraft": false,
         "translation": "Administrador de empresas",
-        "ref": "..\\rh-company\\conf.js [21,70]"
+        "ref": "..\\rh-company\\conf.js [21,79]"
     },
     {
         "source": "Company with UUID %s does not exists.",
         "language": "es",
+        "context": "company",
+        "isDraft": false,
         "translation": "La empresa con el UUID %s no existe.",
-        "ref": "..\\rh-company\\controllers\\company.js [314,85]\n..\\rh-company\\controllers\\company.js [364,85]\n..\\rh-company\\controllers\\company.js [414,85]\n..\\rh-company\\controllers\\company.js [462,85]"
+        "ref": "..\\rh-company\\controllers\\company.js [316,97]\n..\\rh-company\\controllers\\company.js [366,97]\n..\\rh-company\\controllers\\company.js [416,97]\n..\\rh-company\\controllers\\company.js [464,97]"
     },
     {
         "source": "Create companies",
         "language": "es",
+        "context": "permission",
+        "isDraft": false,
         "translation": "Crear empresas",
-        "ref": "..\\rh-company\\conf.js [30,71]"
+        "ref": "..\\rh-company\\conf.js [30,86]"
     },
     {
         "source": "Delete companies",
         "language": "es",
+        "context": "permission",
+        "isDraft": false,
         "translation": "Eliminar empresas",
-        "ref": "..\\rh-company\\conf.js [32,71]"
+        "ref": "..\\rh-company\\conf.js [32,86]"
     },
     {
         "source": "Description",
         "language": "es",
         "translation": "Descripción",
-        "ref": "..\\rh-company\\controllers\\company.js [262,54]\n..\\rh-company\\controllers\\company.js [263,60]"
+        "ref": "..\\rh-company\\controllers\\company.js [264,54]\n..\\rh-company\\controllers\\company.js [265,60]"
     },
     {
         "source": "Edit companies",
         "language": "es",
+        "context": "permission",
+        "isDraft": false,
         "translation": "Modificar empresas",
-        "ref": "..\\rh-company\\conf.js [31,69]"
+        "ref": "..\\rh-company\\conf.js [31,84]"
     },
     {
         "source": "Enabled",
         "language": "es",
         "translation": "Habilitado",
-        "ref": "..\\rh-company\\controllers\\company.js [255,50]\n..\\rh-company\\controllers\\company.js [256,56]"
+        "ref": "..\\rh-company\\controllers\\company.js [257,50]\n..\\rh-company\\controllers\\company.js [258,56]"
+    },
+    {
+        "source": "Exists another test scenary with that name.",
+        "language": "es",
+        "context": "company",
+        "isDraft": false,
+        "translation": "Existe otra empresa con ese nombre.",
+        "ref": "..\\rh-company\\services\\company.js [38,102]"
     },
     {
         "source": "Get companies",
         "language": "es",
+        "context": "permission",
+        "isDraft": false,
         "translation": "Obtener empresas",
-        "ref": "..\\rh-company\\conf.js [29,68]"
+        "ref": "..\\rh-company\\conf.js [29,83]"
+    },
+    {
+        "source": "ID parameter is forbidden for creation.",
+        "language": "es",
+        "context": "company",
+        "isDraft": false,
+        "translation": "El parámetro ID está prohibido durante la creación.",
+        "ref": "..\\rh-company\\services\\company.js [30,95]"
+    },
+    {
+        "source": "Name",
+        "language": "es",
+        "context": "company",
+        "isDraft": false,
+        "translation": "Nombre",
+        "ref": "..\\rh-company\\services\\company.js [32,81]\n..\\rh-company\\controllers\\company.js [96,68]"
     },
     {
         "source": "Name",
         "language": "es",
         "translation": "Nombre",
-        "ref": "..\\rh-company\\controllers\\company.js [94,56]\n..\\rh-company\\controllers\\company.js [217,47]\n..\\rh-company\\controllers\\company.js [245,47]\n..\\rh-company\\controllers\\company.js [246,53]"
+        "ref": "..\\rh-company\\controllers\\company.js [219,47]\n..\\rh-company\\controllers\\company.js [247,47]\n..\\rh-company\\controllers\\company.js [248,53]"
+    },
+    {
+        "source": "No owner specified.",
+        "language": "es",
+        "context": "company",
+        "isDraft": false,
+        "translation": "No hay propietario especificado.",
+        "ref": "..\\rh-company\\services\\company.js [41,75]"
     },
     {
         "source": "Owner",
         "language": "es",
         "translation": "Propietario",
-        "ref": "..\\rh-company\\controllers\\company.js [222,48]"
+        "ref": "..\\rh-company\\controllers\\company.js [224,48]"
     },
     {
         "source": "Spanish",
@@ -92,31 +132,47 @@
     {
         "source": "The company data does not have a owner.",
         "language": "es",
+        "context": "company",
+        "isDraft": false,
         "translation": "La empresa no tiene un propietario.",
-        "ref": "..\\rh-company\\controllers\\company.js [102,91]"
+        "ref": "..\\rh-company\\controllers\\company.js [104,103]"
     },
     {
         "source": "The company does not exist or you do not have permission to access it.",
         "language": "es",
+        "context": "company",
+        "isDraft": false,
         "translation": "La empresa no existe o usted no tiene permiso para accederla.",
-        "ref": "..\\rh-company\\controllers\\company.js [39,122]\n..\\rh-company\\controllers\\company.js [43,122]"
+        "ref": "..\\rh-company\\controllers\\company.js [41,134]\n..\\rh-company\\controllers\\company.js [45,134]"
     },
     {
         "source": "The company with UUID %s does not exists.",
         "language": "es",
+        "context": "company",
+        "isDraft": false,
         "translation": "La empresa con el UUID %s no existe.",
-        "ref": "..\\rh-company\\controllers\\company.js [52,89]"
+        "ref": "..\\rh-company\\controllers\\company.js [54,101]"
+    },
+    {
+        "source": "Title",
+        "language": "es",
+        "context": "company",
+        "isDraft": false,
+        "translation": "Título",
+        "ref": "..\\rh-company\\services\\company.js [33,83]\n..\\rh-company\\controllers\\company.js [96,104]"
     },
     {
         "source": "Title",
         "language": "es",
         "translation": "Título",
-        "ref": "..\\rh-company\\controllers\\company.js [94,80]\n..\\rh-company\\controllers\\company.js [212,48]\n..\\rh-company\\controllers\\company.js [239,48]\n..\\rh-company\\controllers\\company.js [240,54]"
+        "ref": "..\\rh-company\\controllers\\company.js [214,48]\n..\\rh-company\\controllers\\company.js [241,48]\n..\\rh-company\\controllers\\company.js [242,54]"
     },
     {
         "source": "UUID",
         "language": "es",
+        "context": "company",
+        "isDraft": false,
         "translation": "UUID",
-        "ref": "..\\rh-company\\controllers\\company.js [309,120]\n..\\rh-company\\controllers\\company.js [359,120]\n..\\rh-company\\controllers\\company.js [409,120]\n..\\rh-company\\controllers\\company.js [457,120]"
+        "ref": "..\\rh-company\\controllers\\company.js [311,132]\n..\\rh-company\\controllers\\company.js [361,132]\n..\\rh-company\\controllers\\company.js [411,132]\n..\\rh-company\\controllers\\company.js [459,132]"
     }
 ]
