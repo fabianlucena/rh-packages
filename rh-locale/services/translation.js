@@ -78,6 +78,8 @@ export class TranslationService extends Service {
         }
 
         options ??= {};
+        options.domain ??= null;
+        options.context ??= null;
         
         for (const text of texts) {
             let translation;
@@ -85,45 +87,48 @@ export class TranslationService extends Service {
             if (typeof text === 'function') {
                 translation = text();
             } else {
-                let arrangedText;
-                options.isJson ??= false;
-                if (Array.isArray(text)) {
-                    options.isJson = true;
-                    arrangedText = JSON.stringify(text);
-                } else
-                    arrangedText = text;
+                try {
+                    let arrangedText;
+                    options.isJson ??= false;
+                    if (Array.isArray(text)) {
+                        options.isJson = true;
+                        arrangedText = JSON.stringify(text);
+                    } else
+                        arrangedText = text;
 
-                options.domain ??= null;
-
-                if (arrangedText === null || arrangedText === undefined) {
-                    translations[arrangedText] = arrangedText;
-                    continue;
-                }
-                
-                arrangedText = arrangedText.trim();
-                let translationObject = await conf.global.models.TranslationCache.findOne({where: {language, context: options.context ?? null, domain: options.domain ?? null, source: arrangedText, isJson: options.isJson}});
-                if (!translationObject) {
-                    const bestTranslation = await TranslationService.singleton().getBestMatchForLanguageTextIsJsonContextsAndDomains(language, arrangedText, options.isJson, options.context, options.domain);
-                    if (bestTranslation) {
-                        const source = await SourceService.singleton().getForTextAndIsJson(arrangedText, options.isJson);
-                        translationObject = await conf.global.models.TranslationCache.create({
-                            language,
-                            domain: options.domain,
-                            context: options.context,
-                            source: arrangedText,
-                            isJson: options.isJson,
-                            translation: bestTranslation.translation,
-                            ref: source.ref,
-                            isTranslated: bestTranslation.isTranslated,
-                            isDraft: bestTranslation.isDraft
-                        });
+                    if (arrangedText === null || arrangedText === undefined) {
+                        translations[arrangedText] = arrangedText;
+                        continue;
                     }
-                }
+                    
+                    arrangedText = arrangedText.trim();
+                    let translationObject = await conf.global.models.TranslationCache.findOne({where: {language, context: options.context ?? null, domain: options.domain ?? null, source: arrangedText, isJson: options.isJson}});
+                    if (!translationObject) {
+                        const bestTranslation = await TranslationService.singleton().getBestMatchForLanguageTextIsJsonContextsAndDomains(language, arrangedText, options.isJson, options.context, options.domain);
+                        if (bestTranslation) {
+                            const source = await SourceService.singleton().getForTextAndIsJson(arrangedText, options.isJson);
+                            translationObject = await conf.global.models.TranslationCache.create({
+                                language,
+                                domain: options.domain,
+                                context: options.context,
+                                source: arrangedText,
+                                isJson: options.isJson,
+                                translation: bestTranslation.translation,
+                                ref: source.ref,
+                                isTranslated: bestTranslation.isTranslated,
+                                isDraft: bestTranslation.isDraft
+                            });
+                        }
+                    }
 
-                if (translationObject.isJson)
-                    translation = JSON.parse(translationObject.translation);
-                else
-                    translation = translationObject.translation;
+                    if (translationObject.isJson)
+                        translation = JSON.parse(translationObject.translation);
+                    else
+                        translation = translationObject.translation;
+                }
+                catch(_) {
+                    translations[text] = text;
+                }
             }
 
             translations[text] = translation;
