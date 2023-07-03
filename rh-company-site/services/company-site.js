@@ -188,7 +188,7 @@ export class CompanySiteService extends Service {
         if (data.users) {
             const siteId = item.siteId;
             for (const userRole of data.users)
-                await conf.global.services.UserSiteRole.createIfNotExists({...userRole, siteId, owner: data.owner});
+                await conf.global.services.UserSiteRole.singleton().createIfNotExists({...userRole, siteId, owner: data.owner});
         }
 
         return item;

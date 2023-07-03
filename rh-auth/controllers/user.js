@@ -1,7 +1,7 @@
 'use strict';
 
 import {UserService} from '../services/user.js';
-import {getOptionsFromParamsAndOData, _HttpError, ConflictError} from 'http-util';
+import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
 import {checkParameter, checkParameterUuid} from 'rf-util';
 
 /**
@@ -61,10 +61,6 @@ export class UserController {
      *                  $ref: '#/definitions/Error'
      */
     static async post(req, res) {
-        checkParameter(req?.body, 'username', 'displayName');
-        if (await UserService.singleton().getForUsername(req.body.username, {skipNoRowsError: true}))
-            throw new ConflictError();
-
         await UserService.singleton().create(req.body);
         res.status(204).send();
     }

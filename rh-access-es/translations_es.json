@@ -4,7 +4,7 @@
         "language": "es",
         "context": "permission",
         "translation": "Agregar accesos de usuarios",
-        "ref": "..\\rh-access\\conf.js [41,92]"
+        "ref": "..\\rh-access\\conf_data.js [28,88]"
     },
     {
         "source": "Assignable roles per role",
@@ -13,11 +13,27 @@
         "ref": "..\\rh-access\\services\\assignable_role_per_role.js [182,190]"
     },
     {
+        "source": "Create members",
+        "language": "es",
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Crear miembros",
+        "ref": "..\\rh-access\\conf_data.js [36,84]"
+    },
+    {
+        "source": "Delete members",
+        "language": "es",
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Eliminar miembros",
+        "ref": "..\\rh-access\\conf_data.js [38,84]"
+    },
+    {
         "source": "Delete users accesses",
         "language": "es",
         "context": "permission",
         "translation": "Eliminar accesos de usuarios ",
-        "ref": "..\\rh-access\\conf.js [44,95]"
+        "ref": "..\\rh-access\\conf_data.js [31,91]"
     },
     {
         "source": "Description",
@@ -26,18 +42,34 @@
         "ref": "..\\rh-access\\controllers\\switch_site.js [168,54]"
     },
     {
+        "source": "Display name",
+        "language": "es",
+        "context": "member",
+        "isDraft": false,
+        "translation": "Nombre mostrado",
+        "ref": "..\\rh-access\\controllers\\member.js [65,66]\n..\\rh-access\\controllers\\member.js [87,66]"
+    },
+    {
+        "source": "Edit members",
+        "language": "es",
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Modificar miembros",
+        "ref": "..\\rh-access\\conf_data.js [37,82]"
+    },
+    {
         "source": "Edit users accesses",
         "language": "es",
         "context": "permission",
         "translation": "Modificar accesos de usuarios ",
-        "ref": "..\\rh-access\\conf.js [43,93]"
+        "ref": "..\\rh-access\\conf_data.js [30,89]"
     },
     {
         "source": "Editor",
         "language": "es",
         "context": "shareType",
         "translation": "Editor ",
-        "ref": "..\\rh-access\\conf.js [28,67]"
+        "ref": "..\\rh-access\\conf_data.js [15,63]"
     },
     {
         "source": "Enabled",
@@ -46,17 +78,81 @@
         "ref": "..\\rh-access\\controllers\\switch_site.js [163,50]"
     },
     {
+        "source": "Enabled",
+        "language": "es",
+        "context": "member",
+        "isDraft": false,
+        "translation": "Habilitado",
+        "ref": "..\\rh-access\\controllers\\member.js [105,61]\n..\\rh-access\\controllers\\member.js [106,67]"
+    },
+    {
+        "source": "Get members",
+        "language": "es",
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Obtener miembros",
+        "ref": "..\\rh-access\\conf_data.js [35,81]"
+    },
+    {
         "source": "Get users accesses",
         "language": "es",
         "context": "permission",
         "translation": "Obtener accesos de usuarios ",
-        "ref": "..\\rh-access\\conf.js [42,92]"
+        "ref": "..\\rh-access\\conf_data.js [29,88]"
+    },
+    {
+        "source": "Member",
+        "language": "es",
+        "context": "member",
+        "isDraft": false,
+        "translation": "Miembro",
+        "ref": "..\\rh-access\\controllers\\member.js [81,52]"
+    },
+    {
+        "source": "Members",
+        "language": "es",
+        "context": "member",
+        "isDraft": false,
+        "translation": "Miembros",
+        "ref": "..\\rh-access\\controllers\\member.js [54,53]"
+    },
+    {
+        "source": "Members",
+        "language": "es",
+        "context": "menu",
+        "isDraft": false,
+        "translation": "Miembros",
+        "ref": "..\\rh-access\\conf_data.js [35,206]"
+    },
+    {
+        "source": "Members manager",
+        "language": "es",
+        "context": "role",
+        "isDraft": false,
+        "translation": "Administrador de miembros",
+        "ref": "..\\rh-access\\conf_data.js [10,78]"
+    },
+    {
+        "source": "Missing Site ID parameter.",
+        "language": "es",
+        "context": "member",
+        "isDraft": false,
+        "translation": "Falta el parámetro ID de sitio",
+        "ref": "..\\rh-access\\services\\member.js [11,81]"
     },
     {
         "source": "Name",
         "language": "es",
         "translation": "Nombre",
         "ref": "..\\rh-access\\controllers\\switch_site.js [158,47]"
+    },
+    {
+        "source": "Name",
+        "language": "es",
+        "context": "member",
+        "isDraft": false,
+        "translation": "Nombre",
+        "ref": "..\\rh-access\\controllers\\member.js [135,67]"
     },
     {
         "source": "No current site selected",
@@ -69,60 +165,76 @@
         "language": "es",
         "context": "shareType",
         "translation": "Propietario ",
-        "ref": "..\\rh-access\\conf.js [27,66]"
+        "ref": "..\\rh-access\\conf_data.js [14,62]"
+    },
+    {
+        "source": "Password",
+        "language": "es",
+        "context": "member",
+        "isDraft": false,
+        "translation": "Contraseña",
+        "ref": "..\\rh-access\\controllers\\member.js [125,62]"
     },
     {
         "source": "Privileges",
         "language": "es",
         "context": "menu",
         "translation": "Privilegios ",
-        "ref": "..\\rh-access\\conf.js [46,213]"
+        "ref": "..\\rh-access\\conf_data.js [33,209]"
     },
     {
         "source": "Privileges",
         "language": "es",
         "context": "permission",
         "translation": "Privilegios ",
-        "ref": "..\\rh-access\\conf.js [46,84]"
+        "ref": "..\\rh-access\\conf_data.js [33,80]"
     },
     {
         "source": "Roles",
         "language": "es",
         "context": "userAccess",
         "translation": "Roles",
-        "ref": "..\\rh-access\\controllers\\user-access.js [68,99]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [70,99]"
     },
     {
         "source": "Roles",
         "language": "es",
         "translation": "Roles",
-        "ref": "..\\rh-access\\controllers\\user-access.js [297,48]\n..\\rh-access\\controllers\\user-access.js [348,48]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [299,48]\n..\\rh-access\\controllers\\user-access.js [350,48]"
+    },
+    {
+        "source": "Roles",
+        "language": "es",
+        "context": "member",
+        "isDraft": false,
+        "translation": "Roles",
+        "ref": "..\\rh-access\\controllers\\member.js [114,59]"
     },
     {
         "source": "Site",
         "language": "es",
         "context": "userAccess",
         "translation": "Sitio",
-        "ref": "..\\rh-access\\controllers\\user-access.js [67,89]\n..\\rh-access\\controllers\\user-access.js [459,100]\n..\\rh-access\\controllers\\user-access.js [472,86]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [69,89]\n..\\rh-access\\controllers\\user-access.js [461,100]\n..\\rh-access\\controllers\\user-access.js [474,86]"
     },
     {
         "source": "Site",
         "language": "es",
         "translation": "Sitio",
-        "ref": "..\\rh-access\\controllers\\user-access.js [292,47]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [294,47]"
     },
     {
         "source": "Site UUID param is missing.",
         "language": "es",
         "context": "userAccess",
         "translation": "Falta el parámetro UUID de sitio.",
-        "ref": "..\\rh-access\\controllers\\user-access.js [462,94]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [464,94]"
     },
     {
         "source": "Sites",
         "language": "es",
         "translation": "Sitios",
-        "ref": "..\\rh-access\\controllers\\user-access.js [331,48]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [333,48]"
     },
     {
         "source": "Spanish",
@@ -137,10 +249,58 @@
         "ref": "rh-access-es.js [21,57]"
     },
     {
+        "source": "The member with UUID %s does not exists.",
+        "language": "es",
+        "context": "member",
+        "isDraft": false,
+        "translation": "El miembro con el UUID %s no existe.",
+        "ref": "..\\rh-access\\controllers\\member.js [13,99]\n..\\rh-access\\controllers\\member.js [151,99]\n..\\rh-access\\controllers\\member.js [162,99]\n..\\rh-access\\controllers\\member.js [173,99]\n..\\rh-access\\controllers\\member.js [184,99]"
+    },
+    {
         "source": "Title",
         "language": "es",
         "translation": "Título",
         "ref": "..\\rh-access\\controllers\\switch_site.js [153,48]"
+    },
+    {
+        "source": "Title",
+        "language": "es",
+        "context": "member",
+        "isDraft": false,
+        "translation": "Título",
+        "ref": "..\\rh-access\\controllers\\member.js [135,102]"
+    },
+    {
+        "source": "Type here the new password for user",
+        "language": "es",
+        "context": "member",
+        "isDraft": false,
+        "translation": "Escriba aquí la nueva contraseña para el usuario",
+        "ref": "..\\rh-access\\controllers\\member.js [126,95]"
+    },
+    {
+        "source": "Type the display name here",
+        "language": "es",
+        "context": "member",
+        "isDraft": false,
+        "translation": "Escriba el nombre mostrado aquí",
+        "ref": "..\\rh-access\\controllers\\member.js [88,86]"
+    },
+    {
+        "source": "UUID",
+        "language": "es",
+        "context": "member",
+        "isDraft": false,
+        "translation": "UUID",
+        "ref": "..\\rh-access\\controllers\\member.js [146,131]\n..\\rh-access\\controllers\\member.js [157,131]\n..\\rh-access\\controllers\\member.js [168,131]"
+    },
+    {
+        "source": "UUID",
+        "language": "es",
+        "context": "scenario",
+        "isDraft": false,
+        "translation": "UUID",
+        "ref": "..\\rh-access\\controllers\\member.js [179,133]"
     },
     {
         "source": "UUID",
@@ -154,78 +314,82 @@
         "language": "es",
         "context": "userAccess",
         "translation": "UUID",
-        "ref": "..\\rh-access\\controllers\\user-access.js [466,140]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [468,140]"
     },
     {
         "source": "User",
         "language": "es",
         "context": "userAccess",
-        "isDraft": false,
         "translation": "Usuario",
-        "ref": "..\\rh-access\\controllers\\user-access.js [66,89]\n..\\rh-access\\controllers\\user-access.js [458,100]\n..\\rh-access\\controllers\\user-access.js [471,86]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [68,89]\n..\\rh-access\\controllers\\user-access.js [460,100]\n..\\rh-access\\controllers\\user-access.js [473,86]"
     },
     {
         "source": "User",
         "language": "es",
         "translation": "Usuario",
-        "ref": "..\\rh-access\\controllers\\user-access.js [287,47]\n..\\rh-access\\controllers\\user-access.js [316,47]\n..\\rh-access\\controllers\\switch_site.js [143,39]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [289,47]\n..\\rh-access\\controllers\\user-access.js [318,47]\n..\\rh-access\\controllers\\switch_site.js [143,39]"
     },
     {
         "source": "User UUID param is missing.",
         "language": "es",
         "context": "userAccess",
-        "isDraft": false,
         "translation": "Falta el parámetro UUID de usuario.",
-        "ref": "..\\rh-access\\controllers\\user-access.js [464,90]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [466,90]"
     },
     {
         "source": "User access",
         "language": "es",
         "translation": "Acceso de usuario",
-        "ref": "..\\rh-access\\controllers\\user-access.js [309,46]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [311,46]"
     },
     {
         "source": "User access manager",
         "language": "es",
         "context": "role",
         "translation": "Administrador de accesos de usuarios ",
-        "ref": "..\\rh-access\\conf.js [23,86]"
+        "ref": "..\\rh-access\\conf_data.js [9,82]"
     },
     {
         "source": "User with UUID %s has not access to the site with UUID %s.",
         "language": "es",
         "context": "userAccess",
-        "isDraft": false,
         "translation": "El usuario con el UUID %s no tiene acceso al sitio con el UUID %s.",
-        "ref": "..\\rh-access\\controllers\\user-access.js [483,121]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [485,121]"
+    },
+    {
+        "source": "Username",
+        "language": "es",
+        "context": "member",
+        "isDraft": false,
+        "translation": "Nombre de usuario",
+        "ref": "..\\rh-access\\controllers\\member.js [70,62]\n..\\rh-access\\controllers\\member.js [94,62]\n..\\rh-access\\controllers\\member.js [95,68]"
     },
     {
         "source": "Users accesses",
         "language": "es",
         "context": "menu",
         "translation": "Accesos de usuarios ",
-        "ref": "..\\rh-access\\conf.js [42,217]"
+        "ref": "..\\rh-access\\conf_data.js [29,213]"
     },
     {
         "source": "Users accesses",
         "language": "es",
         "translation": "Accesos de usuarios",
-        "ref": "..\\rh-access\\controllers\\user-access.js [277,49]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [279,49]"
     },
     {
         "source": "Viewer",
         "language": "es",
         "context": "shareType",
         "translation": "Visor ",
-        "ref": "..\\rh-access\\conf.js [29,67]"
+        "ref": "..\\rh-access\\conf_data.js [16,63]"
     },
     {
         "source": "Wrong UUID format.",
         "language": "es",
         "context": "userAccess",
-        "isDraft": false,
         "translation": "UUID mal formado.",
-        "ref": "..\\rh-access\\controllers\\user-access.js [469,85]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [471,85]"
     },
     {
         "source": "assignable roles",

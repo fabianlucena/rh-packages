@@ -4,6 +4,8 @@ import {IdentityService} from '../services/identity.js';
 import {conf} from '../conf.js';
 import {Service} from 'rf-service';
 import {getSingle, addEnabledFilter, addEnabledOnerModuleFilter} from 'sql-util';
+import {ConflictError} from 'http-util';
+import {checkParameter} from 'rf-util';
 import {_Error} from 'rf-util';
 import {loc} from 'rf-locale';
 
@@ -19,6 +21,10 @@ export class UserService extends Service {
         if (!data.typeId && !data.type)
             data.type = 'user';
 
+        checkParameter(data, {username: loc._cf('member', 'Username'), displayName: loc._cf('member', 'Display name')});
+        if (await this.getForUsername(data.username, {check: false, skipNoRowsError: true}))
+            throw new ConflictError('Another user with the same name already exists.');
+
         return true;
     }
 
@@ -28,8 +34,8 @@ export class UserService extends Service {
      *  - username: must be unique.
      * @returns {Promise[User]}
      */
-    async create(data) {
-        const user = await super.create(data);
+    async create(data, options) {
+        const user = await super.create(data, options);
         if (data.password) {
             await IdentityService.singleton().createLocal({
                 password: data.password,
