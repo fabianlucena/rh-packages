@@ -13,6 +13,10 @@ export class Service {
 
         return this.singletonInstance;
     }
+
+    async createTransaction() {
+        return this.sequelize.transaction();
+    }
     
     async completeReferences(data, clean) {
         for (const name in this.references) {
@@ -90,13 +94,24 @@ export class Service {
      * @param {object} data - data for the new row.
      * @returns {Promise[row]}
      */
-    async create(data) {
+    async create(data, options) {
         await this.completeReferences(data);
         await this.validateForCreation(data);
-        
-        return await this.sequelize.transaction(async transaction => {
-            const row = await this.model.create(data, {transaction});
-            if (this.shareObject && this.shareService && (data.userId || data.user)) {
+
+        const addShare = this.shareObject && this.shareService && (data.userId || data.user);
+        if (addShare) {
+            options ??= {};
+            options.transaction ||= true;
+        }
+
+        if (options?.transaction) {
+            if (options.transaction === true)
+                options.transaction = await this.createTransaction();
+        }
+
+        try {
+            const row = await this.model.create(data, options);
+            if (addShare) {
                 await this.addCollaborator(
                     {
                         objectId: row.id,
@@ -104,12 +119,19 @@ export class Service {
                         user: data.owner,
                         type: 'owner',
                     },
-                    transaction
+                    options
                 );
             }
 
+            await options?.transaction?.commit();
+
             return row;
-        });
+        } catch (error) {
+            await options?.transaction?.rollback();
+
+            this.lastError = error;
+            throw error;
+        }
     }
 
     /**
@@ -118,12 +140,12 @@ export class Service {
      * @param {object} transaction - transaction object.
      * @returns {Promise[row]}
      */
-    async addCollaborator(data, transaction) {
+    async addCollaborator(data, options) {
         if (!this.shareObject || !this.shareService || (!data.userId && !data.user))
             return;
 
-        return this.shareService.create(data, {transaction});
-    }    
+        return this.shareService.create(data, options);
+    }
 
     async getListOptions(options) {
         if (!options)
