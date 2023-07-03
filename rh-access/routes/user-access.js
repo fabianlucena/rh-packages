@@ -20,4 +20,7 @@ export default (app, checkPermission) => {
     app.get('/user-access-role', checkPermission('user-access.edit'), asyncHandler(UserAccessController, 'getRoles'));
     
     app.all('/user-access', methodNotAllowed);
+    app.all('/user-access-user', methodNotAllowed);
+    app.all('/user-access-site', methodNotAllowed);
+    app.all('/user-access-role', methodNotAllowed);
 };

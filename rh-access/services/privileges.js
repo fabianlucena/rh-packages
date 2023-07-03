@@ -67,7 +67,7 @@ export class PrivilegesService {
             if (!rolesSiteName.includes('system'))
                 rolesSiteName.push('system');
                 
-            privileges.roles = [...privileges.roles, ...await RoleService.getAllNamesForUsernameAndSiteName(username, rolesSiteName, {isEnabled: true})];
+            privileges.roles = [...privileges.roles, ...await RoleService.singleton().getAllNamesForUsernameAndSiteName(username, rolesSiteName, {isEnabled: true})];
         } else
             privileges.roles.push('anonymous');
 

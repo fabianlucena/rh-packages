@@ -1,91 +1,27 @@
 'use strict';
 
-import {RoleService} from './role.js';
 import {conf} from '../conf.js';
+import {Service} from 'rf-service';
 import {addEnabledOnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes, completeIncludeOptions, arrangeOptions} from 'sql-util';
 import {complete} from 'rf-util';
 
-export class UserSiteRoleService {
-    /**
-     * Complete the data object with the userId property if not exists. 
-     * @param {{username: string, userId: integer, ...}} data 
-     * @returns {Promise{data}}
-     */
-    static async completeUserId(data) {
-        if (!data.userId) {
-            if (data.userUuid)
-                data.userId = await conf.global.services.User.singleton().getIdForUuid(data.userUuid);
-            else if (data.user || data.username || data.name) 
-                data.userId = await conf.global.services.User.singleton().getIdForUsername(data.user ?? data.username ?? data.name);
-        }
+export class UserSiteRoleService extends Service {
+    sequelize = conf.global.sequelize;
+    model = conf.global.models.UserSiteRole;
+    references = {
+        user: conf.global.services.User,
+        site: conf.global.services.Site,
+        role: conf.global.services.Role,
+    };
+    defaultTranslationContext = 'userSiteRole';
 
-        return data;
-    }
-
-    /**
-     * Complete the data object with the siteId property if not exists. 
-     * @param {{site: string, siteId: integer, ...}} data 
-     * @returns {Promise{data}}
-     */
-    static async completeSiteId(data) {
-        if (!data.siteId) {
-            const siteService = conf.global.services.Site.singleton();
-            if (data.siteUuid)
-                data.siteId = await siteService.getIdForUuid(data.siteUuid);
-            else if (data.site)
-                data.siteId = await siteService.getIdForName(data.site);
-        }
-
-        return data;
-    }
-    
-    /**
-     * Complete the data object with the roleId property if not exists. 
-     * @param {{role: string, roleId: integer, ...}} data 
-     * @returns {Promise{data}}
-     */
-    static async completeRoleId(data) {
-        if (!data.roleId) {
-            if (data.roleUuid)
-                data.roleId = await RoleService.getIdForUuid(data.roleUuid);
-            else if (data.role)
-                data.roleId = await RoleService.getIdForName(data.role);
-        }
-
-        return data;
-    }
-
-    /**
-     * Complete the data object with the userId, roleId, and siteId properties if not exists. 
-     * @param {{username: string, userId, site: string, siteId: integer, role: string, roleId: integer, ...}} data 
-     * @returns {Promise{data}}
-     */
-    static async completeUserIdRoleIdSiteId(data) {
-        await UserSiteRoleService.completeUserId(data);
-        await UserSiteRoleService.completeSiteId(data);
-        await UserSiteRoleService.completeRoleId(data);
-    }
-    
-    /**
-     * Creates a new UserSiteRole row into DB. Assign user roles in a site. 
-     * @param {{userId: integer, siteId: integer, roleId: integer} data - data for the new UserSiteRole.
-     * @returns {Promise{UserSiteRole}}
-     */
-    static async create(data) {
-        await UserSiteRoleService.completeUserIdRoleIdSiteId(data);
-
+    async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'UserSiteRole', 'userId', 'siteId', 'roleId');
 
-        return conf.global.models.UserSiteRole.create(data);
+        return true;
     }
 
-    /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {options}
-     */
-    static async getListOptions(options) {
+    async getListOptions(options) {
         if (options.isEnabled !== undefined)
             options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
 
@@ -143,24 +79,11 @@ export class UserSiteRoleService {
     }
 
     /**
-     * Gets a list of UserSiteRole.
-     * @param {Options} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{MenuItemList}}
-     */
-    static async getList(options) {
-        return conf.global.models.UserSiteRole.findAll(await UserSiteRoleService.getListOptions(options));
-    }
-
-    static async getListAndCount(options) {
-        return conf.global.models.UserSiteRole.findAndCountAll(await UserSiteRoleService.getListOptions(options));
-    }
-
-    /**
      * Creates a new UserSiteRole row into DB if not exists.
      * @param {data} data - data for the new UserSiteRole.
      * @returns {Promise{UserSiteRole}}
      */
-    static async createIfNotExists(data, options) {
+    async createIfNotExists(data, options) {
         options = {...options, attributes: ['userId', 'siteId', 'roleId'], where: {}, include: [], limit: 1};
 
         if (data.userId)
@@ -184,14 +107,14 @@ export class UserSiteRoleService {
         else
             throw new MissingPropertyError('UserSiteRole', 'role', 'roleId');
 
-        const rowList = await UserSiteRoleService.getList(options);
+        const rowList = await this.getList(options);
         if (rowList.length)
             return rowList[0];
 
-        return UserSiteRoleService.create(data);
+        return this.create(data);
     }
 
-    static async delete(where, options) {
+    async delete(where, options) {
         const Op = conf.global.Sequelize.Op;
 
         if (where?.userUuid && !where.userId) {

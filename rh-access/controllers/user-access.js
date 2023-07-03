@@ -26,7 +26,11 @@ import {checkParameter, checkParameterUuid, checkParameterUuidList, checkNotNull
  *          isEnabled:
  *              type: boolean
  */
-    
+
+const roleService = RoleService.singleton();
+const userSiteRoleService = UserSiteRoleService.singleton();
+const assignableRolePerRoleService = AssignableRolePerRoleService.singleton();
+
 export class UserAccessController {
     /**
      * @swagger
@@ -84,17 +88,17 @@ export class UserAccessController {
 
         let assignableRolesId;
         if (!req.roles.includes('admin'))
-            assignableRolesId = await AssignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
+            assignableRolesId = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
 
         const roleIdList = [];
         await Promise.all(await roleUuidList.map(async roleUuid => {
-            const roleId = await RoleService.getIdForUuid(roleUuid);
+            const roleId = await roleService.getIdForUuid(roleUuid);
             roleIdList.push(roleId);
 
             options.where.roleId = roleId;
-            const result = await UserSiteRoleService.getList(options);
+            const result = await userSiteRoleService.getList(options);
             if (!result?.length && (!assignableRolesId || assignableRolesId.includes(roleId))) {
-                await UserSiteRoleService.create({
+                await userSiteRoleService.create({
                     userId,
                     siteId,
                     roleId,
@@ -106,7 +110,7 @@ export class UserAccessController {
         if (assignableRolesId)
             deleteWhere.roleId = assignableRolesId;
 
-        await UserSiteRoleService.delete(deleteWhere);
+        await userSiteRoleService.delete(deleteWhere);
 
         res.status(204).send();
     }
@@ -199,7 +203,7 @@ export class UserAccessController {
 
         let assignableRolesId;
         if (!req.roles.includes('admin')) {
-            assignableRolesId = await AssignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
+            assignableRolesId = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
             options.where ??= {};
             options.where.roleId = assignableRolesId;
         }
@@ -226,7 +230,7 @@ export class UserAccessController {
         if (assignableRolesId)
             roleQueryOptions.where = {roleId: assignableRolesId};
 
-        const result = await UserSiteRoleService.getListAndCount(options);
+        const result = await userSiteRoleService.getListAndCount(options);
         const loc = req.loc;
 
         result.rows = await Promise.all(result.rows.map(async row => {
@@ -244,7 +248,7 @@ export class UserAccessController {
             roleQueryOptions.where.siteId = row.siteId;
 
             row.Roles = await Promise.all(
-                (await UserSiteRoleService.getList(roleQueryOptions))
+                (await userSiteRoleService.getList(roleQueryOptions))
                     .map(async role => {
                         role = role.Role;
                         if (role?.isTranslatable)
@@ -397,10 +401,9 @@ export class UserAccessController {
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
 
         if (!req.roles.includes('admin'))
-            options.where = {...options?.where, id: await AssignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles)};
+            options.where = {...options?.where, id: await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles)};
 
-        const RoleService = conf.global.services.Role;
-        const result = await RoleService.getListAndCount(options);
+        const result = await roleService.getListAndCount(options);
         
         const loc = req.loc;
         result.rows = await Promise.all(result.rows.map(async row => {
@@ -477,9 +480,9 @@ export class UserAccessController {
         let rowsDeleted;
         const deleteWhere = {userUuid, siteUuid};
         if (!req.roles.includes('admin'))
-            deleteWhere.notRoleName = await AssignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
+            deleteWhere.notRoleName = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
 
-        rowsDeleted = await UserSiteRoleService.delete(deleteWhere);
+        rowsDeleted = await userSiteRoleService.delete(deleteWhere);
 
         if (!rowsDeleted)
             throw new _HttpError(req.loc._cf('userAccess', 'User with UUID %s has not access to the site with UUID %s.'), 403, userUuid, siteUuid);

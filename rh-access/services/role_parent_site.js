@@ -13,7 +13,7 @@ export class RoleParentSiteService {
      */
     static async completeRoleId(data) {
         if (!data.roleId && data.role)
-            data.roleId = await RoleService.getIdForName(data.role);
+            data.roleId = await RoleService.singleton().getIdForName(data.role);
     
         return data;
     }
@@ -25,7 +25,7 @@ export class RoleParentSiteService {
      */
     static async completeParentId(data) {
         if (!data.parentId && data.parent)
-            data.parentId = await RoleService.getIdForName(data.parent);
+            data.parentId = await RoleService.singleton().getIdForName(data.parent);
 
         return data;
     }
