@@ -1,11 +1,11 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {Service} from 'rf-service';
+import {ServiceBase} from 'rf-service';
 import {addEnabledOnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes, completeIncludeOptions, arrangeOptions} from 'sql-util';
 import {complete} from 'rf-util';
 
-export class UserSiteRoleService extends Service {
+export class UserSiteRoleService extends ServiceBase {
     sequelize = conf.global.sequelize;
     model = conf.global.models.UserSiteRole;
     references = {

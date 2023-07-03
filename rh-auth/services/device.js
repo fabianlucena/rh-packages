@@ -1,7 +1,7 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {Service} from 'rf-service';
+import {ServiceIdUuid} from 'rf-service';
 import {getSingle} from 'sql-util';
 import {complete} from 'rf-util';
 import crypto from 'crypto';
@@ -36,7 +36,7 @@ complete(
 
 conf.init.push(() => conf.deviceCacheMaintenance = setInterval(conf.deviceCacheMaintenanceMethod, conf.deviceCacheMaintenanceInterval));
 
-export class DeviceService extends Service {
+export class DeviceService extends ServiceIdUuid {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Device;
     defaultTranslationContext = 'device';

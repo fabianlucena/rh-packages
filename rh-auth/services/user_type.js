@@ -1,10 +1,10 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {Service} from 'rf-service';
+import {ServiceIdUuidNameEnableTranslatable} from 'rf-service';
 import {addEnabledFilter, addEnabledOnerModuleFilter, checkDataForMissingProperties} from 'sql-util';
 
-export class UserTypeService extends Service {
+export class UserTypeService extends ServiceIdUuidNameEnableTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.UserType;
     defaultTranslationContext = 'userType';

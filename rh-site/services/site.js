@@ -1,7 +1,7 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {Service} from 'rf-service';
+import {ServiceIdUuidNameEnableTranslatable} from 'rf-service';
 import {
     addEnabledFilter,
     addEnabledOnerModuleFilter, 
@@ -14,7 +14,7 @@ import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull, co
 import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
-export class SiteService extends Service {
+export class SiteService extends ServiceIdUuidNameEnableTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Site;
     references = {

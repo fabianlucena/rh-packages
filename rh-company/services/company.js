@@ -1,13 +1,13 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {Service} from 'rf-service';
+import {ServiceIdUuidNameEnableTranslatable} from 'rf-service';
 import {addEnabledFilter, includeCollaborators} from 'sql-util';
 import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull} from 'rf-util';
 import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
-export class CompanyService extends Service {
+export class CompanyService extends ServiceIdUuidNameEnableTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Company;
     shareObject = 'Company';

@@ -1,11 +1,11 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {Service} from 'rf-service';
+import {ServiceIdUuidEnable} from 'rf-service';
 import {checkDataForMissingProperties, MissingPropertyError, completeAssociationOptions, addEnabledFilter, getSingle} from 'sql-util';
 import crypto from 'crypto';
 
-export class IdentityService extends Service {
+export class IdentityService extends ServiceIdUuidEnable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Identity;
     references = {

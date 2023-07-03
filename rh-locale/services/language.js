@@ -1,12 +1,12 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {Service} from 'rf-service';
+import {ServiceIdUuidNameEnableTranslatable} from 'rf-service';
 import {checkDataForMissingProperties} from 'sql-util';
 import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
-export class LanguageService extends Service {
+export class LanguageService extends ServiceIdUuidNameEnableTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Language;
     references = {

@@ -1,10 +1,10 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {Service} from 'rf-service';
+import {ServiceBase} from 'rf-service';
 import {checkDataForMissingProperties, completeIncludeOptions, getSingle} from 'sql-util';
 
-export class CompanySiteService extends Service {
+export class CompanySiteService extends ServiceBase {
     sequelize = conf.global.sequelize;
     model = conf.global.models.CompanySite;
     references = {

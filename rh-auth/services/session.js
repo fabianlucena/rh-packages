@@ -1,7 +1,7 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {Service} from 'rf-service';
+import {ServiceIdUuid} from 'rf-service';
 import {checkViewOptions, getSingle} from 'sql-util';
 import {check} from 'rf-util';
 import {loc} from 'rf-locale';
@@ -40,7 +40,7 @@ conf.sessionCacheMaintenanceMethod ??= () => {
 
 conf.init.push(() => conf.sessionCacheMaintenance = setInterval(conf.sessionCacheMaintenanceMethod, conf.sessionCacheMaintenanceInterval));
 
-export class SessionService extends Service {
+export class SessionService extends ServiceIdUuid {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Session;
     defaultTranslationContext = 'session';

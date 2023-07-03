@@ -2,10 +2,10 @@
 
 import {RoleParentSiteService} from './role_parent_site.js';
 import {conf} from '../conf.js';
-import {Service} from 'rf-service';
+import {ServiceIdUuidNameEnableTranslatable} from 'rf-service';
 import {addEnabledFilter, addEnabledOnerModuleFilter, checkDataForMissingProperties, completeAssociationOptions} from 'sql-util';
 
-export class RoleService extends Service {
+export class RoleService extends ServiceIdUuidNameEnableTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Role;
     references = {
