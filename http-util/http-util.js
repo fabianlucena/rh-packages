@@ -130,11 +130,28 @@ export class ConflictError extends Error {
     }
 }
 
+function log(message) {
+    if (typeof message === 'string')
+        message = {message};
+
+    switch(message.type) {
+    case 'error': return console.error(message.message);
+    case 'warning': return console.warn(message.message);
+    case 'info': return console.info(message.message);
+    default: return console.log(message.message);
+    }
+}
+
+log.error = (message) => log({type: 'error', message});
+log.info = (message) => log({type: 'info', message});
+log.warining = (message) => log({type: 'warning', message});
+
 export const maxRowsInResult = 100;
 export const defaultRowsInResult = 20;
 export const defaultGlobal = {
     app: null,
     router: null,
+    log: log,
     sequelize: null,
     beforeConfig: [],
     afterConfig: []

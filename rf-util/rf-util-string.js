@@ -17,6 +17,10 @@ export function ucfirst(text) {
     return text.substring(0, 1).toUpperCase() + text.substring(1);
 }
 
+export function lcfirst(text) {
+    return text.substring(0, 1).toLowerCase() + text.substring(1);
+}
+
 export function isEnquoted(text, quotes) {
     if (!quotes)
         quotes = ['"', '\'', '`'];

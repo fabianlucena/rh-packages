@@ -1,15 +1,19 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {ServiceBase} from 'rf-service';
+import {ServiceShared} from 'rf-service';
 import {addEnabledOnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes, completeIncludeOptions, arrangeOptions} from 'sql-util';
 import {complete} from 'rf-util';
 
-export class UserSiteRoleService extends ServiceBase {
+export class UserSiteRoleService extends ServiceShared {
     sequelize = conf.global.sequelize;
     model = conf.global.models.UserSiteRole;
     references = {
-        user: conf.global.services.User,
+        user: {
+            service: conf.global.services.User,
+            getIdForName: 'getIdForUsername',
+            otherName: 'username',
+        },
         site: conf.global.services.Site,
         role: conf.global.services.Role,
     };
@@ -17,6 +21,9 @@ export class UserSiteRoleService extends ServiceBase {
 
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'UserSiteRole', 'userId', 'siteId', 'roleId');
+
+        if (!data.owner && !data.ownerId)
+            throw new MissingPropertyError('UserSiteRole', 'owner');
 
         return true;
     }

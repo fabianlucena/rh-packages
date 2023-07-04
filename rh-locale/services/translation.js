@@ -126,7 +126,8 @@ export class TranslationService extends ServiceIdUuidEnable {
                     else
                         translation = translationObject.translation;
                 }
-                catch(_) {
+                catch(err) {
+                    conf.global.log.error(err);
                     translations[text] = text;
                 }
             }

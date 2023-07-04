@@ -186,9 +186,10 @@ export class CompanySiteService extends ServiceBase {
             item = await this.create(data);
 
         if (data.users) {
+            const userSiteRoleService = conf.global.services.UserSiteRole.singleton();
             const siteId = item.siteId;
             for (const userRole of data.users)
-                await conf.global.services.UserSiteRole.singleton().createIfNotExists({...userRole, siteId, owner: data.owner});
+                await userSiteRoleService.createIfNotExists({...userRole, siteId, owner: data.owner});
         }
 
         return item;

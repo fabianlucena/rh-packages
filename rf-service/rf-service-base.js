@@ -1,9 +1,41 @@
 'use strict';
 
 import {NoRowsError, ManyRowsError} from './rf-service-errors.js';
-import {ucfirst} from 'rf-util/rf-util-string.js';
+import {ucfirst, lcfirst} from 'rf-util/rf-util-string.js';
 
 export class ServiceBase {
+    /**
+     * Here are spicifed the references for properties. The referencers have the form proeprtyName: options.
+     * {
+     *  user: {
+     *      service: conf.global.services.User,
+     *      name: 'username',
+     *  },
+     *  site: conf.global.services.Site,
+     * }
+     * 
+     * The options for each reference are:
+     *  - idPropertyName: the name for ID property to use in reference and in the data set. If this options is not defined a "name + 'Id'" will be used".
+     *  - service: the service to get the value of the reference.
+     *  - uuidPropertyName: the name for UUID property to get the refence from the service. If this options is not defined a "name + 'Uuid'" will be used".
+     *  - name: the name form the property and for search in the service.
+     *  - Name: the name for the nested object in the data set. In this object the search of: ID, UUID, and name will be performed.
+     *  - otherName: another name for te property name to search in the service.
+     *  - createIfNotExists: if it's true and no object ID founded, the system will create with a create if not exists.
+     *  - getIdForName: method name for get the ID from name from the service.
+     *  - clean: if it's true, the properties uuidPropertyName, name, and Name, will be erased from the data set.
+     * 
+     * For each reference a check for idPropertyName is performed. If the idPropertyName is not defined, the system will try to get the ID from the service using the uuidPropertyName.
+     * If the uuidPropertyName is not defined the the system will try to use the "name" in the service. 
+     * But if the "name" is not defined the "Name" as nested object, looking for the Nameid, Name.uuid, or Name.name.  
+     * If all of the previus alternatives fail, and the otherName is defined an attempt to looking for name = otherName in the service will be running.
+     * If the reference ID is still missing and createIfNotExists is true, the system will try to create the referenced object using:
+     *  - the data[Name] object as the first try,
+     *  - the {name: data.name} object as the second try, and
+     *  - the {name: data.otherName} object as the third and final try.
+     * 
+     * If all of above fails the reference ID will be not completed.
+     */
     references = {};
 
     static singleton() {
@@ -44,47 +76,51 @@ export class ServiceBase {
     async completeEntityId(data, options) {
         const name = options.name;
         const Name = options.Name ?? ucfirst(name);
-        const idParamName = options.idParamName ?? (name + 'Id');
-        const uuidParamName = options.uuidParamName ?? (name + 'Uuid');
-        if (!data[idParamName]) {
+        const idPropertyName = options.idPropertyName ?? (lcfirst(Name) + 'Id');
+        const uuidPropertyName = options.uuidPropertyName ?? (lcfirst(Name) + 'Uuid');
+        if (!data[idPropertyName]) {
             const service = options.service.singleton?
                 options.service.singleton():
                 options.service;
+            const getIdForName = options.getIdForName ?? 'getIdForName';
 
-            if (data[uuidParamName])
-                data[idParamName] = await service.getIdForUuid(data[uuidParamName]);
-            else if (typeof data[name] === 'string' && data[name])
-                data[idParamName] = await service.getIdForName(data[name], {skipNoRowsError: true});
+            if (data[uuidPropertyName] && service.getIdForUuid)
+                data[idPropertyName] = await service.getIdForUuid(data[uuidPropertyName]);
+            else if (typeof data[name] === 'string' && data[name] && service[getIdForName])
+                data[idPropertyName] = await service[getIdForName](data[name], {skipNoRowsError: true});
             else {
                 if (data[Name] && typeof data[Name] === 'object') {
                     if (data[Name].id)
-                        data[idParamName] = data[Name].id;
-                    else if (data[Name].uuid)
-                        data[idParamName] = await service.getIdForUuid(data[Name].uuid);
-                    else if (data[Name].name)
-                        data[idParamName] = await service.getIdForName(data[Name].name);
+                        data[idPropertyName] = data[Name].id;
+                    else if (data[Name].uuid && service.getIdForUuid)
+                        data[idPropertyName] = await service.getIdForUuid(data[Name].uuid);
+                    else if (data[Name].name && service[getIdForName])
+                        data[idPropertyName] = await service[getIdForName](data[Name].name);
                 }
             }
 
-            if (!data[idParamName]) {
+            if (!data[idPropertyName]) {
                 const otherName = options.otherName;
-                if (otherName && typeof data[otherName] === 'string' && data[otherName])
-                    data[idParamName] = await service.getIdForName(data[otherName], {skipNoRowsError: true});
+                if (otherName && typeof data[otherName] === 'string' && data[otherName] && service[getIdForName])
+                    data[idPropertyName] = await service[getIdForName](data[otherName], {skipNoRowsError: true});
 
-                if (!data[idParamName] && options.createIfNotExists) {
-                    if (typeof data[name] === 'string' && data[name]) {
-                        const object = await service.createIfNotExists({name: data[name]});
-                        data[idParamName] = object?.id;
-                    } else if (typeof data[otherName] === 'string' && data[otherName]) {
-                        const object = await service.createIfNotExists({name: data[otherName]});
-                        data[idParamName] = object?.id;
-                    }
+                if (!data[idPropertyName] && options.createIfNotExists) {
+                    let object;
+                    if (typeof data[Name] === 'object' && data[Name])
+                        object = await service.createIfNotExists(data[Name]);
+                    else if (typeof data[name] === 'string' && data[name])
+                        object = await service.createIfNotExists({name: data[name]});
+                    else if (typeof data[otherName] === 'string' && data[otherName])
+                        object = await service.createIfNotExists({name: data[otherName]});
+
+                    if (object)
+                        data[idPropertyName] = object?.id;
                 }
             }
         }
 
         if (options.clean) {
-            delete data[uuidParamName];
+            delete data[uuidPropertyName];
             delete data[Name];
             delete data[name];
         }
@@ -98,7 +134,7 @@ export class ServiceBase {
      * @returns {Promise[row]}
      */
     async create(data, options) {
-        await this.completeReferences(data);
+        await this.completeReferences(data, true);
         await this.validateForCreation(data);
 
         let transaction;

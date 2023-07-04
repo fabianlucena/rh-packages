@@ -16,7 +16,7 @@ export class AssignableRolePerRoleService extends ServiceBase {
     defaultTranslationContext = 'assignableRolePerRole';
 
     async validateForCreation(data) {
-        await checkDataForMissingProperties(data, 'AssignableRolePerRole', 'roleId', 'assignableRolesId');
+        await checkDataForMissingProperties(data, 'AssignableRolePerRole', 'roleId', 'assignableRoleId');
 
         return true;
     }
@@ -44,7 +44,7 @@ export class AssignableRolePerRoleService extends ServiceBase {
         await this.completeReferences(data);
 
         const row = await this.getForAssignableRoleIdAndRoleId(
-            data.assignableRolesId,
+            data.assignableRoleId,
             data.roleId,
             {
                 attributes: ['assignableRoleId', 'roleId'],

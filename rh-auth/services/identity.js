@@ -14,8 +14,9 @@ export class IdentityService extends ServiceIdUuidEnable {
             service: conf.global.services.User,
             name: 'username',
             Name: 'User',
-            idParamName: 'userId',
-            uuidParamName: 'userUuid',
+            idPropertyName: 'userId',
+            uuidPropertyName: 'userUuid',
+            getIdForName: 'getIdForUsername',
         },
     };
     defaultTranslationContext = 'identity';

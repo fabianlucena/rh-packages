@@ -7,7 +7,7 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
      * @returns {Promise[row]}
      */
     async create(data, options) {
-        const addShare = this.shareObject && this.shareService && (data.userId || data.user);
+        const addShare = this.shareObject && this.shareService && (data.ownerId || data.owner);
         if (addShare) {
             options ??= {};
             options.transaction ||= true;
