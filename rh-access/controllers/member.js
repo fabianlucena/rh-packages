@@ -10,12 +10,12 @@ const memberService = MemberService.singleton();
 const assignableRolePerRoleService = AssignableRolePerRoleService.singleton();
 
 export class MemberController {
-    static async checkUuid(req, uuid) {
-        const member = await memberService.getForUuid(uuid, {where: {siteId: req.site.id}, skipNoRowsError: true});
-        if (!member)
+    static async getUserIdFromUuid(req, uuid) {
+        const userId = await memberService.getUserIdForUserUuid(uuid, {where: {siteId: req.site.id}, skipNoRowsError: true});
+        if (!userId)
             throw new _HttpError(req.loc._cf('member', 'The member with UUID %s does not exists.'), 404, uuid);
 
-        return true;
+        return userId;
     }
 
     static async get(req, res) {
@@ -24,7 +24,7 @@ export class MemberController {
         else if ('$form' in req.query)
             return this.getForm(req, res);
             
-        const definitions = {uuid: 'uuid', name: 'string'};
+        const definitions = {uuid: 'uuid', username: 'string'};
         const assignableRolesId = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
 
         let options = {
@@ -33,6 +33,7 @@ export class MemberController {
             view: true,
             where: {},
             loc: req.loc,
+            includeUser: true,
             includeRoles: true,
             includeRolesId: assignableRolesId,
         };
@@ -41,7 +42,20 @@ export class MemberController {
         options.where ??= {};
         options.where.siteId = req.site.id;
 
+        if (options.where.uuid) {
+            options.where.userUuid = options.where.uuid;
+            delete options.where.uuid;
+        }
+
         const result = await memberService.getListAndCount(options);
+        result.rows.map(row => {
+            if (row.Roles?.length) {
+                if (row.Roles.every(role => role.isEnabled)) // all are true
+                    row.isEnabled = true;
+                else if (row.Roles.every(role => role.isEnabled === false)) // all are folse
+                    row.isEnabled = false;
+            }
+        });
 
         res.status(200).send(result);
     }
@@ -51,8 +65,21 @@ export class MemberController {
 
         const actions = [];
         if (req.permissions.includes('member.create')) actions.push('create');
-        if (req.permissions.includes('member.edit'))   actions.push('enableDisable','edit');
-        if (req.permissions.includes('member.delete')) actions.push('delete');
+        if (req.permissions.includes('member.edit')) {
+            actions.push({
+                name: 'enableDisable',
+                actionData: {bodyParam: {uuid: 'User.uuid'}},
+            });
+            actions.push({
+                name: 'edit',
+                actionData: {param: {uuid: 'User.uuid'}},
+            });
+        }
+        if (req.permissions.includes('member.delete'))
+            actions.push({
+                name: 'delete',
+                actionData: {bodyParam: {uuid: 'User.uuid'}},
+            });
         actions.push('search', 'paginate');
         
         let loc = req.loc;
@@ -67,12 +94,12 @@ export class MemberController {
             actions: actions,
             columns: [
                 {
-                    name: 'displayName',
+                    name: 'User.displayName',
                     type: 'text',
                     label: await loc._c('member', 'Display name'),
                 },
                 {
-                    name: 'username',
+                    name: 'User.username',
                     type: 'text',
                     label: await loc._c('member', 'Username'),
                 },
@@ -89,14 +116,14 @@ export class MemberController {
             action: 'member',
             fields: [
                 {
-                    name: 'displayName',
+                    name: 'User.displayName',
                     type: 'text',
                     label: await loc._c('member', 'Display name'),
                     placeholder: await loc._c('member', 'Type the display name here'),
                     autocomplete: 'off',
                 },
                 {
-                    name: 'username',
+                    name: 'User.username',
                     type: 'text',
                     label: await loc._c('member', 'Username'),
                     placeholder: await loc._c('member', 'Username'),
@@ -127,7 +154,7 @@ export class MemberController {
                     },
                 },
                 {
-                    name: 'password',
+                    name: 'User.password',
                     type: 'password',
                     label: await loc._c('member', 'Password'),
                     placeholder: await loc._c('member', 'Type here the new password for user'),
@@ -171,7 +198,7 @@ export class MemberController {
     
     static async post(req, res) {
         const loc = req.loc;
-        checkParameter(req?.body, {username: loc._cf('member', 'Username'), displayName: loc._cf('member', 'Display name')});
+        checkParameter(req?.body?.User, {username: loc._cf('member', 'Username'), displayName: loc._cf('member', 'Display name')});
 
         const data = {
             ...req.body,
@@ -181,27 +208,35 @@ export class MemberController {
         if (!req.roles.includes('admin'))
             data.assignableRolesId = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
 
-        await memberService.create(data);
+        await memberService.create(data, {loc});
 
         res.status(204).send();
     }
 
-    /*static async delete(req, res) {
+    static async delete(req, res) {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('member', 'UUID'));
-        await this.checkUuid(req, uuid);
+        const userId = await this.getUserIdFromUuid(req, uuid);
 
-        const rowsDeleted = await memberService.deleteForUuid(uuid);
+        const deleteWhere = {
+            siteId: req.site.id,
+            userId,
+        };
+
+        if (!req.roles.includes('admin'))
+            deleteWhere.roleId = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
+            
+        const rowsDeleted = await memberService.deleteFor(deleteWhere);
         if (!rowsDeleted)
             throw new _HttpError(req.loc._cf('member', 'The member with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
-    }*/
+    }
 
     static async enablePost(req, res) {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('member', 'UUID'));
-        await this.checkUuid(req, uuid);
+        const userId = await this.getUserIdFromUuid(req, uuid);
 
-        const rowsUpdated = await memberService.enableForUuid(uuid);
+        const rowsUpdated = await memberService.enableForSiteIdAndUserId(req.site.id, userId);
         if (!rowsUpdated)
             throw new _HttpError(req.loc._cf('member', 'The member with UUID %s does not exists.'), 403, uuid);
 
@@ -210,23 +245,35 @@ export class MemberController {
 
     static async disablePost(req, res) {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('member', 'UUID'));
-        await this.checkUuid(req, uuid);
+        const userId = await this.getUserIdFromUuid(req, uuid);
 
-        const rowsUpdated = await memberService.disableForUuid(uuid);
+        const rowsUpdated = await memberService.disableForSiteIdAndUserId(req.site.id, userId);
         if (!rowsUpdated)
             throw new _HttpError(req.loc._cf('member', 'The member with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
     }
 
-    /*static async patch(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('scenario', 'UUID'));
-        await this.checkUuid(req, uuid);
+    static async patch(req, res) {
+        const loc = req.loc;
+        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('member', 'UUID'));
+        const userId = await this.getUserIdFromUuid(req, uuid);
+        const siteId = req.site.id;
 
-        const rowsUpdated = await memberService.updateForUuid(req.body, uuid);
+        const data = {
+            ...req.body,
+            siteId,
+            userId,
+            rolesUuid: await checkParameterUuidList(req.body.Roles, loc._cf('member', 'Roles')),
+        };
+        const options = {};
+        if (!req.roles.includes('admin'))
+            options.assignableRolesId = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
+        
+        const rowsUpdated = await memberService.updateFor(data, {userId, siteId}, options);
         if (!rowsUpdated)
             throw new _HttpError(req.loc._cf('member', 'The member with UUID %s does not exists.'), 403, uuid);
 
         res.sendStatus(204);
-    }*/
+    }
 }

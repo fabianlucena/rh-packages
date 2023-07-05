@@ -1,7 +1,7 @@
 'use strict';
 
 import {RoleService} from '../services/role.js';
-import {UserSiteRoleService} from '../services/user_site_role.js';
+import {UserAccessService} from '../services/user_access.js';
 import {AssignableRolePerRoleService} from '../services/assignable_role_per_role.js';
 import {conf} from '../conf.js';
 import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
@@ -28,7 +28,7 @@ import {checkParameter, checkParameterUuid, checkParameterUuidList, checkNotNull
  */
 
 const roleService = RoleService.singleton();
-const userSiteRoleService = UserSiteRoleService.singleton();
+const userAccessService = UserAccessService.singleton();
 const assignableRolePerRoleService = AssignableRolePerRoleService.singleton();
 
 export class UserAccessController {
@@ -69,48 +69,17 @@ export class UserAccessController {
      */
     static async post(req, res) {
         const loc = req.loc;
-        const userUuid = checkParameterUuid(req.body.User, loc._cf('userAccess', 'User'));
-        const siteUuid = checkParameterUuid(req.body.Site, loc._cf('userAccess', 'Site'));
-        const roleUuidList = checkParameterUuidList(req.body.Roles, loc._cf('userAccess', 'Roles'));
-
-        const userId = await conf.global.services.User.singleton().getIdForUuid(userUuid);
-        const siteId = await conf.global.services.Site.singleton().getIdForUuid(siteUuid);
-
-        const options = {
-            attributes: ['userId'],
-            where: {
-                userId,
-                siteId,
-            },
-            raw: true,
-            nest: true,
+        const data = {
+            ...req.body,
+            siteId: req.site.id,
+            userUuid: checkParameterUuid(req.body.User, loc._cf('userAccess', 'User')),
+            siteUuid: checkParameterUuid(req.body.Site, loc._cf('userAccess', 'Site')),
+            rolesUuid: await checkParameterUuidList(req.body.Roles, loc._cf('userAccess', 'Roles')),
         };
-
-        let assignableRolesId;
         if (!req.roles.includes('admin'))
-            assignableRolesId = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
+            data.assignableRolesId = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
 
-        const roleIdList = [];
-        await Promise.all(await roleUuidList.map(async roleUuid => {
-            const roleId = await roleService.getIdForUuid(roleUuid);
-            roleIdList.push(roleId);
-
-            options.where.roleId = roleId;
-            const result = await userSiteRoleService.getList(options);
-            if (!result?.length && (!assignableRolesId || assignableRolesId.includes(roleId))) {
-                await userSiteRoleService.create({
-                    userId,
-                    siteId,
-                    roleId,
-                });
-            }
-        }));
-
-        const deleteWhere = {userId, siteId, notRoleId: roleIdList};
-        if (assignableRolesId)
-            deleteWhere.roleId = assignableRolesId;
-
-        await userSiteRoleService.delete(deleteWhere);
+        await userAccessService.create(data);
 
         res.status(204).send();
     }
@@ -169,43 +138,28 @@ export class UserAccessController {
      */
     static async get(req, res) {
         if ('$grid' in req.query)
-            return UserAccessController.getGrid(req, res);
+            return this.getGrid(req, res);
         else if ('$form' in req.query)
-            return UserAccessController.getForm(req, res);
-           
+            return this.getForm(req, res);
+            
         let options = {
-            view: true,
             limit: 10,
             offset: 0,
-            includeUser: {},
-            includeSite: {},
-            raw: true,
-            nest: true,
-            attributes: ['userId', 'siteId'],
-            group: [
-                'userId',
-                'siteId',
-                'UserSiteRole.userId',
-                'User.uuid',
-                'User.username',
-                'User.displayName',
-                'User.isTranslatable',
-                'Site.uuid',
-                'Site.name',
-                'Site.title',
-                'Site.isTranslatable',
-            ],
-            order: [['User.username', 'ASC']],
+            view: true,
+            where: {},
+            loc: req.loc,
+            includeUser: true,
+            includeRoles: true,
         };
 
         const definitions = {uuid: 'string', username: 'string'};
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
+        options.where ??= {};
+        options.where.siteId = req.site.id;
 
-        let assignableRolesId;
         if (!req.roles.includes('admin')) {
-            assignableRolesId = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
-            options.where ??= {};
-            options.where.roleId = assignableRolesId;
+            const assignableRolesId = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
+            options.includeRolesId = assignableRolesId;
         }
 
         if (options.where?.uuid) {
@@ -216,54 +170,7 @@ export class UserAccessController {
             options.includeSite = {...options.includeSite, where: {...options.includeSite.where, uuid: uuid[1]}};
         }
 
-        const roleQueryOptions = {
-            view: true,
-            includeUser: {attributes: []},
-            includeSite: {attributes: []},
-            includeRole: {},
-            attributes: [],
-            where: {},
-            raw: true,
-            nest: true,
-        };
-        
-        if (assignableRolesId)
-            roleQueryOptions.where = {roleId: assignableRolesId};
-
-        const result = await userSiteRoleService.getListAndCount(options);
-        const loc = req.loc;
-
-        result.rows = await Promise.all(result.rows.map(async row => {
-            row.uuid = row.User.uuid + ',' + row.Site.uuid;
-
-            if (row.User.isTranslatable)
-                row.User.displayName = await loc._(row.User.displayName);
-            delete row.User.isTranslatable;
-
-            if (row.Site?.isTranslatable)
-                row.Site.title = await loc._(row.Site.title);
-            delete row.Site.isTranslatable;
-
-            roleQueryOptions.where.userId = row.userId;
-            roleQueryOptions.where.siteId = row.siteId;
-
-            row.Roles = await Promise.all(
-                (await userSiteRoleService.getList(roleQueryOptions))
-                    .map(async role => {
-                        role = role.Role;
-                        if (role?.isTranslatable)
-                            role.title = await loc._(role.title);
-                        delete role.isTranslatable;
-
-                        return role;
-                    })
-            );
-
-            delete row.userId;
-            delete row.siteId;
-
-            return row;
-        }));
+        const result = await userAccessService.getListAndCount(options);
 
         res.status(200).send(result);
     }
@@ -482,7 +389,7 @@ export class UserAccessController {
         if (!req.roles.includes('admin'))
             deleteWhere.notRoleName = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
 
-        rowsDeleted = await userSiteRoleService.delete(deleteWhere);
+        rowsDeleted = await userAccessService.delete(deleteWhere);
 
         if (!rowsDeleted)
             throw new _HttpError(req.loc._cf('userAccess', 'User with UUID %s has not access to the site with UUID %s.'), 403, userUuid, siteUuid);
