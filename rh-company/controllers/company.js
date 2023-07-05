@@ -196,7 +196,7 @@ export class CompanyController {
 
         const actions = [];
         if (req.permissions.includes('company.create')) actions.push('create');
-        if (req.permissions.includes('company.edit'))   actions.push('enableDisable','edit');
+        if (req.permissions.includes('company.edit'))   actions.push('enableDisable', 'edit');
         if (req.permissions.includes('company.delete')) actions.push('delete');
         actions.push('search', 'paginate');
         
