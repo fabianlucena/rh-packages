@@ -2,7 +2,7 @@ import {setUpError, deepComplete, replace} from 'rf-util';
 import {loc} from 'rf-locale';
 import fs from 'fs';
 import path from 'path';
-import {Op} from 'sequelize';
+import {Op, Utils} from 'sequelize';
 
 export class NoRowsError extends Error {
     static _message = loc._f('There are no "%s" for "%s" in "%s"');
@@ -358,7 +358,13 @@ export function includeCollaborators(options, object, models, collaboratorOption
 
 export function arrangeOptions(options, sequelize) {
     if (options.order?.length)
-        options.order = options.order.map(order => [sequelize.col(order[0]), order[1]]);
+        options.order = options.order.map(order => {
+            let col = order[0];
+            const sort = order[1];
+            if (!(col instanceof Utils.Col))
+                col = sequelize.col(col);
+            return [col, sort];
+        });
 
     return options;
 }
