@@ -37,6 +37,7 @@ export class ServiceBase {
      * If all of above fails the reference ID will be not completed.
      */
     references = {};
+    lastErrors = [];
 
     static singleton() {
         if (!this.singletonInstance)
@@ -152,7 +153,7 @@ export class ServiceBase {
         } catch (error) {
             await transaction?.rollback();
 
-            this.pushError(error);
+            await this.pushError(error);
 
             throw error;
         }
@@ -269,7 +270,7 @@ export class ServiceBase {
      * @returns {Promise[Array[row]]}
      */
     async getSingle(options) {
-        const rows = this.getList({limit: 2, ...options});
+        const rows = await this.getList({limit: 2, ...options});
         return this.getSingleFromRows(rows, options);
     }
 
@@ -315,9 +316,7 @@ export class ServiceBase {
      * @returns {Promise[integer]} updated rows count.
      */
     async updateFor(data, where, options) {
-        await this.completeReferences(data);
-
-        return this.model.update(data, {...options, where: {...options?.where, ...where}});
+        return this.update(data, {...options, where: {...options?.where, ...where}});
     }
 
     /**
@@ -327,11 +326,6 @@ export class ServiceBase {
      */
     async delete(options) {        
         await this.completeReferences(options.where, true);
-
-        if (this.shareService && this.shareObject) {
-            const id = await this.getIdFor(options.where);
-            await this.shareService.deleteForObjectNameAndId(this.shareObject, id);
-        }
 
         return this.model.destroy(options);
     }

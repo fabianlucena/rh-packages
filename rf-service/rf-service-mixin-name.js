@@ -23,6 +23,6 @@ export const ServiceMixinName = Service => class extends Service {
         if (Array.isArray(name))
             return this.getList({...options, where: {...options?.where, name}});
             
-        return await this.getSingleFor({name}, options);
+        return this.getSingleFor({name}, options);
     }
 };

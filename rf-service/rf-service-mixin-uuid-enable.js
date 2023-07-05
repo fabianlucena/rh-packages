@@ -3,7 +3,7 @@
 export const ServiceMixinUuidEnable = Service => class ServiceUuidEnable extends Service {
     /**
      * Enables a row for a given UUID.
-     * @param {string} uuid - UUID for the row o enable.
+     * @param {string} uuid - UUID for the row to enable.
      * @returns {Promise[integer]} enabled rows count.
      */
     async enableForUuid(uuid) {
@@ -12,7 +12,7 @@ export const ServiceMixinUuidEnable = Service => class ServiceUuidEnable extends
 
     /**
      * Disables a row for a given UUID.
-     * @param {string} uuid - UUID for the row o disable.
+     * @param {string} uuid - UUID for the row to disable.
      * @returns {Promise[integer]} disabled rows count.
      */
     async disableForUuid(uuid) {

@@ -26,3 +26,4 @@ export class ServiceIdUuid extends ServiceMixinIdUuid(ServiceMixinUuid(ServiceMi
 export class ServiceIdUuidEnable extends ServiceMixinUuidEnable(ServiceMixinEnable(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))) {}
 export class ServiceIdUuidNameEnableTranslatable extends ServiceMixinUuidEnable(ServiceMixinEnable(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))) {}
 export class ServiceShared extends ServiceMixinShared(ServiceBase) {}
+export class ServiceSharedEnable extends ServiceMixinEnable(ServiceMixinShared(ServiceBase)) {}

@@ -39,7 +39,7 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
         } catch (error) {
             await transaction?.rollback();
 
-            this.pushError(error);
+            await this.pushError(error);
 
             throw error;
         }
@@ -56,5 +56,21 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
             return;
 
         return this.shareService.create(data, options);
+    }
+
+    /**
+     * Deletes a row for a given criteria.
+     * @param {object} where - Where object with the criteria to delete.
+     * @returns {Promise[integer]} deleted rows count.
+     */
+    async delete(options) {        
+        await this.completeReferences(options.where, true);
+
+        if (this.shareService && this.shareObject) {
+            const id = await this.getIdFor(options.where);
+            await this.shareService.deleteForObjectNameAndId(this.shareObject, id);
+        }
+
+        return Service.delete(options);
     }
 };
