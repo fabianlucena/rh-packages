@@ -1,12 +1,6 @@
 'use strict';
 
 export const ServiceMixinTranslatable = Service => class ServiceTranslatable extends Service {
-    /**
-     * Gets a list of rows.
-     * @param {object} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {Promise[Array[row]]}
-     */
     async getList(options) {
         let result = super.getList(options);
 
@@ -24,5 +18,32 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
             console.warn('Cannot translate because no localization (loc) defined.');
 
         return result;
+    }
+
+    async translateRows(rows, loc) {
+        return Promise.all(rows.map(row => this.translateRow(row, loc)));
+    }
+
+    async translateRow(row, loc) {
+        if (row.toJSON)
+            row = row.toJSON();
+
+        if (row.createdAt)
+            row.createdAt = await loc.strftime('%x %R', row.createdAt);
+
+        if (row.updatedAt)
+            row.updatedAt = await loc.strftime('%x %R', row.updatedAt);
+
+        if (row.isTranslatable) {
+            const translationContext = row.translationContext ?? this.defaultTranslationContext ?? null;
+            if (row.title)
+                row.title = await loc._c(translationContext, row.title);
+
+            if (row.description)
+                row.description = await loc._c(translationContext, row.description);
+        }
+        delete row.isTranslatable;
+
+        return row;
     }
 };

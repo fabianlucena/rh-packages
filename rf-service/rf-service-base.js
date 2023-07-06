@@ -2,6 +2,7 @@
 
 import {NoRowsError, ManyRowsError} from './rf-service-errors.js';
 import {ucfirst, lcfirst} from 'rf-util/rf-util-string.js';
+import {arrangeOptions} from 'sql-util';
 
 export class ServiceBase {
     /**
@@ -37,8 +38,17 @@ export class ServiceBase {
      * If all of above fails the reference ID will be not completed.
      */
     references = {};
+
+    /**
+     * Holds a list of error for this instance.
+     * Wrning, if this is a singleton, this list contains error for all of the threads.
+     */
     lastErrors = [];
 
+    /**
+     * Gets always the same instance of the service.
+     * @returns {Promise[<Child>Service]}
+     */
     static singleton() {
         if (!this.singletonInstance)
             this.singletonInstance = new this();
@@ -46,14 +56,31 @@ export class ServiceBase {
         return this.singletonInstance;
     }
 
+    /**
+     * Gets always the same instance of the service.
+     * @param {*} error - the error to store.
+     * @returns {*}
+     */
     async pushError(error) {
         this.lastErrors.push(error);
+
+        return error;
     }
 
+    /**
+     * Creates a new transaction for use in queries.
+     * @returns {sequelize.Transaction}
+     */
     async createTransaction() {
         return this.sequelize.transaction();
     }
     
+    /**
+     * Completes the references for a data, and, optionally, cleans the value referenced data.
+     * @param {object} data - data object to complete the references.
+     * @param {boolean} clean - if its true cleans the data object of the value referenced data.
+     * @returns {Promise[object]} - the arranged data.
+     */
     async completeReferences(data, clean) {
         for (const name in this.references) {
             let reference = this.references[name];
@@ -74,6 +101,18 @@ export class ServiceBase {
         return data;
     }
 
+    /**
+     * Complete the reference ID for a single entity.
+     * @param {object} data - data object to complete the references.
+     * @param {object} options - confiiguration for the search and complete the entity ID.
+     * @returns {Promise[object]} - the arranged data.
+     * 
+     * This method is used by the @see completeReferences.
+     * For a complete guide refer to @see references documentation.
+     * Beside the references documentation options may contains the clean property. If 
+     * that property is true after create the reference cleans the data object of 
+     * the value referenced data.
+     */
     async completeEntityId(data, options) {
         const name = options.name;
         const Name = options.Name ?? ucfirst(name);
@@ -120,7 +159,7 @@ export class ServiceBase {
             }
         }
 
-        if (options.clean) {
+        if (options.clean && data[idPropertyName]) {
             delete data[uuidPropertyName];
             delete data[Name];
             delete data[name];
@@ -132,6 +171,7 @@ export class ServiceBase {
     /**
      * Creates a new row into DB.
      * @param {object} data - data for the new row.
+     * @param {object} options - options to pass to creator, for use transacion.
      * @returns {Promise[row]}
      */
     async create(data, options) {
@@ -159,17 +199,26 @@ export class ServiceBase {
         }
     }
 
+    /**
+     * Gets the options to use in getList methos.
+     * @param {object} options - options for the getList method.
+     * @returns {Promise[object]}
+     * 
+     * Common properties:
+     * - view: show visible peoperties.
+     */
     async getListOptions(options) {
         if (!options)
             options = {};
+
+        arrangeOptions(options, this.sequelize);
 
         return options;
     }
 
     /**
      * Gets a list of rows.
-     * @param {object} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
+     * @param {object} options - options for the @see sequelize.findAll and @see getListOptions methods.
      * @returns {Promise[Array[row]]}
      */
     async getList(options) {
@@ -182,39 +231,11 @@ export class ServiceBase {
 
     /**
      * Gets a list of rows and the total rows count.
-     * @param {Options} options - options for the @see sequelize.findAndCountAll method.
-     *  - view: show visible peoperties.
+     * @param {Options} options - options for the @see sequelize.findAndCountAll and @see getListOptions methods.
      * @returns {Promise[{Array[row], count}]}
      */
     async getListAndCount(options) {
         return this.getList({...options, withCount: true});
-    }
-
-    async translateRows(rows, loc) {
-        return Promise.all(rows.map(row => this.translateRow(row, loc)));
-    }
-
-    async translateRow(row, loc) {
-        if (row.toJSON)
-            row = row.toJSON();
-
-        if (row.createdAt)
-            row.createdAt = await loc.strftime('%x %R', row.createdAt);
-
-        if (row.updatedAt)
-            row.updatedAt = await loc.strftime('%x %R', row.updatedAt);
-
-        if (row.isTranslatable) {
-            const translationContext = row.translationContext ?? this.defaultTranslationContext ?? null;
-            if (row.title)
-                row.title = await loc._c(translationContext, row.title);
-
-            if (row.description)
-                row.description = await loc._c(translationContext, row.description);
-        }
-        delete row.isTranslatable;
-
-        return row;
     }
 
     /**
@@ -256,8 +277,8 @@ export class ServiceBase {
 
     /**
      * Gets a row for a given criteria.
-     * @param {object} where - criteria to get the row list.
-     * @param {object} options - Options for the @ref getList function.
+     * @param {object} where - criteria to get the row list (where object).
+     * @param {object} options - Options for the @ref getList method.
      * @returns {Promise[Array[row]]}
      */
     async getFor(where, options) {
@@ -267,7 +288,7 @@ export class ServiceBase {
     /**
      * Gets a single row for a given criteria in options.
      * @param {object} options - Options for the @ref getList function.
-     * @returns {Promise[Array[row]]}
+     * @returns {Promise[row]}
      */
     async getSingle(options) {
         const rows = await this.getList({limit: 2, ...options});
@@ -276,31 +297,18 @@ export class ServiceBase {
 
     /**
      * Gets a single row for a given criteria.
-     * @param {object} where - criteria to get the row list.
+     * @param {object} where - criteria to get the row list (where object).
      * @param {object} options - Options for the @ref getList function.
-     * @returns {Promise[Array[row]]}
+     * @returns {Promise[row]}
      */
     async getSingleFor(where, options) {
         return this.getSingle({...options, where: {...options?.where, ...where}});
     }
 
     /**
-     * Creates a new row into DB if not exists.
-     * @param {data} data - data for the row @see create.
-     * @returns {Promise[row]}
-     */
-    async createIfNotExists(data, options) {
-        const row = await this.getForName(data.name, {skipNoRowsError: true, ...options});
-        if (row)
-            return row;
-
-        return this.create(data);
-    }
-
-    /**
-     * Updates a row for a given criteria.
+     * Updates rows for options.
      * @param {object} data - Data to update.
-     * @param {object} where - Where object with the criteria to update.
+     * @param {object} options - object with the where property for criteria to update and the transaction object.
      * @returns {Promise[integer]} updated rows count.
      */
     async update(data, options) {
@@ -310,9 +318,10 @@ export class ServiceBase {
     }
 
     /**
-     * Updates a row for a given criteria.
+     * Updates row for a criteria.
      * @param {object} data - Data to update.
-     * @param {object} where - Where object with the criteria to update.
+     * @param {object} where - where object with the criteria to update.
+     * @param {object} options - object for transaction.
      * @returns {Promise[integer]} updated rows count.
      */
     async updateFor(data, where, options) {
@@ -320,8 +329,8 @@ export class ServiceBase {
     }
 
     /**
-     * Deletes a row for a given criteria.
-     * @param {object} where - Where object with the criteria to delete.
+     * Deletes rows for options.
+     * @param {object} options - object with the where property for criteria to delete and the transaction object.
      * @returns {Promise[integer]} deleted rows count.
      */
     async delete(options) {        
@@ -331,8 +340,9 @@ export class ServiceBase {
     }
 
     /**
-     * Deletes a row for a given criteria.
-     * @param {object} where - Where object with the criteria to delete.
+     * Deletes rows for a criteria.
+     * @param {object} where - where object with the criteria to delete.
+     * @param {object} options - object for transaction.
      * @returns {Promise[integer]} deleted rows count.
      */
     async deleteFor(where, options) {        

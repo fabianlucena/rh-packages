@@ -25,4 +25,18 @@ export const ServiceMixinName = Service => class extends Service {
             
         return this.getSingleFor({name}, options);
     }
+
+    /**
+     * Creates a new row into DB if not exists.
+     * @param {object} data - data for the row @see create.
+     * @param {object} options - options for getForName method and for transaction in creation phase.
+     * @returns {Promise[row]}
+     */
+    async createIfNotExists(data, options) {
+        const row = await this.getForName(data.name, {skipNoRowsError: true, ...options});
+        if (row)
+            return row;
+
+        return this.create(data, {transacion: options.transacion});
+    }
 };
