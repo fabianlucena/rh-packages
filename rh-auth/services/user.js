@@ -23,7 +23,10 @@ export class UserService extends ServiceIdUuidEnable {
 
         checkParameter(data, {username: loc._cf('member', 'Username'), displayName: loc._cf('member', 'Display name')});
         if (await this.getForUsername(data.username, {check: false, skipNoRowsError: true}))
-            throw new ConflictError('Another user with the same name already exists.');
+            throw new ConflictError('Another user with the same username already exists.');
+
+        if (await this.getForDisplayName(data.displayName, {check: false, skipNoRowsError: true}))
+            throw new ConflictError('Another user with the same display name already exists.');
 
         return true;
     }
@@ -37,10 +40,13 @@ export class UserService extends ServiceIdUuidEnable {
     async create(data, options) {
         const user = await super.create(data, options);
         if (data.password) {
-            await IdentityService.singleton().createLocal({
-                password: data.password,
-                userId: user.id,
-            });
+            await IdentityService.singleton().createLocal(
+                {
+                    password: data.password,
+                    userId: user.id,
+                },
+                options
+            );
         }
 
         return user;
@@ -108,6 +114,24 @@ export class UserService extends ServiceIdUuidEnable {
         const rows = await this.getList(options);
 
         return getSingle(rows, {params: ['user', ['username = %s', username], 'User'], ...options});
+    }
+
+    /**
+     * Gets an user for its display name. For many coincidences and for no rows this method fails.
+     * @param {string} username - username for the user to get.
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {Promise{User}}
+     */
+    async getForDisplayName(displayName, options) {
+        options = {...options, where: {...options?.where, displayName}};
+
+        if (Array.isArray(displayName))
+            return this.getList(options);
+
+        options.limit ??= 2;
+        const rows = await this.getList(options);
+
+        return getSingle(rows, {params: ['user', ['displayName = %s', displayName], 'User'], ...options});
     }
 
     /**

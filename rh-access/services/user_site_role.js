@@ -2,7 +2,7 @@
 
 import {conf} from '../conf.js';
 import {ServiceSharedEnable} from 'rf-service';
-import {addEnabledOnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes, completeIncludeOptions, arrangeOptions, getIncludedModelOptions} from 'sql-util';
+import {addEnabledOnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes, completeIncludeOptions, getIncludedModelOptions} from 'sql-util';
 import {complete} from 'rf-util';
 
 export class UserSiteRoleService extends ServiceSharedEnable {
@@ -134,9 +134,7 @@ export class UserSiteRoleService extends ServiceSharedEnable {
             options.order.push(['User.username', 'ASC']);
         }
 
-        arrangeOptions(options, conf.global.sequelize);
-
-        return options;
+        return super.getListOptions(options);
     }
 
     async getUserIdForUserUuid(uuid, options) {

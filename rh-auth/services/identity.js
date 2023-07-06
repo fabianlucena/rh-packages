@@ -74,12 +74,13 @@ export class IdentityService extends ServiceIdUuidEnable {
     /**
      * Creates a local identity, this method set the type property of data to 'local' and then calls create method.
      * @param {{isEnabled: boolean, data: JSON, userId: integer}} data - data to pass to create method.
+     * @param {object} options - options to pass to creator, for use transacion.
      * @returns {Promise[data]}
      */
-    async createLocal(data) {
+    async createLocal(data, options) {
         delete data.typeId;
         data.type = 'local';
-        return this.create(data);
+        return this.create(data, options);
     }
 
     /**
