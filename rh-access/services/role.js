@@ -87,7 +87,9 @@ export class RoleService extends ServiceIdUuidNameEnableTranslatable {
         if (!site || (Array.isArray(site) && !site.length))
             return;
 
-        const siteId = site.map(site => site.id);
+        const siteId = Array.isArray(site)?
+            site.map(site => site.id):
+            site.id;
 
         const isEnabled = options?.isEnabled ?? true;
         const Op = conf.global.Sequelize.Op;

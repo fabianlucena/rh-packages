@@ -97,6 +97,21 @@ export class IdentityService extends ServiceIdUuidEnable {
     }
 
     /**
+     * Get the identity for a given user ID and type name. If not exists or exist many cohincidences the method fails. If the isEnabled value is not defined this value is setted to true.
+     * @param {string} userId - the user ID to search.
+     * @param {string} typeName - the typename to search.
+     * @param {OptionsObject} options - For valid options see: sqlUtil.completeAssociationOptions method, and sqlUtil.getSingle.
+     * @returns {Promise[Identity]}
+     */
+    async getForUserIdTypeName(userId, typeName, options) {
+        options = {include: [], limit: 2, ...options, where: {...options?.where, userId}};
+        options.include.push(completeAssociationOptions({model: conf.global.models.IdentityType, where: {name: typeName}, required: true}, options));
+
+        const rowList = await this.getList(options);
+        return getSingle(rowList, options);
+    }
+
+    /**
      * Get the identity for a given username and type name. If not exists or exist many cohincidences the method fails. If the isEnabled value is not defined this value is setted to true.
      * @param {string} username - the username to search.
      * @param {string} typeName - the typename to search.
@@ -110,6 +125,16 @@ export class IdentityService extends ServiceIdUuidEnable {
 
         const rowList = await this.getList(options);
         return getSingle(rowList, options);
+    }
+
+    /**
+     * Get the 'local' type identity for a given user ID. See getForUserIdTypeName for more details.
+     * @param {string} userId - the user ID to search. 
+     * @param {object} options - For valid options see: sqlUtil.getForUserIdTypeName method.
+     * @returns {Promise[Identity]}
+     */
+    async getLocalForUserId(userId, options) {
+        return this.getForUserIdTypeName(userId, 'local', options);
     }
 
     /**
@@ -184,16 +209,16 @@ export class IdentityService extends ServiceIdUuidEnable {
      * @param {object} where - Where object with the criteria to update.
      * @returns {Promise[integer]} updated rows count.
      */
-    async update(data, where) {
+    async update(data, options) {
         if (data.password) {
             if (!data.data) {
-                const identity = await this.getFor(where);
+                const identity = await this.getFor(options.where);
                 data.data = identity.data;
             }
 
             await this.completeDataFromPassword(data);
         }
 
-        return super.update(data, where);
+        return super.update(data, options);
     }
 }

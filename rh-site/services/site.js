@@ -85,13 +85,29 @@ export class SiteService extends ServiceIdUuidNameEnableTranslatable {
         const rowList = await this.getList(options);
         return getSingle(rowList, {params: ['site', ['session id = %s', sessionId], 'Site'], ...options});
     }
+
+    /**
+     * Gets a site list for an user ID.
+     * @param {string} userId - 
+     * @param {Options} options - Options for the @ref getList method.
+     * @returns {Promise{[]Site]}}
+     */
+    async getForUserId(userId, options) {
+        options ??= {};
+        options.include ??= [];       
+        options.include.push(completeAssociationOptions({model: conf.global.models.User, where: {id: userId}}, options));
+
+        return this.getList(options);
+    }
+
     /**
      * Gets a site list for an user with the username.
      * @param {string} username - 
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{[]Site]}}
      */
-    getForUsername(username, options) {
+    async getForUsername(username, options) {
+        options ??= {};
         options.include ??= [];       
         options.include.push(completeAssociationOptions({model: conf.global.models.User, where: {username}}, options));
 
@@ -104,7 +120,7 @@ export class SiteService extends ServiceIdUuidNameEnableTranslatable {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{[]Site]}}
      */
-    getNameForUsername(username, options) {
+    async getNameForUsername(username, options) {
         if (!username)
             return [];
 

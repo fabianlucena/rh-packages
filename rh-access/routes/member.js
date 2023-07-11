@@ -11,6 +11,8 @@ export default (app, checkPermission) => {
     app.options('/member/disable', corsSimplePreflight('POST'));
     app.options('/member/disable/:uuid', corsSimplePreflight('POST'));
     app.options('/member-role', corsSimplePreflight('GET'));
+    app.options('/member-set-password', corsSimplePreflight('GET'));
+    app.options('/member-set-password/:uuid', corsSimplePreflight('GET'));
     
     app.post('/member', checkPermission('member.create'), asyncHandler(MemberController, 'post'));
     app.get('/member', checkPermission('member.get'), asyncHandler(MemberController, 'get'));
@@ -31,8 +33,13 @@ export default (app, checkPermission) => {
 
     app.get('/member-role', checkPermission('member.edit'), asyncHandler(MemberController, 'getRoles'));
 
+    app.get('/member-set-password', checkPermission('member.edit'), asyncHandler(MemberController, 'getSetPassword'));
+    app.get('/member-set-password/:uuid', checkPermission('member.edit'), asyncHandler(MemberController, 'getSetPassword'));
+    app.post('/member-set-password', checkPermission('member.edit'), asyncHandler(MemberController, 'postSetPassword'));
+
     app.all('/member', methodNotAllowed);
     app.all('/member-role', methodNotAllowed);
+    app.all('/member-set-password', methodNotAllowed);
 };
 
 
