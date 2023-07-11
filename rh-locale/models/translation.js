@@ -40,7 +40,7 @@ export default (sequelize, DataTypes) => {
             defaultValue: false
         },
         text: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             allowNull: true
         },
     }, {

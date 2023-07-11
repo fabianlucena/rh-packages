@@ -182,10 +182,10 @@ export class CompanyController {
 
         result.rows = result.rows.map(row => {
             row = row.toJSON();
-            return {
-                ...row,
-                ownerDisplayName: row.Collaborators[0].User?.displayName ?? null
-            };
+            if (row.Collaborators)
+                row.ownerDisplayName = row.Collaborators[0]?.User?.displayName;
+                
+            return row;
         });
 
         res.status(200).send(result);

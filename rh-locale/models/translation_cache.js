@@ -19,7 +19,7 @@ export default (sequelize, DataTypes) => {
             allowNull: true
         },
         source: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             allowNull: false
         },
         isJson: {
@@ -28,11 +28,11 @@ export default (sequelize, DataTypes) => {
             defaultValue: false
         },
         translation: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             allowNull: false
         },
         ref: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             allowNull: true
         },
         isTranslated: {

@@ -295,7 +295,7 @@ export class MemberController {
         const userUuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, loc._cf('member', 'UUID'));
         const userId = await this.getUserIdFromUuid(req, userUuid);
         
-        if (userId == req.userId)
+        if (userId == req.user.id)
             throw new _HttpError(loc._cf('member', 'Error you cannot set your own password. Please use change password option instead.'), 403);
 
         let sites = await siteService.getForUserId(userId);

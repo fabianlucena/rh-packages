@@ -29,12 +29,12 @@ export default (sequelize, DataTypes) => {
             defaultValue: false
         },
         text: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             allowNull: false,
-            unique: true
+            //unique: true
         },
         ref: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             allowNull: true
         },
     }, {

@@ -70,6 +70,6 @@ export class ModuleService {
      * @returns {Promise{Permission}}
      */
     static async getIdForName(name, options) {
-        return (await ModuleService.getForName(name, {...options, attributes: ['id']})).id;
+        return (await ModuleService.getForName(name, {...options, attributes: ['id']}))?.id;
     }
 }

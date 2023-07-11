@@ -323,12 +323,14 @@ export function includeCollaborators(options, object, models, collaboratorOption
 
     const objectName = {
         model: models.ObjectName,
+        required: false,
         attributes: [],
         where: {name: object},
     };
     
     const shareType = {
         model: models.ShareType,
+        required: false,
         attributes: ['name', 'title'],
     };
 
@@ -337,6 +339,7 @@ export function includeCollaborators(options, object, models, collaboratorOption
 
     const user = {
         model: models.User,
+        required: false,
         attributes: ['uuid', 'userName', 'displayName'],
     };
 
@@ -349,6 +352,7 @@ export function includeCollaborators(options, object, models, collaboratorOption
         {
             model: models.Share,
             as: 'Collaborators',
+            required: false,
             attributes: ['isEnabled'], // A column is needed because a Sequelize bug
             // where, // Cannot use this where because a Sequelize bug
             include: [objectName, shareType, user],
