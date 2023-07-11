@@ -79,9 +79,17 @@
     {
         "source": "Display name",
         "language": "es",
+        "context": "member",
+        "isDraft": true,
+        "translation": "Nombre mostrado",
+        "ref": "..\\rh-auth\\services\\user.js [24,118]"
+    },
+    {
+        "source": "Display name",
+        "language": "es",
         "context": "user",
         "translation": "Nombre mostrado",
-        "ref": "..\\rh-auth\\controllers\\user.js [161,64]\n..\\rh-auth\\controllers\\user.js [183,64]"
+        "ref": "..\\rh-auth\\controllers\\user.js [157,64]\n..\\rh-auth\\controllers\\user.js [179,64]"
     },
     {
         "source": "Edit user",
@@ -95,7 +103,7 @@
         "language": "es",
         "context": "user",
         "translation": "Habilitado",
-        "ref": "..\\rh-auth\\controllers\\user.js [201,59]\n..\\rh-auth\\controllers\\user.js [202,65]"
+        "ref": "..\\rh-auth\\controllers\\user.js [197,59]\n..\\rh-auth\\controllers\\user.js [198,65]"
     },
     {
         "source": "Error to change the password",
@@ -199,7 +207,6 @@
         "source": "HTTP error 403 forbidden, authorization token error.",
         "language": "es",
         "context": "session",
-        "isDraft": false,
         "translation": "Error HTTP 403 prohibido, error en el identificador de autorización.\n\n",
         "ref": "..\\rh-auth\\controllers\\session.js [32,137]"
     },
@@ -207,7 +214,6 @@
         "source": "HTTP error 403 forbidden, session is closed.",
         "language": "es",
         "context": "session",
-        "isDraft": false,
         "translation": "Error HTTP 403 prohibido, la sesión está cerrada.",
         "ref": "..\\rh-auth\\controllers\\session.js [30,129]"
     },
@@ -293,7 +299,7 @@
         "language": "es",
         "context": "user",
         "translation": "Contraseña",
-        "ref": "..\\rh-auth\\controllers\\user.js [208,60]"
+        "ref": "..\\rh-auth\\controllers\\user.js [204,60]"
     },
     {
         "source": "Row for UUID %s does not exist",
@@ -389,7 +395,7 @@
         "language": "es",
         "context": "user",
         "translation": "Escriba aquí la nueva contraseña para el usuario",
-        "ref": "..\\rh-auth\\controllers\\user.js [209,93]"
+        "ref": "..\\rh-auth\\controllers\\user.js [205,93]"
     },
     {
         "source": "Type here your current password",
@@ -417,7 +423,7 @@
         "language": "es",
         "context": "user",
         "translation": "Escriba aquí el nombre mostrado",
-        "ref": "..\\rh-auth\\controllers\\user.js [184,84]"
+        "ref": "..\\rh-auth\\controllers\\user.js [180,84]"
     },
     {
         "source": "Type the password here",
@@ -445,7 +451,7 @@
         "language": "es",
         "context": "user",
         "translation": "UUID ",
-        "ref": "..\\rh-auth\\controllers\\user.js [256,129]\n..\\rh-auth\\controllers\\user.js [304,129]\n..\\rh-auth\\controllers\\user.js [352,129]\n..\\rh-auth\\controllers\\user.js [398,129]"
+        "ref": "..\\rh-auth\\controllers\\user.js [252,129]\n..\\rh-auth\\controllers\\user.js [300,129]\n..\\rh-auth\\controllers\\user.js [348,129]\n..\\rh-auth\\controllers\\user.js [394,129]"
     },
     {
         "source": "User",
@@ -459,7 +465,7 @@
         "language": "es",
         "context": "user",
         "translation": "Usuario",
-        "ref": "..\\rh-auth\\controllers\\user.js [151,48]"
+        "ref": "..\\rh-auth\\controllers\\user.js [147,48]"
     },
     {
         "source": "User",
@@ -473,42 +479,42 @@
         "language": "es",
         "context": "user",
         "translation": "El usuario \"%s\" no existe ",
-        "ref": "..\\rh-auth\\services\\user.js [129,73]"
+        "ref": "..\\rh-auth\\services\\user.js [159,73]"
     },
     {
         "source": "User \"%s\" does not have local identity",
         "language": "es",
         "context": "identity",
         "translation": "El usuario \"%s\" no tiene identidad local",
-        "ref": "..\\rh-auth\\services\\identity.js [133,90]"
+        "ref": "..\\rh-auth\\services\\identity.js [160,90]"
     },
     {
         "source": "User \"%s\" does not have local identity data",
         "language": "es",
         "context": "identity",
         "translation": "El usuario \"%s\" no tiene datos de identidad local ",
-        "ref": "..\\rh-auth\\services\\identity.js [139,95]"
+        "ref": "..\\rh-auth\\services\\identity.js [166,95]"
     },
     {
         "source": "User \"%s\" does not have local password",
         "language": "es",
         "context": "identity",
         "translation": "El usuario \"%s\" no tiene contraseña local",
-        "ref": "..\\rh-auth\\services\\identity.js [143,90]"
+        "ref": "..\\rh-auth\\services\\identity.js [170,90]"
     },
     {
         "source": "User \"%s\" is not enabled",
         "language": "es",
         "context": "user",
         "translation": "El usuario \"%s no está habilitado ",
-        "ref": "..\\rh-auth\\services\\user.js [132,73]"
+        "ref": "..\\rh-auth\\services\\user.js [162,73]"
     },
     {
         "source": "User \"%s\" local identity is not enabled",
         "language": "es",
         "context": "identity",
         "translation": "La identidad local del usuario \"%s\" no está habilitada",
-        "ref": "..\\rh-auth\\services\\identity.js [136,91]"
+        "ref": "..\\rh-auth\\services\\identity.js [163,91]"
     },
     {
         "source": "User manager",
@@ -522,7 +528,7 @@
         "language": "es",
         "context": "user",
         "translation": "No existe el usuario con el UUID %s. ",
-        "ref": "..\\rh-auth\\controllers\\user.js [259,91]\n..\\rh-auth\\controllers\\user.js [307,91]\n..\\rh-auth\\controllers\\user.js [355,91]\n..\\rh-auth\\controllers\\user.js [401,91]"
+        "ref": "..\\rh-auth\\controllers\\user.js [255,91]\n..\\rh-auth\\controllers\\user.js [303,91]\n..\\rh-auth\\controllers\\user.js [351,91]\n..\\rh-auth\\controllers\\user.js [397,91]"
     },
     {
         "source": "Username",
@@ -534,9 +540,17 @@
     {
         "source": "Username",
         "language": "es",
+        "context": "member",
+        "isDraft": true,
+        "translation": "Nombre de usuario ",
+        "ref": "..\\rh-auth\\services\\user.js [24,70]"
+    },
+    {
+        "source": "Username",
+        "language": "es",
         "context": "user",
         "translation": "Nombre de usuario",
-        "ref": "..\\rh-auth\\controllers\\user.js [166,60]\n..\\rh-auth\\controllers\\user.js [190,60]\n..\\rh-auth\\controllers\\user.js [191,66]"
+        "ref": "..\\rh-auth\\controllers\\user.js [162,60]\n..\\rh-auth\\controllers\\user.js [186,60]\n..\\rh-auth\\controllers\\user.js [187,66]"
     },
     {
         "source": "Users",
@@ -550,7 +564,7 @@
         "language": "es",
         "context": "user",
         "translation": "Usuarios",
-        "ref": "..\\rh-auth\\controllers\\user.js [177,49]"
+        "ref": "..\\rh-auth\\controllers\\user.js [173,49]"
     },
     {
         "source": "current password",
