@@ -85,7 +85,6 @@
         "source": "The main company data does not have a owner.",
         "language": "es",
         "context": "mainCompany",
-        "isDraft": false,
         "translation": "Los datos para la empresa titular no tienen propietario. ",
         "ref": "..\\rh-main-company\\controllers\\main-company.js [135,112]"
     },

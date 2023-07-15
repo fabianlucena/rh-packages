@@ -28,7 +28,7 @@ export const conf = {
         ],
 
         permissions: [
-            {name: 'site.get',            title: loc._cf('permission', 'Get sites'),        isTranslatable: true, roles: 'sitesManager', ownerModule: name, menuItem: {action: 'grid', service: 'site'}},
+            {name: 'site.get', title: loc._cf('permission', 'Get sites'), isTranslatable: true, roles: 'sitesManager', ownerModule: name, menuItem: {label: loc._cf('menu', 'Sites'), action: 'grid', service: 'site', toolbarIcon: 'site'}},
         ],
     },
 };

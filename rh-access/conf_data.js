@@ -24,15 +24,19 @@ export const data = {
         {username: 'admin', role: 'admin', site: 'system'},
     ],
 
+    menuItems: [
+        {name: 'administration',      isTranslatable: true, roles: 'user',        ownerModule: name, data: {alias: 'administration', label: loc._cf('premission', 'Administration'), icon: 'administration'}},
+    ],
+
     permissions: [
         {name: 'user-access.create', title: loc._cf('permission', 'Add users accesses'),    isTranslatable: true, roles: 'userAccessManager', ownerModule: name},
-        {name: 'user-access.get',    title: loc._cf('permission', 'Get users accesses'),    isTranslatable: true, roles: 'userAccessManager', ownerModule: name, menuItem: {label: loc._cf('menu', 'Users accesses'), isTranslatable: true, action: 'grid',   service: 'user-access'}},
+        {name: 'user-access.get',    title: loc._cf('permission', 'Get users accesses'),    isTranslatable: true, roles: 'userAccessManager', ownerModule: name, menuItem: {label: loc._cf('menu', 'Users accesses'), isTranslatable: true, parent: 'administration', action: 'grid',   service: 'user-access'}},
         {name: 'user-access.edit',   title: loc._cf('permission', 'Edit users accesses'),   isTranslatable: true, roles: 'userAccessManager', ownerModule: name},
         {name: 'user-access.delete', title: loc._cf('permission', 'Delete users accesses'), isTranslatable: true, roles: 'userAccessManager', ownerModule: name},
 
-        {name: 'privileges',         title: loc._cf('permission', 'Privileges'),            isTranslatable: true, roles: 'user',              ownerModule: name, menuItem: {label: loc._cf('menu', 'Privileges'),     isTranslatable: true, action: 'object', service: 'privileges', parent: 'session-menu'}},
+        {name: 'privileges',         title: loc._cf('permission', 'Privileges'),            isTranslatable: true, roles: 'user',              ownerModule: name, menuItem: {label: loc._cf('menu', 'Privileges'),     isTranslatable: true, parent: 'session-menu',   action: 'object', service: 'privileges'}},
 
-        {name: 'member.get',         title: loc._cf('permission', 'Get members'),           isTranslatable: true, roles: 'membersManager',    ownerModule: name, menuItem: {label: loc._cf('menu', 'Members'),        isTranslatable: true, action: 'grid',   service: 'member'}},
+        {name: 'member.get',         title: loc._cf('permission', 'Get members'),           isTranslatable: true, roles: 'membersManager',    ownerModule: name, menuItem: {label: loc._cf('menu', 'Members'),        isTranslatable: true, action: 'grid',                             service: 'member'}},
         {name: 'member.create',      title: loc._cf('permission', 'Create members'),        isTranslatable: true, roles: 'membersManager',    ownerModule: name},
         {name: 'member.edit',        title: loc._cf('permission', 'Edit members'),          isTranslatable: true, roles: 'membersManager',    ownerModule: name},
         {name: 'member.delete',      title: loc._cf('permission', 'Delete members'),        isTranslatable: true, roles: 'membersManager',    ownerModule: name},    

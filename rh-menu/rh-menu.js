@@ -5,6 +5,8 @@ import {runSequentially} from 'rf-util';
 export const conf = localConf;
 
 conf.updateData = async function(global) {
+    await runSequentially(global?.data?.menuItems, async menuItem => await MenuItemService.singleton().createIfNotExists(menuItem));
+
     await runSequentially(global?.data?.permissions, async permissionData => {
         let menuItemData = permissionData.menuItem;
         if (!menuItemData)
@@ -13,13 +15,10 @@ conf.updateData = async function(global) {
         if (menuItemData === true)
             menuItemData = {};
 
-        if (!menuItemData.data)
-            menuItemData.data = {};
-
+        menuItemData.data ??= {};
         menuItemData.name ??= menuItemData.data.name ?? permissionData.name;
         menuItemData.uuid ??= menuItemData.data.uuid;
         menuItemData.isEnabled ??= menuItemData.data.isEnabled;
-        menuItemData.name ??= menuItemData.data.name;
         menuItemData.parent ??= menuItemData.data.parent;
         menuItemData.permission ??= permissionData.name;
         menuItemData.isTranslatable ??= permissionData.isTranslatable;

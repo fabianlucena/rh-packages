@@ -3,7 +3,6 @@
         "source": "Exists another test site with that name.",
         "language": "es",
         "context": "site",
-        "isDraft": false,
         "translation": "Existe otro sitio con ese nombre.",
         "ref": "..\\rh-site\\services\\site.js [38,96]"
     },
@@ -27,13 +26,6 @@
         "context": "site",
         "translation": "Nombre",
         "ref": "..\\rh-site\\services\\site.js [32,78]"
-    },
-    {
-        "source": "No owner specified.",
-        "language": "es",
-        "context": "site",
-        "translation": "Se hay propietario especificado.",
-        "ref": "..\\rh-site\\services\\site.js [41,72]"
     },
     {
         "source": "Sites manager",

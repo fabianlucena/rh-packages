@@ -48,13 +48,16 @@ export class MenuController {
                     model: conf.global.models.Permission,
                     where: {name: permissions},
                 }
-            ]
+            ],
+            includeParentAsMenuItem: true,
         };
 
         const rows = await MenuItemService.singleton().getList(options);
         const loc = req.loc;
-        let menu = await runSequentially(rows, async mir => {
-            let mi = mir.toJSON();
+        let menu = await runSequentially(rows, async mi => {
+            if (mi.toJSON)
+                mi = mi.toJSON();
+
             if (mi.Parent) {
                 mi.parent = mi.Parent?.name;
                 delete mi.Parent;

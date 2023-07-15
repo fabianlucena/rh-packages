@@ -270,7 +270,7 @@
         "source": "New password",
         "language": "es",
         "context": "changeMyPassword",
-        "translation": " Nueva contraseña",
+        "translation": "Nueva contraseña",
         "ref": "..\\rh-auth\\controllers\\change-my-password.js [27,76]"
     },
     {
