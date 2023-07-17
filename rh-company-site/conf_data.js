@@ -6,6 +6,6 @@ const name = 'qaait';
 
 export const data = {
     permissions: [        
-        {name: 'company-site.switch', title: loc._cf('permission', 'Select company'), isTranslatable: true, ownerModule: name, menuItem: {label: loc._cf('menu', 'Select company'), isTranslatable: true, action: 'object', service: 'company-site'}},
+        {name: 'company-site.switch', title: loc._cf('permission', 'Select company'), isTranslatable: true, ownerModule: name, menuItem: {label: loc._cf('menu', 'Select company'), isTranslatable: true, action: 'object', service: 'company-site', toolbarIcon: 'company-site-switch'}},
     ],
 };

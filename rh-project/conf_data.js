@@ -14,7 +14,7 @@ export const data = {
     ],
 
     permissions: [
-        {name: 'project.get',    title: loc._cf('permission', 'Get projects'),    isTranslatable: true, roles: 'projectManager', ownerModule: name, menuItem: {label: loc._cf('menu', 'Projects'), isTranslatable: true, action: 'grid', service: 'project'}},
+        {name: 'project.get',    title: loc._cf('permission', 'Get projects'),    isTranslatable: true, roles: 'projectManager', ownerModule: name, menuItem: {label: loc._cf('menu', 'Projects'), isTranslatable: true, parent: 'administration', action: 'grid', service: 'project'}},
         {name: 'project.create', title: loc._cf('permission', 'Create projects'), isTranslatable: true, roles: 'projectManager', ownerModule: name,},
         {name: 'project.edit',   title: loc._cf('permission', 'Edit projects'),   isTranslatable: true, roles: 'projectManager', ownerModule: name,},
         {name: 'project.delete', title: loc._cf('permission', 'Delete projects'), isTranslatable: true, roles: 'projectManager', ownerModule: name,},

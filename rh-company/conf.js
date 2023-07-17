@@ -26,7 +26,7 @@ export const conf = {
         ],
 
         permissions: [
-            {name: 'company.get',    title: loc._cf('permission', 'Get companies'),    isTranslatable: true, roles: 'companyManager', ownerModule: name, menuItem: {label: loc._cf('menu', 'Companies'), isTranslatable: true, action: 'grid', service: 'company'}},
+            {name: 'company.get',    title: loc._cf('permission', 'Get companies'),    isTranslatable: true, roles: 'companyManager', ownerModule: name, menuItem: {label: loc._cf('menu', 'Companies'), isTranslatable: true, parent: 'administration', action: 'grid', service: 'company'}},
             {name: 'company.create', title: loc._cf('permission', 'Create companies'), isTranslatable: true, roles: 'companyManager', ownerModule: name,},
             {name: 'company.edit',   title: loc._cf('permission', 'Edit companies'),   isTranslatable: true, roles: 'companyManager', ownerModule: name,},
             {name: 'company.delete', title: loc._cf('permission', 'Delete companies'), isTranslatable: true, roles: 'companyManager', ownerModule: name,},
