@@ -22,12 +22,16 @@ export class EventBus {
         }
     }
 
-    $emit(event, ...params) {
+    async $emit(event, ...params) {
         const handlers = this.handlers[event];
         if (!handlers)
             return;
 
-        return handlers.map(handler => handler(...params));
+        const result = [];
+        for (const handler of handlers)
+            result.push(await handler(...params));
+
+        return result;
     }
 }
 
