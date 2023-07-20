@@ -225,18 +225,22 @@ export class ProjectController {
                 name: 'Collaborators[0].User.displayName',
                 type: 'text',
                 label: await loc._cf('project', 'Owner'),
-            }
+            },
         ];
 
-        res.status(200).send({
+        const grid = {
             title: await loc._('Projects'),
             load: {
                 service: 'project',
                 method: 'get',
             },
             actions,
-            columns: await filterVisualItemsByAliasName(columns, conf?.project, {loc, entity: 'Project', interface: 'grid'}),
-        });
+            columns: await filterVisualItemsByAliasName(columns, conf?.project, {loc, entity: 'Project', translationContext: 'project', interface: 'grid'}),
+        };
+
+        await conf.global.eventBus?.$emit('project.interface.grid.get', grid, {loc});
+
+        res.status(200).send(grid);
     }
 
     static async getForm(req, res) {
@@ -290,12 +294,16 @@ export class ProjectController {
                 placeholder: await loc._cf('project', 'Description'),
             },
         ];
-        
-        res.status(200).send({
+
+        const form = {
             title: await loc._('Projects'),
             action: 'project',
             fields: await filterVisualItemsByAliasName(fields, conf?.project, {loc, entity: 'Project', interface: 'form'}),
-        });
+        };
+
+        await conf.global.eventBus?.$emit('project.interface.form.get', form, {loc});
+        
+        res.status(200).send(form);
     }
 
     /**

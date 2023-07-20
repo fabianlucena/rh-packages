@@ -1,0 +1,126 @@
+[
+    {
+        "source": "Create tags",
+        "language": "es",
+        "context": "permission",
+        "translation": "Crear etiquetas",
+        "ref": "..\\rh-tag\\conf_data.js [18,73]"
+    },
+    {
+        "source": "Delete tags",
+        "language": "es",
+        "context": "permission",
+        "translation": "Eliminar etiquetas",
+        "ref": "..\\rh-tag\\conf_data.js [20,73]"
+    },
+    {
+        "source": "Description",
+        "language": "es",
+        "context": "tag",
+        "translation": "Descripción",
+        "ref": "..\\rh-tag\\controllers\\tag.js [130,62]\n..\\rh-tag\\controllers\\tag.js [131,68]"
+    },
+    {
+        "source": "Edit tags",
+        "language": "es",
+        "context": "permission",
+        "translation": "Modificar etiquetas",
+        "ref": "..\\rh-tag\\conf_data.js [19,71]"
+    },
+    {
+        "source": "Enabled",
+        "language": "es",
+        "context": "tag",
+        "translation": "Habilitado",
+        "ref": "..\\rh-tag\\controllers\\tag.js [123,58]\n..\\rh-tag\\controllers\\tag.js [124,64]"
+    },
+    {
+        "source": "Exists another tag category with that name.",
+        "language": "es",
+        "context": "tag",
+        "translation": "Existe otra etiqueta con ese nombre.",
+        "ref": "..\\rh-tag\\services\\tag_category.js [30,98]"
+    },
+    {
+        "source": "Exists another tag with that name.",
+        "language": "es",
+        "context": "tag",
+        "translation": "Ya existe otra etiqueta con ese nombre.",
+        "ref": "..\\rh-tag\\services\\tag.js [32,89]"
+    },
+    {
+        "source": "Get tags",
+        "language": "es",
+        "context": "permission",
+        "translation": "Obtener etiquetas",
+        "ref": "..\\rh-tag\\conf_data.js [17,70]"
+    },
+    {
+        "source": "ID parameter is forbidden for creation.",
+        "language": "es",
+        "context": "tag",
+        "translation": "El parámetro ID está prohibido durante la creación.",
+        "ref": "..\\rh-tag\\services\\tag_category.js [22,91]\n..\\rh-tag\\services\\tag.js [21,91]"
+    },
+    {
+        "source": "Name",
+        "language": "es",
+        "context": "tag",
+        "translation": "Nombre",
+        "ref": "..\\rh-tag\\services\\tag_category.js [24,78]\n..\\rh-tag\\services\\tag.js [26,86]\n..\\rh-tag\\controllers\\tag.js [85,55]\n..\\rh-tag\\controllers\\tag.js [113,55]\n..\\rh-tag\\controllers\\tag.js [114,61]"
+    },
+    {
+        "source": "Owner",
+        "language": "es",
+        "context": "tag",
+        "translation": "Propietario",
+        "ref": "..\\rh-tag\\controllers\\tag.js [90,56]"
+    },
+    {
+        "source": "Spanish",
+        "language": "es",
+        "translation": "Español",
+        "ref": "rh-tag-es.js [20,41]"
+    },
+    {
+        "source": "Spanish language.",
+        "language": "es",
+        "translation": "Idioma español.",
+        "ref": "rh-tag-es.js [21,57]"
+    },
+    {
+        "source": "Tag category",
+        "language": "es",
+        "context": "tag",
+        "translation": "Categoría de etiqueta",
+        "ref": "..\\rh-tag\\services\\tag.js [27,94]"
+    },
+    {
+        "source": "Tag manager",
+        "language": "es",
+        "context": "role",
+        "translation": "Administrador de etiquetas",
+        "ref": "..\\rh-tag\\conf_data.js [9,68]"
+    },
+    {
+        "source": "Tags",
+        "language": "es",
+        "context": "menu",
+        "translation": "Etiquetas",
+        "ref": "..\\rh-tag\\conf_data.js [17,179]"
+    },
+    {
+        "source": "Tags",
+        "language": "es",
+        "context": "tag",
+        "translation": "Etiquetas",
+        "ref": "..\\rh-tag\\controllers\\tag.js [70,47]\n..\\rh-tag\\controllers\\tag.js [101,47]"
+    },
+    {
+        "source": "Title",
+        "language": "es",
+        "context": "tag",
+        "translation": "Título",
+        "ref": "..\\rh-tag\\services\\tag_category.js [25,79]\n..\\rh-tag\\controllers\\tag.js [80,56]\n..\\rh-tag\\controllers\\tag.js [107,56]\n..\\rh-tag\\controllers\\tag.js [108,62]"
+    }
+]

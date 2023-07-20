@@ -1,0 +1,22 @@
+[
+    {
+        "source": "Spanish",
+        "language": "es",
+        "translation": "Español",
+        "ref": "rh-project-tag-es.js [20,41]"
+    },
+    {
+        "source": "Spanish language.",
+        "language": "es",
+        "translation": "Idioma español.",
+        "ref": "rh-project-tag-es.js [21,57]"
+    },
+    {
+        "source": "Tags",
+        "language": "es",
+        "context": "project",
+        "isDraft": false,
+        "translation": "Etiquetas",
+        "ref": "..\\rh-project-tag\\rh-project-tag.js [20,42]"
+    }
+]
