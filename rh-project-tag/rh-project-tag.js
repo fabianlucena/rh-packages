@@ -31,6 +31,7 @@ async function projectInterfaceFormGet(form, options) {
         label: await (options.loc ?? loc)._c('project', 'Tags'),
         loadOptionsFrom: {
             service: 'tag',
+            params:  {tagCategory: conf.tagCategory},
             value:   'uuid',
             text:    'name',
             title:   'description',
