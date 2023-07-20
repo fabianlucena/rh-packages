@@ -74,9 +74,8 @@ export class ProjectSelectController {
 
         await SessionDataService.setData(sessionId, sessionData);
 
-        await Promise.all(conf.global.eventBus?.$emit('projectSwitch', data, {sessionId}));
-        
-        conf.global.eventBus?.$emit('sessionUpdated', sessionId);
+        await conf.global.eventBus?.$emit('projectSwitch', data, {sessionId});
+        await conf.global.eventBus?.$emit('sessionUpdated', sessionId);
 
         res.status(200).send(data);
     }

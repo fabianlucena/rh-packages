@@ -2,6 +2,7 @@
 
 export async function filterVisualItemsByAliasName(items, filter, options) {
     const loc = options?.loc;
+    const translationContext = options?.translationContext;
 
     const filtered = [];
     for (const item of items) {
@@ -13,9 +14,10 @@ export async function filterVisualItemsByAliasName(items, filter, options) {
             continue;
             
         if (loc) {
-            if (item.label)       item.label =       await loc._(item.label);
-            if (item.title)       item.title =       await loc._(item.title);
-            if (item.placeholder) item.placeholder = await loc._(item.placeholder);
+            const thisTranslationContext = item.translationContext ?? translationContext;
+            if (item.label)       item.label =       await loc._c(thisTranslationContext, item.label);
+            if (item.title)       item.title =       await loc._c(thisTranslationContext, item.title);
+            if (item.placeholder) item.placeholder = await loc._c(thisTranslationContext, item.placeholder);
         }
 
         filtered.push(item);

@@ -87,9 +87,8 @@ export class MenuController {
         });
 
         const data = {menu};
-        await Promise.all(conf.global.eventBus?.$emit('menuGet', data, {sessionId: req.session?.id, params: req.query}));
-
-        await Promise.all(conf.global.eventBus?.$emit('menuFilter', data, {sessionId: req.session?.id, params: req.query}));
+        await conf.global.eventBus?.$emit('menuGet', data, {sessionId: req.session?.id, params: req.query});
+        await conf.global.eventBus?.$emit('menuFilter', data, {sessionId: req.session?.id, params: req.query});
 
         res.status(200).send(data);
     }

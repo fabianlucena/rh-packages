@@ -36,8 +36,7 @@ export class LogoutController {
             return res.status(401).send({error: await req.loc._c('logout', 'No session')});
 
         await LogoutService.singleton().logout(req.session);
-
-        conf.global.eventBus?.$emit('logout', req.session.id);
+        await conf.global.eventBus?.$emit('logout', req.session.id);
 
         delete req.session;
         res.status(204).send();

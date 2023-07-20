@@ -147,7 +147,7 @@ export class LoginController {
                 },
             };
 
-            await Promise.all(await conf.global.eventBus?.$emit(
+            await conf.global.eventBus?.$emit(
                 'login',
                 result,
                 {
@@ -155,7 +155,7 @@ export class LoginController {
                     oldSessionId: session.oldSessionId,
                     autoLogin: !!req.body.autoLoginToken
                 }
-            ));
+            );
 
             req.session = session;
             res.header('Authorization', 'Bearer ' + session.authToken);

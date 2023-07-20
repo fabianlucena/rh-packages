@@ -86,8 +86,7 @@ export class CompanySiteController {
         data.rows = companySite;
 
         await conf.global.eventBus?.$emit('companySwitch', data, {sessionId});
-        
-        conf.global.eventBus?.$emit('sessionUpdated', sessionId);
+        await conf.global.eventBus?.$emit('sessionUpdated', sessionId);
 
         res.status(200).send(data);
     }

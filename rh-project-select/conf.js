@@ -11,7 +11,7 @@ export const conf = {
     title: 'RH Select Project',
     version: '0.1',
     path: dirname,
-    schema: 'company',
+    schema: 'project',
     routesPath: dirname + '/routes',
     servicesPath: dirname + '/services',
 };
