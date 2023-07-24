@@ -148,6 +148,8 @@ export class ServiceBase {
                     let object;
                     if (typeof data[Name] === 'object' && data[Name])
                         object = await service.createIfNotExists(data[Name]);
+                    else if (typeof data[Name] === 'string' && data[Name])
+                        object = await service.createIfNotExists({name: data[Name]});
                     else if (typeof data[name] === 'string' && data[name])
                         object = await service.createIfNotExists({name: data[name]});
                     else if (typeof data[otherName] === 'string' && data[otherName])
@@ -155,6 +157,23 @@ export class ServiceBase {
 
                     if (object)
                         data[idPropertyName] = object?.id;
+                    else {
+                        let list;
+                        if (Array.isArray(data[Name]) && data[Name].length)
+                            list = data[Name];
+                        else if (Array.isArray(data[name]) && data[name].length)
+                            list = data[name];
+                        else if (Array.isArray(data[otherName]) && data[otherName].length)
+                            list = data[otherName];
+
+                        if (list?.length) {
+                            const id = [];
+                            for (const item of list)
+                                id.push((await service.createIfNotExists({name: item})).id);
+                            
+                            data[idPropertyName] = id;
+                        }
+                    }
                 }
             }
         }

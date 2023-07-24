@@ -11,7 +11,7 @@ export const conf = {
     title: 'RH Tags',
     version: '0.1',
     path: dirname,
-    schema: 'syst',
+    schema: 'tag',
     init: null,
     configure: null,
     routesPath: dirname + '/routes',

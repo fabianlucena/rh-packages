@@ -9,7 +9,7 @@ import {loc} from 'rf-locale';
 
 export class TagCategoryService extends ServiceIdUuidNameEnableTranslatable {
     sequelize = conf.global.sequelize;
-    model = conf.global.models.Tag;
+    model = conf.global.models.TagCategory;
     shareObject = 'Tag';
     shareService = conf.global.services.Share;
     references = {

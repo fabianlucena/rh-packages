@@ -37,7 +37,6 @@ export const ServiceMixinName = Service => class extends Service {
         if (row)
             return row;
             
-
         return this.create(data, {transacion: options?.transacion});
     }
 };

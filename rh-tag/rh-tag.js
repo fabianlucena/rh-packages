@@ -10,6 +10,11 @@ export const conf = localConf;
 conf.updateData = updateData;
 
 async function updateData(global) {
-    await runSequentially(global?.data?.tagCategories, async data => await TagCategoryService.singleton().createIfNotExists(data));
-    await runSequentially(global?.data?.tags,          async data => await TagService.        singleton().createIfNotExists(data));
+    const tagCategoryService = TagCategoryService.singleton();
+    const tagService = TagService.singleton();
+
+    await runSequentially(global?.data?.tagCategories, async data => await tagCategoryService.createIfNotExists(data));
+    await runSequentially(global?.data?.tags,          async data => await tagService.        createIfNotExists(data));
 }
+
+export {EntityTagService} from './services/entity_tag.js';

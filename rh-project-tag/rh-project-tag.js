@@ -32,9 +32,7 @@ async function projectInterfaceFormGet(form, options) {
         loadOptionsFrom: {
             service: 'tag',
             params:  {tagCategory: conf.tagCategory},
-            value:   'uuid',
-            text:    'name',
-            title:   'description',
+            value:   'name',
         },
     });
 }
