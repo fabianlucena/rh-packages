@@ -135,13 +135,13 @@ export class EntityTagService extends ServiceBase {
     async getForEntityId(entityId, options) {
         options = {
             attributes: [],
+            raw: true,
+            nest: true,
             ...options,
             where: {
                 ...options?.where,
                 [this.entityId]: entityId,
             },
-            raw: true,
-            nest: true,
         };
 
         completeIncludeOptions(
