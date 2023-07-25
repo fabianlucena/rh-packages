@@ -12,5 +12,7 @@ export const conf = {
     version: '0.1',
     path: dirname,
     schema: 'project',
+    modelsPath: dirname + '/models',
     servicesPath: dirname + '/services',
+    tagCategory: 'project',
 };

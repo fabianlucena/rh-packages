@@ -1,65 +1,44 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {getSingle, addEnabledFilter, includeCollaborators, completeIncludeOptions} from 'sql-util';
-import {complete, deepComplete, _Error} from 'rf-util';
+import {ServiceIdUuidNameSharedEnableTranslatable} from 'rf-service';
+import {addEnabledFilter, includeCollaborators, completeIncludeOptions} from 'sql-util';
+import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull} from 'rf-util';
+import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
-export class ProjectService {
-    /**
-     * Completes the data object with the companyId property if not exists. 
-     * @param {{company: string, companyUuis: string,  ...}} data 
-     * @returns {Promise{data}}
-     */
-    static async completeCompanyId(data) {
-        if (!data.companyId) {
-            if (data.companyUuid)
-                data.companyId = await conf.global.services.Company.singleton().getIdForUuid(data.companyUuid);
-            else if (data.company)
-                data.companyId = await conf.global.services.Company.singleton().getIdForName(data.company);
-        }
-        
-        return data;
-    }
-    
-    /**
-     * Creates a new project row into DB.
-     * @param {{isEnabled: boolean, name: string, title: string}} data - data for the new Project.
-     *  - name: must be unique.
-     * @returns {Promise{Project}}
-     */
-    static async create(data) {
-        await ProjectService.completeCompanyId(data);
-        
-        try {
-            return await conf.global.sequelize.transaction(async t => {
-                const project = await conf.global.models.Project.create(data, { transaction: t });
-                if (data.owner || data.ownerId)
-                    await conf.global.services.Share.create(
-                        {
-                            objectName: 'Project',
-                            objectId: project.id,
-                            userId: data.ownerId,
-                            user: data.owner,
-                            type: 'owner'
-                        },
-                        { transaction: t }
-                    );
+export class ProjectService extends ServiceIdUuidNameSharedEnableTranslatable {
+    sequelize = conf.global.sequelize;
+    model = conf.global.models.Project;
+    shareObject = 'Project';
+    shareService = conf.global.services.Share;
+    references = {
+        company: conf.global.services.Company,
+        ownerModule: conf.global.services.Module,
+    };
+    defaultTranslationContext = 'project';
+    eventBus = conf.global.eventBus;
+    eventName = 'project';
 
-                return project;
-            });
-        } catch (error) {
-            return null;
-        }
+    async validateForCreation(data) {
+        if (data.id)
+            throw new CheckError(loc._cf('project', 'ID parameter is forbidden for creation.'));
+
+        checkParameterStringNotNullOrEmpty(data.name, loc._cf('project', 'Name'));
+        checkParameterStringNotNullOrEmpty(data.title, loc._cf('project', 'Title'));
+
+        checkValidUuidOrNull(data.uuid);
+
+        if (await this.getForName(data.name, {skipNoRowsError: true}))
+            throw new ConflictError(loc._cf('project', 'Exists another test scenary with that name.'));
+
+        if (!data.owner && !data.ownerId)
+            throw new CheckError(loc._cf('project', 'No owner specified.'));
+
+        return true;
     }
 
-    /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {options}
-     */
-    static async getListOptions(options) {
+    async getListOptions(options) {
         if (!options)
             options = {};
 
@@ -119,154 +98,12 @@ export class ProjectService {
         return options;
     }
 
-    /**
-     * Gets a list of projects.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {Promise{ProjectList}}
-     */
-    static async getList(options) {
-        return conf.global.models.Project.findAll(await ProjectService.getListOptions(options));
+    async getForCompanyId(companyId, options) {
+        return this.getList({...options, where: {companyId}});
     }
 
-    /**
-     * Gets a list of projects and the rows count.
-     * @param {Options} options - options for the @see sequelize.findAndCountAll method.
-     *  - view: show visible peoperties.
-     * @returns {Promise{ProjectList, count}}
-     */
-    static async getListAndCount(options) {
-        return conf.global.models.Project.findAndCountAll(await ProjectService.getListOptions(options));
-    }
-
-    /**
-     * Gets a project for its ID. For many coincidences and for no rows this method fails.
-     * @param {integer} id - ID for the project to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise[Project]}
-     */
-    static async get(id, options) {
-        const rows = await ProjectService.getList(deepComplete(options, {where: {id}, limit: 2}));
-        return getSingle(rows, {params: ['project', ['ID = %s', id], 'Project'], ...options});
-    }
-
-    /**
-     * Gets a project for its UUID. For many coincidences and for no rows this method fails.
-     * @param {string} uuid - UUID for the project to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Project}}
-     */
-    static async getForUuid(uuid, options) {
-        const rows = await ProjectService.getList(deepComplete(options, {where: {uuid}, limit: 2}));
-        return getSingle(rows, {params: ['project', ['UUID = %s', uuid], 'Project'], ...options});
-    }
-
-    /**
-     * Gets a project ID for its UUID. For many coincidences and for no rows this method fails.
-     * @param {string} uuid - UUID for the project to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {ID}
-     */
-    static async getIdForUuid(uuid, options) {
-        return (await ProjectService.getForUuid(uuid, {...options, attributes: [...options?.attributes ?? [], 'id']})).id;
-    }
-
-    /**
-     * Gets a project for its name. For many coincidences and for no rows this method fails.
-     * @param {string} name - name for the project to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Project}}
-     */
-    static getForName(name, options) {
-        return ProjectService.getList(deepComplete(options, {where: {name}, limit: 2}))
-            .then(rowList => getSingle(rowList, complete(options, {params: ['project', ['name = %s', name], 'Project']})));
-    }
-
-    /**
-     * Gets a project ID for its name. For many coincidences and for no rows this method fails.
-     * @param {string} name - name for the project to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {ID}
-     */
-    static async getIdForName(name, options) {
-        return (await ProjectService.getForName(name, deepComplete(options, {attributes: ['id']}))).id;
-    }
-
-    /**
-     * Checks for an existent and enabled project. If the project exists and is enabled resolve, otherwise fail.
-     * @param {Project} project - project model object to check.
-     * @param {*string} name - name only for result message purpuose.
-     * @returns 
-     */
-    static async checkEnabledProject(project, name) {
-        if (!project)
-            throw new _Error(loc._cf('project', 'Project "%s" does not exist'), name);
-
-        if (!project.isEnabled)
-            throw new _Error(loc._cf('project', 'Project "%s" is not enabled'), name);
-    }
-
-    /**
-     * Deletes a project for a given UUID.
-     * @param {string} uuid - UUID for the project o delete.
-     * @returns {Promise{Result}} deleted rows count.
-     */
-    static async deleteForUuid(uuid) {
-        const id = await ProjectService.getIdForUuid(uuid);
-        await conf.global.services.Share.deleteForObjectNameAndId('Project', id);
-
-        return conf.global.models.Project.destroy({where:{id}});
-    }
-
-    /**
-     * Updates a project.
-     * @param {object} data - Data to update.
-     * @param {object} uuid - UUID of the uer to update.
-     * @returns {Promise{Result}} updated rows count.
-     */
-    static async updateForUuid(data, uuid) {
-        await ProjectService.completeCompanyId(data);
-
-        return conf.global.models.Project.update(data, {where:{uuid}});
-    }
-
-    /**
-     * Enables a project for a given UUID.
-     * @param {string} uuid - UUID for the project o enable.
-     * @returns {Promise{Result}} enabled rows count.
-     */
-    static async enableForUuid(uuid) {
-        return await ProjectService.updateForUuid({isEnabled: true}, uuid);
-    }
-
-    /**
-     * Disables a project for a given UUID.
-     * @param {string} uuid - UUID for the project o disable.
-     * @returns {Promise{Result}} disabled rows count.
-     */
-    static async disableForUuid(uuid) {
-        return await ProjectService.updateForUuid({isEnabled: false}, uuid);
-    }
-    
-    /**
-     * Creates a new Project row into DB if not exists.
-     * @param {data} data - data for the new Role @see create.
-     * @returns {Promise{Role}}
-     */
-    static async createIfNotExists(data, options) {
-        const row = await ProjectService.getForName(data.name, {attributes: ['id'], foreign: {module: {attributes:[]}}, skipNoRowsError: true, ...options});
-        if (row)
-            return row;
-
-        return ProjectService.create(data);
-    }
-
-    static async getForCompanyId(companyId, options) {
-        return ProjectService.getList({...options, where: {companyId}});
-    }
-
-    static async getIdForCompanyId(companyId, options) {
-        const rows = await ProjectService.getForCompanyId(companyId, {...options, attributes:['id']});
+    async getIdForCompanyId(companyId, options) {
+        const rows = await this.getForCompanyId(companyId, {...options, attributes:['id']});
         return rows.map(row => row.id);
     }
 }

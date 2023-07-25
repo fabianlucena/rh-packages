@@ -4,6 +4,8 @@ import {conf} from '../conf.js';
 import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
 import {checkParameter, MissingParameterError} from 'rf-util';
 
+const projectService = conf.global.services.Project.singleton();
+
 export class ProjectSelectController {
     static async post(req, res) {
         const loc = req.loc;
@@ -13,7 +15,7 @@ export class ProjectSelectController {
             throw new MissingParameterError(loc._cf('projectSelect', 'Project UUID'));
 
         const options = {skipNoRowsError: true};
-        let project = await conf.global.services.Project.getForUuid(projectUuid, options);
+        let project = await projectService.getForUuid(projectUuid, options);
         if (!project)
             throw new _HttpError(loc._cf('projectSelect', 'The selected project does not exist or you do not have permission to access it.'), 400);
 
@@ -102,7 +104,7 @@ export class ProjectSelectController {
 
         options.includeCompany = true;
 
-        const result = await conf.global.services.Project.getListAndCount(options);
+        const result = await projectService.getListAndCount(options);
         
         res.status(200).send(result);
     }

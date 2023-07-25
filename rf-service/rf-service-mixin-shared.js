@@ -14,13 +14,13 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
         }
 
         let transaction;
-        if (options?.transaction) {
-            if (options.transaction === true)
+        if (options?.transaction || this.transaction) {
+            if (options.transaction === true || !options.transaction)
                 options.transaction = transaction = await this.createTransaction();
         }
 
         try {
-            const row = await super.create(data, options);
+            const row = await super.create(data, {...options, emitEvent: false});
             if (addShare) {
                 await this.addCollaborator(
                     {
@@ -32,6 +32,9 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
                     options
                 );
             }
+
+            if (options?.emitEvent !== false && this.eventBus && this.eventName)
+                await this.eventBus?.$emit(this.eventName + '.created', row, data, options);
 
             await transaction?.commit();
 

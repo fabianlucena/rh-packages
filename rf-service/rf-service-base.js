@@ -67,6 +67,11 @@ export class ServiceBase {
         return error;
     }
 
+    async emit(eventSubName, condition, ...params) {
+        if (condition !== false && this.eventBus && this.eventName)
+            await this.eventBus?.$emit(this.eventName + '.' + eventSubName, ...params);
+    }
+
     /**
      * Creates a new transaction for use in queries.
      * @returns {sequelize.Transaction}
@@ -198,13 +203,15 @@ export class ServiceBase {
         await this.validateForCreation(data);
 
         let transaction;
-        if (options?.transaction) {
-            if (options.transaction === true)
+        if (options?.transaction || this.transaction) {
+            if (options.transaction === true || !options.transaction)
                 options.transaction = transaction = await this.createTransaction();
         }
 
         try {
+            await this.emit('creating', options?.emitEvent, data, options);
             const row = await this.model.create(data, options);
+            await this.emit('created', options?.emitEvent, row, data, options);
 
             await transaction?.commit();
 
@@ -242,10 +249,14 @@ export class ServiceBase {
      */
     async getList(options) {
         options = await this.getListOptions(options);
+        await this.emit('getting', options?.emitEvent, options);
+        let result;
         if (options.withCount)
-            return this.model.findAndCountAll(options);
+            result = this.model.findAndCountAll(options);
         else
-            return this.model.findAll(options);
+            result = this.model.findAll(options);
+        await this.emit('getted', options?.emitEvent, result, options);
+        return result;
     }
 
     /**
@@ -333,7 +344,11 @@ export class ServiceBase {
     async update(data, options) {
         await this.completeReferences(data);
 
-        return this.model.update(data, options);
+        await this.emit('updating', options?.emitEvent, data, options);
+        const result = await this.model.update(data, options);
+        await this.emit('updated', options?.emitEvent, result, data, options);
+
+        return result;
     }
 
     /**
@@ -355,7 +370,12 @@ export class ServiceBase {
     async delete(options) {        
         await this.completeReferences(options.where, true);
 
-        return this.model.destroy(options);
+        await this.emit('deleting', options?.emitEvent, options);
+        const result = await this.model.destroy(options);
+        await this.emit('deleted', options?.emitEvent, result, options);
+
+        return result;
+
     }
 
     /**

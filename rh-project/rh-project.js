@@ -16,5 +16,7 @@ async function configure(global, options) {
 
 async function updateData(global) {
     const data = global?.data;
-    await runSequentially(data?.projects, async data => await ProjectService.createIfNotExists(data));
+    const projectService = ProjectService.singleton();
+
+    await runSequentially(data?.projects, async data => await projectService.createIfNotExists(data));
 }

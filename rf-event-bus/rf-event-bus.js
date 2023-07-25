@@ -4,18 +4,20 @@ export class EventBus {
     handlers = {};
 
     $on(event, handler) {
-        if (!this.handlers[event])
-            this.handlers[event] = [];
+        const sanitEvent = event.toLowerCase();
+        if (!this.handlers[sanitEvent])
+            this.handlers[sanitEvent] = [];
 
-        this.handlers[event].push(handler);
+        this.handlers[sanitEvent].push(handler);
     }
 
     $off(event, handler) {
-        if (this.handlers && this.handlers[event]) {
-            for (let i = 0; i < this.handlers[event].length; i++) {
-                const thisHandler = this.handlers[event];
+        const sanitEvent = event.toLowerCase();
+        if (this.handlers && this.handlers[sanitEvent]) {
+            for (let i = 0; i < this.handlers[sanitEvent].length; i++) {
+                const thisHandler = this.handlers[sanitEvent];
                 if (thisHandler === handler) {
-                    this.handlers[event].splice(i, 1);
+                    this.handlers[sanitEvent].splice(i, 1);
                     i--;
                 }
             }
@@ -23,7 +25,8 @@ export class EventBus {
     }
 
     async $emit(event, ...params) {
-        const handlers = this.handlers[event];
+        const sanitEvent = event.toLowerCase();
+        const handlers = this.handlers[sanitEvent];
         if (!handlers)
             return;
 

@@ -5,6 +5,8 @@ import {conf} from '../conf.js';
 import {getOptionsFromParamsAndOData, _HttpError, ConflictError} from 'http-util';
 import {checkParameter, checkParameterUuid, filterVisualItemsByAliasName} from 'rf-util';
 
+const projectService = ProjectService.singleton();
+
 /**
  * @swagger
  * definitions:
@@ -52,7 +54,7 @@ export class ProjectController {
     }
 
     static async checkUuid(req, uuid) {
-        const project = await ProjectService.getForUuid(uuid, {skipNoRowsError: true});
+        const project = await projectService.getForUuid(uuid, {skipNoRowsError: true});
         if (!project)
             throw new _HttpError(req.loc._cf('project', 'The project with UUID %s does not exists.'), 404, uuid);
 
@@ -102,7 +104,7 @@ export class ProjectController {
 
         await ProjectController.checkDataForCompanyId(req, data);
 
-        if (await ProjectService.getForName(data.name, {skipNoRowsError: true}))
+        if (await projectService.getForName(data.name, {skipNoRowsError: true}))
             throw new ConflictError();
 
         if (!data.owner && !data.ownerId) {
@@ -111,7 +113,7 @@ export class ProjectController {
                 throw new _HttpError(req.loc._cf('project', 'The project data does not have a owner.'));
         }
 
-        await ProjectService.create(data);
+        await projectService.create(data);
         res.status(204).send();
     }
 
@@ -182,10 +184,11 @@ export class ProjectController {
             options.where.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
         }
 
-        const result = await ProjectService.getListAndCount(options);
+        const result = await projectService.getListAndCount(options);
 
         result.rows = result.rows.map(row => {
-            row = row.toJSON();
+            if (row.toJSON)
+                row = row.toJSON();
             row.companyUuid = row.Company.uuid;
             return row;
         });
@@ -349,7 +352,7 @@ export class ProjectController {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('project', 'UUID'));
         await ProjectController.checkUuid(req, uuid);
 
-        const rowsDeleted = await ProjectService.deleteForUuid(uuid);
+        const rowsDeleted = await projectService.deleteForUuid(uuid);
         if (!rowsDeleted)
             throw new _HttpError(req.loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
 
@@ -399,7 +402,7 @@ export class ProjectController {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('project', 'UUID'));
         await ProjectController.checkUuid(req, uuid);
 
-        const rowsUpdated = await ProjectService.enableForUuid(uuid);
+        const rowsUpdated = await projectService.enableForUuid(uuid);
         if (!rowsUpdated)
             throw new _HttpError(req.loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
 
@@ -449,7 +452,7 @@ export class ProjectController {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('project', 'UUID'));
         await ProjectController.checkUuid(req, uuid);
 
-        const rowsUpdated = await ProjectService.disableForUuid(uuid);
+        const rowsUpdated = await projectService.disableForUuid(uuid);
         if (!rowsUpdated)
             throw new _HttpError(req.loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
 
@@ -497,7 +500,7 @@ export class ProjectController {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('project', 'UUID'));
         await ProjectController.checkUuid(req, uuid);
 
-        const rowsUpdated = await ProjectService.updateForUuid(req.body, uuid);
+        const rowsUpdated = await projectService.updateForUuid(req.body, uuid);
         if (!rowsUpdated)
             throw new _HttpError(req.loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
 

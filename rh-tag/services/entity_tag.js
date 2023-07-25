@@ -85,7 +85,7 @@ export class EntityTagService extends ServiceBase {
                 result++;
             }
 
-            result += await this.deleteFor({[this.entityId]: entityId, notTagId: data.tagId}, options);
+            result += await this.deleteFor({[this.entityId]: entityId, notTagId: data.tagId}, {...options, where: undefined});
         }
 
         return result;
@@ -154,5 +154,31 @@ export class EntityTagService extends ServiceBase {
         );
 
         return this.getList(options);
+    }
+
+    async completeForEntities(result, options) {
+        if (!options.includeTags)
+            return result;
+
+        result = await result;
+        let rows = options.withCount? result.rows: result;
+
+        for (const i in rows) {
+            let row = rows[i];
+            if (row.toJSON)
+                row = row.toJSON();
+
+            const tags = await this.getForEntityId(row.id);
+            row.tags = tags.map(tag => tag.Tag.name);
+
+            rows[i] = row;
+        }
+
+        if (options.withCount)
+            result.rows = rows;
+        else
+            result = rows;
+
+        return result;
     }
 }
