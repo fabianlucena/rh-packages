@@ -13,8 +13,11 @@ var projectTagService;
 var projectService;
 
 async function configure(global, options) {
-    if (options?.tagCategory)
-        conf.tagCategory = options.tagCategory;
+    if (options) {
+        const transferProperties = ['tagCategory', 'tagsTitle'];
+        for (const propertyName of transferProperties)
+            conf[propertyName] = options[propertyName];
+    }
 
     global.eventBus?.$on('project.interface.grid.get', projectInterfaceGridGet);
     global.eventBus?.$on('project.interface.form.get', projectInterfaceFormGet);
@@ -30,11 +33,17 @@ async function init() {
     projectService = conf.global.services.Project.singleton();
 }
 
+loc._cf('project', 'Tag');
+
+async function getTagTitle(options) {
+    return await (options.loc ?? loc)._c('project', conf.tagsTitle ?? 'Tags');
+}
+
 async function projectInterfaceGridGet(grid, options) {
     grid.columns.push({
         name:  'tags',
         type:  'tags',
-        label: await (options.loc ?? loc)._c('project', 'Tags'),
+        label: await getTagTitle(options),
     });
 }
 
@@ -42,7 +51,7 @@ async function projectInterfaceFormGet(form, options) {
     form.fields.push({
         name:  'tags',
         type:  'tags',
-        label: await (options.loc ?? loc)._c('project', 'Tags'),
+        label: await getTagTitle(options),
         loadOptionsFrom: {
             service: 'tag',
             params:  {tagCategory: conf.tagCategory},
