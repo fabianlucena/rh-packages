@@ -73,7 +73,13 @@ export class EntityTagService extends ServiceBase {
 
         let result = 0;
         const entitiesId = Array.isArray(entityId)? entityId: [entityId];
+        if (!entitiesId?.length)
+            return;
+
         const data = await this.completeReferences({tags}, true);
+        if (!data.tagId?.length)
+            return;
+
         for (const entityId of entitiesId) {
             for (const tagId of data.tagId) {
                 const data = {[this.entityId]: entityId, tagId};
@@ -92,7 +98,7 @@ export class EntityTagService extends ServiceBase {
     }
 
     async deleteTagsForEntityId(entityId, options) {
-        return this.deleteFor({entityId}, options);
+        return this.deleteFor({[this.entityId]: entityId}, {...options, where: undefined});
     }
 
     async delete(options) {

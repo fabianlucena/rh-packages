@@ -60,7 +60,7 @@ async function projectGetting(options) {
 }
 
 async function projectGetted(result, options) {
-    return projectTagService.completeForEntities(result, {...options, includeTags: true});
+    return projectTagService.completeForEntities(result, options);
 }
 
 async function projectCreated(row, data, options) {
@@ -73,8 +73,8 @@ async function projectUpdated(result, data, options) {
         await projectTagService.updateTagsForEntityId(data.tags, id, options);
 }
 
-async function projectDeleting(result, options) {
-    const id = await projectService.getIdFrom(options.where);
+async function projectDeleting(options) {
+    const id = await projectService.getIdFor(options.where);
     if (id)
         await projectTagService.deleteTagsForEntityId(id, options);
 }

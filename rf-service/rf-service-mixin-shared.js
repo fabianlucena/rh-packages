@@ -74,6 +74,6 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
             await this.shareService.deleteForObjectNameAndId(this.shareObject, id);
         }
 
-        return Service.delete(options);
+        return super.delete(options);
     }
 };

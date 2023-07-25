@@ -69,7 +69,7 @@ export class ServiceBase {
 
     async emit(eventSubName, condition, ...params) {
         if (condition !== false && this.eventBus && this.eventName)
-            await this.eventBus?.$emit(this.eventName + '.' + eventSubName, ...params);
+            return this.eventBus?.$emit(this.eventName + '.' + eventSubName, ...params);
     }
 
     /**
