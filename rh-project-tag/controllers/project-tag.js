@@ -1,6 +1,5 @@
 'use strict';
 
-import {ProjectTagService} from '../services/project_tag.js';
 import {conf} from '../conf.js';
 import {getOptionsFromParamsAndOData} from 'http-util';
 
@@ -18,7 +17,7 @@ import {getOptionsFromParamsAndOData} from 'http-util';
  *              example: Example error
  */
 
-const projectTagService = ProjectTagService.singleton();
+const tagService = conf.global.services.Tag.singleton();
 
 export class projectTagController {
     /** 
@@ -41,26 +40,18 @@ export class projectTagController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static async get(req, res) {
+    static async getTags(req, res) {
         const defaultOptions = {
             view: true,
-            limit: 10,
+            limit: 20,
             offset: 0,
-            includeTags: true,
-            attributes: [],
-            where: {},
+            attributes: ['name'],
+            where: {isEnabled: true},
         };
         const options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, null, defaultOptions);
-        if (options.limit > 20)
-            options.limit = 20;
         options.where.tagCategory = conf.tagCategory;
 
-        const result = await projectTagService.getListAndCount(options);
-        result.rows = result.rows.map(row => {
-            if (row.toJSON)
-                row = row.toJSON();
-            return row.Tag;
-        });
+        const result = await tagService.getListAndCount(options);
 
         res.status(200).send(result);
     }
