@@ -14,10 +14,18 @@ var projectService;
 
 async function configure(global, options) {
     if (options) {
-        const transferProperties = ['tagCategory', 'tagsTitle'];
-        for (const propertyName of transferProperties)
-            conf[propertyName] = options[propertyName];
+        const transferProperties = ['tagCategory', 'tagsTitle', 'permissions'];
+        for (const propertyName of transferProperties) {
+            const value = options[propertyName];
+            if (value !== undefined)
+                conf[propertyName] = value;
+        }
     }
+
+    if (!options.permissions)
+        options.permissions = [];
+    else if (!Array.isArray(options.permissions))
+        options.permissions = [options.permissions];
 
     global.eventBus?.$on('project.interface.grid.get', projectInterfaceGridGet);
     global.eventBus?.$on('project.interface.form.get', projectInterfaceFormGet);
@@ -53,9 +61,8 @@ async function projectInterfaceFormGet(form, options) {
         type:  'tags',
         label: await getTagTitle(options),
         loadOptionsFrom: {
-            service: 'tag',
-            params:  {tagCategory: conf.tagCategory},
-            value:   'name',
+            service: 'project-tag',
+            params:  {q: 'value'},
         },
     });
 }

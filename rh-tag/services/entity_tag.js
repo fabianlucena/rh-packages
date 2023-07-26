@@ -6,7 +6,7 @@ import {ServiceBase} from 'rf-service';
 import {ucfirst, checkParameterStringNotNullOrEmpty} from 'rf-util';
 import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
-import {completeIncludeOptions} from 'sql-util';
+import {completeIncludeOptions, getIncludedModelOptions} from 'sql-util';
 
 export class EntityTagService extends ServiceBase {
     references = {
@@ -65,6 +65,55 @@ export class EntityTagService extends ServiceBase {
             throw new ConflictError(loc._cf('entityTag', 'The tag is already linked to the %s.', this.entityName));
 
         return true;
+    }
+
+    async getListOptions(options) {
+        let where;
+        if (options.q) {
+            const q = `%${options.q}%`;
+            const Op = this.Sequelize.Op;
+            where = {name: {[Op.like]: q}};
+        }
+
+        if (options.includeTags || options.includeTagCategory || where) {
+            const attributes = options.includeTags?
+                ['name']:
+                [];
+
+            completeIncludeOptions(
+                options,
+                'Tag',
+                {
+                    model: this.models.Tag,
+                    attributes,
+                    where,
+                }
+            );
+        }
+
+        if (options.includeTagCategory || options.where?.tagCategory) {
+            const attributes = options.includeTagCategory?
+                ['name', 'title']:
+                [];
+
+            let where;
+            if (options.where?.tagCategory) {
+                where = {name: options.where.tagCategory};
+                delete options.where.tagCategory;
+            }
+
+            completeIncludeOptions(
+                getIncludedModelOptions(options, this.models.Tag),
+                'Tag',
+                {
+                    model: this.models.TagCategory,
+                    attributes,
+                    where,
+                }
+            );
+        }
+
+        return options;
     }
 
     async updateTagsForEntityId(tags, entityId, options) {
