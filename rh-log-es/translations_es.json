@@ -1,0 +1,70 @@
+[
+    {
+        "source": "Data",
+        "language": "es",
+        "context": "log",
+        "isDraft": false,
+        "translation": "Datos",
+        "ref": "..\\rh-log\\controllers\\log.js [55,55]"
+    },
+    {
+        "source": "Date time",
+        "language": "es",
+        "context": "log",
+        "isDraft": false,
+        "translation": "Fecha hora",
+        "ref": "..\\rh-log\\controllers\\log.js [38,60]"
+    },
+    {
+        "source": "Get log",
+        "language": "es",
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Obtener registro",
+        "ref": "..\\rh-log\\conf_data.js [9,66]"
+    },
+    {
+        "source": "Log",
+        "language": "es",
+        "context": "log",
+        "isDraft": false,
+        "translation": "Registro",
+        "ref": "..\\rh-log\\controllers\\log.js [28,46]"
+    },
+    {
+        "source": "Log",
+        "language": "es",
+        "context": "menu",
+        "isDraft": false,
+        "translation": "Registro",
+        "ref": "..\\rh-log\\conf_data.js [9,165]"
+    },
+    {
+        "source": "Message",
+        "language": "es",
+        "context": "log",
+        "isDraft": false,
+        "translation": "Mensaje",
+        "ref": "..\\rh-log\\controllers\\log.js [48,58]"
+    },
+    {
+        "source": "Spanish",
+        "language": "es",
+        "translation": "Español",
+        "ref": "rh-log-es.js [20,41]"
+    },
+    {
+        "source": "Spanish language.",
+        "language": "es",
+        "translation": "Idioma español.",
+        "ref": "rh-log-es.js [21,57]"
+    },
+    {
+        "source": "Type",
+        "language": "es",
+        "context": "log",
+        "isDraft": false,
+        "translation": "Tipo",
+        "ref": "..\\rh-log\\controllers\\log.js [43,55]"
+    }
+]

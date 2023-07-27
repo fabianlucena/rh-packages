@@ -27,5 +27,6 @@ loc._f('Select');
 loc._f('Selected');
 loc._f('Submit');
 loc._f('Total pages %s\nTotal rows founded %s\nShowing %s rows from %s to %s');
+loc._f('View');
 
 loc._f('-- Select an option --');

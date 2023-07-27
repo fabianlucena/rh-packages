@@ -26,7 +26,6 @@ export class SiteService extends ServiceIdUuidNameEnableTranslatable {
         if (data.id)
             throw new CheckError(loc._cf('site', 'ID parameter is forbidden for creation.'));
 
-        
         await checkDataForMissingProperties(data, 'Site', 'name', 'title');
 
         checkParameterStringNotNullOrEmpty(data.name, loc._cf('site', 'Name'));

@@ -115,7 +115,7 @@ export class SwitchSiteController {
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {view: true, limit: 10, offset: 0};
 
-        options = getOptionsFromParamsAndOData(req?.query, definitions, options);
+        options = await getOptionsFromParamsAndOData(req?.query, definitions, options);
         if (!req.roles.includes('admin')) {
             options.where ??= {};
             options.where.name = req?.sites ?? null;

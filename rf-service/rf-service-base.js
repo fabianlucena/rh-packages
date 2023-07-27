@@ -193,6 +193,15 @@ export class ServiceBase {
     }
 
     /**
+     * Performs the necesary validations before creation.
+     * @param {object} data - data to update in entity.
+     * @returns {Promise[data]} - the data.
+     */
+    async validateForCreation(data) {
+        return data;
+    }
+
+    /**
      * Creates a new row into DB.
      * @param {object} data - data for the new row.
      * @param {object} options - options to pass to creator, for use transacion.

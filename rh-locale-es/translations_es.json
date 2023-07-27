@@ -3,7 +3,7 @@
         "source": "-- Select an option --",
         "language": "es",
         "translation": "-- Seleccione una opción --",
-        "ref": "..\\rh-locale\\texts.js [31,33]"
+        "ref": "..\\rh-locale\\texts.js [32,33]"
     },
     {
         "source": "Actions",
@@ -32,7 +32,6 @@
     {
         "source": "Cannot create the language because already exists.",
         "language": "es",
-        "isDraft": false,
         "translation": "No se puede crear el idioma porque ya existe.",
         "ref": "..\\rh-locale\\services\\language.js [21,97]"
     },
@@ -94,7 +93,7 @@
         "source": "English",
         "language": "es",
         "translation": "Inglés",
-        "ref": "..\\rh-locale\\conf.js [23,44]"
+        "ref": "..\\rh-locale\\conf.js [24,41]"
     },
     {
         "source": "Expand",
@@ -179,5 +178,12 @@
         "language": "es",
         "translation": "Páginas en total %s\\nFilas en total encontradas %s\\nMostrando %s filas desde %s al %s",
         "ref": "..\\rh-locale\\texts.js [29,79]"
+    },
+    {
+        "source": "View",
+        "language": "es",
+        "isDraft": false,
+        "translation": "Ver",
+        "ref": "..\\rh-locale\\texts.js [30,15]"
     }
 ]
