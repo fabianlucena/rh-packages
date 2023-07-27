@@ -16,6 +16,7 @@ export class LogService extends ServiceBase {
             options.where = {
                 [Op.or]: [
                     {type:     {[Op.like]: q}},
+                    {session:  {[Op.like]: q}},
                     {message:  {[Op.like]: q}},
                     {jsonData: {[Op.like]: q}},
                 ],

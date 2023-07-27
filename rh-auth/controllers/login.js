@@ -118,10 +118,13 @@ export class LoginController {
         try {
             const loginService = LoginService.singleton();
             let session;
-            if (req.body.autoLoginToken)
+            if (req.body.autoLoginToken) {
                 session = await loginService.forAutoLoginTokenAndSessionIndex(req.body.autoLoginToken, req.body.deviceToken, req.body?.sessionIndex ?? req.body.index, req.loc);
-            else
+                conf.global?.log.info('Auto logged by autoLoginToken.', {autoLoginToken: req.body.autoLoginToken, session});
+            } else {
                 session = await loginService.forUsernamePasswordDeviceTokenAndSessionIndex(req.body.username, req.body.password, req.body.deviceToken, req.body.sessionIndex ?? req.body.index, req.loc);
+                conf.global?.log.info(`User ${req.body.username} successfully logged with username and password.`, {session});
+            }
 
             const now = new Date();
             const expires30  = new Date();
@@ -162,7 +165,12 @@ export class LoginController {
             res.cookie('deviceToken',  session.deviceToken,  {expire: expires365, path: '/'});
             res.cookie('autoLoginToken', session.autoLoginToken, {expire: expires30});
             res.status(201).send(result);
-        } catch (err) {
+        } catch (error) {
+            if (req.body.autoLoginToken)
+                conf.global?.log.info(`Error trying logged by autoLoginToken: ${error}.`, {autoLoginToken: req.body.autoLoginToken, error});
+            else
+                conf.global?.log.info(`Error in login: ${error}.`, {username: req.body.username, error});
+
             throw new _HttpError(req.loc._cf('login', 'Invalid login'), 403);
         }
     }

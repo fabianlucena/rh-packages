@@ -11,7 +11,7 @@ export class LogController {
         if ('$grid' in req.query)
             return LogController.getGrid(req, res);
 
-        let options = {view: true, limit: 10, offset: 0, orderBy: [['dateTime', 'DESC']]};
+        let options = {view: true, limit: 10, offset: 0, order: [['dateTime', 'DESC']]};
 
         options = await getOptionsFromParamsAndOData(req?.query, null, options);
         const rows = await logService.getListAndCount(options);
@@ -43,6 +43,11 @@ export class LogController {
                     name: 'type',
                     type: 'text',
                     label: await loc._c('log', 'Type'),
+                },
+                {
+                    name: 'session',
+                    type: 'text',
+                    label: await loc._c('log', 'Session'),
                 },
                 {
                     name: 'message',

@@ -22,7 +22,8 @@ export class ProjectSelectController {
         if (!project.isEnabled)
             throw new _HttpError(loc._cf('projectSelect', 'The selected project is disabled.'), 403);
 
-        project = project.toJSON();
+        if (project.toJSON)
+            project = project.toJSON();
 
         const SessionDataService = conf.global.services.SessionData;
         if (!SessionDataService)
@@ -78,6 +79,8 @@ export class ProjectSelectController {
 
         await conf.global.eventBus?.$emit('projectSwitch', data, {sessionId});
         await conf.global.eventBus?.$emit('sessionUpdated', sessionId);
+
+        conf.global?.log.info(`Project switched to: ${project.title}.`, {sessionId, projectName: project.name});
 
         res.status(200).send(data);
     }

@@ -62,6 +62,19 @@ export class Log {
             data,
         };
 
+        if (data) {
+            if (data.session) {
+                if (typeof data.session === 'string')
+                    line.session = data.session;
+                else if (typeof data.session === 'object')
+                    line.session = data.session.id;
+            } 
+            
+            if (!line.session && data.sessionId) {
+                line.session = data.sessionId;
+            }
+        }
+
         const TYPE = type.toUpperCase();
         if (this.show.all) {
             switch (TYPE) {
@@ -74,7 +87,7 @@ export class Log {
         }
 
         if (this.console) {
-            let text = `${this.dateFormat(line.dateTime)} - ${type ?? '{NO TYPE}'} - ${message ?? '{NO MESSAGE}'}`;
+            let text = `${this.dateFormat(line.dateTime)} - ${type ?? '{NO TYPE}'} - ${line.session ?? '{NO SESSION}'} - ${message ?? '{NO MESSAGE}'}`;
             if (data)
                 text += ' - ' + JSON.stringify(data);
 

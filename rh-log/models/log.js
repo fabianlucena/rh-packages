@@ -21,12 +21,16 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true,
         },
-        message: {
+        session: {
             type: DataTypes.STRING,
             allowNull: true,
         },
+        message: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
         jsonData: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             allowNull: true,
         },
         data: {

@@ -3,23 +3,20 @@
         "source": "Data",
         "language": "es",
         "context": "log",
-        "isDraft": false,
         "translation": "Datos",
-        "ref": "..\\rh-log\\controllers\\log.js [55,55]"
+        "ref": "..\\rh-log\\controllers\\log.js [62,55]"
     },
     {
         "source": "Date time",
         "language": "es",
         "context": "log",
-        "isDraft": false,
         "translation": "Fecha hora",
-        "ref": "..\\rh-log\\controllers\\log.js [38,60]"
+        "ref": "..\\rh-log\\controllers\\log.js [40,60]"
     },
     {
         "source": "Get log",
         "language": "es",
         "context": "permission",
-        "isDraft": false,
         "translation": "Obtener registro",
         "ref": "..\\rh-log\\conf_data.js [9,66]"
     },
@@ -27,15 +24,13 @@
         "source": "Log",
         "language": "es",
         "context": "log",
-        "isDraft": false,
         "translation": "Registro",
-        "ref": "..\\rh-log\\controllers\\log.js [28,46]"
+        "ref": "..\\rh-log\\controllers\\log.js [30,46]"
     },
     {
         "source": "Log",
         "language": "es",
         "context": "menu",
-        "isDraft": false,
         "translation": "Registro",
         "ref": "..\\rh-log\\conf_data.js [9,165]"
     },
@@ -43,9 +38,16 @@
         "source": "Message",
         "language": "es",
         "context": "log",
-        "isDraft": false,
         "translation": "Mensaje",
-        "ref": "..\\rh-log\\controllers\\log.js [48,58]"
+        "ref": "..\\rh-log\\controllers\\log.js [55,58]"
+    },
+    {
+        "source": "Session",
+        "language": "es",
+        "context": "log",
+        "isDraft": false,
+        "translation": "Sesión",
+        "ref": "..\\rh-log\\controllers\\log.js [50,58]"
     },
     {
         "source": "Spanish",
@@ -63,8 +65,7 @@
         "source": "Type",
         "language": "es",
         "context": "log",
-        "isDraft": false,
         "translation": "Tipo",
-        "ref": "..\\rh-log\\controllers\\log.js [43,55]"
+        "ref": "..\\rh-log\\controllers\\log.js [45,55]"
     }
 ]
