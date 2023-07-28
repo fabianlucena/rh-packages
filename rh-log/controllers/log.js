@@ -11,12 +11,18 @@ export class LogController {
         if ('$grid' in req.query)
             return LogController.getGrid(req, res);
 
-        let options = {view: true, limit: 10, offset: 0, order: [['dateTime', 'DESC']]};
+        let options = {
+            view: true,
+            limit: 10,
+            offset: 0,
+            order: [['dateTime', 'DESC']],
+            loc: req.loc,
+        };
 
         options = await getOptionsFromParamsAndOData(req?.query, null, options);
-        const rows = await logService.getListAndCount(options);
+        const result = logService.getListAndCount(options);
 
-        res.status(200).send(rows);
+        res.status(200).send(result);
     }
 
     static async getGrid(req, res) {

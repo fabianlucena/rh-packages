@@ -136,7 +136,9 @@ export class SessionController {
 
         const data = await SessionService.singleton().getListAndCount(options);
         data.rows = await Promise.all(data.rows.map(async row => {
-            row = row.toJSON();
+            if (row.toJSON)
+                row = row.toJSON();
+                
             row.open = await req.loc.strftime('%x %X', row.open);
             if (row.close)
                 row.close = await req.loc.strftime('%x %X', row.close);

@@ -1,9 +1,9 @@
 'use strict';
 
 import {conf} from '../conf.js';
-import {ServiceBase} from 'rf-service';
+import {ServiceIdTranslatable} from 'rf-service';
 
-export class LogService extends ServiceBase {
+export class LogService extends ServiceIdTranslatable {
     sequelize = conf.global.sequelize;
     Sequelize = conf.global.Sequelize;
     model = conf.global.models.Log;
@@ -24,5 +24,13 @@ export class LogService extends ServiceBase {
         }
 
         return options;
+    }
+
+    async translateRow(row, loc) {
+        row = await super.translateRow(row, loc);
+
+        row.dateTime = await loc.strftime('%x %X.%f', row.dateTime);
+
+        return row;
     }
 }
