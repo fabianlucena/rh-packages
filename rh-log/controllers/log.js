@@ -20,7 +20,7 @@ export class LogController {
         };
 
         options = await getOptionsFromParamsAndOData(req?.query, null, options);
-        const result = logService.getListAndCount(options);
+        const result = await logService.getListAndCount(options);
 
         res.status(200).send(result);
     }
