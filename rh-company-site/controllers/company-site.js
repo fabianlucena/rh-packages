@@ -88,7 +88,7 @@ export class CompanySiteController {
         await conf.global.eventBus?.$emit('companySwitch', data, {sessionId});
         await conf.global.eventBus?.$emit('sessionUpdated', sessionId);
 
-        conf.global?.log.info(`Company switched to: ${companySite.Company.title}.`, {sessionId, siteId, companyName: companySite.Company.name});
+        req.log?.info(`Company switched to: ${companySite.Company.title}.`, {sessionId, siteId, companyName: companySite.Company.name});
 
         res.status(200).send(data);
     }

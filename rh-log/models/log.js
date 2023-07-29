@@ -4,6 +4,10 @@ import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {
     class Log extends sequelize.Sequelize.Model {
+        static postAssociate(models) {
+            if (models.Session)
+                this.belongsTo(models.Session, {foreignKey: 'sessionId', required: false});
+        }
     }
     Log.init({
         id: {
@@ -17,12 +21,16 @@ export default (sequelize, DataTypes) => {
             defaultValue: DataTypes.NOW,
             allowNull: true,
         },
+        ref: {
+            type: DataTypes.BIGINT,
+            allowNull: true,
+        },
         type: {
             type: DataTypes.STRING,
             allowNull: true,
         },
-        session: {
-            type: DataTypes.STRING,
+        sessionId: {
+            type: DataTypes.BIGINT,
             allowNull: true,
         },
         message: {

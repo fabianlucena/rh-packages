@@ -80,7 +80,7 @@ export class ProjectSelectController {
         await conf.global.eventBus?.$emit('projectSwitch', data, {sessionId});
         await conf.global.eventBus?.$emit('sessionUpdated', sessionId);
 
-        conf.global?.log.info(`Project switched to: ${project.title}.`, {sessionId, projectName: project.name});
+        req.log?.info(`Project switched to: ${project.title}.`, {sessionId, projectName: project.name});
 
         res.status(200).send(data);
     }

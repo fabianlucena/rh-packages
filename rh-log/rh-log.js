@@ -7,4 +7,4 @@ import {Log} from './log.js';
 export const conf = localConf;
 export const log = new Log;
 
-conf.afterConfig = () => log.logService = LogService.singleton();
+conf.afterConfig = () => log.setLogService(LogService.singleton());

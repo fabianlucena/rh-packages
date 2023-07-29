@@ -17,6 +17,15 @@ export class LogController {
             offset: 0,
             order: [['dateTime', 'DESC']],
             loc: req.loc,
+            includeUser: true,
+            searchColumns: [
+                'ref',
+                'type',
+                'sessionId',
+                'message',
+                'jsonData',
+                '$Session.User.username$',
+            ],
         };
 
         options = await getOptionsFromParamsAndOData(req?.query, null, options);
@@ -46,12 +55,22 @@ export class LogController {
                     label: await loc._c('log', 'Date time'),
                 },
                 {
+                    name: 'ref',
+                    type: 'text',
+                    label: await loc._c('log', 'Ref'),
+                },
+                {
                     name: 'type',
                     type: 'text',
                     label: await loc._c('log', 'Type'),
                 },
                 {
-                    name: 'session',
+                    name: 'Session.User.username',
+                    type: 'text',
+                    label: await loc._c('log', 'User'),
+                },
+                {
+                    name: 'sessionId',
                     type: 'text',
                     label: await loc._c('log', 'Session'),
                 },

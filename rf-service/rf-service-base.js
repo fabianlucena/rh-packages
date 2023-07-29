@@ -246,6 +246,20 @@ export class ServiceBase {
         if (!options)
             options = {};
 
+        if (options.q && options.searchColumns) {
+            const Op = this.Sequelize.Op;
+            const q = `%${options.q}%`;
+            const qColumns = [];
+            for (const searchColumn of options.searchColumns)
+                qColumns?.push({[searchColumn]: {[Op.like]: q}});
+
+            const qWhere = {[Op.or]: qColumns};
+            if (options.where)
+                options.where = {[Op.and]: [options.where, qWhere]};
+            else
+                options.where = qWhere;
+        }
+
         arrangeOptions(options, this.sequelize);
 
         return options;

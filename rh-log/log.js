@@ -19,11 +19,12 @@ function pad03(number) {
 }
 
 export class Log {
-    #logService;
+    static refSeed;
+    logService;
     console = true;
     cache = [];
     show = {
-        all:     true,
+        all:     false,
         error:   true,
         warning: true,
         info:    true,
@@ -31,21 +32,49 @@ export class Log {
         debug:   true,
     };
 
-    get logService() {
-        return this.#logService;
-    }
+    async setLogService(logService) {
+        if (!Log.refSeed) {
+            let newRef = await logService.getMaxRef();
+            if (!newRef || isNaN(newRef))
+                Log.refSeed = 1;
+            else
+                Log.refSeed = parseInt(newRef) + 1;
+            
+            if (this.ref) {
+                if (this.ref > Log.refSeed)
+                    Log.refSeed = this.ref + 1;
+                else
+                    this.ref = (Log.refSeed++);
+            }
+        }
 
-    set logService(logService) {
-        this.#logService = logService;
+        this.logService = logService;
         this.flushCache();
     }
 
-    flushCache() {
-        if (!this.#logService)
+    clone() {
+        const ref = (Log.refSeed++);
+
+        const log = new Log();
+        for (const k in this) {
+            if (k !== 'ref')
+                log[k] = this[k];
+        }
+
+        log.ref = ref;
+
+        return log;
+    }
+
+    async flushCache() {
+        if (!this.logService)
             return;
+
+        if (!this.ref || isNaN(this.ref))
+            this.ref = (Log.refSeed++);
             
         for (const line of this.cache)
-            this.#logService.create(line);
+            this.logService.create({...line, ref: this.ref});
 
         this.cache = [];
     }
@@ -55,24 +84,25 @@ export class Log {
     }
 
     msg(type, message, data) {
+        if (!this.ref || isNaN(this.ref))
+            this.ref = (Log.refSeed++);
+
         const line = {
             dateTime: new Date,
+            ref: this.ref,
             type,
+            sessionId: data?.sessionId ?? data?.session?.id ?? ((!isNaN(data?.session))? data.session: undefined),
             message,
-            data,
         };
 
-        if (data) {
-            if (data.session) {
-                if (typeof data.session === 'string')
-                    line.session = data.session;
-                else if (typeof data.session === 'object')
-                    line.session = data.session.id;
-            } 
-            
-            if (!line.session && data.sessionId) {
-                line.session = data.sessionId;
-            }
+        if (data)
+            line.data = JSON.parse(JSON.stringify(data));
+
+        if (typeof line.message !== 'string') {
+            if (line.message.toString)
+                line.message = line.message.toString();
+            else
+                line.message = JSON.stringify(line.message);
         }
 
         const TYPE = type.toUpperCase();
@@ -100,8 +130,8 @@ export class Log {
             }
         }
 
-        if (this.#logService)
-            this.#logService.create(line);
+        if (this.logService)
+            this.logService.create(line);
         else
             this.cache.push(line);
     }

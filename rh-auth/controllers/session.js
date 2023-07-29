@@ -4,17 +4,43 @@ import {SessionService, SessionClosedError, NoSessionForAuthTokenError} from '..
 import {getOptionsFromParamsAndOData, deleteHandler} from 'http-util';
 import {getErrorMessage, checkParameter, checkParameterUuid} from 'rf-util';
 
+function hidePrivateData(data) {
+    if (typeof data !== 'object')
+        return data;
+
+    const result = {};
+
+    for (const k in data) {
+        if (/password/.test(k))
+            result[k] = '****';
+        else
+            result[k] = hidePrivateData(data[k]);
+    }
+
+    return result;
+}
+
 export class SessionController {
     static configureMiddleware() {
         return async (req, res, next) => {
+            let logLine = `${req.method} ${req.path}`;
+            const logOptions = {};
+            if (Object.keys(req.query).length)
+                logOptions.query = hidePrivateData(req.query);
+
+            if (Object.keys(req.body).length)
+                logOptions.body = hidePrivateData(req.body);
+
             const authorization = req.header('Authorization');
             if (!authorization || authorization.length < 8 || !authorization.startsWith('Bearer ')) {
+                req.log?.info(logLine, logOptions);
                 next();
                 return;
             }
 
             req.authToken = authorization.substring(7);
             if (!req.authToken) {
+                req.log?.info(logLine, logOptions);
                 next();
                 return;
             }
@@ -23,13 +49,15 @@ export class SessionController {
                 .then(session => {
                     req.session = session;
                     req.user = req.session.User;
+                    req.log?.info(logLine, {...logOptions, session: session.id, username: session.User.username});
                     next();
                 })
                 .catch(async err => {
+                    let error;
                     if (err instanceof SessionClosedError)
-                        res.status(401).send({error: await req.loc._c('session', 'HTTP error 403 forbidden, session is closed.')});
+                        error = {error: await req.loc._c('session', 'HTTP error 403 forbidden, session is closed.')};
                     else if (err instanceof NoSessionForAuthTokenError)
-                        res.status(401).send({error: await req.loc._c('session', 'HTTP error 403 forbidden, authorization token error.')});
+                        error = {error: await req.loc._c('session', 'HTTP error 403 forbidden, authorization token error.')};
                     else {
                         let msg;
                         if (err instanceof Error)
@@ -38,10 +66,13 @@ export class SessionController {
                             msg = err;
 
                         if (msg)
-                            res.status(401).send({error: 'Unauthorized', message: await req.loc._c('session', 'HTTP error 401 unauthorized: %s', msg)});
+                            error = {error: 'Unauthorized', message: await req.loc._c('session', 'HTTP error 401 unauthorized: %s', msg)};
                         else
-                            res.status(401).send({error: 'Unauthorized', message: await req.loc._c('session', 'HTTP error 401 unauthorized')});
+                            error = {error: 'Unauthorized', message: await req.loc._c('session', 'HTTP error 401 unauthorized')};
                     }
+
+                    req.log.error(logLine, {...logOptions, error: err, result: error});
+                    res.status(401).send(error);
                 });
         };
     }
