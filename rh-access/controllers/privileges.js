@@ -63,17 +63,23 @@ export class PrivilegesController {
      *                  $ref: '#/definitions/Error'
      */
     static async get(req, res) {
-        const result = {
-            sites: req?.sites,
-        };
+        let result;
 
-        result.site = req?.site?.name ?? null;
-        result.roles = req?.roles;
-        result.groups = req?.groups;
-        result.permissions = req?.permissions;
+        if (req) {
+            result = {
+                username: req.user?.username ?? null,
+                displayName: req.user?.displayName ?? null,
+                site: req.site?.name ?? null,
+                sites:  req.sites,
+                roles: req.roles,
+                groups: req.groups,
+                permissions: req.permissions,
+            };
 
-        if (!req?.site?.name)
-            result.warning = await (req.loc ?? loc)._('No current site selected');
+            if (!req.site?.name)
+                result.warning = await (req.loc ?? loc)._('No current site selected');
+        } else
+            result = {};
 
         res.status(200).send({count: 1, rows: [result]});
     }
