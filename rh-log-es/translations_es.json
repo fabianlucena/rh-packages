@@ -4,14 +4,14 @@
         "language": "es",
         "context": "log",
         "translation": "Datos",
-        "ref": "..\\rh-log\\controllers\\log.js [62,55]"
+        "ref": "..\\rh-log\\controllers\\log.js [87,55]"
     },
     {
         "source": "Date time",
         "language": "es",
         "context": "log",
         "translation": "Fecha hora",
-        "ref": "..\\rh-log\\controllers\\log.js [40,60]"
+        "ref": "..\\rh-log\\controllers\\log.js [55,60]"
     },
     {
         "source": "Get log",
@@ -25,7 +25,7 @@
         "language": "es",
         "context": "log",
         "translation": "Registro",
-        "ref": "..\\rh-log\\controllers\\log.js [30,46]"
+        "ref": "..\\rh-log\\controllers\\log.js [45,46]"
     },
     {
         "source": "Log",
@@ -39,15 +39,22 @@
         "language": "es",
         "context": "log",
         "translation": "Mensaje",
-        "ref": "..\\rh-log\\controllers\\log.js [55,58]"
+        "ref": "..\\rh-log\\controllers\\log.js [80,58]"
+    },
+    {
+        "source": "Ref",
+        "language": "es",
+        "context": "log",
+        "isDraft": false,
+        "translation": "Ref",
+        "ref": "..\\rh-log\\controllers\\log.js [60,54]"
     },
     {
         "source": "Session",
         "language": "es",
         "context": "log",
-        "isDraft": false,
         "translation": "Sesión",
-        "ref": "..\\rh-log\\controllers\\log.js [50,58]"
+        "ref": "..\\rh-log\\controllers\\log.js [75,58]"
     },
     {
         "source": "Spanish",
@@ -66,6 +73,14 @@
         "language": "es",
         "context": "log",
         "translation": "Tipo",
-        "ref": "..\\rh-log\\controllers\\log.js [45,55]"
+        "ref": "..\\rh-log\\controllers\\log.js [65,55]"
+    },
+    {
+        "source": "User",
+        "language": "es",
+        "context": "log",
+        "isDraft": false,
+        "translation": "Usuario",
+        "ref": "..\\rh-log\\controllers\\log.js [70,55]"
     }
 ]

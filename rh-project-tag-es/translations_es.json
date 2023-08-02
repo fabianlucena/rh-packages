@@ -12,11 +12,11 @@
         "ref": "rh-project-tag-es.js [21,57]"
     },
     {
-        "source": "Tags",
+        "source": "Tag",
         "language": "es",
         "context": "project",
         "isDraft": false,
-        "translation": "Etiquetas",
-        "ref": "..\\rh-project-tag\\rh-project-tag.js [36,26]"
+        "translation": "Etiqueta",
+        "ref": "..\\rh-project-tag\\rh-project-tag.js [44,26]"
     }
 ]

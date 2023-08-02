@@ -182,7 +182,6 @@
     {
         "source": "View",
         "language": "es",
-        "isDraft": false,
         "translation": "Ver",
         "ref": "..\\rh-locale\\texts.js [30,15]"
     }

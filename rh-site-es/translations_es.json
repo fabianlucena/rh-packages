@@ -4,14 +4,14 @@
         "language": "es",
         "context": "site",
         "translation": "Existe otro sitio con ese nombre.",
-        "ref": "..\\rh-site\\services\\site.js [38,96]"
+        "ref": "..\\rh-site\\services\\site.js [37,96]"
     },
     {
         "source": "Get sites",
         "language": "es",
         "context": "permission",
         "translation": "Obtener sitios",
-        "ref": "..\\rh-site\\conf.js [31,84]"
+        "ref": "..\\rh-site\\conf_data.js [21,69]"
     },
     {
         "source": "ID parameter is forbidden for creation.",
@@ -25,14 +25,22 @@
         "language": "es",
         "context": "site",
         "translation": "Nombre",
-        "ref": "..\\rh-site\\services\\site.js [32,78]"
+        "ref": "..\\rh-site\\services\\site.js [31,78]"
+    },
+    {
+        "source": "Sites",
+        "language": "es",
+        "context": "menu",
+        "isDraft": true,
+        "translation": null,
+        "ref": "..\\rh-site\\conf_data.js [21,177]"
     },
     {
         "source": "Sites manager",
         "language": "es",
         "context": "role",
         "translation": "Administrador de sitios",
-        "ref": "..\\rh-site\\conf.js [27,75]"
+        "ref": "..\\rh-site\\conf_data.js [13,71]"
     },
     {
         "source": "Spanish",
@@ -51,13 +59,13 @@
         "language": "es",
         "context": "site",
         "translation": "Sistema",
-        "ref": "..\\rh-site\\conf.js [23,62]"
+        "ref": "..\\rh-site\\conf_data.js [9,58]"
     },
     {
         "source": "Title",
         "language": "es",
         "context": "site",
         "translation": "Título",
-        "ref": "..\\rh-site\\services\\site.js [33,80]"
+        "ref": "..\\rh-site\\services\\site.js [32,80]"
     }
 ]

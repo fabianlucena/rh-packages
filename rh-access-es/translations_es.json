@@ -4,7 +4,15 @@
         "language": "es",
         "context": "permission",
         "translation": "Agregar accesos de usuarios",
-        "ref": "..\\rh-access\\conf_data.js [28,88]"
+        "ref": "..\\rh-access\\conf_data.js [32,88]"
+    },
+    {
+        "source": "Administration",
+        "language": "es",
+        "context": "premission",
+        "isDraft": false,
+        "translation": "Administración",
+        "ref": "..\\rh-access\\conf_data.js [28,180]"
     },
     {
         "source": "Assignable roles per role",
@@ -17,21 +25,21 @@
         "language": "es",
         "context": "permission",
         "translation": "Crear miembros",
-        "ref": "..\\rh-access\\conf_data.js [36,84]"
+        "ref": "..\\rh-access\\conf_data.js [40,84]"
     },
     {
         "source": "Delete members",
         "language": "es",
         "context": "permission",
         "translation": "Eliminar miembros",
-        "ref": "..\\rh-access\\conf_data.js [38,84]"
+        "ref": "..\\rh-access\\conf_data.js [42,84]"
     },
     {
         "source": "Delete users accesses",
         "language": "es",
         "context": "permission",
         "translation": "Eliminar accesos de usuarios ",
-        "ref": "..\\rh-access\\conf_data.js [31,91]"
+        "ref": "..\\rh-access\\conf_data.js [35,91]"
     },
     {
         "source": "Description",
@@ -51,14 +59,14 @@
         "language": "es",
         "context": "permission",
         "translation": "Modificar miembros",
-        "ref": "..\\rh-access\\conf_data.js [37,82]"
+        "ref": "..\\rh-access\\conf_data.js [41,82]"
     },
     {
         "source": "Edit users accesses",
         "language": "es",
         "context": "permission",
         "translation": "Modificar accesos de usuarios ",
-        "ref": "..\\rh-access\\conf_data.js [30,89]"
+        "ref": "..\\rh-access\\conf_data.js [34,89]"
     },
     {
         "source": "Editor",
@@ -98,8 +106,8 @@
         "source": "Error you cannot set your own password. Please use change password option instead.",
         "language": "es",
         "context": "member",
-        "isDraft": true,
-        "translation": null,
+        "isDraft": false,
+        "translation": "Error usted no puede especificar su propia contraseña. Por favor, en su lugar, use la opción cambiar contraseña.",
         "ref": "..\\rh-access\\controllers\\member.js [299,137]"
     },
     {
@@ -107,14 +115,14 @@
         "language": "es",
         "context": "permission",
         "translation": "Obtener miembros",
-        "ref": "..\\rh-access\\conf_data.js [35,81]"
+        "ref": "..\\rh-access\\conf_data.js [39,81]"
     },
     {
         "source": "Get users accesses",
         "language": "es",
         "context": "permission",
         "translation": "Obtener accesos de usuarios ",
-        "ref": "..\\rh-access\\conf_data.js [29,88]"
+        "ref": "..\\rh-access\\conf_data.js [33,88]"
     },
     {
         "source": "Member",
@@ -135,7 +143,7 @@
         "language": "es",
         "context": "menu",
         "translation": "Miembros",
-        "ref": "..\\rh-access\\conf_data.js [35,206]"
+        "ref": "..\\rh-access\\conf_data.js [39,206]"
     },
     {
         "source": "Members manager",
@@ -154,7 +162,7 @@
         "source": "No current site selected",
         "language": "es",
         "translation": "No hay sitio actual seleccionado.",
-        "ref": "..\\rh-access\\controllers\\privileges.js [76,82]"
+        "ref": "..\\rh-access\\controllers\\privileges.js [80,86]"
     },
     {
         "source": "Owner",
@@ -175,21 +183,14 @@
         "language": "es",
         "context": "menu",
         "translation": "Privilegios ",
-        "ref": "..\\rh-access\\conf_data.js [33,209]"
+        "ref": "..\\rh-access\\conf_data.js [37,209]"
     },
     {
         "source": "Privileges",
         "language": "es",
         "context": "permission",
         "translation": "Privilegios ",
-        "ref": "..\\rh-access\\conf_data.js [33,80]"
-    },
-    {
-        "source": "Roles",
-        "language": "es",
-        "context": "member",
-        "translation": "Roles",
-        "ref": "..\\rh-access\\controllers\\member.js [157,59]\n..\\rh-access\\controllers\\member.js [219,95]\n..\\rh-access\\controllers\\member.js [280,95]"
+        "ref": "..\\rh-access\\conf_data.js [37,80]"
     },
     {
         "source": "Roles",
@@ -203,6 +204,13 @@
         "language": "es",
         "translation": "Roles",
         "ref": "..\\rh-access\\controllers\\user-access.js [210,48]\n..\\rh-access\\controllers\\user-access.js [261,48]"
+    },
+    {
+        "source": "Roles",
+        "language": "es",
+        "context": "member",
+        "translation": "Roles",
+        "ref": "..\\rh-access\\controllers\\member.js [157,59]\n..\\rh-access\\controllers\\member.js [219,95]\n..\\rh-access\\controllers\\member.js [280,95]"
     },
     {
         "source": "Set member\\'s password",
@@ -349,7 +357,7 @@
         "language": "es",
         "context": "menu",
         "translation": "Accesos de usuarios ",
-        "ref": "..\\rh-access\\conf_data.js [29,213]"
+        "ref": "..\\rh-access\\conf_data.js [33,213]"
     },
     {
         "source": "Users accesses",

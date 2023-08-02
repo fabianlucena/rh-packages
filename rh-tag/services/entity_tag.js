@@ -158,7 +158,7 @@ export class EntityTagService extends ServiceBase {
 
     async delete(options) {
         if (!options.where)
-            throw new Error(loc._cf('Delete without where is forbiden.'));
+            throw new Error(loc._cf('tag', 'Delete without where is forbiden.'));
 
         const Op = this.Sequelize.Op;
         const where = options.where;

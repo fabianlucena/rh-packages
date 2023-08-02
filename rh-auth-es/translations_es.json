@@ -1,5 +1,13 @@
 [
     {
+        "source": "Administration",
+        "language": "es",
+        "context": "premission",
+        "isDraft": false,
+        "translation": "Administración",
+        "ref": "..\\rh-auth\\conf_data.js [34,180]"
+    },
+    {
         "source": "Administrator",
         "language": "es",
         "context": "user",
@@ -18,14 +26,14 @@
         "language": "es",
         "context": "menu",
         "translation": "Cambiar mi contraseña",
-        "ref": "..\\rh-auth\\conf_data.js [38,212]"
+        "ref": "..\\rh-auth\\conf_data.js [42,212]"
     },
     {
         "source": "Change own password",
         "language": "es",
         "context": "premission",
         "translation": "Cambiar contraseña propia",
-        "ref": "..\\rh-auth\\conf_data.js [38,90]"
+        "ref": "..\\rh-auth\\conf_data.js [42,90]"
     },
     {
         "source": "Change password",
@@ -39,7 +47,7 @@
         "language": "es",
         "context": "session",
         "translation": "Cerrado",
-        "ref": "..\\rh-auth\\controllers\\session.js [176,60]"
+        "ref": "..\\rh-auth\\controllers\\session.js [209,60]"
     },
     {
         "source": "Confirm new password",
@@ -53,7 +61,7 @@
         "language": "es",
         "context": "premission",
         "translation": "Crear usuario",
-        "ref": "..\\rh-auth\\conf_data.js [42,82]"
+        "ref": "..\\rh-auth\\conf_data.js [46,82]"
     },
     {
         "source": "Current password",
@@ -67,20 +75,20 @@
         "language": "es",
         "context": "premission",
         "translation": "Eliminar sesiones",
-        "ref": "..\\rh-auth\\conf_data.js [46,85]"
+        "ref": "..\\rh-auth\\conf_data.js [50,85]"
     },
     {
         "source": "Delete user",
         "language": "es",
         "context": "premission",
         "translation": "Eliminar usuario",
-        "ref": "..\\rh-auth\\conf_data.js [44,82]"
+        "ref": "..\\rh-auth\\conf_data.js [48,82]"
     },
     {
         "source": "Display name",
         "language": "es",
         "context": "member",
-        "isDraft": true,
+        "isDraft": false,
         "translation": "Nombre mostrado",
         "ref": "..\\rh-auth\\services\\user.js [24,118]"
     },
@@ -96,7 +104,7 @@
         "language": "es",
         "context": "premission",
         "translation": "Modificar usuario",
-        "ref": "..\\rh-auth\\conf_data.js [43,80]"
+        "ref": "..\\rh-auth\\conf_data.js [47,80]"
     },
     {
         "source": "Enabled",
@@ -145,28 +153,28 @@
         "language": "es",
         "context": "premission",
         "translation": "Obtener sitio actual",
-        "ref": "..\\rh-auth\\conf_data.js [48,87]"
+        "ref": "..\\rh-auth\\conf_data.js [52,87]"
     },
     {
         "source": "Get own sessions only",
         "language": "es",
         "context": "premission",
         "translation": "Obtener únicamente la sesión propia",
-        "ref": "..\\rh-auth\\conf_data.js [37,92]"
+        "ref": "..\\rh-auth\\conf_data.js [41,92]"
     },
     {
         "source": "Get session(s)",
         "language": "es",
         "context": "premission",
         "translation": "Obtener sesion(es)",
-        "ref": "..\\rh-auth\\conf_data.js [45,85]"
+        "ref": "..\\rh-auth\\conf_data.js [49,85]"
     },
     {
         "source": "Get user(s)",
         "language": "es",
         "context": "premission",
         "translation": "Obtener usuario(s)",
-        "ref": "..\\rh-auth\\conf_data.js [41,82]"
+        "ref": "..\\rh-auth\\conf_data.js [45,82]"
     },
     {
         "source": "Group",
@@ -180,7 +188,7 @@
         "language": "es",
         "context": "session",
         "translation": "Error HTTP 401 no autorizado",
-        "ref": "..\\rh-auth\\controllers\\session.js [43,141]"
+        "ref": "..\\rh-auth\\controllers\\session.js [71,128]"
     },
     {
         "source": "HTTP error 401 unauthorized, authorization schema is no Bearer.",
@@ -201,28 +209,28 @@
         "language": "es",
         "context": "session",
         "translation": "Error HTTP 401 no autorizado: %s",
-        "ref": "..\\rh-auth\\controllers\\session.js [41,150]"
+        "ref": "..\\rh-auth\\controllers\\session.js [69,137]"
     },
     {
         "source": "HTTP error 403 forbidden, authorization token error.",
         "language": "es",
         "context": "session",
         "translation": "Error HTTP 403 prohibido, error en el identificador de autorización.\n\n",
-        "ref": "..\\rh-auth\\controllers\\session.js [32,137]"
+        "ref": "..\\rh-auth\\controllers\\session.js [60,124]"
     },
     {
         "source": "HTTP error 403 forbidden, session is closed.",
         "language": "es",
         "context": "session",
         "translation": "Error HTTP 403 prohibido, la sesión está cerrada.",
-        "ref": "..\\rh-auth\\controllers\\session.js [30,129]"
+        "ref": "..\\rh-auth\\controllers\\session.js [58,116]"
     },
     {
         "source": "Invalid login",
         "language": "es",
         "context": "login",
         "translation": "Ingreso inválido ",
-        "ref": "..\\rh-auth\\controllers\\login.js [166,71]"
+        "ref": "..\\rh-auth\\controllers\\login.js [174,71]"
     },
     {
         "source": "Local",
@@ -243,28 +251,28 @@
         "language": "es",
         "context": "premission",
         "translation": "Menú de acceso",
-        "ref": "..\\rh-auth\\conf_data.js [34,81]"
+        "ref": "..\\rh-auth\\conf_data.js [38,81]"
     },
     {
         "source": "Logout",
         "language": "es",
         "context": "menu",
         "translation": "Salir",
-        "ref": "..\\rh-auth\\conf_data.js [39,200]"
+        "ref": "..\\rh-auth\\conf_data.js [43,200]"
     },
     {
         "source": "Logout",
         "language": "es",
         "context": "premission",
         "translation": "Salir",
-        "ref": "..\\rh-auth\\conf_data.js [39,77]"
+        "ref": "..\\rh-auth\\conf_data.js [43,77]"
     },
     {
         "source": "My sessions",
         "language": "es",
         "context": "menu",
         "translation": "Mis sesiones",
-        "ref": "..\\rh-auth\\conf_data.js [37,205]"
+        "ref": "..\\rh-auth\\conf_data.js [41,205]"
     },
     {
         "source": "New password",
@@ -278,14 +286,14 @@
         "language": "es",
         "context": "logout",
         "translation": "No hay sesión",
-        "ref": "..\\rh-auth\\controllers\\logout.js [36,89]"
+        "ref": "..\\rh-auth\\controllers\\logout.js [36,82]"
     },
     {
         "source": "Open",
         "language": "es",
         "context": "session",
         "translation": "Abierto",
-        "ref": "..\\rh-auth\\controllers\\session.js [171,59]"
+        "ref": "..\\rh-auth\\controllers\\session.js [204,59]"
     },
     {
         "source": "Password",
@@ -313,21 +321,21 @@
         "language": "es",
         "context": "premission",
         "translation": "Menú se sessión",
-        "ref": "..\\rh-auth\\conf_data.js [35,83]"
+        "ref": "..\\rh-auth\\conf_data.js [39,83]"
     },
     {
         "source": "Sessions",
         "language": "es",
         "context": "menu",
         "translation": "Sesiones",
-        "ref": "..\\rh-auth\\conf_data.js [45,202]"
+        "ref": "..\\rh-auth\\conf_data.js [49,202]"
     },
     {
         "source": "Sessions",
         "language": "es",
         "context": "session",
         "translation": "Sesiones",
-        "ref": "..\\rh-auth\\controllers\\session.js [161,55]"
+        "ref": "..\\rh-auth\\controllers\\session.js [194,55]"
     },
     {
         "source": "Spanish",
@@ -346,7 +354,7 @@
         "language": "es",
         "context": "premission",
         "translation": "Cambiar de sitio",
-        "ref": "..\\rh-auth\\conf_data.js [47,82]"
+        "ref": "..\\rh-auth\\conf_data.js [51,82]"
     },
     {
         "source": "System administrator",
@@ -444,7 +452,7 @@
         "language": "es",
         "context": "session",
         "translation": "UUID",
-        "ref": "..\\rh-auth\\controllers\\session.js [222,89]"
+        "ref": "..\\rh-auth\\controllers\\session.js [255,89]"
     },
     {
         "source": "UUID",
@@ -541,7 +549,7 @@
         "source": "Username",
         "language": "es",
         "context": "member",
-        "isDraft": true,
+        "isDraft": false,
         "translation": "Nombre de usuario ",
         "ref": "..\\rh-auth\\services\\user.js [24,70]"
     },
@@ -557,7 +565,7 @@
         "language": "es",
         "context": "menu",
         "translation": "Usuarios",
-        "ref": "..\\rh-auth\\conf_data.js [41,199]"
+        "ref": "..\\rh-auth\\conf_data.js [45,199]"
     },
     {
         "source": "Users",
