@@ -41,8 +41,8 @@ export class ProjectSelectController {
         }
 
         if (project.isTranslatable) {
-            project.title = loc._(project.title);
-            project.description = loc._(project.description);
+            project.title = await loc._(project.title);
+            project.description = await loc._(project.description);
         }
 
         delete project.isTranslatable;

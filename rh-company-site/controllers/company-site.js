@@ -43,8 +43,8 @@ export class CompanySiteController {
         conf.global.services.SessionSite.createOrUpdate({sessionId, siteId});
 
         if (companySite.Company.isTranslatable) {
-            companySite.Company.title = loc._(companySite.Company.title);
-            companySite.Company.description = loc._(companySite.Company.description);
+            companySite.Company.title = await loc._(companySite.Company.title);
+            companySite.Company.description = await loc._(companySite.Company.description);
         }
 
         delete companySite.Company.isTranslatable;
