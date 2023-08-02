@@ -68,17 +68,23 @@ export class EntityTagService extends ServiceBase {
     }
 
     async getListOptions(options) {
-        let where;
-        if (options.q) {
-            const q = `%${options.q}%`;
-            const Op = this.Sequelize.Op;
-            where = {name: {[Op.like]: q}};
-        }
-
-        if (options.includeTags || options.includeTagCategory || where) {
+        if (options.includeTags || options.includeTagCategory || options.q || options.where?.tags) {
             const attributes = options.includeTags?
                 ['name']:
                 [];
+
+            let where = {};
+            if (options.q) {
+                const q = `%${options.q}%`;
+                const Op = this.Sequelize.Op;
+                where = {name: {[Op.like]: q}};
+                delete options.q;
+            }
+
+            if (options.where?.tags) {
+                where.name = options.where.tags;
+                delete options.where.tags;
+            }
 
             completeIncludeOptions(
                 options,
@@ -204,9 +210,11 @@ export class EntityTagService extends ServiceBase {
             'Tag',
             {
                 model: this.models.Tag,
-                attributes: ['name'],
+                attributes: options.tagAttributes ?? ['name'],
             }
         );
+
+        delete options.tagAttributes;
 
         return this.getList(options);
     }
@@ -233,6 +241,22 @@ export class EntityTagService extends ServiceBase {
             result.rows = rows;
         else
             result = rows;
+
+        return result;
+    }
+
+    async getForTags(tags, options) {
+        return this.getList({...options, where: {...options?.where, tags}});
+    }
+
+    async getEntityIdForTags(tags, options) {
+        const rows = await this.getForTags(tags, {...options, attributes: [this.entityId], raw: true, nest: true});
+        const result = [];
+        rows.map(rows => {
+            const id = rows[this.entityId];
+            if (!result.includes(id))
+                result.push(id);
+        });
 
         return result;
     }
