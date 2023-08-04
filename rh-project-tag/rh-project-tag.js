@@ -29,6 +29,7 @@ async function configure(global, options) {
 
     global.eventBus?.$on('project.interface.grid.get', projectInterfaceGridGet);
     global.eventBus?.$on('project.interface.form.get', projectInterfaceFormGet);
+    global.eventBus?.$on('project.response.getting', projectResponseGetting);
     global.eventBus?.$on('project.getting', projectGetting);
     global.eventBus?.$on('project.getted', projectGetted);
     global.eventBus?.$on('project.created', projectCreated);
@@ -62,6 +63,10 @@ async function projectInterfaceFormGet(form, options) {
         label: await getTagTitle(options),
         loadOptionsFrom: {service: 'project-tag/tags'},
     });
+}
+
+async function projectResponseGetting(options) {
+    options.includeTags ??= true;
 }
 
 async function projectGetting(options) {

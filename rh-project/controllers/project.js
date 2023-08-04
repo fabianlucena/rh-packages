@@ -184,6 +184,8 @@ export class ProjectController {
             options.where.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
         }
 
+        await conf.global.eventBus?.$emit('project.response.getting', options);
+
         const result = await projectService.getListAndCount(options);
 
         result.rows = result.rows.map(row => {
@@ -192,6 +194,8 @@ export class ProjectController {
             row.companyUuid = row.Company.uuid;
             return row;
         });
+
+        await conf.global.eventBus?.$emit('project.response.getted', result, options);
 
         res.status(200).send(result);
     }
