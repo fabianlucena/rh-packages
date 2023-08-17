@@ -34,22 +34,27 @@ export class Log {
 
     async setLogService(logService) {
         if (!Log.refSeed) {
-            let newRef = await logService.getMaxRef();
-            if (!newRef || isNaN(newRef))
-                Log.refSeed = 1;
-            else
-                Log.refSeed = parseInt(newRef) + 1;
-            
-            if (this.ref) {
-                if (this.ref > Log.refSeed)
-                    Log.refSeed = this.ref + 1;
+            try {
+                let newRef = await logService.getMaxRef();
+                if (!newRef || isNaN(newRef))
+                    Log.refSeed = 1;
                 else
-                    this.ref = (Log.refSeed++);
+                    Log.refSeed = parseInt(newRef) + 1;
+                
+                if (this.ref) {
+                    if (this.ref > Log.refSeed)
+                        Log.refSeed = this.ref + 1;
+                    else
+                        this.ref = (Log.refSeed++);
+                }
+            } catch(e) {
+                if (!Log.refSeed)
+                    Log.refSeed = 1;                        
             }
         }
 
         this.logService = logService;
-        this.flushCache();
+        await this.flushCache();
     }
 
     clone() {
@@ -67,23 +72,28 @@ export class Log {
     }
 
     async flushCache() {
-        if (!this.logService)
-            return;
+        try {
+            if (!this.logService)
+                return;
 
-        if (!this.ref || isNaN(this.ref))
-            this.ref = (Log.refSeed++);
-            
-        for (const line of this.cache)
-            this.logService.create({...line, ref: this.ref});
+            if (!this.ref || isNaN(this.ref))
+                this.ref = (Log.refSeed++);
+                
+            for (const line of this.cache)
+                await this.logService.create({...line, ref: this.ref});
 
-        this.cache = [];
+            this.cache = [];
+            this.checkCache = false;
+        } catch(e) {
+            console.error(e);
+        }
     }
 
     dateFormat(date) {
         return date.getFullYear() + '-' + pad02(date.getMonth() + 1) + '-' + pad02(date.getDate(), 2) + ' ' + date.toLocaleTimeString() + '.' + pad03(date.getMilliseconds());
     }
 
-    msg(type, message, data) {
+    async msg(type, message, data) {
         if (!this.ref || isNaN(this.ref))
             this.ref = (Log.refSeed++);
 
@@ -130,10 +140,20 @@ export class Log {
             }
         }
 
-        if (this.logService)
-            this.logService.create(line);
-        else
+        try {
+            if (this.logService) {
+                if (this.checkCache)
+                    await this.flushCache();
+
+                await this.logService.create(line);
+            } else {
+                this.cache.push(line);
+                this.checkCache = true;
+            }
+        } catch(e) {
             this.cache.push(line);
+            this.checkCache = true;
+        }
     }
 
     log(message, data) {
