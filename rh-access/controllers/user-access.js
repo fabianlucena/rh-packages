@@ -28,7 +28,7 @@ import {checkParameter, checkParameterUuid, checkParameterUuidList, checkNotNull
  */
 
 const roleService = RoleService.singleton();
-const userAccessService = UserAccessService.singleton();
+const userAccessService = new UserAccessService;
 const assignableRolePerRoleService = AssignableRolePerRoleService.singleton();
 
 export class UserAccessController {
@@ -149,13 +149,14 @@ export class UserAccessController {
             where: {},
             loc: req.loc,
             includeUser: true,
+            includeSite: true,
             includeRoles: true,
         };
 
         const definitions = {uuid: 'string', username: 'string'};
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
-        options.where ??= {};
-        options.where.siteId = req.site.id;
+        if (req.site?.id)
+            options.where.siteId = req.site.id;
 
         if (!req.roles.includes('admin')) {
             const assignableRolesId = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
@@ -208,7 +209,7 @@ export class UserAccessController {
                     name: 'Roles',
                     type: 'list',
                     label: await loc._('Roles'),
-                    properties: ['title'],
+                    singleProperty: 'title',
                 },
             ]
         });

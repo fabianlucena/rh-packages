@@ -65,8 +65,12 @@ export class UserSiteRoleService extends ServiceSharedEnable {
         } else if (!getIncludedModelOptions(options, conf.global.models.Role))
             autoGroup = [];
 
-        if (autoGroup)
+        if (autoGroup) {
+            if (!options.attributes.includes('userId'))
+                autoGroup.push('UserSiteRole.userId');
+
             options.attributes.forEach(column => autoGroup.push('UserSiteRole.' + column));
+        }
 
         if (options.includeUser || options.where?.userUuid) {
             const attributes = options.includeUser?.attributes ??
@@ -93,8 +97,12 @@ export class UserSiteRoleService extends ServiceSharedEnable {
 
             delete options.includeUser;
 
-            if (autoGroup)
+            if (autoGroup) {
+                if (!attributes.includes('id'))
+                    autoGroup.push('User.id');
+
                 attributes.forEach(column => autoGroup.push('User.' + column));
+            }
         }
 
         if (options.includeSite || options.where?.siteUuid) {
@@ -122,8 +130,12 @@ export class UserSiteRoleService extends ServiceSharedEnable {
 
             delete options.includeSite;
 
-            if (autoGroup)
+            if (autoGroup) {
+                if (!attributes.includes('id'))
+                    autoGroup.push('Site.id');
+                
                 attributes.forEach(column => autoGroup.push('Site.' + column));
+            }
         }
 
         if (autoGroup?.length)
