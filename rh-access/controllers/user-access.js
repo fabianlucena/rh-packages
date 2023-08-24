@@ -70,8 +70,7 @@ export class UserAccessController {
     static async post(req, res) {
         const loc = req.loc;
         const data = {
-            ...req.body,
-            siteId: req.site.id,
+            siteId: req.site?.id,
             userUuid: checkParameterUuid(req.body.User, loc._cf('userAccess', 'User')),
             siteUuid: checkParameterUuid(req.body.Site, loc._cf('userAccess', 'Site')),
             rolesUuid: await checkParameterUuidList(req.body.Roles, loc._cf('userAccess', 'Roles')),
@@ -155,8 +154,11 @@ export class UserAccessController {
 
         const definitions = {uuid: 'string', username: 'string'};
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
-        if (req.site?.id)
+
+        if (req.site?.id) {
+            options.where ??= {};
             options.where.siteId = req.site.id;
+        }
 
         if (!req.roles.includes('admin')) {
             const assignableRolesId = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);

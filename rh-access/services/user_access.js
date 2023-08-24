@@ -32,7 +32,16 @@ export class UserAccessService extends UserSiteRoleService {
     async create(data) {
         const transaction = await this.createTransaction();
         try {
-            const user = await this.userService.create(data.User, {transaction});
+            let user;
+            if (data.userId)
+                user = await this.userService.getForId(data.userId, {transaction});
+            else if (data.userUuid)
+                user = await this.userService.getForUuid(data.userUuid, {transaction});
+            else
+                user = await this.userService.create(data.User, {transaction});
+
+            if (user.toJSON)
+                user = user.toJSON();
             
             if (!data.rolesId?.length && data.rolesUuid?.length)
                 data.rolesId = await this.roleService.getIdForUuid(data.rolesUuid);

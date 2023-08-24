@@ -44,12 +44,17 @@ export class MemberController {
         };
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
-        options.where ??= {};
-        options.where.siteId = req.site.id;
 
-        if (options.where.uuid) {
-            options.where.userUuid = options.where.uuid;
-            delete options.where.uuid;
+        if (req.site?.id) {
+            options.where ??= {};
+            options.where.siteId = req.site.id;
+        }
+
+        if (options.where) {
+            if (options.where.uuid) {
+                options.where.userUuid = options.where.uuid;
+                delete options.where.uuid;
+            }
         }
 
         const result = await memberService.getListAndCount(options);
