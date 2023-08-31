@@ -10,9 +10,11 @@ export const conf = {
     name,
     title: 'RH Page',
     version: '0.1',
+    path: dirname,
     schema: 'page',
     routesPath: dirname + '/routes',
     modelsPath: dirname + '/models',
     servicesPath: dirname + '/services',
+    controllersPath: dirname + '/controllers',
     apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
 };

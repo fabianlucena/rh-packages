@@ -3,17 +3,9 @@
 import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-    class Page extends sequelize.Sequelize.Model {
-        static associate(models) {
-            this.belongsTo(models.Language,   {foreignKey: 'languageId', allowNull: true});
-            this.belongsTo(models.PageFormat, {as: 'Format', foreignKey: 'formatId',   allowNull: false});
-        }
-
-        static postAssociate(models) {
-            this.hasMany(models.Share, {as: 'Collaborators', foreignKey: 'objectId'});
-        }
+    class PageFormat extends sequelize.Sequelize.Model {
     }
-    Page.init({
+    PageFormat.init({
         id: {
             type: DataTypes.BIGINT,
             autoIncrement: true,
@@ -31,33 +23,26 @@ export default (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: true,
         },
-        name: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true,
-        },
         isTranslatable: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false,
         },
-        translationContext: {
+        name: {
             type: DataTypes.STRING,
-            allowNull: true,
+            allowNull: false,
+            unique: true,
         },
         title: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING,
             allowNull: false,
-        },
-        content: {
-            type: DataTypes.TEXT,
-            allowNull: false,
+            unique: true,
         },
     }, {
         sequelize,
         timestamps: true,
         freezeTableName: true,
-        schema: conf.schema
+        schema: conf.schema,
     });
-    return Page;
+    return PageFormat;
 };

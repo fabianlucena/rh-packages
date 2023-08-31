@@ -4,36 +4,78 @@
         "language": "es",
         "context": "page",
         "translation": "Contenido",
-        "ref": "..\\rh-page\\services\\page.js [26,84]"
+        "ref": "..\\rh-page\\services\\page.js [37,84]"
     },
     {
         "source": "Error: No page name.",
         "language": "es",
         "context": "page",
-        "isDraft": false,
         "translation": "Error: sin nombre de página.",
         "ref": "..\\rh-page\\translations.js [7,40]"
+    },
+    {
+        "source": "Exists another page format with that name.",
+        "language": "es",
+        "context": "pageFormat",
+        "isDraft": false,
+        "translation": "Existe otro formato de página con ese nombre.",
+        "ref": "..\\rh-page\\services\\page_format.js [25,104]"
     },
     {
         "source": "Exists another page with that name.",
         "language": "es",
         "context": "page",
         "translation": "Existe otra página con ese nombre.",
-        "ref": "..\\rh-page\\services\\page.js [31,91]"
+        "ref": "..\\rh-page\\services\\page.js [33,91]"
+    },
+    {
+        "source": "Format",
+        "language": "es",
+        "context": "pageFormat",
+        "translation": "Formato",
+        "ref": "..\\rh-page\\conf_data.js [10,63]"
     },
     {
         "source": "ID parameter is forbidden for creation.",
         "language": "es",
         "context": "page",
         "translation": "El parámetro ID está prohibido durante la creación.",
-        "ref": "..\\rh-page\\services\\page.js [22,92]"
+        "ref": "..\\rh-page\\services\\page.js [28,92]"
+    },
+    {
+        "source": "ID parameter is forbidden for creation.",
+        "language": "es",
+        "context": "pageFormat",
+        "translation": "El parámetro ID está prohibido durante la creación.",
+        "ref": "..\\rh-page\\services\\page_format.js [17,98]"
     },
     {
         "source": "Name",
         "language": "es",
         "context": "page",
         "translation": "Nombre",
-        "ref": "..\\rh-page\\services\\page.js [24,78]"
+        "ref": "..\\rh-page\\services\\page.js [31,78]"
+    },
+    {
+        "source": "Name",
+        "language": "es",
+        "context": "pageFormat",
+        "translation": "Nombre",
+        "ref": "..\\rh-page\\services\\page_format.js [19,84]"
+    },
+    {
+        "source": "Page not found.",
+        "language": "es",
+        "context": "page",
+        "translation": "Página no encontrada.",
+        "ref": "..\\rh-page\\controllers\\page.js [73,72]"
+    },
+    {
+        "source": "Plain",
+        "language": "es",
+        "context": "pageFormat",
+        "translation": "Plano",
+        "ref": "..\\rh-page\\conf_data.js [9,62]"
     },
     {
         "source": "Spanish",
@@ -52,6 +94,13 @@
         "language": "es",
         "context": "page",
         "translation": "Título ",
-        "ref": "..\\rh-page\\services\\page.js [25,80]"
+        "ref": "..\\rh-page\\services\\page.js [36,80]"
+    },
+    {
+        "source": "Title",
+        "language": "es",
+        "context": "pageFormat",
+        "translation": "Título",
+        "ref": "..\\rh-page\\services\\page_format.js [20,86]"
     }
 ]
