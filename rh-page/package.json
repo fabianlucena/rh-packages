@@ -1,0 +1,13 @@
+{
+  "name": "rh-page",
+  "version": "1.0.0",
+  "description": "",
+  "main": "rh-page.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Fabian Lucena",
+  "license": "ISC"
+}

@@ -1,0 +1,57 @@
+[
+    {
+        "source": "Content",
+        "language": "es",
+        "context": "page",
+        "translation": "Contenido",
+        "ref": "..\\rh-page\\services\\page.js [26,84]"
+    },
+    {
+        "source": "Error: No page name.",
+        "language": "es",
+        "context": "page",
+        "isDraft": false,
+        "translation": "Error: sin nombre de página.",
+        "ref": "..\\rh-page\\translations.js [7,40]"
+    },
+    {
+        "source": "Exists another page with that name.",
+        "language": "es",
+        "context": "page",
+        "translation": "Existe otra página con ese nombre.",
+        "ref": "..\\rh-page\\services\\page.js [31,91]"
+    },
+    {
+        "source": "ID parameter is forbidden for creation.",
+        "language": "es",
+        "context": "page",
+        "translation": "El parámetro ID está prohibido durante la creación.",
+        "ref": "..\\rh-page\\services\\page.js [22,92]"
+    },
+    {
+        "source": "Name",
+        "language": "es",
+        "context": "page",
+        "translation": "Nombre",
+        "ref": "..\\rh-page\\services\\page.js [24,78]"
+    },
+    {
+        "source": "Spanish",
+        "language": "es",
+        "translation": "Español",
+        "ref": "rh-page-es.js [20,41]"
+    },
+    {
+        "source": "Spanish language.",
+        "language": "es",
+        "translation": "Idioma español.",
+        "ref": "rh-page-es.js [21,57]"
+    },
+    {
+        "source": "Title",
+        "language": "es",
+        "context": "page",
+        "translation": "Título ",
+        "ref": "..\\rh-page\\services\\page.js [25,80]"
+    }
+]
