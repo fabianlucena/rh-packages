@@ -1,3 +1,5 @@
+'use strict';
+
 import {MenuItemService} from './services/menu_item.js';
 import {conf as localConf} from './conf.js';
 import {runSequentially} from 'rf-util';

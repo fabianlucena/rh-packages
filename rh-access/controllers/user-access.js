@@ -70,11 +70,22 @@ export class UserAccessController {
     static async post(req, res) {
         const loc = req.loc;
         const data = {
-            siteId: req.site?.id,
             userUuid: checkParameterUuid(req.body.User, loc._cf('userAccess', 'User')),
             siteUuid: checkParameterUuid(req.body.Site, loc._cf('userAccess', 'Site')),
             rolesUuid: await checkParameterUuidList(req.body.Roles, loc._cf('userAccess', 'Roles')),
         };
+
+        if (req.body.Site) {
+            const siteUuid = checkParameterUuid(req.body.Site, loc._cf('userAccess', 'Site'));
+            if (siteUuid) {
+                data.siteUuid = siteUuid;
+            } else if (!req.site?.id) {
+                throw new _HttpError(req.loc._cf('userAccess', 'Site UUID param is missing.'), 400);
+            } else {
+                data.siteId = req.site.id;
+            }
+        }
+
         if (!req.roles.includes('admin'))
             data.assignableRolesId = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
 
@@ -392,7 +403,7 @@ export class UserAccessController {
         if (!req.roles.includes('admin'))
             deleteWhere.notRoleName = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
 
-        rowsDeleted = await userAccessService.delete(deleteWhere);
+        rowsDeleted = await userAccessService.deleteFor(deleteWhere);
 
         if (!rowsDeleted)
             throw new _HttpError(req.loc._cf('userAccess', 'User with UUID %s has not access to the site with UUID %s.'), 403, userUuid, siteUuid);

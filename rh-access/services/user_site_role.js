@@ -211,7 +211,7 @@ export class UserSiteRoleService extends ServiceSharedEnable {
     }
 
     async delete(options) {
-        await this.completeReferences(options, true);
+        await this.completeReferences(options.where, true);
 
         const where = options.where;
         if (where?.notRoleId) {

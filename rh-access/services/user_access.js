@@ -14,14 +14,18 @@ export class UserAccessService extends UserSiteRoleService {
     }
 
     async completeReferences(data, clean) {
-        super.completeReferences(data, clean);
+        await super.completeReferences(data, clean);
 
         if (!data.rolesId?.length && data.rolesUuid?.length)
             data.rolesId = await this.roleService.getIdForUuid(data.rolesUuid);
     }
 
     async validateForCreation(data) {
-        await this.userService.validateForCreation(data.User);
+        await this.completeReferences(data);
+        
+        if (data.User) {
+            await this.userService.validateForCreation(data.User);
+        }
 
         if (!data.rolesId?.length)
             throw new MissingPropertyError('UserAccess', 'roles');
@@ -30,6 +34,8 @@ export class UserAccessService extends UserSiteRoleService {
     }
 
     async create(data) {
+        await this.validateForCreation(data);
+
         const transaction = await this.createTransaction();
         try {
             let user;
