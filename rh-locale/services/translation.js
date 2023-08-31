@@ -36,7 +36,7 @@ export class TranslationService extends ServiceIdUuidEnable {
      */
     async completeSourceId(data) {
         if (!data.sourceId && data.source)
-            data.sourceId = await conf.global.services.Source.singleton().getIdOrCreateForTextAndIsJson(data.source, data.isJson, {data: {ref: data.ref}});
+            data.sourceId = await SourceService.singleton().getIdOrCreateForTextAndIsJson(data.source, data.isJson, {data: {ref: data.ref}});
 
         return data;
     }
@@ -101,7 +101,7 @@ export class TranslationService extends ServiceIdUuidEnable {
                         continue;
                     }
                     
-                    arrangedText = arrangedText.trim();
+                    arrangedText = arrangedText.trim().replace(/\r/g, '\\r').replace(/\n/g, '\\n');
                     let translationObject = await conf.global.models.TranslationCache.findOne({where: {language, context: options.context ?? null, domain: options.domain ?? null, source: arrangedText, isJson: options.isJson}});
                     if (!translationObject) {
                         const bestTranslation = await TranslationService.singleton().getBestMatchForLanguageTextIsJsonContextsAndDomains(language, arrangedText, options.isJson, options.context, options.domain);
@@ -183,8 +183,13 @@ export class TranslationService extends ServiceIdUuidEnable {
                     translation = await conf.global.models.Translation.findAll(options);
 
                     if (translation.length) {
-                        if (translation[0].text)
-                            return {translation: translation[0].text, isTranslated: true, isDraft: translation[0].isDraft};
+                        if (translation[0].text) {
+                            return {
+                                translation: translation[0].text, 
+                                isTranslated: true, 
+                                isDraft: translation[0].isDraft,
+                            };
+                        }
                     }
                 }
             }
