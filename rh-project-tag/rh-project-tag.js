@@ -71,8 +71,9 @@ async function projectResponseGetting(options) {
 
 async function projectGetting(options) {
     if (options.includeTags) {
-        if (options.attributes && !options.attributes.includes('id'))
+        if (options.attributes && !options.attributes.includes('id')) {
             options.attributes.push('id');
+        }
     }
 }
 
@@ -86,12 +87,14 @@ async function projectCreated(row, data, options) {
 
 async function projectUpdated(result, data, options) {
     const id = await projectService.getIdFor(options.where);
-    if (id)
+    if (id) {
         await projectTagService.updateTagsForEntityId(data.tags, id, options);
+    }
 }
 
 async function projectDeleting(options) {
     const id = await projectService.getIdFor(options.where);
-    if (id)
+    if (id) {
         await projectTagService.deleteTagsForEntityId(id, options);
+    }
 }

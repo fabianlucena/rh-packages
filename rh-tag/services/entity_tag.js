@@ -123,24 +123,25 @@ export class EntityTagService extends ServiceBase {
     }
 
     async updateTagsForEntityId(tags, entityId, options) {
-        if (!entityId)
+        if (!entityId) {
             return;
+        }
 
         let result = 0;
         const entitiesId = Array.isArray(entityId)? entityId: [entityId];
-        if (!entitiesId?.length)
+        if (!entitiesId?.length) {
             return;
+        }
 
         const data = await this.completeReferences({tags}, true);
-        if (!data.tagId?.length)
-            return;
-
+        
         for (const entityId of entitiesId) {
             for (const tagId of data.tagId) {
                 const data = {[this.entityId]: entityId, tagId};
                 const rows = await this.getFor(data, {skipNoRowsError: true});
-                if (rows?.length)
+                if (rows?.length) {
                     continue;
+                }
 
                 await this.create(data, options);
                 result++;
