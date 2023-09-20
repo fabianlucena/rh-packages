@@ -72,7 +72,7 @@ export class CompanySiteController {
             const sessionData = await SessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
 
             sessionData.api ??= {};
-            sessionData.api.data ??= {};
+            sessionData.api.data = {};
             sessionData.api.data.companyUuid = companySite.Company.uuid;
 
             sessionData.menu ??= [];
