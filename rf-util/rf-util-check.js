@@ -159,9 +159,10 @@ export function checkParameterUuid(value, options) {
 export function checkValidUuidList(value, options) {
     options = {
         method: uuidList => {
-            for (let i in uuidList) {
-                if (!uuid.validate(uuidList[i]))
+            for (const uuidItem of uuidList) {
+                if (!uuid.validate(uuidItem)) {
                     return false;
+                }
             }
 
             return true;
@@ -175,12 +176,16 @@ export function checkValidUuidList(value, options) {
 }
 
 export function checkParameterUuidList(value, options) {
+    if (!Array.isArray(value) && value) {
+        value = value.split(',').map(value => value.trim());
+    }
+
     options = getCheckOptionsFromParams(options);
     return checkValidUuidList(
         value,
         {
             statusCode: 400,
-            _message: [loc._f('"%s" parameter is not a valid UUID value'), options?.paramTitle ?? 'value'],
+            _message: [loc._f('"%s" parameter is not a valid UUID list value'), options?.paramTitle ?? 'value'],
             ...options,
         }
     );
