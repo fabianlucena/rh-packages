@@ -21,7 +21,7 @@
     {
         "source": "Project: %s",
         "language": "es",
-        "translation": "Proyecto %s",
+        "translation": "Proyecto: %s",
         "ref": "..\\rh-project-select\\controllers\\project-select.js [55,61]"
     },
     {
