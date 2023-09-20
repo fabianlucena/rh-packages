@@ -136,18 +136,22 @@ export class EntityTagService extends ServiceBase {
         const data = await this.completeReferences({tags}, true);
         
         for (const entityId of entitiesId) {
-            for (const tagId of data.tagId) {
-                const data = {[this.entityId]: entityId, tagId};
-                const rows = await this.getFor(data, {skipNoRowsError: true});
-                if (rows?.length) {
-                    continue;
+            if (data.tagId) {
+                for (const tagId of data.tagId) {
+                    const data = {[this.entityId]: entityId, tagId};
+                    const rows = await this.getFor(data, {skipNoRowsError: true});
+                    if (rows?.length) {
+                        continue;
+                    }
+
+                    await this.create(data, options);
+                    result++;
                 }
 
-                await this.create(data, options);
-                result++;
+                result += await this.deleteFor({[this.entityId]: entityId, notTagId: data.tagId}, {...options, where: undefined});
+            } else {
+                result += await this.deleteFor({[this.entityId]: entityId}, {...options, where: undefined});
             }
-
-            result += await this.deleteFor({[this.entityId]: entityId, notTagId: data.tagId}, {...options, where: undefined});
         }
 
         return result;
