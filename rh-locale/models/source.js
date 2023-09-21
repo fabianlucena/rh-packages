@@ -41,7 +41,19 @@ export default (sequelize, DataTypes) => {
         sequelize,
         timestamps: true,
         freezeTableName: true,
-        schema: conf.schema
+        schema: conf.schema,
+        /*indexes: [
+            {
+                //unique: true,
+                type: 'FULLTEXT',
+                fields: [
+                    'isJson',
+                    {
+                        name: 'text',
+                    },
+                ],
+            },
+        ],*/
     });
     return Source;
 };

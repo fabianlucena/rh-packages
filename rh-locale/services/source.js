@@ -2,7 +2,7 @@
 
 import {conf} from '../conf.js';
 import {ServiceIdUuidEnable} from 'rf-service';
-import {checkDataForMissingProperties, getSingle} from 'sql-util';
+import {checkDataForMissingProperties} from 'sql-util';
 
 export class SourceService extends ServiceIdUuidEnable {
     sequelize = conf.global.sequelize;
@@ -15,22 +15,25 @@ export class SourceService extends ServiceIdUuidEnable {
     }
 
     async getListOptions(options) {
-        if (!options)
-            options = {};
+        options ||= {};
 
         return options;
     }
 
     /**
-     * Gets a source for its text. For many coincidences and for no rows this method fails.
+     * Gets a source for its text. For many coincidences returns the first ocurrence and for no rows this method fails.
      * @param {string} text - text for the source to get.
      * @param {boolean} isJson - indicates if the text is a object in JSON format.
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Source}}
      */
     async getForTextAndIsJson(text, isJson, options) {
-        const rows = await this.getList({where: {text, isJson: isJson ?? false, ...options?.where}, limit: 2, ...options});
-        return getSingle(rows, {params: ['source', 'text', text, 'Source'], ...options});
+        const rows = await this.getList({where: {text, isJson: isJson ?? false, ...options?.where}, limit: 1, ...options});
+        if (!rows?.length) {
+            return;
+        }
+
+        return rows[0];
     }
     
     /**
