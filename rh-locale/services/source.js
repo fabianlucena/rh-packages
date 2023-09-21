@@ -53,8 +53,9 @@ export class SourceService extends ServiceIdUuidEnable {
         data.text = data.text.trim();
         data.isJson ??= false;
         const row = await this.getForTextAndIsJson(data.text, data.isJson, {attributes: ['id'], skipNoRowsError: true, ...options});
-        if (row)
+        if (row) {
             return row;
+        }
 
         return this.create(data);
     }

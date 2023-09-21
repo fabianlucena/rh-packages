@@ -35,8 +35,9 @@ export class TranslationService extends ServiceIdUuidEnable {
      * @returns {Promise{data}}
      */
     async completeSourceId(data) {
-        if (!data.sourceId && data.source)
+        if (!data.sourceId && data.source) {
             data.sourceId = await SourceService.singleton().getIdOrCreateForTextAndIsJson(data.source, data.isJson, {data: {ref: data.ref}});
+        }
 
         return data;
     }
@@ -147,8 +148,9 @@ export class TranslationService extends ServiceIdUuidEnable {
         let domainsId = [];
         
         if (contexts) {
-            if (!Array.isArray(contexts))
+            if (!Array.isArray(contexts)) {
                 contexts = contexts.split(',').map(t => t.trim());
+            }
             
             contextsId = await ContextService.singleton().getIdOrCreateForName(contexts);
         }
@@ -156,15 +158,18 @@ export class TranslationService extends ServiceIdUuidEnable {
             contextsId.push(null);
 
         if (domains) {
-            if (!Array.isArray(domains))
+            if (!Array.isArray(domains)) {
                 domains = domains.split(',').map(t => t.trim());
+            }
             
             domainsId = await DomainService.singleton().getIdOrCreateForName(domains);
-            if (!domainsId.length && domains.some(c => !c))
+            if (!domainsId.length && domains.some(c => !c)) {
                 domainsId.push(null);
+            }
         }
-        if (!domainsId.length || !domainsId.some(domian => domian === null))
+        if (!domainsId.length || !domainsId.some(domian => domian === null)) {
             domainsId.push(null);
+        }
         
         let languageData = await LanguageService.singleton().createIfNotExists({name: language.trim(), title: language.trim()});
         while (languageData.id) {
@@ -194,8 +199,9 @@ export class TranslationService extends ServiceIdUuidEnable {
                 }
             }
 
-            if (!languageData.parentId) 
+            if (!languageData.parentId) {
                 break;
+            }
 
             languageData = await LanguageService.singleton().getForId(languageData.parentId);
         }
@@ -225,8 +231,9 @@ export class TranslationService extends ServiceIdUuidEnable {
         await this.completeReferences(data);
 
         const rows = await this.getList({where:{languageId: data.languageId, sourceId: data.sourceId, domainId: data.domainId, contextId: data.contextId, ...options?.where}, limit: 1, ...options});
-        if (rows.length)
+        if (rows.length) {
             return rows[0];
+        }
 
         data.text = data.translation;
 

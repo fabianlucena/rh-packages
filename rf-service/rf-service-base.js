@@ -50,8 +50,9 @@ export class ServiceBase {
      * @returns {Promise[<Child>Service]}
      */
     static singleton() {
-        if (!this.singletonInstance)
+        if (!this.singletonInstance) {
             this.singletonInstance = new this();
+        }
 
         return this.singletonInstance;
     }
@@ -94,11 +95,13 @@ export class ServiceBase {
                 continue;
             }
 
-            if (!reference.service)
+            if (!reference.service) {
                 reference = {service: reference};
+            }
                 
-            if (typeof reference !== 'object')
+            if (typeof reference !== 'object') {
                 reference = {};
+            }
 
             await this.completeEntityId(data, {name, ...reference, clean});
         }
@@ -129,52 +132,57 @@ export class ServiceBase {
                 options.service;
             const getIdForName = options.getIdForName ?? 'getIdForName';
 
-            if (data[uuidPropertyName] && service.getIdForUuid)
+            if (data[uuidPropertyName] && service.getIdForUuid) {
                 data[idPropertyName] = await service.getIdForUuid(data[uuidPropertyName]);
-            else if (typeof data[name] === 'string' && data[name] && service[getIdForName])
+            } else if (typeof data[name] === 'string' && data[name] && service[getIdForName]) {
                 data[idPropertyName] = await service[getIdForName](data[name], {skipNoRowsError: true});
-            else {
+            } else {
                 if (data[Name] && typeof data[Name] === 'object') {
-                    if (data[Name].id)
+                    if (data[Name].id) {
                         data[idPropertyName] = data[Name].id;
-                    else if (data[Name].uuid && service.getIdForUuid)
+                    } else if (data[Name].uuid && service.getIdForUuid) {
                         data[idPropertyName] = await service.getIdForUuid(data[Name].uuid);
-                    else if (data[Name].name && service[getIdForName])
+                    } else if (data[Name].name && service[getIdForName]) {
                         data[idPropertyName] = await service[getIdForName](data[Name].name);
+                    }
                 }
             }
 
             if (!data[idPropertyName]) {
                 const otherName = options.otherName;
-                if (otherName && typeof data[otherName] === 'string' && data[otherName] && service[getIdForName])
+                if (otherName && typeof data[otherName] === 'string' && data[otherName] && service[getIdForName]) {
                     data[idPropertyName] = await service[getIdForName](data[otherName], {skipNoRowsError: true});
+                }
 
                 if (!data[idPropertyName] && options.createIfNotExists) {
                     let object;
-                    if (typeof data[Name] === 'object' && data[Name])
+                    if (typeof data[Name] === 'object' && data[Name]) {
                         object = await service.createIfNotExists(data[Name]);
-                    else if (typeof data[Name] === 'string' && data[Name])
+                    } else if (typeof data[Name] === 'string' && data[Name]) {
                         object = await service.createIfNotExists({name: data[Name]});
-                    else if (typeof data[name] === 'string' && data[name])
+                    } else if (typeof data[name] === 'string' && data[name]) {
                         object = await service.createIfNotExists({name: data[name]});
-                    else if (typeof data[otherName] === 'string' && data[otherName])
+                    } else if (typeof data[otherName] === 'string' && data[otherName]) {
                         object = await service.createIfNotExists({name: data[otherName]});
+                    }
 
-                    if (object)
+                    if (object) {
                         data[idPropertyName] = object?.id;
-                    else {
+                    } else {
                         let list;
-                        if (Array.isArray(data[Name]) && data[Name].length)
+                        if (Array.isArray(data[Name]) && data[Name].length) {
                             list = data[Name];
-                        else if (Array.isArray(data[name]) && data[name].length)
+                        } else if (Array.isArray(data[name]) && data[name].length) {
                             list = data[name];
-                        else if (Array.isArray(data[otherName]) && data[otherName].length)
+                        } else if (Array.isArray(data[otherName]) && data[otherName].length) {
                             list = data[otherName];
+                        }
 
                         if (list?.length) {
                             const id = [];
-                            for (const item of list)
+                            for (const item of list) {
                                 id.push((await service.createIfNotExists({name: item})).id);
+                            }
                             
                             data[idPropertyName] = id;
                         }

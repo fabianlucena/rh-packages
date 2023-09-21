@@ -98,8 +98,9 @@ export async function posConfigureModelsAssociations(sequelize) {
 }
 
 export function postConfigureModels(sequelize) {
-    if (!sequelize)
+    if (!sequelize) {
         return;
+    }
 
     Object.keys(sequelize.models).forEach(modelName => {
         if (sequelize.models[modelName].postAssociate) {
@@ -109,12 +110,14 @@ export function postConfigureModels(sequelize) {
 }
 
 export async function getSingle(rowList, options) {
-    if (rowList.length == 1)
+    if (rowList.length == 1) {
         return rowList[0];
+    }
 
     if (!rowList.length) {
-        if (options?.skipNoRowsError)
+        if (options?.skipNoRowsError) {
             return;
+        }
         
         throw new NoRowsError({
             message: options?.noRowsError ?? options?.error,
@@ -125,8 +128,9 @@ export async function getSingle(rowList, options) {
         });
     }
     
-    if (options?.skipManyRowsError)
+    if (options?.skipManyRowsError) {
         return rowList[0];
+    }
 
     return new ManyRowsError({
         message: options?.manyRowsError || options?.error,
