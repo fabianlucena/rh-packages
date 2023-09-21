@@ -114,6 +114,13 @@
         "ref": "..\\rh-locale\\texts.js [20,15]"
     },
     {
+        "source": "Loading...",
+        "language": "es",
+        "isDraft": false,
+        "translation": "Cargando...",
+        "ref": "..\\rh-locale\\texts.js [33,21]"
+    },
+    {
         "source": "Next",
         "language": "es",
         "translation": "Siguiente",

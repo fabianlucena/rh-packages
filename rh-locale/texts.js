@@ -30,3 +30,4 @@ loc._f('Total pages %s\nTotal rows founded %s\nShowing %s rows from %s to %s');
 loc._f('View');
 
 loc._f('-- Select an option --');
+loc._f('Loading...');
