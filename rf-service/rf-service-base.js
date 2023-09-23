@@ -69,8 +69,9 @@ export class ServiceBase {
     }
 
     async emit(eventSubName, condition, ...params) {
-        if (condition !== false && this.eventBus && this.eventName)
+        if (condition !== false && this.eventBus && this.eventName) {
             return this.eventBus?.$emit(this.eventName + '.' + eventSubName, ...params);
+        }
     }
 
     /**
@@ -201,12 +202,23 @@ export class ServiceBase {
     }
 
     /**
+     * Performs the necesary validations.
+     * @param {object} data - data to update in entity.
+     * @param {string} operation - any of values: creation, update or delete.
+     * @returns {Promise[data]} - the data.
+     */
+    // eslint-disable-next-line no-unused-vars
+    async validate(data, operation) {
+        return data;
+    }
+
+    /**
      * Performs the necesary validations before creation.
      * @param {object} data - data to update in entity.
      * @returns {Promise[data]} - the data.
      */
     async validateForCreation(data) {
-        return data;
+        return this.validate(data, 'creation');
     }
 
     /**
@@ -221,8 +233,9 @@ export class ServiceBase {
 
         let transaction;
         if (options?.transaction || this.transaction) {
-            if (options.transaction === true || !options.transaction)
+            if (options.transaction === true || !options.transaction) {
                 options.transaction = transaction = await this.createTransaction();
+            }
         }
 
         try {
@@ -251,21 +264,24 @@ export class ServiceBase {
      * - view: show visible peoperties.
      */
     async getListOptions(options) {
-        if (!options)
+        if (!options) {
             options = {};
+        }
 
         if (options.q && options.searchColumns) {
             const Op = this.Sequelize.Op;
             const q = `%${options.q}%`;
             const qColumns = [];
-            for (const searchColumn of options.searchColumns)
+            for (const searchColumn of options.searchColumns) {
                 qColumns?.push({[searchColumn]: {[Op.like]: q}});
+            }
 
             const qWhere = {[Op.or]: qColumns};
-            if (options.where)
+            if (options.where) {
                 options.where = {[Op.and]: [options.where, qWhere]};
-            else
+            } else {
                 options.where = qWhere;
+            }
         }
 
         arrangeOptions(options, this.sequelize);
@@ -282,11 +298,14 @@ export class ServiceBase {
         options = await this.getListOptions(options);
         await this.emit('getting', options?.emitEvent, options);
         let result;
-        if (options.withCount)
+        if (options.withCount) {
             result = this.model.findAndCountAll(options);
-        else
+        } else {
             result = this.model.findAll(options);
+        }
+
         await this.emit('getted', options?.emitEvent, result, options);
+
         return result;
     }
 
@@ -317,21 +336,25 @@ export class ServiceBase {
      * - skipManyRowsError: if is true the exception ManyRowsError will be omitted.
      */
     async getSingleFromRows(rows, options) {
-        if (rows.then)
+        if (rows.then) {
             rows = await rows;
+        }
 
-        if (rows.length === 1)
+        if (rows.length === 1) {
             return rows[0];
+        }
 
         if (!rows.length) {
-            if (options?.skipNoRowsError)
+            if (options?.skipNoRowsError) {
                 return;
+            }
             
             throw new NoRowsError();
         }
         
-        if (options?.skipManyRowsError)
+        if (options?.skipManyRowsError) {
             return rows[0];
+        }
 
         return new ManyRowsError({length: rows.length});
     }
@@ -367,6 +390,15 @@ export class ServiceBase {
     }
 
     /**
+     * Performs the necesary validations before updating.
+     * @param {object} data - data to update in entity.
+     * @returns {Promise[data]} - the data.
+     */
+    async validateForUpdate(data) {
+        return this.validate(data, 'update');
+    }
+
+    /**
      * Updates rows for options.
      * @param {object} data - Data to update.
      * @param {object} options - object with the where property for criteria to update and the transaction object.
@@ -374,6 +406,7 @@ export class ServiceBase {
      */
     async update(data, options) {
         await this.completeReferences(data);
+        await this.validateForUpdate(data);
 
         await this.emit('updating', options?.emitEvent, data, options);
         const result = await this.model.update(data, options);
@@ -406,7 +439,6 @@ export class ServiceBase {
         await this.emit('deleted', options?.emitEvent, result, options);
 
         return result;
-
     }
 
     /**
