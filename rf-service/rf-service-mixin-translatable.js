@@ -5,17 +5,20 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
         let result = super.getList(options);
 
         let loc;
-        if (options.translate !== false)
+        if (options.translate !== false) {
             loc = options.loc;
+        }
 
         if (loc) {
             result = await result;
-            if (options.withCount)
+            if (options.withCount) {
                 result.rows = await this.translateRows(await result.rows, loc);
-            else
+            } else {
                 result = await this.translateRows(await result, loc);
-        } else if (options.translate)
+            }
+        } else if (options.translate) {
             console.warn('Cannot translate because no localization (loc) defined.');
+        }
 
         return result;
     }
@@ -25,22 +28,19 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
     }
 
     async translateRow(row, loc) {
-        if (row.toJSON)
+        if (row.toJSON) {
             row = row.toJSON();
-
-        if (row.createdAt)
-            row.createdAt = await loc.strftime('%x %R', row.createdAt);
-
-        if (row.updatedAt)
-            row.updatedAt = await loc.strftime('%x %R', row.updatedAt);
+        }
 
         if (row.isTranslatable) {
             const translationContext = row.translationContext ?? this.defaultTranslationContext ?? null;
-            if (row.title)
+            if (row.title) {
                 row.title = await loc._c(translationContext, row.title);
+            }
 
-            if (row.description)
+            if (row.description) {
                 row.description = await loc._c(translationContext, row.description);
+            }
         }
         delete row.isTranslatable;
 
