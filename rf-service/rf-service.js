@@ -30,4 +30,4 @@ export class ServiceIdUuidEnable extends ServiceMixinUuidEnable(ServiceMixinEnab
 export class ServiceIdUuidNameEnableTranslatable extends ServiceMixinTranslatable(ServiceMixinUuidEnable(ServiceMixinEnable(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase)))))))) {}
 export class ServiceShared extends ServiceMixinShared(ServiceBase) {}
 export class ServiceSharedEnable extends ServiceMixinEnable(ServiceMixinShared(ServiceBase)) {}
-export class ServiceIdUuidNameSharedEnableTranslatable extends ServiceMixinUuidEnable(ServiceMixinEnable(ServiceMixinShared(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase)))))))) {}
+export class ServiceIdUuidNameSharedEnableTranslatable extends ServiceMixinTranslatable(ServiceMixinUuidEnable(ServiceMixinEnable(ServiceMixinShared(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))))) {}

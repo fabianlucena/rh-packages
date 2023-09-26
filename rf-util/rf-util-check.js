@@ -122,7 +122,45 @@ export function checkParameterStringNotNullOrEmpty(value, options) {
     ) ;
 }
 
+export function checkParameterStringUndefinedOrNotNullOrEmpty(value, options) {
+    if (value === undefined) {
+        return value;
+    }
+
+    options = getCheckOptionsFromParams(options);
+    return checkNotNullOrEmpty(
+        value,
+        {
+            statusCode: 400,
+            _message: [loc._f('"%s" parameter is missing, null, or empty'), options?.paramTitle ?? 'value'],
+            ...options,
+        }
+    ) && checkString(
+        value,
+        {
+            statusCode: 400,
+            _message: [loc._f('"%s" parameter is not a string'), options?.paramTitle ?? 'value'],
+            ...options,
+        }
+    );
+}
+
 export function checkValidUuid(value, options) {
+    options = {
+        method: uuid.validate,
+        statusCode: 500,
+        _message: [loc._f('"%s" is not a valid UUID value'), options?.paramTitle ?? 'value'],
+        ...options
+    };
+
+    return check(value, options);
+}
+
+export function checkValidUuidOrUnefined(value, options) {
+    if (value === undefined) {
+        return value;
+    }
+
     options = {
         method: uuid.validate,
         statusCode: 500,

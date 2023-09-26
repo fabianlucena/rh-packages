@@ -27,7 +27,7 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
         return Promise.all(rows.map(row => this.translateRow(row, loc)));
     }
 
-    async translateRow(row, loc) {
+    async translateRow(row, loc, options) {
         if (row.toJSON) {
             row = row.toJSON();
         }
@@ -42,7 +42,10 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
                 row.description = await loc._c(translationContext, row.description);
             }
         }
-        delete row.isTranslatable;
+
+        if (!options?.skipDeleteIsTranslatable) {
+            delete row.isTranslatable;
+        }
 
         return row;
     }
