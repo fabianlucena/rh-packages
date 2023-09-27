@@ -480,19 +480,15 @@ export async function configureModule(global, module) {
                 
                 for (const sep of ['_', '-']) {
                     let path = module.path + `/conf${sep}data.js`;
-                    if (fs.existsSync(path))
+                    if (fs.existsSync(path)) {
                         deepComplete(module.data, (await import('file://' + path)).data);
-
-                    if (env) {
-                        path = module.path + `/conf${sep}data${sep}${env}.js`;
-                        if (fs.existsSync(path))
-                            deepComplete(module.data, (await import('file://' + path)).data);
                     }
 
                     if (suffix) {
                         path = module.path + `/conf${sep}data${sep}${suffix}.js`;
-                        if (fs.existsSync(path))
+                        if (fs.existsSync(path)) {
                             deepComplete(module.data, (await import('file://' + path)).data);
+                        }
                     }
                 }
             }
