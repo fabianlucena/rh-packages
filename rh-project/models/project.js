@@ -33,12 +33,10 @@ export default (sequelize, DataTypes) => {
         name: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true,
         },
         title: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true,
         },
         isTranslatable: {
             type: DataTypes.BOOLEAN,
