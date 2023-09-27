@@ -21,19 +21,23 @@ export class ProjectService extends ServiceIdUuidNameSharedEnableTranslatable {
     eventName = 'project';
 
     async validateForCreation(data) {
-        if (data.id)
+        if (data.id) {
             throw new CheckError(loc._cf('project', 'ID parameter is forbidden for creation.'));
+        }
 
         checkParameterStringNotNullOrEmpty(data.name, loc._cf('project', 'Name'));
         checkParameterStringNotNullOrEmpty(data.title, loc._cf('project', 'Title'));
 
+        if (!data.companyId) {
+            throw new CheckError(loc._cf('project', 'Company parameter is missing.'));
+        }
+
         checkValidUuidOrNull(data.uuid);
 
-        if (await this.getForName(data.name, {skipNoRowsError: true}))
-            throw new ConflictError(loc._cf('project', 'Exists another test scenary with that name.'));
-
-        if (!data.owner && !data.ownerId)
-            throw new CheckError(loc._cf('project', 'No owner specified.'));
+        const rows = await this.getFor({name: data.name, companyId: data.companyId}, {skipNoRowsError: true});
+        if (rows?.length) {
+            throw new ConflictError(loc._cf('project', 'Exists another test project with that name in this company.'));
+        }
 
         return true;
     }
