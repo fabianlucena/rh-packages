@@ -5,7 +5,7 @@ import {UserAccessService} from '../services/user_access.js';
 import {AssignableRolePerRoleService} from '../services/assignable_role_per_role.js';
 import {conf} from '../conf.js';
 import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
-import {checkParameter, checkParameterUuid, checkParameterUuidList, checkNotNullOrEmpty} from 'rf-util';
+import {checkParameter, checkParameterUuid, checkParameterUuidList, checkNotNullNotEmptyAndNotUndefined} from 'rf-util';
 
 /**
  * @swagger
@@ -389,7 +389,7 @@ export class UserAccessController {
         } else if (siteUuid)
             throw new _HttpError(req.loc._cf('userAccess', 'User UUID param is missing.'), 403);
         else {
-            const uuid = await checkNotNullOrEmpty(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('userAccess', 'UUID'));
+            const uuid = await checkNotNullNotEmptyAndNotUndefined(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('userAccess', 'UUID'));
             const uuidParts = uuid.split(',');
             if (uuidParts.length !== 2)
                 throw new _HttpError(req.loc._cf('userAccess', 'Wrong UUID format.'), 403);

@@ -41,23 +41,28 @@ export function checkNotNull(obj, errMsj) {
 }
 
 export function check(value, options) {
-    if (typeof options === 'string')
+    if (typeof options === 'string') {
         options = {message: options};
+    }
 
-    if (options.allowNull && value === null)
+    if (options.allowNull && value === null) {
         return value;
+    }
     
-    if (options.allowUndefined && value === undefined)
+    if (options.allowUndefined && value === undefined) {
         return value;
+    }
 
     let result;
-    if (options?.method)
+    if (options?.method) {
         result = options.method(value);
-    else
+    } else {
         result = !!value;
+    }
 
-    if (result)
+    if (result) {
         return value;
+    }
     
     throw new CheckError(options);
 }
@@ -69,7 +74,7 @@ function getCheckOptionsFromParams(options, moreOptions) {
     return {...options, ...moreOptions};
 }
 
-export function checkNotNullOrEmpty(value, options) {
+export function checkNotNullNotEmptyAndNotUndefined(value, options) {
     options = {
         method: v => !!v,
         statusCode: 500,
@@ -80,13 +85,24 @@ export function checkNotNullOrEmpty(value, options) {
     return check(value, options);
 }
 
+export function checkUndefinedOrNotNullAndNotEmpty(value, options) {
+    options = {
+        method: v => v === undefined || !!v,
+        statusCode: 500,
+        _message: [loc._f('"%s" is null or empty'), options?.paramTitle ?? 'value'],
+        ...options
+    };
+
+    return check(value, options);
+}
+
 export function checkParameterNotNullOrEmpty(value, options) {
     options = getCheckOptionsFromParams(options);
-    return checkNotNullOrEmpty(
+    return checkUndefinedOrNotNullAndNotEmpty(
         value,
         {
             statusCode: 400,
-            _message: [loc._f('"%s" parameter is null or empty'), options?.paramTitle ?? 'value'],
+            _message: [loc._f('"%s" parameter is undefiend, null or empty'), options?.paramTitle ?? 'value'],
             ...options,
         }
     );
@@ -105,7 +121,7 @@ export function checkString(value, options) {
 
 export function checkParameterStringNotNullOrEmpty(value, options) {
     options = getCheckOptionsFromParams(options);
-    return checkNotNullOrEmpty(
+    return checkNotNullNotEmptyAndNotUndefined(
         value,
         {
             statusCode: 400,
@@ -122,17 +138,13 @@ export function checkParameterStringNotNullOrEmpty(value, options) {
     ) ;
 }
 
-export function checkParameterStringUndefinedOrNotNullOrEmpty(value, options) {
-    if (value === undefined) {
-        return value;
-    }
-
+export function checkParameterStringUndefinedOrNotNullAndNotEmpty(value, options) {
     options = getCheckOptionsFromParams(options);
-    return checkNotNullOrEmpty(
+    return checkUndefinedOrNotNullAndNotEmpty(
         value,
         {
             statusCode: 400,
-            _message: [loc._f('"%s" parameter is missing, null, or empty'), options?.paramTitle ?? 'value'],
+            _message: [loc._f('"%s" parameter is null, or empty'), options?.paramTitle ?? 'value'],
             ...options,
         }
     ) && checkString(
