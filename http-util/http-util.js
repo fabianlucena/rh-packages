@@ -131,8 +131,9 @@ export class ConflictError extends Error {
 }
 
 function log(message) {
-    if (typeof message === 'string')
+    if (typeof message === 'string') {
         message = {message};
+    }
 
     switch(message.type) {
     case 'error': return console.error(message.message);
@@ -158,12 +159,14 @@ export const defaultGlobal = {
 };
 
 export async function httpUtilConfigure(global, ...modules) {
-    if (!global)
+    if (!global) {
         global = {...defaultGlobal};
+    }
 
     if (global.checkRoutePermission === undefined) {
-        if (global.checkPermissionHandler === undefined)
+        if (global.checkPermissionHandler === undefined) {
             global.checkPermissionHandler = async () => {};
+        }
 
         global.checkRoutePermission = (...permission) => (req, res, next) => {
             global.checkPermissionHandler(req, ...permission)
@@ -172,13 +175,15 @@ export async function httpUtilConfigure(global, ...modules) {
         };
     }
 
-    if (!global.sequelize.Sequelize && global.Sequelize)
+    if (!global.sequelize.Sequelize && global.Sequelize) {
         global.sequelize.Sequelize = global.Sequelize;
+    }
 
     if (!global.models) {
         global.models = global.sequelize.models;
-        if (!global.models)
+        if (!global.models) {
             global.models = {};
+        }
     }
 
     await beforeConfig(global);
@@ -204,11 +209,13 @@ export function methodNotAllowed(req) {
 }
 
 export function configureRouter(routesPath, router, checkPermission, options) {
-    if (!router)
+    if (!router) {
         return;
+    }
 
-    if (!routesPath)
+    if (!routesPath) {
         return;
+    }
 
     if (!fs.existsSync(routesPath))
         throw new Error(`The routes path does not exists: ${routesPath}`);
@@ -224,8 +231,9 @@ export function configureRouter(routesPath, router, checkPermission, options) {
 }
 
 export function configureServices(services, servicesPath, options) {
-    if (!servicesPath)
+    if (!servicesPath) {
         return;
+    }
         
     fs
         .readdirSync(servicesPath)
@@ -236,8 +244,9 @@ export function configureServices(services, servicesPath, options) {
                 let module = modules[k];
                 let name = k;
                 let l = name.length;
-                if (l > 7 && name.endsWith('Service'))
+                if (l > 7 && name.endsWith('Service')) {
                     name = name.substring(0, l - 7);
+                }
 
                 services[name] = module;
             }
@@ -245,8 +254,9 @@ export function configureServices(services, servicesPath, options) {
 }
 
 export function configureControllers(controllers, controllersPath, options) {
-    if (!controllersPath)
+    if (!controllersPath) {
         return;
+    }
         
     fs
         .readdirSync(controllersPath)
@@ -257,8 +267,9 @@ export function configureControllers(controllers, controllersPath, options) {
                 let module = modules[k];
                 let name = k;
                 let l = name.length;
-                if (l > 7 && name.endsWith('Controller'))
+                if (l > 7 && name.endsWith('Controller')) {
                     name = name.substring(0, l - 10);
+                }
 
                 controllers[name] = module;
             }
@@ -267,8 +278,10 @@ export function configureControllers(controllers, controllersPath, options) {
 
 export async function sendError(req, res, error) {
     const data = await errorHandler(error, req.loc, req.showErrorInConsole);
-    if (data.stack)
+    if (data.stack) {
         delete data.stack;
+    }
+
     res.status(data.statusCode ?? 500).send(data);
 }
 
@@ -279,19 +292,21 @@ export function httpErrorHandler(req, res) {
 export function asyncHandler(methodContainer, method) {
     return async (req, res, next) => {
         try {
-            if (!methodContainer)
+            if (!methodContainer) {
                 throw new _HttpError(loc._f('No method defined.'));
+            }
 
             if (method) {
-                if (typeof method === 'string')
+                if (typeof method === 'string') {
                     await methodContainer[method](req, res, next);
-                else if (typeof method === 'function')
+                } else if (typeof method === 'function') {
                     await methodContainer.call(method, req, res, next);
-                else
+                } else {
                     throw new _HttpError(loc._f('Error in method definition.'));
-            }
-            else
+                }
+            } else {
                 await methodContainer(req, res, next);
+            }
         }
         catch(err) {
             next(err);
@@ -300,13 +315,15 @@ export function asyncHandler(methodContainer, method) {
 }
 
 export async function getOptionsFromOData(params, options) {
-    if (!options)
+    if (!options) {
         options = {};
+    }
 
     if (params) {
         if (params.$select) {
-            if (!options.attributes)
+            if (!options.attributes) {
                 options.attributes = [];
+            }
 
             params.$select.split(',')
                 .forEach(column => options.attributes.push(column.trim()));
@@ -318,45 +335,54 @@ export async function getOptionsFromOData(params, options) {
 
         if (params.$top) {
             const limit = parseInt(params.$top);
-            if (isNaN(limit))
+            if (isNaN(limit)) {
                 throw new _HttpError(loc._fp('Error to convert $top = "%s" parameter value to a integer number.', params.$top));
+            }
 
-            if (limit > maxRowsInResult)
+            if (limit > maxRowsInResult) {
                 throw new _HttpError(loc._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', maxRowsInResult));
+            }
     
-            if (limit > options.maxLimit)
+            if (limit > options.maxLimit) {
                 throw new _HttpError(loc._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', options.maxLimit));
+            }
     
-            if (limit < 0)
+            if (limit < 0) {
                 throw new _HttpError(loc._fp('The $top parameter cannot be negative.'), 400);
+            }
 
             options.limit = limit;
         }
 
-        if (!options.limit)
+        if (!options.limit) {
             options.limit = defaultRowsInResult;
+        }
     
         if (params.$skip) {
             const offset = parseInt(params.$skip);
-            if (isNaN(offset))
+            if (isNaN(offset)) {
                 throw new _HttpError(loc._fp('Error to convert $skip = "%s" parameter value to a integer number.', params.$skip));
+            }
 
-            if (offset < 0)
+            if (offset < 0) {
                 throw new _HttpError(loc._f('The $skip param cannot be negative.'), 400);
+            }
             
             options.offset = offset;
         }
 
-        if (!options.offset)
+        if (!options.offset) {
             options.offset = 0;
+        }
     }
 
     return options;
 }
 
 export async function getWhereOptionsFromParams(params, definitions, options) {
-    if (!options)
+    if (!options) {
         options = {};
+    }
 
     if (params && definitions) {
         for(const name in definitions) {
@@ -365,12 +391,14 @@ export async function getWhereOptionsFromParams(params, definitions, options) {
                 const def = definitions[name];
                 switch (def) {
                 case 'uuid':
-                    if (!uuid.validate(params.uuid))
+                    if (!uuid.validate(params.uuid)) {
                         throw new NoUUIDError(name);
+                    }
                 }
             
-                if (!options.where)
+                if (!options.where) {
                     options.where = {};
+                }
 
                 options.where[name] = value;
             }
@@ -386,12 +414,13 @@ export async function getOptionsFromParamsAndOData(params, definitions, options)
 }
 
 export async function deleteHandler(req, res, rowCount) {
-    if (!rowCount)
+    if (!rowCount) {
         res.status(200).send({msg: await req.loc._('Nothing to delete.')});
-    else if (rowCount != 1)
+    } else if (rowCount != 1) {
         res.status(200).send({msg: await req.loc._('%s rows deleted.', rowCount)});
-    else
+    } else {
         res.sendStatus(204);
+    }
 }
 
 export function getDeleteHandler(req, res) {
@@ -403,12 +432,14 @@ export async function execAsyncMethodList(asyncMethodList, singleItemName, ...pa
         isEmpty,
         itemName;
     if (Array.isArray(asyncMethodList)) {
-        if (!asyncMethodList.length)
+        if (!asyncMethodList.length) {
             return;
+        }
 
         itemName = singleItemName;
-        if (singleItemName === undefined || singleItemName === null || singleItemName < 0 || singleItemName >= asyncMethodList.length)
+        if (singleItemName === undefined || singleItemName === null || singleItemName < 0 || singleItemName >= asyncMethodList.length) {
             itemName = 0;
+        }
 
         method = asyncMethodList.splice(itemName, 1)[0];
         isEmpty = !asyncMethodList.length;
@@ -422,8 +453,9 @@ export async function execAsyncMethodList(asyncMethodList, singleItemName, ...pa
                 }
             }
 
-            if (!itemName)
+            if (!itemName) {
                 return;
+            }
         }
 
         method = asyncMethodList[itemName];
@@ -432,12 +464,14 @@ export async function execAsyncMethodList(asyncMethodList, singleItemName, ...pa
         isEmpty = !Object.keys(asyncMethodList).length;
     }
 
-    if (!method)
+    if (!method) {
         return;
+    }
 
     await method(...params);
-    if (isEmpty || (singleItemName !== undefined && singleItemName !== null))
+    if (isEmpty || (singleItemName !== undefined && singleItemName !== null)) {
         return;
+    }
             
     return await execAsyncMethodList(asyncMethodList, null, ...params);
 }
@@ -445,17 +479,20 @@ export async function execAsyncMethodList(asyncMethodList, singleItemName, ...pa
 export async function configureModule(global, module) {
     let params = [];
     if (Array.isArray(module)) {
-        if (module.length > 1)
+        if (module.length > 1) {
             params = module.slice(1);
+        }
 
         module = module[0];
     }
 
-    if (typeof module === 'string')
+    if (typeof module === 'string') {
         module = (await import(module)).conf;
+    }
 
-    if (!module.name)
+    if (!module.name) {
         throw new Error('Module does not have a name.');
+    }
 
     if (module.path) {
         const config = global?.config;
@@ -542,11 +579,13 @@ export async function configureModule(global, module) {
 
 export async function installModule(global, module) {
     module.global = global;
-    if (module.routesPath)
+    if (module.routesPath) {
         await configureRouter(module.routesPath, global.router, global.checkRoutePermission, module.routesPathOptions);
+    }
 
-    if (module.init)
+    if (module.init) {
         await runSequentially(module.init, async method => await method());
+    }
 
     if (module.afterConfig) {
         const afterConfig = Array.isArray(module.afterConfig)?
@@ -563,14 +602,102 @@ export async function configureModules(global, modules) {
     global.controllers ||= {};
     global.data ||= {};
 
-    for (const i in modules)
+    for (const i in modules) {
         modules[i] = await configureModule(global, modules[i]);
+    }
 
-    if (global.posConfigureModelsAssociations)
+    if (global.posConfigureModelsAssociations) {
         await global.posConfigureModelsAssociations(global.sequelize);
+    }
     
-    for (const module of modules)
+    for (const module of modules) {
         await installModule(global, module);
+    }
+
+    filterData(global);
+}
+
+export async function filterData(global) {
+    if (!global.data) {
+        return;
+    }
+
+    let updateData = global.config?.db?.updateData;
+    if (!updateData || updateData === true) {
+        return;
+    }
+
+
+    if (typeof updateData === 'string') {
+        updateData = updateData.trim().split(',');
+    }
+
+    if (Array.isArray(updateData)) {
+        const include = [],
+            skip = [];
+        for (let entity of updateData) {
+            if (entity[0] === '!') {
+                skip.push(entity.substring(1));
+            } else {
+                include.push(entity);
+            }
+        }
+
+        updateData = {};
+
+        if (include.length) {
+            updateData.include = include;
+        }
+
+        if (skip.length) {
+            updateData.skip = skip;
+        }
+    }
+
+    if (typeof updateData !== 'object') {
+        return;
+    }
+
+    const updateDataOptions = {};
+    for (const entity in global.data) {
+        updateDataOptions[entity] = true;
+    }
+
+    if (updateData.include) {
+        for (const entity in updateDataOptions) {
+            updateDataOptions[entity] = false;
+        }
+
+        let include = updateData.include;
+        if (typeof include === 'string') {
+            include = include.trim().split(',').map(i => i.trim());
+        }
+
+        for (const entity of include) {
+            updateDataOptions[entity] = true;
+        }
+    }
+
+    if (updateData.skip) {
+        let skip = updateData.skip;
+        if (typeof skip === 'string') {
+            skip = skip.trim().split(',').map(i => i.trim());
+        }
+
+        for (const entity of skip) {
+            updateDataOptions[entity] = false;
+        }
+    }
+
+    const data = global.data;
+    const newData = {};
+    for (const entity in updateDataOptions) {
+        if (updateDataOptions[entity]) {
+            newData[entity] = data[entity];
+        }
+    }
+
+    global.data = newData;
 }
 
 export function getPropertyFromItems(propertyName, list) {
@@ -578,8 +705,9 @@ export function getPropertyFromItems(propertyName, list) {
         const checkList = [];
         list.forEach(item => {
             const v = item[propertyName];
-            if (v !== undefined)
+            if (v !== undefined) {
                 checkList.push(v);
+            }
         });
 
         return checkList;
@@ -588,8 +716,9 @@ export function getPropertyFromItems(propertyName, list) {
         for (let name in list) {
             const item = list[name];
             const v = item[propertyName];
-            if (v !== undefined)
+            if (v !== undefined) {
                 checkList[name] = v;
+            }
         }
 
         return checkList;
@@ -707,12 +836,14 @@ export function cookies(response, cookieName, cookieProperty) {
 
         let [name, ...rest] = cookieProps[0].split('=');
         name = name?.trim();
-        if (!name)
+        if (!name) {
             return;
+        }
 
         const value = rest.join('=').trim();
-        if (!value)
+        if (!value) {
             return;
+        }
 
         const cookie = {
             value: decodeURIComponent(value),
@@ -721,17 +852,20 @@ export function cookies(response, cookieName, cookieProperty) {
         cookieProps.slice(1).forEach(prop => {
             let [name, ...rest] = prop.split('=');
             name = name?.trim();
-            if (!name)
+            if (!name) {
                 return;
+            }
 
             let value = rest.join('=').trim();
-            if (!value)
+            if (!value) {
                 return;
+            }
             
-            if (name === 'Expires')
+            if (name === 'Expires') {
                 value = new Date(value);
-            else
+            } else {
                 value = decodeURIComponent(value);
+            }
 
             cookie[name] = decodeURIComponent(value);
         });
@@ -742,12 +876,14 @@ export function cookies(response, cookieName, cookieProperty) {
     let result = list;
 
     if (result) {
-        if (cookieName)
+        if (cookieName) {
             result = result[cookieName];
+        }
 
         if (result) {
-            if (cookieProperty)
+            if (cookieProperty) {
                 result = result[cookieProperty];
+            }
         }
     }
 
@@ -755,18 +891,21 @@ export function cookies(response, cookieName, cookieProperty) {
 }
 
 function reduceToSingleArray(list, sanitizeMethod) {
-    if (typeof list === 'string')
+    if (typeof list === 'string') {
         list = list.split(',');
+    }
     
-    if (!sanitizeMethod)
+    if (!sanitizeMethod) {
         sanitizeMethod = s => s;
+    }
 
     return list?.map(list => list.split(',').map(item => sanitizeMethod(item)).reduce((a, v) => a = [...a, ...v]));
 }
 
 function checkCors(req, res, requestName, acceptable, responseName, sanitizeMethod) {
-    if (!sanitizeMethod)
+    if (!sanitizeMethod) {
         sanitizeMethod = s => s.trim();
+    }
 
     const requestRaw = req.header(requestName);
     if (requestRaw) {
@@ -774,9 +913,10 @@ function checkCors(req, res, requestName, acceptable, responseName, sanitizeMeth
         if (acceptableList) {
             const requestList = reduceToSingleArray(requestRaw);
             const negotiated = [];
-            for(const value of requestList) {
-                if (acceptableList.includes(sanitizeMethod(value)))
+            for (const value of requestList) {
+                if (acceptableList.includes(sanitizeMethod(value))) {
                     negotiated.push(value);
+                }
             }
 
             res.header(responseName, negotiated.join(', '));
