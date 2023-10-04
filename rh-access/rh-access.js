@@ -19,8 +19,9 @@ conf.configure = configure;
 conf.updateData = updateData;
 
 function configure(global) {
-    if (global.router)
+    if (global.router) {
         global.router.use(PrivilegesController.middleware());
+    }
 
     global.checkPermissionHandler = getCheckPermissionHandler(global.checkPermissionHandler);
 
@@ -30,30 +31,37 @@ function configure(global) {
 
 function getCheckPermissionHandler(chain) {
     return async (req, ...requiredPermissions) => {
-        if (await checkPermissionForUsernameAndSiteName(req, ...requiredPermissions))
+        if (await checkPermissionForUsernameAndSiteName(req, ...requiredPermissions)) {
             return;
+        }
 
-        if (await chain(req, ...requiredPermissions))
+        if (await chain(req, ...requiredPermissions)) {
             return;
+        }
 
         throw new NoPermissionError({permissions: requiredPermissions});
     };
 }
 
 async function checkPermissionForUsernameAndSiteName(privileges, ...requiredPermissions) {
-    if (!privileges)
+    if (!privileges) {
         return false;
+    }
 
-    if (privileges.roles?.includes('admin'))
+    if (privileges.roles?.includes('admin')) {
         return true;
+    }
 
     const permissions = privileges.permissions;
-    if (!permissions)
+    if (!permissions) {
         return false;
+    }
         
-    for (let i = 0, e = requiredPermissions.length; i < e; i++)
-        if (permissions.includes(requiredPermissions[i]))
+    for (let i = 0, e = requiredPermissions.length; i < e; i++) {
+        if (permissions.includes(requiredPermissions[i])) {
             return true;
+        }
+    }
 
     return false;
 }
@@ -71,17 +79,20 @@ async function updateData(global) {
 }
 
 async function login(data, options) {
-    if (!options?.sessionId || !options?.oldSessionId)
+    if (!options?.sessionId || !options?.oldSessionId) {
         return;
+    }
 
     const sessionId = options?.sessionId;
     const currentSite = await SessionSiteService.getList({where: {sessionId}});
-    if (currentSite?.length) 
+    if (currentSite?.length)  {
         return;
+    }
 
     const oldSite = await SessionSiteService.getList({where: {sessionId: options.oldSessionId}});
-    if (!oldSite?.length) 
+    if (!oldSite?.length) {
         return;
+    }
 
     await SessionSiteService.createOrUpdate({sessionId, siteId: oldSite[0].siteId});
 }

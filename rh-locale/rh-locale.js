@@ -12,14 +12,16 @@ conf.configure = configure;
 conf.updateData = updateData;
 
 function configure(global) {
-    if (global.router)
+    if (global.router) {
         global.router.use(LocaleController.middleware());
+    }
 }
 
 async function updateData(global) {
     const data = global?.data;
-    if (!data)
+    if (!data) {
         return;
+    }
         
     const languageService = LanguageService.singleton();
     const translationService = TranslationService.singleton();

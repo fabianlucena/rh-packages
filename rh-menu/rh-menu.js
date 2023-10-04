@@ -11,11 +11,13 @@ conf.updateData = async function(global) {
 
     await runSequentially(global?.data?.permissions, async permissionData => {
         let menuItemData = permissionData.menuItem;
-        if (!menuItemData)
+        if (!menuItemData) {
             return;
+        }
 
-        if (menuItemData === true)
+        if (menuItemData === true) {
             menuItemData = {};
+        }
 
         menuItemData.data ??= {};
         menuItemData.name ??= menuItemData.data.name ?? permissionData.name;

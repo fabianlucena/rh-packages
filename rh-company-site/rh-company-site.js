@@ -14,8 +14,9 @@ async function updateData(global) {
 }
 
 export function getCurrentCompanyId(req) {
-    if (!req?.site?.id)
+    if (!req?.site?.id) {
         return;
+    }
         
     return CompanySiteService.singleton().getCompanyIdForSiteId(req.site.id, {isEnabled: true, skipNoRowsError: true});
 }

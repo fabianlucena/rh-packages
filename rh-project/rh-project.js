@@ -10,8 +10,9 @@ conf.configure = configure;
 conf.updateData = updateData;
 
 async function configure(global, options) {
-    for (const k in options)
+    for (const k in options) {
         conf[k] = options[k];
+    }
 }
 
 async function updateData(global) {

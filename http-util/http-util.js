@@ -184,14 +184,17 @@ export async function httpUtilConfigure(global, ...modules) {
     await beforeConfig(global);
     await configureModules(global, modules);
     await beforeSync(global);
-    if (global.config.db.sync)
+    if (global.config.db.sync) {
         await syncDB(global);
-    if (global.postConfigureModels)
+    }
+    if (global.postConfigureModels) {
         global.postConfigureModels(global.sequelize);
+    }
     await afterSync(global);
     await afterConfig(global);
-    if (global.config.db.updateData)
+    if (global.config.db.updateData) {
         await updateData(global);
+    }
     
     configureSwagger(global);
 }
@@ -461,8 +464,9 @@ export async function configureModule(global, module) {
             if (env) {
                 for (const sep of ['_', '-']) {
                     let path = module.path + `/conf${sep}${env}.js`;
-                    if (fs.existsSync(path))
+                    if (fs.existsSync(path)) {
                         deepComplete(module, (await import('file://' + path)).conf);
+                    }
                 }
             }
 
@@ -470,8 +474,9 @@ export async function configureModule(global, module) {
             if (suffix) {
                 for (const sep of ['_', '-']) {
                     let path = module.path + `/conf${sep}${suffix}.js`;
-                    if (fs.existsSync(path))
+                    if (fs.existsSync(path)) {
                         deepComplete(module, (await import('file://' + path)).conf);
+                    }
                 }
             }
 
@@ -498,27 +503,33 @@ export async function configureModule(global, module) {
     global.modules[module.name] = module;
     module.global = global;
 
-    if (module.configure)
+    if (module.configure) {
         await module.configure(global, ...params);
+    }
 
-    if (module.modelsPath && global.configureModels)
+    if (module.modelsPath && global.configureModels) {
         await global.configureModels(module.modelsPath, global.sequelize);
+    }
 
-    if (module.servicesPath)
+    if (module.servicesPath) {
         await configureServices(global.services, module.servicesPath);
+    }
 
-    if (module.controllersPath)
+    if (module.controllersPath) {
         await configureControllers(global.controllers, module.controllersPath);
+    }
 
-    if (module.schema && global.createSchema)
+    if (module.schema && global.createSchema) {
         await global.createSchema(module.schema);
+    }
 
     if (module.data) {
         const moduleData = {};
         for (let type in module.data) {
             let data = module.data[type];
-            if (typeof data === 'function')
+            if (typeof data === 'function') {
                 data = await data();
+            }
 
             moduleData[type] = data;
         }
@@ -608,8 +619,9 @@ export async function afterSync(global) {
 }
 
 export async function syncDB(global) {
-    if (!global.sequelize)
+    if (!global.sequelize) {
         return;
+    }
 
     await global.sequelize.sync(global?.config?.db?.sync);
     const asyncMethodList = getPropertyFromItems('check', global.sequelize.models);
@@ -617,16 +629,18 @@ export async function syncDB(global) {
 }
 
 export async function updateData(global) {
-    if (!global.sequelize)
+    if (!global.sequelize) {
         return;
+    }
 
     const list = getPropertyFromItems('updateData', global.modules);
     await execAsyncMethodList(list, null, global);
 }
 
 export function configureSwagger(global) {
-    if (!global.swagger)
+    if (!global.swagger) {
         return;
+    }
         
     let swaggerJSDoc;
     import('swagger-jsdoc')
@@ -638,8 +652,9 @@ export function configureSwagger(global) {
             let apis = [];
             for (const moduleName in global.modules) {
                 const module = global.modules[moduleName];
-                if (module.apis)
+                if (module.apis) {
                     apis.push(...module.apis);
+                }
             }
 
             const swaggerDocs = swaggerJSDoc({
@@ -669,19 +684,22 @@ export function configureSwagger(global) {
 export function cookies(response, cookieName, cookieProperty) {
     const list = {};
     let cookieHeader = response;
-    if (!cookieHeader)
+    if (!cookieHeader) {
         return list;
+    }
 
     if (cookieHeader.headers) {
         cookieHeader = cookieHeader.headers;
-        if (!cookieHeader)
+        if (!cookieHeader) {
             return list;
+        }
     }
     
     if (cookieHeader['set-cookie']) {
         cookieHeader = cookieHeader['set-cookie'];
-        if (!cookieHeader)
+        if (!cookieHeader) {
             return list;
+        }
     }
 
     cookieHeader.forEach(cookieData => {

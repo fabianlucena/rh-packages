@@ -4,6 +4,7 @@ import {conf as localConf} from './conf.js';
 export const conf = localConf;
 
 conf.updateData = async function() {
-    for (const moduleName in conf?.global?.modules)
+    for (const moduleName in conf?.global?.modules) {
         await ModuleService.createIfNotExists(conf.global.modules[moduleName]);
+    }
 };
