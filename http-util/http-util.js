@@ -668,23 +668,21 @@ export async function filterData(global) {
             updateDataOptions[entity] = false;
         }
 
-        let include = updateData.include;
-        if (typeof include === 'string') {
-            include = include.trim().split(',').map(i => i.trim());
+        if (typeof updateData.include === 'string') {
+            updateData.include = updateData.include.trim().split(',').map(i => i.trim());
         }
 
-        for (const entity of include) {
+        for (const entity of updateData.include) {
             updateDataOptions[entity] = true;
         }
     }
 
     if (updateData.skip) {
-        let skip = updateData.skip;
-        if (typeof skip === 'string') {
-            skip = skip.trim().split(',').map(i => i.trim());
+        if (typeof updateData.skip === 'string') {
+            updateData.skip = updateData.skip.trim().split(',').map(i => i.trim());
         }
 
-        for (const entity of skip) {
+        for (const entity of updateData.skip) {
             updateDataOptions[entity] = false;
         }
     }
