@@ -60,6 +60,7 @@ export class LoginController {
             method: 'post',
             onSuccess: 'setBearerAuthorizationFromResponseProperty("authToken"); reloadMenu();',
             includeSessionIndexInBody: true,
+            skipConfirmation: true,
             fields: [
                 {
                     name: 'username',
