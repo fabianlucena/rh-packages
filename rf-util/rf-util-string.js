@@ -47,3 +47,15 @@ export function format(text, ...params) {
 
     return text;
 }
+
+export function trim(data) {
+    if (typeof data === 'string') {
+        return data.trim();
+    } else if (typeof data === 'object') {
+        for (const k in data) {
+            data[k] = trim(data[k]);
+        }
+    }
+
+    return data;
+}
