@@ -1,5 +1,3 @@
-'use strict';
-
 import {PageFormatService} from './page_format.js';
 import {conf} from '../conf.js';
 import {ServiceIdUuidNameEnableTranslatable} from 'rf-service';
@@ -14,6 +12,10 @@ export class PageService extends ServiceIdUuidNameEnableTranslatable {
     shareObject = 'Page';
     shareService = conf.global.services.Share;
     references = {
+        format: {
+            service: conf.global.services.PageFormat,
+            otherName: 'pageFormat',
+        },
         language: conf.global.services.Language,
     };
     defaultTranslationContext = 'page';
