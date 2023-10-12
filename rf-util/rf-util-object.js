@@ -90,6 +90,8 @@ export function merge(dst, src, options) {
                 if (isSrcObject)
                     if (Array.isArray(src[p]))
                         v = merge([], src[p], deepOptions);
+                    else if (Buffer.isBuffer(src[p]))
+                        v = Buffer.from(src[p]);
                     else if (src[p] === null)
                         v = null;
                     else
@@ -100,7 +102,7 @@ export function merge(dst, src, options) {
                 let isDstObject = typeof dst[p] === 'object';
 
                 if (isDstObject)
-                    if (isSrcObject && deepOptions.deep)
+                    if (isSrcObject && deepOptions.deep && !Buffer.isBuffer(src[p]))
                         v = merge(dst[p], src[p], deepOptions);
                     else if (options?.skipExistent)
                         v = dst[p];
