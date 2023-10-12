@@ -1,17 +1,17 @@
 import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-    class Page extends sequelize.Sequelize.Model {
+    class Resource extends sequelize.Sequelize.Model {
         static associate(models) {
             this.belongsTo(models.Language,   {foreignKey: 'languageId', allowNull: true});
-            this.belongsTo(models.PageFormat, {as: 'Format', foreignKey: 'formatId',   allowNull: false});
+            this.belongsTo(models.ResourceType, {as: 'Type', foreignKey: 'typeId',   allowNull: false});
         }
 
         static postAssociate(models) {
             this.hasMany(models.Share, {as: 'Collaborators', foreignKey: 'objectId'});
         }
     }
-    Page.init({
+    Resource.init({
         id: {
             type: DataTypes.BIGINT,
             autoIncrement: true,
@@ -34,28 +34,21 @@ export default (sequelize, DataTypes) => {
             allowNull: false,
             unique: true,
         },
-        isTranslatable: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false,
-        },
-        translationContext: {
-            type: DataTypes.STRING,
-            allowNull: true,
-        },
         title: {
             type: DataTypes.TEXT,
-            allowNull: false,
+            allowNull: true,
         },
         content: {
-            type: DataTypes.TEXT,
+            type: DataTypes.BLOB,
             allowNull: false,
         },
     }, {
         sequelize,
         timestamps: true,
         freezeTableName: true,
-        schema: conf.schema
+        schema: conf.schema,
+        charset: 'latin1',
+        //collate: 'utf8mb4_general_ci',                                  
     });
-    return Page;
+    return Resource;
 };

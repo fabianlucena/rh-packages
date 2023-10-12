@@ -5,23 +5,23 @@ import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull} fr
 import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
-export class PageFormatService extends ServiceIdUuidNameEnableTranslatable {
+export class ResourceTypeService extends ServiceIdUuidNameEnableTranslatable {
     sequelize = conf.global.sequelize;
-    model = conf.global.models.PageFormat;
-    defaultTranslationContext = 'pageFormat';
+    model = conf.global.models.ResourceType;
+    defaultTranslationContext = 'resourceType';
 
     async validateForCreation(data) {
         if (data.id) {
-            throw new CheckError(loc._cf('pageFormat', 'ID parameter is forbidden for creation.'));
+            throw new CheckError(loc._cf('resourceType', 'ID parameter is forbidden for creation.'));
         }
 
-        checkParameterStringNotNullOrEmpty(data.name, loc._cf('pageFormat', 'Name'));
-        checkParameterStringNotNullOrEmpty(data.title, loc._cf('pageFormat', 'Title'));
+        checkParameterStringNotNullOrEmpty(data.name, loc._cf('resourceType', 'Name'));
+        checkParameterStringNotNullOrEmpty(data.title, loc._cf('resourceType', 'Title'));
 
         checkValidUuidOrNull(data.uuid);
 
         if (await this.getForName(data.name, {skipNoRowsError: true})) {
-            throw new ConflictError(loc._cf('pageFormat', 'Exists another page format with that name.'));
+            throw new ConflictError(loc._cf('resourceType', 'Exists another resource type with that name.'));
         }
 
         return true;
@@ -45,9 +45,8 @@ export class PageFormatService extends ServiceIdUuidNameEnableTranslatable {
             };
         }
 
-        if (options.isEnabled !== undefined) {
+        if (options.isEnabled !== undefined)
             options = addEnabledFilter(options);
-        }
 
         return options;
     }

@@ -1,5 +1,3 @@
-'use strict';
-
 import {PageService} from '../services/page.js';
 import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
 
