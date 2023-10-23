@@ -1,8 +1,6 @@
-'use strict';
-
 import {loc} from 'rf-locale';
 
-const name = 'qaait';
+const name = 'rhCompanySite';
 
 export const data = {
     permissions: [        

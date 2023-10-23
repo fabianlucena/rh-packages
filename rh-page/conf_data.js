@@ -1,6 +1,6 @@
 import {loc} from 'rf-locale';
 
-const name = 'qaait';
+const name = 'rhPage';
 
 export const data = {
     pageFormats: [
