@@ -1,0 +1,88 @@
+[
+    {
+        "source": "Branch UUID",
+        "language": "es",
+        "context": "branchSelect",
+        "translation": "UUID de sucursal",
+        "ref": "..\\rh-branch-select\\controllers\\branch-select.js [13,83]"
+    },
+    {
+        "source": "Branch: %s",
+        "language": "es",
+        "translation": "Sucursal: %s",
+        "ref": "..\\rh-branch-select\\controllers\\branch-select.js [60,59]"
+    },
+    {
+        "source": "Description",
+        "language": "es",
+        "translation": "Descripción",
+        "ref": "..\\rh-branch-select\\controllers\\branch-select.js [161,54]"
+    },
+    {
+        "source": "Name",
+        "language": "es",
+        "translation": "Nombre",
+        "ref": "..\\rh-branch-select\\controllers\\branch-select.js [156,47]"
+    },
+    {
+        "source": "Select branch",
+        "language": "es",
+        "context": "menu",
+        "translation": "Seleccionar sucursal",
+        "ref": "..\\rh-branch-select\\conf_data.js [7,178]"
+    },
+    {
+        "source": "Select branch",
+        "language": "es",
+        "context": "permission",
+        "translation": "Seleccionar sucursal",
+        "ref": "..\\rh-branch-select\\conf_data.js [7,85]"
+    },
+    {
+        "source": "Select branch",
+        "language": "es",
+        "translation": "Seleccionar sucursal",
+        "ref": "..\\rh-branch-select\\controllers\\branch-select.js [138,48]"
+    },
+    {
+        "source": "Spanish",
+        "language": "es",
+        "translation": "Español",
+        "ref": "rh-branch-select-es.js [18,41]"
+    },
+    {
+        "source": "Spanish language.",
+        "language": "es",
+        "translation": "Idioma español.",
+        "ref": "rh-branch-select-es.js [19,57]"
+    },
+    {
+        "source": "The selected branch does not exist or you do not have permission to access it.",
+        "language": "es",
+        "context": "branchSelect",
+        "translation": "La sucursal seleccionada no existe o usted no tiene permiso para accederla.",
+        "ref": "..\\rh-branch-select\\controllers\\branch-select.js [19,139]",
+        "isDraft": false
+    },
+    {
+        "source": "The selected branch is disabled.",
+        "language": "es",
+        "context": "branchSelect",
+        "translation": "La sucursal seleccionada está deshabilitado.",
+        "ref": "..\\rh-branch-select\\controllers\\branch-select.js [23,93]",
+        "isDraft": false
+    },
+    {
+        "source": "Title",
+        "language": "es",
+        "translation": "Título",
+        "ref": "..\\rh-branch-select\\controllers\\branch-select.js [151,48]"
+    },
+    {
+        "source": "You do not have permission to select this branch.",
+        "language": "es",
+        "context": "branchSelect",
+        "translation": "Usted no tiene permiso para seleccionar esta sucursal.",
+        "ref": "..\\rh-branch-select\\controllers\\branch-select.js [32,110]\n..\\rh-branch-select\\controllers\\branch-select.js [44,114]"
+    }
+]

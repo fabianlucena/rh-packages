@@ -1,0 +1,13 @@
+{
+  "name": "rh-branch-select",
+  "version": "1.0.0",
+  "description": "",
+  "main": "rh-branch-select.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Fabian Lucena",
+  "license": "ISC"
+}
