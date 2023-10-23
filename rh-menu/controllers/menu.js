@@ -55,8 +55,9 @@ export class MenuController {
         const rows = await MenuItemService.singleton().getList(options);
         const loc = req.loc;
         let menu = await runSequentially(rows, async mi => {
-            if (mi.toJSON)
+            if (mi.toJSON) {
                 mi = mi.toJSON();
+            }
 
             if (mi.Parent) {
                 mi.parent = mi.Parent?.name;
@@ -64,15 +65,17 @@ export class MenuController {
             }
 
             if (mi.jsonData) {
-                if (mi.data)
+                if (mi.data) {
                     mi = {...mi, Parent: undefined, data: undefined, ...mi.data};
+                }
 
                 delete mi.jsonData;
             }
 
             if (mi.isTranslatable) {
-                if (mi.label)
+                if (mi.label) {
                     mi.label = await loc._c(mi.translationContext ?? 'menu', mi.label);
+                }
 
                 delete mi.isTranslatable;
                 delete mi.translationContext;
