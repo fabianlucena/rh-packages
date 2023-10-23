@@ -1,5 +1,3 @@
-'use strict';
-
 import {MemberService} from '../services/member.js';
 import {AssignableRolePerRoleService} from '../services/assignable_role_per_role.js';
 import {RoleService} from '../services/role.js';
@@ -17,17 +15,19 @@ const identityService = conf.global.services.Identity.singleton();
 export class MemberController {
     static async getUserIdFromUuid(req, uuid) {
         const userId = await memberService.getUserIdForUserUuid(uuid, {where: {siteId: req.site.id}, skipNoRowsError: true});
-        if (!userId)
+        if (!userId) {
             throw new _HttpError(req.loc._cf('member', 'The member with UUID %s does not exists.'), 404, uuid);
+        }
 
         return userId;
     }
 
     static async get(req, res) {
-        if ('$grid' in req.query)
+        if ('$grid' in req.query) {
             return this.getGrid(req, res);
-        else if ('$form' in req.query)
+        } else if ('$form' in req.query) {
             return this.getForm(req, res);
+        }
             
         const definitions = {uuid: 'uuid', username: 'string'};
         const assignableRolesId = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
@@ -60,10 +60,11 @@ export class MemberController {
         const result = await memberService.getListAndCount(options);
         result.rows.map(row => {
             if (row.Roles?.length) {
-                if (row.Roles.every(role => role.isEnabled)) // all are true
+                if (row.Roles.every(role => role.isEnabled)) { // all are true
                     row.isEnabled = true;
-                else if (row.Roles.every(role => role.isEnabled === false)) // all are folse
+                } else if (row.Roles.every(role => role.isEnabled === false)) { // all are folse
                     row.isEnabled = false;
+                }
             }
         });
 
