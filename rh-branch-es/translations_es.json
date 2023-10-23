@@ -11,7 +11,7 @@
         "language": "es",
         "context": "branch",
         "translation": "La sucursal con el UUID %s no existe. ",
-        "ref": "..\\rh-branch\\controllers\\project.js [368,95]\n..\\rh-branch\\controllers\\project.js [419,95]\n..\\rh-branch\\controllers\\project.js [470,95]\n..\\rh-branch\\controllers\\project.js [519,95]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [368,95]\n..\\rh-branch\\controllers\\branch.js [419,95]\n..\\rh-branch\\controllers\\branch.js [470,95]\n..\\rh-branch\\controllers\\branch.js [519,95]"
     },
     {
         "source": "Branches",
@@ -24,14 +24,14 @@
         "source": "Branches",
         "language": "es",
         "translation": "Sucursales",
-        "ref": "..\\rh-branch\\controllers\\project.js [246,43]\n..\\rh-branch\\controllers\\project.js [313,43]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [246,43]\n..\\rh-branch\\controllers\\branch.js [313,43]"
     },
     {
         "source": "Company",
         "language": "es",
         "context": "branch",
         "translation": "Empresa",
-        "ref": "..\\rh-branch\\controllers\\project.js [235,58]\n..\\rh-branch\\controllers\\project.js [287,58]\n..\\rh-branch\\controllers\\project.js [288,64]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [235,58]\n..\\rh-branch\\controllers\\branch.js [287,58]\n..\\rh-branch\\controllers\\branch.js [288,64]"
     },
     {
         "source": "Company parameter is missing.",
@@ -59,7 +59,7 @@
         "language": "es",
         "context": "branch",
         "translation": "Descripción ",
-        "ref": "..\\rh-branch\\controllers\\project.js [307,62]\n..\\rh-branch\\controllers\\project.js [308,68]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [307,62]\n..\\rh-branch\\controllers\\branch.js [308,68]"
     },
     {
         "source": "Edit branches",
@@ -73,13 +73,12 @@
         "language": "es",
         "context": "branch",
         "translation": "Habilitado ",
-        "ref": "..\\rh-branch\\controllers\\project.js [300,58]\n..\\rh-branch\\controllers\\project.js [301,64]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [300,58]\n..\\rh-branch\\controllers\\branch.js [301,64]"
     },
     {
         "source": "Exists another branch with that name in this company.",
         "language": "es",
         "context": "branch",
-        "isDraft": false,
         "translation": "Existe otra sucursal con ese nombre en esta empresa.",
         "ref": "..\\rh-branch\\services\\branch.js [37,111]"
     },
@@ -102,14 +101,14 @@
         "language": "es",
         "context": "branch",
         "translation": "Nombre ",
-        "ref": "..\\rh-branch\\services\\branch.js [26,80]\n..\\rh-branch\\controllers\\project.js [103,67]\n..\\rh-branch\\controllers\\project.js [229,55]\n..\\rh-branch\\controllers\\project.js [275,55]\n..\\rh-branch\\controllers\\project.js [276,61]"
+        "ref": "..\\rh-branch\\services\\branch.js [26,80]\n..\\rh-branch\\controllers\\branch.js [103,67]\n..\\rh-branch\\controllers\\branch.js [229,55]\n..\\rh-branch\\controllers\\branch.js [275,55]\n..\\rh-branch\\controllers\\branch.js [276,61]"
     },
     {
         "source": "Owner",
         "language": "es",
         "context": "branch",
         "translation": "Propietario ",
-        "ref": "..\\rh-branch\\controllers\\project.js [241,56]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [241,56]"
     },
     {
         "source": "Spanish",
@@ -128,34 +127,34 @@
         "language": "es",
         "context": "branch",
         "translation": "Los datos de la sucursal no tienen un propietario. ",
-        "ref": "..\\rh-branch\\controllers\\project.js [116,101]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [116,101]"
     },
     {
         "source": "The branch with UUID %s does not exists.",
         "language": "es",
         "context": "branch",
         "translation": "La sucursal con el UUID %s no existe. ",
-        "ref": "..\\rh-branch\\controllers\\project.js [60,99]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [60,99]"
     },
     {
         "source": "The company does not exist or you do not have permission to access it.",
         "language": "es",
         "context": "branch",
         "translation": "La empresa no existe o usted no tiene permiso para accederla. ",
-        "ref": "..\\rh-branch\\controllers\\project.js [45,133]\n..\\rh-branch\\controllers\\project.js [51,129]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [45,133]\n..\\rh-branch\\controllers\\branch.js [51,129]"
     },
     {
         "source": "Title",
         "language": "es",
         "context": "branch",
         "translation": "Título ",
-        "ref": "..\\rh-branch\\services\\branch.js [27,82]\n..\\rh-branch\\controllers\\project.js [103,102]\n..\\rh-branch\\controllers\\project.js [224,56]\n..\\rh-branch\\controllers\\project.js [268,56]\n..\\rh-branch\\controllers\\project.js [269,62]"
+        "ref": "..\\rh-branch\\services\\branch.js [27,82]\n..\\rh-branch\\controllers\\branch.js [103,102]\n..\\rh-branch\\controllers\\branch.js [224,56]\n..\\rh-branch\\controllers\\branch.js [268,56]\n..\\rh-branch\\controllers\\branch.js [269,62]"
     },
     {
         "source": "UUID",
         "language": "es",
         "context": "branch",
         "translation": "UUID ",
-        "ref": "..\\rh-branch\\controllers\\project.js [363,131]\n..\\rh-branch\\controllers\\project.js [414,131]\n..\\rh-branch\\controllers\\project.js [465,131]\n..\\rh-branch\\controllers\\project.js [514,131]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [363,131]\n..\\rh-branch\\controllers\\branch.js [414,131]\n..\\rh-branch\\controllers\\branch.js [465,131]\n..\\rh-branch\\controllers\\branch.js [514,131]"
     }
 ]

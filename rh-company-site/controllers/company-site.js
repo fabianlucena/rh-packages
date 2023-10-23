@@ -1,5 +1,3 @@
-'use strict';
-
 import {CompanySiteService} from '../services/company-site.js';
 import {conf} from '../conf.js';
 import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
@@ -12,8 +10,9 @@ export class CompanySiteController {
         const companyUuid = req.query?.companyUuid ?? req.params?.companyUuid ?? req.body?.companyUuid;
         const siteUuid = req.query?.siteUuid ?? req.params?.siteUuid ?? req.body?.siteUuid;
 
-        if (!companyUuid && !siteUuid)
+        if (!companyUuid && !siteUuid) {
             throw new MissingParameterError(loc._cf('companySite', 'Company UUID'), loc._cf('companySite', 'Site UUID'));
+        }
 
         const options = {attributes:['companyId', 'siteId'], view: true, includeCompany: true, includeSite: true, where: {}};
         if (companyUuid) {
@@ -26,16 +25,19 @@ export class CompanySiteController {
             options.where.siteUuid = siteUuid;
         }
 
-        if (!req.roles.includes('admin'))
+        if (!req.roles.includes('admin')) {
             options.where.siteName = req?.sites ?? null;
+        }
 
         const companySites = await CompanySiteService.singleton().getList(options);
-        if (!companySites?.length)
+        if (!companySites?.length) {
             throw new _HttpError(loc._cf('companySite', 'The selected object does not exist or you do not have permission.'), 400);
+        }
 
         const companySite = companySites[0].toJSON();
-        if (!companySite.Company.isEnabled || !companySite.Site.isEnabled)
+        if (!companySite.Company.isEnabled || !companySite.Site.isEnabled) {
             throw new _HttpError(loc._cf('companySite', 'The selected company is disabled.'), 403);
+        }
 
         const sessionId = req.session.id;
         const siteId = companySite.siteId;
@@ -94,8 +96,9 @@ export class CompanySiteController {
     }
 
     static async get(req, res) {
-        if ('$object' in req.query)
+        if ('$object' in req.query) {
             return CompanySiteController.getObject(req, res);
+        }
 
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {view: true, limit: 10, offset: 0};

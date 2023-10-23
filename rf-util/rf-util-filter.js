@@ -1,5 +1,3 @@
-'use strict';
-
 export async function filterVisualItemsByAliasName(items, filter, options) {
     const loc = options?.loc;
     const translationContext = options?.translationContext;
@@ -7,11 +5,13 @@ export async function filterVisualItemsByAliasName(items, filter, options) {
     const filtered = [];
     for (const item of items) {
         let hideValue = filter?.hide?.[item.alias ?? item.name];
-        if (typeof hideValue === 'function')
+        if (typeof hideValue === 'function') {
             hideValue = await hideValue(options);
+        }
         
-        if (hideValue)
+        if (hideValue) {
             continue;
+        }
             
         if (loc) {
             const thisTranslationContext = item.translationContext ?? translationContext;
