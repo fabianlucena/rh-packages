@@ -29,14 +29,14 @@
         "language": "es",
         "context": "menu",
         "translation": "Seleccionar proyecto",
-        "ref": "..\\rh-project-select\\conf_data.js [9,181]"
+        "ref": "..\\rh-project-select\\conf_data.js [7,181]"
     },
     {
         "source": "Select project",
         "language": "es",
         "context": "permission",
         "translation": "Seleccionar proyecto",
-        "ref": "..\\rh-project-select\\conf_data.js [9,87]"
+        "ref": "..\\rh-project-select\\conf_data.js [7,87]"
     },
     {
         "source": "Select project",
@@ -60,7 +60,7 @@
         "source": "The selected project does not exist or you do not have permission to access it.",
         "language": "es",
         "context": "projectSelect",
-        "translation": "El proyecto seleccionado no existe o ustd no tiene permiso para accederlo.",
+        "translation": "El proyecto seleccionado no existe o usted no tiene permiso para accederlo.",
         "ref": "..\\rh-project-select\\controllers\\project-select.js [20,141]"
     },
     {
