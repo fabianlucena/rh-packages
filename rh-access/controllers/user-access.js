@@ -1,5 +1,3 @@
-'use strict';
-
 import {RoleService} from '../services/role.js';
 import {UserAccessService} from '../services/user_access.js';
 import {AssignableRolePerRoleService} from '../services/assignable_role_per_role.js';
@@ -10,7 +8,7 @@ import {checkParameter, checkParameterUuid, checkParameterUuidList, checkNotNull
 /**
  * @swagger
  * definitions:
- *  QAAIT User:
+ *  User:
  *      type: object
  *      properties:
  *          username:
@@ -38,8 +36,8 @@ export class UserAccessController {
      *  post:
      *      tags:
      *          - User
-     *      summary: Create a QAAIT user
-     *      description: Add a new QAAIT user to the database
+     *      summary: Create an user
+     *      description: Add a new user to the database
      *      security:
      *          - bearerAuth: []
      *      produces:
@@ -100,7 +98,7 @@ export class UserAccessController {
      *  get:
      *      tags:
      *          - User
-     *      summary: Get a QAAIT user or a QAAIT user list
+     *      summary: Get an user list
      *      description: If the UUID or username params is provided this endpoint returns a single user otherwise returns a list of users
      *      security:
      *          -   bearerAuth: []
