@@ -1,5 +1,3 @@
-'use strict';
-
 import {MemberController} from '../controllers/member.js';
 import {methodNotAllowed, corsSimplePreflight, asyncHandler} from 'http-util';
 
