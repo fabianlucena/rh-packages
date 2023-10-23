@@ -4,7 +4,14 @@
         "language": "es",
         "context": "project",
         "translation": "Empresa",
-        "ref": "..\\rh-project\\controllers\\project.js [224,59]\n..\\rh-project\\controllers\\project.js [276,59]\n..\\rh-project\\controllers\\project.js [277,65]"
+        "ref": "..\\rh-project\\controllers\\project.js [234,59]\n..\\rh-project\\controllers\\project.js [286,59]\n..\\rh-project\\controllers\\project.js [287,65]"
+    },
+    {
+        "source": "Company parameter is missing.",
+        "language": "es",
+        "context": "project",
+        "translation": "Falta el parámetro empresa.",
+        "ref": "..\\rh-project\\services\\project.js [32,85]"
     },
     {
         "source": "Create projects",
@@ -25,7 +32,7 @@
         "language": "es",
         "context": "project",
         "translation": "Descripción ",
-        "ref": "..\\rh-project\\controllers\\project.js [296,63]\n..\\rh-project\\controllers\\project.js [297,69]"
+        "ref": "..\\rh-project\\controllers\\project.js [306,63]\n..\\rh-project\\controllers\\project.js [307,69]"
     },
     {
         "source": "Edit projects",
@@ -39,15 +46,14 @@
         "language": "es",
         "context": "project",
         "translation": "Habilitado ",
-        "ref": "..\\rh-project\\controllers\\project.js [289,59]\n..\\rh-project\\controllers\\project.js [290,65]"
+        "ref": "..\\rh-project\\controllers\\project.js [299,59]\n..\\rh-project\\controllers\\project.js [300,65]"
     },
     {
-        "source": "Exists another test scenary with that name.",
+        "source": "Exists another project with that name in this company.",
         "language": "es",
         "context": "project",
-        "isDraft": false,
-        "translation": "Existe otro escenario con ese nombre.",
-        "ref": "..\\rh-project\\services\\project.js [33,102]"
+        "translation": "Existe otro proyecto con ese nombre en esta empresa.",
+        "ref": "..\\rh-project\\services\\project.js [39,113]"
     },
     {
         "source": "Get projects",
@@ -60,7 +66,6 @@
         "source": "ID parameter is forbidden for creation.",
         "language": "es",
         "context": "project",
-        "isDraft": false,
         "translation": "El parámetro ID está prohibido durante la creación.",
         "ref": "..\\rh-project\\services\\project.js [25,95]"
     },
@@ -69,22 +74,14 @@
         "language": "es",
         "context": "project",
         "translation": "Nombre ",
-        "ref": "..\\rh-project\\services\\project.js [27,81]\n..\\rh-project\\controllers\\project.js [101,68]\n..\\rh-project\\controllers\\project.js [218,56]\n..\\rh-project\\controllers\\project.js [264,56]\n..\\rh-project\\controllers\\project.js [265,62]"
-    },
-    {
-        "source": "No owner specified.",
-        "language": "es",
-        "context": "project",
-        "isDraft": false,
-        "translation": "No se ha especificado el propietario.",
-        "ref": "..\\rh-project\\services\\project.js [36,75]"
+        "ref": "..\\rh-project\\services\\project.js [28,81]\n..\\rh-project\\controllers\\project.js [102,68]\n..\\rh-project\\controllers\\project.js [228,56]\n..\\rh-project\\controllers\\project.js [274,56]\n..\\rh-project\\controllers\\project.js [275,62]"
     },
     {
         "source": "Owner",
         "language": "es",
         "context": "project",
         "translation": "Propietario ",
-        "ref": "..\\rh-project\\controllers\\project.js [230,57]"
+        "ref": "..\\rh-project\\controllers\\project.js [240,57]"
     },
     {
         "source": "Project manager",
@@ -98,7 +95,7 @@
         "language": "es",
         "context": "project",
         "translation": "El proyecto con el UUID %s no existe. ",
-        "ref": "..\\rh-project\\controllers\\project.js [357,97]\n..\\rh-project\\controllers\\project.js [407,97]\n..\\rh-project\\controllers\\project.js [457,97]\n..\\rh-project\\controllers\\project.js [505,97]"
+        "ref": "..\\rh-project\\controllers\\project.js [367,97]\n..\\rh-project\\controllers\\project.js [418,97]\n..\\rh-project\\controllers\\project.js [469,97]\n..\\rh-project\\controllers\\project.js [518,97]"
     },
     {
         "source": "Projects",
@@ -111,7 +108,7 @@
         "source": "Projects",
         "language": "es",
         "translation": "Proyectos",
-        "ref": "..\\rh-project\\controllers\\project.js [235,43]\n..\\rh-project\\controllers\\project.js [302,43]"
+        "ref": "..\\rh-project\\controllers\\project.js [245,43]\n..\\rh-project\\controllers\\project.js [312,43]"
     },
     {
         "source": "Spanish",
@@ -130,14 +127,14 @@
         "language": "es",
         "context": "project",
         "translation": "La empresa no existe o usted no tiene permiso para accederla. ",
-        "ref": "..\\rh-project\\controllers\\project.js [46,134]\n..\\rh-project\\controllers\\project.js [51,130]"
+        "ref": "..\\rh-project\\controllers\\project.js [44,134]\n..\\rh-project\\controllers\\project.js [50,130]"
     },
     {
         "source": "The project data does not have a owner.",
         "language": "es",
         "context": "project",
         "translation": "Los datos del proyecto no tienen un propietario. ",
-        "ref": "..\\rh-project\\controllers\\project.js [113,103]"
+        "ref": "..\\rh-project\\controllers\\project.js [115,103]"
     },
     {
         "source": "The project with UUID %s does not exists.",
@@ -151,13 +148,13 @@
         "language": "es",
         "context": "project",
         "translation": "Título ",
-        "ref": "..\\rh-project\\services\\project.js [28,83]\n..\\rh-project\\controllers\\project.js [101,104]\n..\\rh-project\\controllers\\project.js [213,57]\n..\\rh-project\\controllers\\project.js [257,57]\n..\\rh-project\\controllers\\project.js [258,63]"
+        "ref": "..\\rh-project\\services\\project.js [29,83]\n..\\rh-project\\controllers\\project.js [102,104]\n..\\rh-project\\controllers\\project.js [223,57]\n..\\rh-project\\controllers\\project.js [267,57]\n..\\rh-project\\controllers\\project.js [268,63]"
     },
     {
         "source": "UUID",
         "language": "es",
         "context": "project",
         "translation": "UUID ",
-        "ref": "..\\rh-project\\controllers\\project.js [352,132]\n..\\rh-project\\controllers\\project.js [402,132]\n..\\rh-project\\controllers\\project.js [452,132]\n..\\rh-project\\controllers\\project.js [500,132]"
+        "ref": "..\\rh-project\\controllers\\project.js [362,132]\n..\\rh-project\\controllers\\project.js [413,132]\n..\\rh-project\\controllers\\project.js [464,132]\n..\\rh-project\\controllers\\project.js [513,132]"
     }
 ]
