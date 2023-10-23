@@ -1,5 +1,3 @@
-'use strict';
-
 import {conf} from '../conf.js';
 import {ServiceIdUuidNameSharedEnableTranslatable} from 'rf-service';
 import {addEnabledFilter, includeCollaborators, completeIncludeOptions} from 'sql-util';
@@ -36,7 +34,7 @@ export class ProjectService extends ServiceIdUuidNameSharedEnableTranslatable {
 
         const rows = await this.getFor({name: data.name, companyId: data.companyId}, {skipNoRowsError: true});
         if (rows?.length) {
-            throw new ConflictError(loc._cf('project', 'Exists another test project with that name in this company.'));
+            throw new ConflictError(loc._cf('project', 'Exists another project with that name in this company.'));
         }
 
         return true;

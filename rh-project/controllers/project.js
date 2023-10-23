@@ -1,5 +1,3 @@
-'use strict';
-
 import {ProjectService} from '../services/project.js';
 import {conf} from '../conf.js';
 import {getOptionsFromParamsAndOData, _HttpError, ConflictError} from 'http-util';
@@ -33,30 +31,33 @@ export class ProjectController {
             return;
             
         if (!data.companyId) {
-            if (data.companyUuid)
+            if (data.companyUuid) {
                 data.companyId = await conf.global.services.Company.singleton().getIdForUuid(data.companyUuid);
-            else if (data.companyName)
+            } else if (data.companyName) {
                 data.companyId = await conf.global.services.Company.singleton().getIdForName(data.companyName);
-            else {
+            } else {
                 data.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
                 return data.companyId;
             }
         
-            if (!data.companyId)
+            if (!data.companyId) {
                 throw new _HttpError(req.loc._cf('project', 'The company does not exist or you do not have permission to access it.'), 404);
+            }
         }
 
         const companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
-        if (data.companyId != companyId)
+        if (data.companyId != companyId) {
             throw new _HttpError(req.loc._cf('project', 'The company does not exist or you do not have permission to access it.'), 403);
+        }
 
         return data.companyId;
     }
 
     static async checkUuid(req, uuid) {
         const project = await projectService.getForUuid(uuid, {skipNoRowsError: true});
-        if (!project)
+        if (!project) {
             throw new _HttpError(req.loc._cf('project', 'The project with UUID %s does not exists.'), 404, uuid);
+        }
 
         return await ProjectController.checkDataForCompanyId(req, {companyId: project.companyId});
     }
@@ -104,13 +105,15 @@ export class ProjectController {
 
         await ProjectController.checkDataForCompanyId(req, data);
 
-        if (await projectService.getForName(data.name, {skipNoRowsError: true}))
+        if (await projectService.getForName(data.name, {skipNoRowsError: true})) {
             throw new ConflictError();
+        }
 
         if (!data.owner && !data.ownerId) {
             data.ownerId = req.user.id;
-            if (!data.ownerId)
+            if (!data.ownerId) {
                 throw new _HttpError(req.loc._cf('project', 'The project data does not have a owner.'));
+            }
         }
 
         await projectService.create(data);
@@ -170,10 +173,11 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async get(req, res) {
-        if ('$grid' in req.query)
+        if ('$grid' in req.query) {
             return ProjectController.getGrid(req, res);
-        else if ('$form' in req.query)
+        } else if ('$form' in req.query) {
             return ProjectController.getForm(req, res);
+        }
 
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {view: true, limit: 10, offset: 0, includeCompany: true};
@@ -189,8 +193,10 @@ export class ProjectController {
         const result = await projectService.getListAndCount(options);
 
         result.rows = result.rows.map(row => {
-            if (row.toJSON)
+            if (row.toJSON) {
                 row = row.toJSON();
+            }
+
             row.companyUuid = row.Company.uuid;
             return row;
         });
@@ -357,8 +363,9 @@ export class ProjectController {
         await ProjectController.checkUuid(req, uuid);
 
         const rowsDeleted = await projectService.deleteForUuid(uuid);
-        if (!rowsDeleted)
+        if (!rowsDeleted) {
             throw new _HttpError(req.loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
+        }
 
         res.sendStatus(204);
     }
@@ -407,8 +414,9 @@ export class ProjectController {
         await ProjectController.checkUuid(req, uuid);
 
         const rowsUpdated = await projectService.enableForUuid(uuid);
-        if (!rowsUpdated)
+        if (!rowsUpdated) {
             throw new _HttpError(req.loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
+        }
 
         res.sendStatus(204);
     }
@@ -457,8 +465,9 @@ export class ProjectController {
         await ProjectController.checkUuid(req, uuid);
 
         const rowsUpdated = await projectService.disableForUuid(uuid);
-        if (!rowsUpdated)
+        if (!rowsUpdated) {
             throw new _HttpError(req.loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
+        }
 
         res.sendStatus(204);
     }
@@ -505,8 +514,9 @@ export class ProjectController {
         await ProjectController.checkUuid(req, uuid);
 
         const rowsUpdated = await projectService.updateForUuid(req.body, uuid);
-        if (!rowsUpdated)
+        if (!rowsUpdated) {
             throw new _HttpError(req.loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
+        }
 
         res.sendStatus(204);
     }
