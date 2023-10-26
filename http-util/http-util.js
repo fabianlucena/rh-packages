@@ -385,7 +385,7 @@ export async function getWhereOptionsFromParams(params, definitions, options) {
     }
 
     if (params && definitions) {
-        for(const name in definitions) {
+        for (const name in definitions) {
             const value = params[name];
             if (value !== undefined) {
                 const def = definitions[name];
