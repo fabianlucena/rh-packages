@@ -1,6 +1,6 @@
 import {setUpError, errorHandler, deepComplete} from 'rf-util';
 import {loc} from 'rf-locale';
-import {runSequentially} from 'rf-util';
+import {runSequentially, stripQuotes} from 'rf-util';
 import * as uuid from 'uuid';
 import fs from 'fs';
 import path from 'path';
@@ -315,65 +315,84 @@ export function asyncHandler(methodContainer, method) {
 }
 
 export async function getOptionsFromOData(params, options) {
-    if (!options) {
-        options = {};
+    options ??= {};
+
+    if (!params) {
+        return options;
     }
 
-    if (params) {
-        if (params.$select) {
-            if (!options.attributes) {
-                options.attributes = [];
-            }
-
-            params.$select.split(',')
-                .forEach(column => options.attributes.push(column.trim()));
+    if (params.$select) {
+        if (!options.attributes) {
+            options.attributes = [];
         }
 
-        if (params.$q) {
-            options.q = params.$q;
+        params.$select.split(',')
+            .forEach(column => options.attributes.push(column.trim()));
+    }
+
+    if (params.$q) {
+        options.q = params.$q;
+    }
+
+    if (params.$top) {
+        const limit = parseInt(params.$top);
+        if (isNaN(limit)) {
+            throw new _HttpError(loc._fp('Error to convert $top = "%s" parameter value to a integer number.', params.$top));
         }
 
-        if (params.$top) {
-            const limit = parseInt(params.$top);
-            if (isNaN(limit)) {
-                throw new _HttpError(loc._fp('Error to convert $top = "%s" parameter value to a integer number.', params.$top));
-            }
-
-            if (limit > maxRowsInResult) {
-                throw new _HttpError(loc._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', maxRowsInResult));
-            }
-    
-            if (limit > options.maxLimit) {
-                throw new _HttpError(loc._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', options.maxLimit));
-            }
-    
-            if (limit < 0) {
-                throw new _HttpError(loc._fp('The $top parameter cannot be negative.'), 400);
-            }
-
-            options.limit = limit;
+        if (limit > maxRowsInResult) {
+            throw new _HttpError(loc._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', maxRowsInResult));
         }
 
-        if (!options.limit) {
-            options.limit = defaultRowsInResult;
-        }
-    
-        if (params.$skip) {
-            const offset = parseInt(params.$skip);
-            if (isNaN(offset)) {
-                throw new _HttpError(loc._fp('Error to convert $skip = "%s" parameter value to a integer number.', params.$skip));
-            }
-
-            if (offset < 0) {
-                throw new _HttpError(loc._f('The $skip param cannot be negative.'), 400);
-            }
-            
-            options.offset = offset;
+        if (limit > options.maxLimit) {
+            throw new _HttpError(loc._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', options.maxLimit));
         }
 
-        if (!options.offset) {
-            options.offset = 0;
+        if (limit < 0) {
+            throw new _HttpError(loc._fp('The $top parameter cannot be negative.'), 400);
         }
+
+        options.limit = limit;
+    }
+
+    if (!options.limit) {
+        options.limit = defaultRowsInResult;
+    }
+
+    if (params.$skip) {
+        const offset = parseInt(params.$skip);
+        if (isNaN(offset)) {
+            throw new _HttpError(loc._fp('Error to convert $skip = "%s" parameter value to a integer number.', params.$skip));
+        }
+
+        if (offset < 0) {
+            throw new _HttpError(loc._f('The $skip param cannot be negative.'), 400);
+        }
+        
+        options.offset = offset;
+    }
+
+    if (!options.offset) {
+        options.offset = 0;
+    }
+
+    if (params.$filter) {
+        const where = {};
+        const filters = params.$filter.split('and').map(t => t.trim());
+        for (const filter of filters) {
+            const parts = filter.split(' ').map(t => t.trim()).filter(i => !!i);
+            if (parts.length < 3) {
+                throw new _HttpError(loc._fp('Error to compile filter in part "%s".', filter));
+            }
+
+            if (parts[1] !== 'eq') {
+                throw new _HttpError(loc._fp('Error to compile filter in part "%s", only the "eq" operator is supported.', filter));
+            }
+
+            where[parts[0]] = stripQuotes(parts.slice(2).join(' '));
+        }
+
+        options.where = {...options.where, ...where};
     }
 
     return options;
