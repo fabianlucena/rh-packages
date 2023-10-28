@@ -44,7 +44,12 @@ export class LocaleController {
             }
 
             res.status(200).send(data);
-        } else
+        } else if (req.body?.definition) {
+            // eslint-disable-next-line no-unused-vars
+            const {copy, driver, ...def} = req.loc;
+            res.status(200).send(def);
+        } else {
             res.status(200).send();
+        }
     }
 }
