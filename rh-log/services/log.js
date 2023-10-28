@@ -1,10 +1,8 @@
-'use strict';
-
 import {completeIncludeOptions, getIncludedModelOptions} from 'sql-util';
 import {conf} from '../conf.js';
-import {ServiceIdTranslatable} from 'rf-service';
+import {ServiceId} from 'rf-service';
 
-export class LogService extends ServiceIdTranslatable {
+export class LogService extends ServiceId {
     sequelize = conf.global.sequelize;
     Sequelize = conf.global.Sequelize;
     model = conf.global.models.Log;
@@ -41,14 +39,6 @@ export class LogService extends ServiceIdTranslatable {
         }
 
         return options;
-    }
-
-    async translateRow(row, loc) {
-        row = await super.translateRow(row, loc);
-
-        row.dateTime = await loc.strftime('%x %X.%f', row.dateTime);
-
-        return row;
     }
 
     async getMaxRef() {

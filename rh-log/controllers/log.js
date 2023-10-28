@@ -52,6 +52,7 @@ export class LogController {
                 {
                     name: 'dateTime',
                     type: 'dateTime',
+                    format: '%x %X.%f',
                     label: await loc._c('log', 'Date time'),
                 },
                 {
