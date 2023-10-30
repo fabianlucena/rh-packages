@@ -1,6 +1,6 @@
 import {conf} from '../conf.js';
 import {ServiceIdUuidNameSharedEnableTranslatable} from 'rf-service';
-import {addEnabledFilter, includeCollaborators, completeIncludeOptions} from 'sql-util';
+import {includeCollaborators, completeIncludeOptions} from 'sql-util';
 import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull} from 'rf-util';
 import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
@@ -15,6 +15,7 @@ export class BranchService extends ServiceIdUuidNameSharedEnableTranslatable {
         ownerModule: conf.global.services.Module,
     };
     defaultTranslationContext = 'branch';
+    searchColumns = ['name', 'title', 'description'];
     eventBus = conf.global.eventBus;
     eventName = 'branch';
 
@@ -41,13 +42,12 @@ export class BranchService extends ServiceIdUuidNameSharedEnableTranslatable {
     }
 
     async getListOptions(options) {
-        if (!options) {
-            options = {};
-        }
+        options ??= {};
 
         if (options.view) {
-            if (!options.attributes)
+            if (!options.attributes) {
                 options.attributes = ['uuid', 'isEnabled', 'name', 'title', 'description'];
+            }
         }
 
         if (options.includeCompany || options.where?.companyUuid !== undefined) {
@@ -85,22 +85,7 @@ export class BranchService extends ServiceIdUuidNameSharedEnableTranslatable {
             delete options.includeOwner;
         }
 
-        if (options.q) {
-            const q = `%${options.q}%`;
-            const Op = conf.global.Sequelize.Op;
-            options.where = {
-                [Op.or]: [
-                    {name:  {[Op.like]: q}},
-                    {title: {[Op.like]: q}},
-                ],
-            };
-        }
-
-        if (options.isEnabled !== undefined) {
-            options = addEnabledFilter(options);
-        }
-
-        return options;
+        return super.getListOptions(options);
     }
 
     async getForCompanyId(companyId, options) {
