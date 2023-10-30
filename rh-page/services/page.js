@@ -1,12 +1,12 @@
 import {PageFormatService} from './page_format.js';
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameEnableTranslatable} from 'rf-service';
-import {addEnabledFilter, completeIncludeOptions, checkViewOptions} from 'sql-util';
+import {ServiceIdUuidNameTitleEnableModuleTranslatable} from 'rf-service';
+import {completeIncludeOptions, checkViewOptions} from 'sql-util';
 import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull} from 'rf-util';
 import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
-export class PageService extends ServiceIdUuidNameEnableTranslatable {
+export class PageService extends ServiceIdUuidNameTitleEnableModuleTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Page;
     shareObject = 'Page';
@@ -54,10 +54,6 @@ export class PageService extends ServiceIdUuidNameEnableTranslatable {
      * @returns {options}
      */
     async getListOptions(options) {
-        if (options.isEnabled !== undefined) {
-            options = addEnabledFilter(options);
-        }
-
         if (options.view) {
             if (!options.attributes) {
                 options.attributes = ['uuid', 'name', 'isTranslatable', 'translationContext', 'title', 'content'];
@@ -76,6 +72,6 @@ export class PageService extends ServiceIdUuidNameEnableTranslatable {
             checkViewOptions(options);
         }
 
-        return options;
+        return super.getListOptions(options);
     }
 }
