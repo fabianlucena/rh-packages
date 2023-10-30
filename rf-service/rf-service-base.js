@@ -1,5 +1,3 @@
-'use strict';
-
 import {NoRowsError, ManyRowsError} from './rf-service-errors.js';
 import {ucfirst, lcfirst} from 'rf-util/rf-util-string.js';
 import {arrangeOptions} from 'sql-util';
@@ -264,15 +262,14 @@ export class ServiceBase {
      * - view: show visible peoperties.
      */
     async getListOptions(options) {
-        if (!options) {
-            options = {};
-        }
+        options ??= {};
 
-        if (options.q && options.searchColumns) {
+        const searchColumns = this.searchColumns = options.searchColumns || this.searchColumns;
+        if (options.q && searchColumns) {
             const Op = this.Sequelize.Op;
             const q = `%${options.q}%`;
             const qColumns = [];
-            for (const searchColumn of options.searchColumns) {
+            for (const searchColumn of searchColumns) {
                 qColumns?.push({[searchColumn]: {[Op.like]: q}});
             }
 

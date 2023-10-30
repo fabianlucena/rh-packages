@@ -1,5 +1,3 @@
-'use strict';
-
 export const ServiceMixinShared = Service => class ServiceShared extends Service {
     /**
      * Creates a new row into DB.

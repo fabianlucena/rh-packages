@@ -1,5 +1,3 @@
-'use strict';
-
 import {loc} from 'rf-locale';
 import {setUpError} from 'rf-util/rf-util-error.js';
 

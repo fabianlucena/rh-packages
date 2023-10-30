@@ -1,8 +1,8 @@
-'use strict';
-
 import {loc} from 'rf-locale';
 
 export const ServiceMixinName = Service => class extends Service {
+    searchColumns = ['name'];
+
     /**
      * Gets a row for its name. For many coincidences and for no rows this 
      * function fails.

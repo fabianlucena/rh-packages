@@ -1,5 +1,3 @@
-'use strict';
-
 export const ServiceMixinId = Service => class ServiceId extends Service {
     /**
      * Gets a row for its ID. For many coincidences and for no rows this 

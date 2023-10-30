@@ -1,5 +1,3 @@
-'use strict';
-
 export const ServiceMixinTranslatable = Service => class ServiceTranslatable extends Service {
     async getList(options) {
         let result = super.getList(options);

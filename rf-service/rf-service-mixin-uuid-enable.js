@@ -1,5 +1,3 @@
-'use strict';
-
 export const ServiceMixinUuidEnable = Service => class ServiceUuidEnable extends Service {
     /**
      * Enables a row for a given UUID.
