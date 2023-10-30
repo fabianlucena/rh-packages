@@ -31,20 +31,23 @@ export class CompanyController {
     static async checkData(req, data) {
         if (conf.filters?.getCurrentCompanyId) {
             if (!data.id) {
-                if (data.uuid)
+                if (data.uuid) {
                     data.id = await conf.global.services.Company.singleton().getIdForUuid(data.uuid);
-                else if (data.name)
+                } else if (data.name) {
                     data.id = await conf.global.services.Company.singleton().getIdForName(data.name);
-                else
+                } else {
                     return;
+                }
             }
 
-            if (!data.id)
+            if (!data.id) {
                 throw new _HttpError(req.loc._cf('company', 'The company does not exist or you do not have permission to access it.'), 404);
+            }
 
             const companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
-            if (data.id != companyId)
+            if (data.id != companyId) {
                 throw new _HttpError(req.loc._cf('company', 'The company does not exist or you do not have permission to access it.'), 403);
+            }
         }
 
         return true;
@@ -52,8 +55,9 @@ export class CompanyController {
 
     static async checkUuid(req, uuid) {
         const company = await companyService.getForUuid(uuid, {skipNoRowsError: true});
-        if (!company)
+        if (!company) {
             throw new _HttpError(req.loc._cf('company', 'The company with UUID %s does not exists.'), 404, uuid);
+        }
 
         await CompanyController.checkData(req, {id: company.id});
     }
@@ -96,14 +100,16 @@ export class CompanyController {
     static async post(req, res) {
         const loc = req.loc;
         checkParameter(req?.body, {name: loc._cf('company', 'Name'), title: loc._cf('company', 'Title')});
-        if (await companyService.getForName(req.body.name, {skipNoRowsError: true}))
+        if (await companyService.getForName(req.body.name, {skipNoRowsError: true})) {
             throw new ConflictError();
+        }
 
         const data = {...req.body};
         if (!data.owner && !data.ownerId) {
             data.ownerId = req.user.id;
-            if (!data.ownerId)
+            if (!data.ownerId) {
                 throw new _HttpError(req.loc._cf('company', 'The company data does not have a owner.'));
+            }
         }
 
         await companyService.create(data);
@@ -164,10 +170,11 @@ export class CompanyController {
      *                  $ref: '#/definitions/Error'
      */
     static async get(req, res) {
-        if ('$grid' in req.query)
+        if ('$grid' in req.query) {
             return CompanyController.getGrid(req, res);
-        else if ('$form' in req.query)
+        } else if ('$form' in req.query) {
             return CompanyController.getForm(req, res);
+        }
             
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {view: true, limit: 10, offset: 0, includeOwner: true};
@@ -182,8 +189,9 @@ export class CompanyController {
 
         result.rows = result.rows.map(row => {
             row = row.toJSON();
-            if (row.Collaborators)
+            if (row.Collaborators) {
                 row.ownerDisplayName = row.Collaborators[0]?.User?.displayName;
+            }
                 
             return row;
         });
@@ -314,8 +322,9 @@ export class CompanyController {
         await CompanyController.checkUuid(req, uuid);
 
         const rowsDeleted = await companyService.deleteForUuid(uuid);
-        if (!rowsDeleted)
+        if (!rowsDeleted) {
             throw new _HttpError(req.loc._cf('company', 'Company with UUID %s does not exists.'), 403, uuid);
+        }
 
         res.sendStatus(204);
     }
@@ -364,8 +373,9 @@ export class CompanyController {
         await CompanyController.checkUuid(req, uuid);
 
         const rowsUpdated = await companyService.enableForUuid(uuid);
-        if (!rowsUpdated)
+        if (!rowsUpdated) {
             throw new _HttpError(req.loc._cf('company', 'Company with UUID %s does not exists.'), 403, uuid);
+        }
 
         res.sendStatus(204);
     }
@@ -414,8 +424,9 @@ export class CompanyController {
         await CompanyController.checkUuid(req, uuid);
 
         const rowsUpdated = await companyService.disableForUuid(uuid);
-        if (!rowsUpdated)
+        if (!rowsUpdated) {
             throw new _HttpError(req.loc._cf('company', 'Company with UUID %s does not exists.'), 403, uuid);
+        }
 
         res.sendStatus(204);
     }
@@ -462,8 +473,9 @@ export class CompanyController {
         await CompanyController.checkUuid(req, uuid);
 
         const rowsUpdated = await companyService.updateForUuid(req.body, uuid);
-        if (!rowsUpdated)
+        if (!rowsUpdated) {
             throw new _HttpError(req.loc._cf('company', 'Company with UUID %s does not exists.'), 403, uuid);
+        }
 
         res.sendStatus(204);
     }
