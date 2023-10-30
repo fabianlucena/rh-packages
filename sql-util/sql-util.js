@@ -191,8 +191,11 @@ export function completeAssociationOptions(base, options) {
 
 export async function checkDataForMissingProperties(data, objectName, ...properties) {
     const missingProperties = properties.filter(property => !data[property]);
-    if (missingProperties?.length)
+    if (missingProperties?.length) {
         throw new MissingPropertyError(objectName, ...missingProperties);
+    }
+
+    return true;
 }
 
 export async function checkViewOptions(options) {
@@ -275,12 +278,8 @@ export function completeIncludeOptions(options, name, includeOptions, includeDef
 }
 
 export function addEnabledFilter(options) {
-    if (!options)
-        options = {};
-
-    if (!options.where)
-        options.where = {};
-            
+    options ??= {};
+    options.where ??= {};
     options.where.isEnabled = options.isEnabled ?? true;
 
     return options;
