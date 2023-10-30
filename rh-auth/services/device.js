@@ -1,5 +1,3 @@
-'use strict';
-
 import {conf} from '../conf.js';
 import {ServiceIdUuid} from 'rf-service';
 import {getSingle} from 'sql-util';
@@ -42,8 +40,9 @@ export class DeviceService extends ServiceIdUuid {
     defaultTranslationContext = 'device';
 
     async validateForCreation(data) {
-        if (!data.token)
+        if (!data.token) {
             data.token = crypto.randomBytes(64).toString('hex');
+        }
 
         return true;
     }
@@ -55,8 +54,9 @@ export class DeviceService extends ServiceIdUuid {
      * @returns {Promise[Device]}
      */
     async getForToken(token, options) {
-        if (Array.isArray(token))
+        if (Array.isArray(token)) {
             return this.getList({...options, where: {...options?.where, token}});
+        }
             
         const rows = await this.getList({...options, where: {...options?.where, token}, limit: 2});
 

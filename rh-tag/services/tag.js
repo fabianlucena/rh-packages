@@ -1,5 +1,3 @@
-'use strict';
-
 import {conf} from '../conf.js';
 import {ServiceIdUuidNameEnableTranslatable} from 'rf-service';
 import {addEnabledFilter, addEnabledOnerModuleFilter, checkDataForMissingProperties, completeIncludeOptions} from 'sql-util';
