@@ -1,11 +1,11 @@
-import {ServiceIdUuidNameTitleEnabledModuleTranslatable} from './rf-service-primary.js';
+import {ServiceIdUuidNameTitleEnabledModuleTranslatable} from './rf-service-id-uuid-name-title-enabled-module-translatable.js';
 import {checkDataForMissingProperties, addEnabledFilter, addEnabledOnerModuleFilter} from 'sql-util';
 
-export class ServiceIdUuidNameTitleDescrptionEnabledModuleTranslatable extends ServiceIdUuidNameTitleEnabledModuleTranslatable {
-    searchColumn = ['name', 'title'];
+export class ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable extends ServiceIdUuidNameTitleEnabledModuleTranslatable {
+    searchColumn = ['name', 'title', 'description'];
 
     async validateForCreation(data) {
-        return await checkDataForMissingProperties(data, this.constructor.name, 'name', 'title');
+        return await checkDataForMissingProperties(data, this.constructor.name, 'name', 'title', 'description');
     }
 
     /**
