@@ -14,6 +14,7 @@ export const ServiceMixinEnable = Service => class ServiceEnable extends Service
         options ??= {};
         if (options.isEnabled !== undefined) {
             options = addEnabledFilter(options);
+            delete options.isEnabled;
         }
 
         return super.getListOptions(options);
