@@ -1,7 +1,7 @@
 import {conf} from '../conf.js';
 import {ServiceIdUuidNameEnabledSharedTranslatable} from 'rf-service';
 import {completeIncludeOptions} from 'sql-util';
-import {CheckError, checkParameterStringNotNullOrEmpty} from 'rf-util';
+import {CheckError} from 'rf-util';
 import {loc} from 'rf-locale';
 
 export class BranchService extends ServiceIdUuidNameEnabledSharedTranslatable {
@@ -19,9 +19,6 @@ export class BranchService extends ServiceIdUuidNameEnabledSharedTranslatable {
     eventName = 'branch';
 
     async validateForCreation(data) {
-        checkParameterStringNotNullOrEmpty(data.name, loc._cf('branch', 'Name'));
-        checkParameterStringNotNullOrEmpty(data.title, loc._cf('branch', 'Title'));
-
         if (!data.companyId) {
             throw new CheckError(loc._cf('branch', 'Company parameter is missing.'));
         }

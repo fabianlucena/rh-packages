@@ -1,21 +1,24 @@
 import {IdentityService} from '../services/identity.js';
 import {conf} from '../conf.js';
-import {ServiceIdUuidEnabled} from 'rf-service';
-import {getSingle, addEnabledFilter, addEnabledOwnerModuleFilter} from 'sql-util';
+import {ServiceIdUuidEnabledModule} from 'rf-service';
+import {getSingle, addEnabledFilter} from 'sql-util';
 import {ConflictError} from 'http-util';
 import {checkParameter} from 'rf-util';
 import {_Error} from 'rf-util';
 import {loc} from 'rf-locale';
 
-export class UserService extends ServiceIdUuidEnabled {
+export class UserService extends ServiceIdUuidEnabledModule {
     sequelize = conf.global.sequelize;
     model = conf.global.models.User;
     references = {
         type: conf.global.services.UserType,
     };
     defaultTranslationContext = 'user';
+    searchColumns = [''];
 
     async validateForCreation(data) {
+        data ??= {};
+
         if (!data.typeId && !data.type) {
             data.type = 'user';
         }
@@ -29,7 +32,7 @@ export class UserService extends ServiceIdUuidEnabled {
             throw new ConflictError('Another user with the same display name already exists.');
         }
 
-        return true;
+        return super.validateForCreation(data);
     }
 
     /**
@@ -79,24 +82,6 @@ export class UserService extends ServiceIdUuidEnabled {
                 model: conf.global.models.UserType, 
                 attributes: ['uuid', 'name', 'title']
             });
-        }
-
-        if (options.q) {
-            const q = `%${options.q}%`;
-            const Op = conf.global.Sequelize.Op;
-            options.where = {
-                [Op.or]: [
-                    {username:    {[Op.like]: q}},
-                    {displayName: {[Op.like]: q}},
-                ],
-            };
-        }
-
-        if (options.isEnabled !== undefined) {
-            options = addEnabledFilter(options);
-            if (conf.global.models.Module) {
-                options = addEnabledOwnerModuleFilter(options, conf.global.models.Module);
-            }
         }
 
         return options;
