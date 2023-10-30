@@ -1,5 +1,3 @@
-'use strict';
-
 import {loc} from 'rf-locale';
 import {format} from './rf-util-string.js';
 
@@ -270,8 +268,9 @@ export async function errorHandler(error, loc, showInConsole) {
 
     if (showInConsole || showInConsole === undefined) {
         console.error(logTitle + data.message);
-        if (error.stack)
+        if (error.stack) {
             console.error(error.stack);
+        }
     }
 
     return data;
