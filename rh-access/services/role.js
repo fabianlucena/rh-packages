@@ -1,12 +1,12 @@
 import {RoleParentSiteService} from './role_parent_site.js';
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameTitleModuleEnableTranslatable} from 'rf-service';
+import {ServiceIdUuidNameTitleEnableModuleTranslatable} from 'rf-service';
 import {checkDataForMissingProperties, completeAssociationOptions} from 'sql-util';
 
-export class RoleService extends ServiceIdUuidNameTitleModuleEnableTranslatable {
+export class RoleService extends ServiceIdUuidNameTitleEnableModuleTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Role;
-    ModuleService = conf.global.services.Module;
+    moduleModel = conf.global.models.Module;
     defaultTranslationContext = 'role';
 
     constructor() {
@@ -60,8 +60,9 @@ export class RoleService extends ServiceIdUuidNameTitleModuleEnableTranslatable 
      */
     async getAllIdsForUsernameAndSiteName(username, siteName, options) {
         const site = await this.siteService.getForName(siteName, {isEnabled: true});
-        if (!site || (Array.isArray(site) && !site.length))
+        if (!site || (Array.isArray(site) && !site.length)) {
             return;
+        }
 
         const siteId = Array.isArray(site)?
             site.map(site => site.id):
