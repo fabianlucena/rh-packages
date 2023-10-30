@@ -1,9 +1,9 @@
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameTitleEnabledModuleTranslatable} from 'rf-service';
+import {ServiceIdUuidNameTitleEnableModuleTranslatable} from 'rf-service';
 
-export class UserTypeService extends ServiceIdUuidNameTitleEnabledModuleTranslatable {
+export class UserTypeService extends ServiceIdUuidNameTitleEnableModuleTranslatable {
     sequelize = conf.global.sequelize;
-    ModuleService = conf.global.models.Module;
+    moduleModel = conf.global.models.Module;
     model = conf.global.models.UserType;
     defaultTranslationContext = 'userType';
 }
