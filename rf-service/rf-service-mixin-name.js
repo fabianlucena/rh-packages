@@ -1,7 +1,30 @@
+import {CheckError, checkParameterStringNotNullOrEmpty} from 'rf-util';
+import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
 export const ServiceMixinName = Service => class extends Service {
     searchColumns = ['name'];
+
+    async validateForCreation(data) {
+        checkParameterStringNotNullOrEmpty(data?.name, loc._f('Name'));
+        this.checkNameForConflict(data.name, data);
+        return super.validateForCreation(data);
+    }
+
+    async checkNameForConflict(name) {
+        const rows = await this.getForName(name, {skipNoRowsError: true});
+        if (rows?.length) {
+            throw new ConflictError(loc._f('Exists another row with that name.'));
+        }
+    }
+
+    async validateForUpdate(data) {
+        if (data.name) {
+            throw new CheckError(loc._f('Name parameter is forbidden for update.'));
+        }
+
+        return super.validateForUpdate(data);
+    }
 
     /**
      * Gets a row for its name. For many coincidences and for no rows this 
@@ -17,11 +40,13 @@ export const ServiceMixinName = Service => class extends Service {
      * function can be specified.
      */
     async getForName(name, options) {
-        if (name === undefined)
+        if (name === undefined) {
             throw new Error(loc._f('Invalid value for name to get row'));
+        }
 
-        if (Array.isArray(name))
+        if (Array.isArray(name)) {
             return this.getList({...options, where: {...options?.where, name}});
+        }
             
         return this.getSingleFor({name}, options);
     }
@@ -34,8 +59,9 @@ export const ServiceMixinName = Service => class extends Service {
      */
     async createIfNotExists(data, options) {
         const row = await this.getForName(data.name, {skipNoRowsError: true, ...options});
-        if (row)
-            return row;
+        if (row?.length) {
+            return row[0];
+        }
             
         return this.create(data, {transacion: options?.transacion});
     }

@@ -1,6 +1,7 @@
 import {NoRowsError, ManyRowsError} from './rf-service-errors.js';
 import {ucfirst, lcfirst} from 'rf-util/rf-util-string.js';
 import {arrangeOptions} from 'sql-util';
+import {trim} from 'rf-util';
 
 export class ServiceBase {
     /**
@@ -207,7 +208,7 @@ export class ServiceBase {
      */
     // eslint-disable-next-line no-unused-vars
     async validate(data, operation) {
-        return data;
+        trim(data);
     }
 
     /**

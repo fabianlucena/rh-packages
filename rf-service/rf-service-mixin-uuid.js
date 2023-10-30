@@ -1,4 +1,32 @@
+import {CheckError, checkValidUuidOrNull} from 'rf-util';
+import {ConflictError} from 'http-util';
+import {loc} from 'rf-locale';
+
 export const ServiceMixinUuid = Service => class ServiceUuid extends Service {
+    async validateForCreation(data) {
+        checkValidUuidOrNull(data.uuid);
+        if (data.uuid) {
+            this.checkUuidForConflict(data.uuid, data);
+        }
+
+        return super.validateForCreation(data);
+    }
+
+    async checkUuidForConflict(uuid) {
+        const rows = await this.getForUuid(uuid, {skipNoRowsError: true});
+        if (rows?.length) {
+            throw new ConflictError(loc._f('Exists another row with that UUID.'));
+        }
+    }
+
+    async validateForUpdate(data) {
+        if (data.uuid) {
+            throw new CheckError(loc._f('UUID parameter is forbidden for update.'));
+        }
+
+        return super.validateForUpdate(data);
+    }
+
     /**
      * Gets a row for its UUID. For many coincidences and for no rows this 
      * function fails.

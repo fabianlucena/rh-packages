@@ -1,4 +1,16 @@
+import {includeCollaborators} from 'sql-util';
+import {CheckError} from 'rf-util';
+import {loc} from 'rf-locale';
+
 export const ServiceMixinShared = Service => class ServiceShared extends Service {
+    async validateForCreation(data) {
+        if (!data.owner && !data.ownerId) {
+            throw new CheckError(loc._f('No owner specified.'));
+        }
+
+        return super.validateForCreation(data);
+    }
+
     /**
      * Creates a new row into DB.
      * @param {object} data - data for the new row.
@@ -13,8 +25,9 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
 
         let transaction;
         if (options?.transaction || this.transaction) {
-            if (options.transaction === true || !options.transaction)
+            if (options.transaction === true || !options.transaction) {
                 options.transaction = transaction = await this.createTransaction();
+            }
         }
 
         try {
@@ -31,8 +44,9 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
                 );
             }
 
-            if (options?.emitEvent !== false && this.eventBus && this.eventName)
+            if (options?.emitEvent !== false && this.eventBus && this.eventName) {
                 await this.eventBus?.$emit(this.eventName + '.created', row, data, options);
+            }
 
             await transaction?.commit();
 
@@ -53,10 +67,26 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
      * @returns {Promise[row]}
      */
     async addCollaborator(data, options) {
-        if (!this.shareObject || !this.shareService || (!data.userId && !data.user))
+        if (!this.shareObject || !this.shareService || (!data.userId && !data.user)) {
             return;
+        }
 
         return this.shareService.create({objectName: this.shareObject, ...data}, options);
+    }
+
+    /**
+     * Gets the options for use in the getList and getListAndCount methods.
+     * @param {Options} options - options for the @see sequelize.findAll method.
+     *  - includeOwner: for owners inclusion.
+     * @returns {options}
+     */
+    async getListOptions(options) {
+        if (options?.includeOwner) {
+            includeCollaborators(options, 'Scenario', this.models, {filterType: 'owner'});
+            delete options.includeOwner;
+        }
+
+        return super.getListOptions(options);
     }
 
     /**

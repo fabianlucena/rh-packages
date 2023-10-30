@@ -11,10 +11,8 @@ export const ServiceMixinEnabled = Service => class ServiceEnabled extends Servi
      * - view: show visible peoperties.
      */
     async getListOptions(options) {
-        options ??= {};
-        if (options.isEnabled !== undefined) {
+        if (options?.isEnabled !== undefined) {
             options = addEnabledFilter(options);
-            delete options.isEnabled;
         }
 
         return super.getListOptions(options);

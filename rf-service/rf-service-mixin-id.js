@@ -1,4 +1,23 @@
+import {CheckError} from 'rf-util';
+import {loc} from 'rf-locale';
+
 export const ServiceMixinId = Service => class ServiceId extends Service {
+    async validateForCreation(data) {
+        if (data?.id) {
+            throw new CheckError(loc._f('ID parameter is forbidden for creation.'));
+        }
+
+        return super.validateForCreation(data);
+    }
+    
+    async validateForUpdate(data) {
+        if (data?.id) {
+            throw new CheckError(loc._f('ID parameter is forbidden for update.'));
+        }
+
+        return super.validateForUpdate(data);
+    }
+
     /**
      * Gets a row for its ID. For many coincidences and for no rows this 
      * function fails.
@@ -13,8 +32,9 @@ export const ServiceMixinId = Service => class ServiceId extends Service {
      * function can be specified.
      */
     async getForId(id, options) {
-        if (Array.isArray(id))
+        if (Array.isArray(id)) {
             return this.getList({...options, where: {...options?.where, id}});
+        }
             
         const rows = await this.getList({limit: 2, ...options, where: {...options?.where, id}});
 
