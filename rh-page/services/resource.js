@@ -1,9 +1,8 @@
 import {ResourceTypeService} from './resource_type.js';
 import {conf} from '../conf.js';
 import {ServiceIdUuidNameEnabledTranslatable} from 'rf-service';
-import {addEnabledFilter, completeIncludeOptions, checkViewOptions} from 'sql-util';
-import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull, checkNotNullNotEmptyAndNotUndefined} from 'rf-util';
-import {ConflictError} from 'http-util';
+import {completeIncludeOptions, checkViewOptions} from 'sql-util';
+import {checkNotNullNotEmptyAndNotUndefined} from 'rf-util';
 import {loc} from 'rf-locale';
 
 export class ResourceService extends ServiceIdUuidNameEnabledTranslatable {
@@ -26,28 +25,12 @@ export class ResourceService extends ServiceIdUuidNameEnabledTranslatable {
     }
 
     async validateForCreation(data) {
-        if (data.id) {
-            throw new CheckError(loc._cf('resource', 'ID parameter is forbidden for creation.'));
-        }
-
-        checkParameterStringNotNullOrEmpty(data.name, loc._cf('resource', 'Name'));
-        if (await this.getForName(data.name, {skipNoRowsError: true})) {
-            throw new ConflictError(loc._cf('resource', 'Exists another resource with that name.'));
-        }
-
-        if (data.title) {
-            checkParameterStringNotNullOrEmpty(data.title, loc._cf('resource', 'Title'));
-        }
-
         checkNotNullNotEmptyAndNotUndefined(data.content, loc._cf('resource', 'Content'));
-
-        checkValidUuidOrNull(data.uuid);
-
         if (!data.typeId) {
             data.typeId = await this.resourceTypeService.getIdForName('raw');
         }
 
-        return true;
+        return super.validateForCreation(data);
     }
 
     /**
@@ -57,10 +40,6 @@ export class ResourceService extends ServiceIdUuidNameEnabledTranslatable {
      * @returns {options}
      */
     async getListOptions(options) {
-        if (options.isEnabled !== undefined) {
-            options = addEnabledFilter(options);
-        }
-
         if (options.view) {
             if (!options.attributes) {
                 options.attributes = ['uuid', 'name', 'title', 'content'];
@@ -79,6 +58,6 @@ export class ResourceService extends ServiceIdUuidNameEnabledTranslatable {
             checkViewOptions(options);
         }
 
-        return options;
+        return super.getListOptions(options);
     }
 }

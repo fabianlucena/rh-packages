@@ -26,10 +26,10 @@ export const ServiceMixinModule = Service => class ServiceModule extends Service
      * @returns {options}
      */
     async getListOptions(options) {
-        if (options.isEnabled !== undefined) {
+        if (options?.isEnabled !== undefined) {
             options = addEnabledOwnerModuleFilter(options, this.moduleModel);
         }
 
-        return options;
+        return super.getListOptions(options);
     }
 };

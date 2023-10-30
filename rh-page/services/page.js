@@ -2,8 +2,7 @@ import {PageFormatService} from './page_format.js';
 import {conf} from '../conf.js';
 import {ServiceIdUuidNameTitleEnabledModuleTranslatable} from 'rf-service';
 import {completeIncludeOptions, checkViewOptions} from 'sql-util';
-import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull} from 'rf-util';
-import {ConflictError} from 'http-util';
+import {checkParameterStringNotNullOrEmpty} from 'rf-util';
 import {loc} from 'rf-locale';
 
 export class PageService extends ServiceIdUuidNameTitleEnabledModuleTranslatable {
@@ -26,25 +25,12 @@ export class PageService extends ServiceIdUuidNameTitleEnabledModuleTranslatable
     }
 
     async validateForCreation(data) {
-        if (data.id) {
-            throw new CheckError(loc._cf('page', 'ID parameter is forbidden for creation.'));
-        }
-
-        checkParameterStringNotNullOrEmpty(data.name, loc._cf('page', 'Name'));
-        if (await this.getForName(data.name, {skipNoRowsError: true})) {
-            throw new ConflictError(loc._cf('page', 'Exists another page with that name.'));
-        }
-
-        checkParameterStringNotNullOrEmpty(data.title, loc._cf('page', 'Title'));
         checkParameterStringNotNullOrEmpty(data.content, loc._cf('page', 'Content'));
-
-        checkValidUuidOrNull(data.uuid);
-
         if (!data.formatId) {
             data.formatId = await this.pageFormatService.getIdForName('plain');
         }
 
-        return true;
+        return super.validateForCreation(data);
     }
 
     /**

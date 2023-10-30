@@ -1,8 +1,7 @@
 import {conf} from '../conf.js';
 import {ServiceIdUuidNameEnabledSharedTranslatable} from 'rf-service';
-import {includeCollaborators, completeIncludeOptions} from 'sql-util';
-import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull} from 'rf-util';
-import {ConflictError} from 'http-util';
+import {completeIncludeOptions} from 'sql-util';
+import {CheckError, checkParameterStringNotNullOrEmpty} from 'rf-util';
 import {loc} from 'rf-locale';
 
 export class BranchService extends ServiceIdUuidNameEnabledSharedTranslatable {
@@ -20,10 +19,6 @@ export class BranchService extends ServiceIdUuidNameEnabledSharedTranslatable {
     eventName = 'branch';
 
     async validateForCreation(data) {
-        if (data.id) {
-            throw new CheckError(loc._cf('branch', 'ID parameter is forbidden for creation.'));
-        }
-
         checkParameterStringNotNullOrEmpty(data.name, loc._cf('branch', 'Name'));
         checkParameterStringNotNullOrEmpty(data.title, loc._cf('branch', 'Title'));
 
@@ -31,14 +26,7 @@ export class BranchService extends ServiceIdUuidNameEnabledSharedTranslatable {
             throw new CheckError(loc._cf('branch', 'Company parameter is missing.'));
         }
 
-        checkValidUuidOrNull(data.uuid);
-
-        const rows = await this.getFor({name: data.name, companyId: data.companyId}, {skipNoRowsError: true});
-        if (rows?.length) {
-            throw new ConflictError(loc._cf('branch', 'Exists another branch with that name in this company.'));
-        }
-
-        return true;
+        return super.validateForCreation(data);
     }
 
     async getListOptions(options) {
@@ -78,11 +66,6 @@ export class BranchService extends ServiceIdUuidNameEnabledSharedTranslatable {
             );
 
             delete options.includeCompany;
-        }
-
-        if (options.includeOwner) {
-            includeCollaborators(options, 'Branch', conf.global.models, {filterType: 'owner'});
-            delete options.includeOwner;
         }
 
         return super.getListOptions(options);

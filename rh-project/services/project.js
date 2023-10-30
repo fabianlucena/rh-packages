@@ -1,7 +1,7 @@
 import {conf} from '../conf.js';
 import {ServiceIdUuidNameEnabledSharedTranslatable} from 'rf-service';
-import {addEnabledFilter, includeCollaborators, completeIncludeOptions} from 'sql-util';
-import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull} from 'rf-util';
+import {completeIncludeOptions} from 'sql-util';
+import {CheckError} from 'rf-util';
 import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
@@ -19,30 +19,22 @@ export class ProjectService extends ServiceIdUuidNameEnabledSharedTranslatable {
     eventName = 'project';
 
     async validateForCreation(data) {
-        if (data.id) {
-            throw new CheckError(loc._cf('project', 'ID parameter is forbidden for creation.'));
-        }
-
-        checkParameterStringNotNullOrEmpty(data.name, loc._cf('project', 'Name'));
-        checkParameterStringNotNullOrEmpty(data.title, loc._cf('project', 'Title'));
-
-        if (!data.companyId) {
+        if (!data?.companyId) {
             throw new CheckError(loc._cf('project', 'Company parameter is missing.'));
         }
 
-        checkValidUuidOrNull(data.uuid);
+        return super.validateForCreation(data);
+    }
 
-        const rows = await this.getFor({name: data.name, companyId: data.companyId}, {skipNoRowsError: true});
+    async checkNameForConflict(name, data) {
+        const rows = await this.getFor({name, companyId: data.companyId}, {skipNoRowsError: true});
         if (rows?.length) {
             throw new ConflictError(loc._cf('project', 'Exists another project with that name in this company.'));
         }
-
-        return true;
     }
 
     async getListOptions(options) {
-        if (!options)
-            options = {};
+        options ??= {};
 
         if (options.view) {
             if (!options.attributes)
@@ -78,26 +70,7 @@ export class ProjectService extends ServiceIdUuidNameEnabledSharedTranslatable {
             delete options.includeCompany;
         }
 
-        if (options.includeOwner) {
-            includeCollaborators(options, 'Project', conf.global.models, {filterType: 'owner'});
-            delete options.includeOwner;
-        }
-
-        if (options.q) {
-            const q = `%${options.q}%`;
-            const Op = conf.global.Sequelize.Op;
-            options.where = {
-                [Op.or]: [
-                    {name:  {[Op.like]: q}},
-                    {title: {[Op.like]: q}},
-                ],
-            };
-        }
-
-        if (options.isEnabled !== undefined)
-            options = addEnabledFilter(options);
-
-        return options;
+        return super.getListOptions(options);
     }
 
     async getForCompanyId(companyId, options) {

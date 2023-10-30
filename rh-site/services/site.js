@@ -1,46 +1,15 @@
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameEnabledTranslatable} from 'rf-service';
-import {
-    addEnabledFilter,
-    addEnabledOwnerModuleFilter, 
-    checkDataForMissingProperties,
-    getIncludedModelOptions,
-    getSingle,
-    completeAssociationOptions
-} from 'sql-util';
-import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull, complete} from 'rf-util';
-import {ConflictError} from 'http-util';
-import {loc} from 'rf-locale';
+import {ServiceIdUuidNameEnabledModuleTranslatable} from 'rf-service';
+import {getIncludedModelOptions, getSingle, completeAssociationOptions} from 'sql-util';
 
-export class SiteService extends ServiceIdUuidNameEnabledTranslatable {
+export class SiteService extends ServiceIdUuidNameEnabledModuleTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Site;
-    references = {
-        ownerModule: conf.global.services.Module,
-    };
+    moduleModel = conf.global.models.Module;
     defaultTranslationContext = 'site';
 
-    async validateForCreation(data) {
-        if (data.id) {
-            throw new CheckError(loc._cf('site', 'ID parameter is forbidden for creation.'));
-        }
-
-        await checkDataForMissingProperties(data, 'Site', 'name', 'title');
-
-        checkParameterStringNotNullOrEmpty(data.name, loc._cf('site', 'Name'));
-        checkParameterStringNotNullOrEmpty(data.title, loc._cf('site', 'Title'));
-
-        checkValidUuidOrNull(data.uuid);
-
-        if (await this.getForName(data.name, {skipNoRowsError: true})) {
-            throw new ConflictError(loc._cf('site', 'Exists another test site with that name.'));
-        }
-
-        return true;
-    }
-
     async getListOptions(options) {
-        if (options.view) {
+        if (options?.view) {
             if (!options.attributes) {
                 options.attributes = ['uuid', 'name', 'title'];
             }
@@ -53,23 +22,7 @@ export class SiteService extends ServiceIdUuidNameEnabledTranslatable {
             }
         }
 
-        if (options.q) {
-            const q = `%${options.q}%`;
-            const Op = conf.global.Sequelize.Op;
-            options.where = {
-                [Op.or]: [
-                    {name:  {[Op.like]: q}},
-                    {title: {[Op.like]: q}},
-                ],
-            };
-        }
-
-        if (options.isEnabled !== undefined) {
-            options = addEnabledFilter(options);
-            options = addEnabledOwnerModuleFilter(options, conf.global.models.Module);
-        }
-
-        return options;
+        return super.getListOptions(options);
     }
 
     /**
@@ -79,7 +32,7 @@ export class SiteService extends ServiceIdUuidNameEnabledTranslatable {
      * @returns {Promise{Site}}
      */
     async getForSessionId(sessionId, options) {
-        options = complete(options, {include: [], limit: 2});
+        options = {...options, include: [], limit: 2};
         options.include.push(completeAssociationOptions({model: conf.global.models.Session, where: {id: sessionId}}, options));
 
         const rowList = await this.getList(options);
