@@ -1,8 +1,6 @@
-'use strict';
-
 import {conf} from '../conf.js';
 import {ServiceSharedEnable} from 'rf-service';
-import {addEnabledOnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes, completeIncludeOptions, getIncludedModelOptions} from 'sql-util';
+import {addEnabledOwnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes, completeIncludeOptions, getIncludedModelOptions} from 'sql-util';
 import {complete} from 'rf-util';
 
 export class UserSiteRoleService extends ServiceSharedEnable {
@@ -27,14 +25,15 @@ export class UserSiteRoleService extends ServiceSharedEnable {
 
     async getListOptions(options) {
         if (options.isEnabled !== undefined) {
-            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+            options = addEnabledOwnerModuleFilter(options, conf.global.models.Module);
             options.where ??= {};
             options.where.isEnabled = options.isEnabled;
         }
 
         if (!options.attributes) {
-            if (options.view)
+            if (options.view) {
                 options.attributes = ['isEnabled'];
+            }
         }
         
         let autoGroup;
@@ -62,12 +61,14 @@ export class UserSiteRoleService extends ServiceSharedEnable {
             );
 
             delete options.includeRole;
-        } else if (!getIncludedModelOptions(options, conf.global.models.Role))
+        } else if (!getIncludedModelOptions(options, conf.global.models.Role)) {
             autoGroup = [];
+        }
 
         if (autoGroup) {
-            if (!options.attributes.includes('userId'))
+            if (!options.attributes.includes('userId')) {
                 autoGroup.push('UserSiteRole.userId');
+            }
 
             options.attributes.forEach(column => autoGroup.push('UserSiteRole.' + column));
         }
@@ -98,8 +99,9 @@ export class UserSiteRoleService extends ServiceSharedEnable {
             delete options.includeUser;
 
             if (autoGroup) {
-                if (!attributes.includes('id'))
+                if (!attributes.includes('id')) {
                     autoGroup.push('User.id');
+                }
 
                 attributes.forEach(column => autoGroup.push('User.' + column));
             }
@@ -131,15 +133,17 @@ export class UserSiteRoleService extends ServiceSharedEnable {
             delete options.includeSite;
 
             if (autoGroup) {
-                if (!attributes.includes('id'))
+                if (!attributes.includes('id')) {
                     autoGroup.push('Site.id');
+                }
                 
                 attributes.forEach(column => autoGroup.push('Site.' + column));
             }
         }
 
-        if (autoGroup?.length)
+        if (autoGroup?.length) {
             options.group = [...new Set((options.group ?? []).concat(autoGroup))];
+        }
         
         if (!options.order && getIncludedModelOptions(options, conf.global.models.User)) {
             options.order ??= [];
@@ -182,30 +186,34 @@ export class UserSiteRoleService extends ServiceSharedEnable {
     async createIfNotExists(data, options) {
         options = {...options, attributes: ['userId', 'siteId', 'roleId'], where: {}, include: [], limit: 1};
 
-        if (data.userId)
+        if (data.userId) {
             options.where.userId = data.userId;
-        else if (data.user || data.username || data.name)
+        } else if (data.user || data.username || data.name) {
             options.include.push(complete({model: conf.global.models.User, where: {username: data.user ?? data.username ?? data.name}}, skipAssociationAttributes));
-        else
+        } else {
             throw new MissingPropertyError('UserSiteRole', 'user', 'userId');
+        }
         
-        if (data.siteId)
+        if (data.siteId) {
             options.where.siteId = data.siteId;
-        else if (data.site)
+        } else if (data.site) {
             options.include.push(complete({model: conf.global.models.Site, where: {name: data.site}}, skipAssociationAttributes));
-        else
+        } else {
             throw new MissingPropertyError('UserSiteRole', 'site', 'siteId');
+        }
 
-        if (data.roleId)
+        if (data.roleId) {
             options.where.roleId = data.roleId;
-        else if (data.role)
+        } else if (data.role) {
             options.include.push(complete({model: conf.global.models.Role, where: {name: data.role}}, skipAssociationAttributes));
-        else
+        } else {
             throw new MissingPropertyError('UserSiteRole', 'role', 'roleId');
+        }
 
         const rowList = await this.getList(options);
-        if (rowList.length)
+        if (rowList.length) {
             return rowList[0];
+        }
 
         return this.create(data);
     }
@@ -217,10 +225,11 @@ export class UserSiteRoleService extends ServiceSharedEnable {
         if (where?.notRoleId) {
             const Op = conf.global.Sequelize.Op;
             const condition = {[Op.notIn]: where.notRoleId};
-            if (where.roleId)
+            if (where.roleId) {
                 where.roleId = {[Op.and]: [where.roleId, condition]};
-            else
+            } else {
                 where.roleId = condition;
+            }
 
             delete where.notRoleId;
         }

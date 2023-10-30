@@ -1,7 +1,7 @@
 import {RoleService} from './role.js';
 import {PermissionService} from './permission.js';
 import {conf} from '../conf.js';
-import {addEnabledOnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes} from 'sql-util';
+import {addEnabledOwnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes} from 'sql-util';
 import {complete} from 'rf-util';
 
 export class RolePermissionService {
@@ -11,8 +11,9 @@ export class RolePermissionService {
      * @returns {Promise{data}}
      */
     static async completeRoleId(data) {
-        if (!data.roleId && data.role)
+        if (!data.roleId && data.role) {
             data.roleId = await RoleService.singleton().getIdForName(data.role);
+        }
 
         return data;
     }
@@ -23,8 +24,9 @@ export class RolePermissionService {
      * @returns {Promise{data}}
      */
     static async completePermissionId(data) {
-        if (!data.permissionId && data.permission)
+        if (!data.permissionId && data.permission) {
             data.permissionId = await PermissionService.getIdForName(data.permission);
+        }
 
         return data;
     }
@@ -55,8 +57,9 @@ export class RolePermissionService {
      * @returns {options}
      */
     static async getListOptions(options) {
-        if (options.isEnabled !== undefined)
-            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+        if (options.isEnabled !== undefined) {
+            options = addEnabledOwnerModuleFilter(options, conf.global.models.Module);
+        }
 
         return options;
     }
@@ -78,23 +81,26 @@ export class RolePermissionService {
     static async createIfNotExists(data, options) {
         options = {...options, attributes: ['roleId', 'permissionId'], where: {}, include: [], limit: 1};
 
-        if (data.roleId)
+        if (data.roleId) {
             options.where.roleId = data.roleId;
-        else if (data.role)
+        } else if (data.role) {
             options.include.push(complete({model: conf.global.models.Role, where: {name: data.role}}, skipAssociationAttributes));
-        else
+        } else {
             throw new MissingPropertyError('RolePermission', 'role', 'roleId');
+        }
         
-        if (data.permissionId)
+        if (data.permissionId) {
             options.where.permissionId = data.permissionId;
-        else if (data.permission)
+        } else if (data.permission) {
             options.include.push(complete({model: conf.global.models.Permission, where: {name: data.permission}}, skipAssociationAttributes));
-        else
+        } else {
             throw new MissingPropertyError('RolePermission', 'permission', 'permissionId');
+        }
 
         const rowList = await RolePermissionService.getList(options);
-        if (rowList.length)
+        if (rowList.length) {
             return rowList[0];
+        }
 
         return RolePermissionService.create(data);
     }

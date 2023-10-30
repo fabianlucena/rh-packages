@@ -1,8 +1,6 @@
-'use strict';
-
 import {conf} from '../conf.js';
 import {ServiceBase} from 'rf-service';
-import {completeIncludeOptions, addEnabledOnerModuleFilter, checkDataForMissingProperties, getSingle} from 'sql-util';
+import {completeIncludeOptions, addEnabledOwnerModuleFilter, checkDataForMissingProperties, getSingle} from 'sql-util';
 import {loc} from 'rf-locale';
 
 export class AssignableRolePerRoleService extends ServiceBase {
@@ -110,7 +108,7 @@ export class AssignableRolePerRoleService extends ServiceBase {
         }
 
         if (options.isEnabled !== undefined) {
-            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+            options = addEnabledOwnerModuleFilter(options, conf.global.models.Module);
         }
 
         return options;

@@ -67,14 +67,17 @@ export const skipAssociationAttributes = {attributes: []};
 export const skipThroughAssociationAttributes = {attributes: [], through: {attributes: []}};
 
 export async function configureModels(modelsPath, sequelize) {
-    if (!sequelize)
+    if (!sequelize) {
         return;
+    }
 
-    if (!modelsPath)
+    if (!modelsPath) {
         return;
+    }
         
-    if (!fs.existsSync(modelsPath))
+    if (!fs.existsSync(modelsPath)) {
         throw new Error(`The modules path does not exists: ${modelsPath}`);
+    }
 
     await Promise.all(
         await fs
@@ -85,8 +88,9 @@ export async function configureModels(modelsPath, sequelize) {
 }
 
 export async function posConfigureModelsAssociations(sequelize) {
-    if (!sequelize)
+    if (!sequelize) {
         return;
+    }
         
     await Promise.all(
         await Object.keys(sequelize.models).map(async modelName => {
@@ -180,11 +184,13 @@ export async function getSingleRowProperty(model, data, getProperty, options) {
 }
 
 export function completeAssociationOptions(base, options) {
-    if (options.skipAssociationAttributes)
+    if (options.skipAssociationAttributes) {
         deepComplete(base, skipAssociationAttributes);
+    }
 
-    if (options.skipThroughAssociationAttributes)
+    if (options.skipThroughAssociationAttributes) {
         deepComplete(base, skipThroughAssociationAttributes);
+    }
 
     return base;
 }
@@ -199,14 +205,16 @@ export async function checkDataForMissingProperties(data, objectName, ...propert
 }
 
 export async function checkViewOptions(options) {
-    if (!options)
+    if (!options) {
         options = {};
+    }
 
     if (options.view) {
         if (options.include) {
             options.include = await options.include.map(include => {
-                if (!include.attributes)
+                if (!include.attributes) {
                     include.attributes = [];
+                }
 
                 return include;
             });
@@ -227,8 +235,9 @@ export function getIncludedModelOptions(options, model, as) {
     if (options?.include) {
         for (let i = 0, e = options.include.length; i < e; i++) {
             const included = options.include[i];
-            if (included.model === model && (!as || as === included.as))
+            if (included.model === model && (!as || as === included.as)) {
                 return included;
+            }
         }
     }
 }
@@ -244,35 +253,43 @@ export function getIncludedModelOptions(options, model, as) {
 export function completeIncludeOptions(options, name, includeOptions, includeDefaultOptions) {
     options ??= {};
     
-    if (options?.foreign && options?.foreign[name] === false)
+    if (options?.foreign && options?.foreign[name] === false) {
         return options;
+    }
 
-    if (typeof includeOptions !== 'object' || !includeOptions)
+    if (typeof includeOptions !== 'object' || !includeOptions) {
         includeOptions = {};
+    }
         
-    if (includeDefaultOptions)
+    if (includeDefaultOptions) {
         includeOptions = {...includeDefaultOptions, ...includeOptions};
+    }
 
     let includedOptions;
-    if (options.include)
+    if (options.include) {
         includedOptions = getIncludedModelOptions(options, includeOptions.model, includeOptions.as);
-    else
+    } else {
         options.include = [];
+    }
 
     if (!includedOptions) {
         includedOptions = includeOptions;
         options.include.push(includedOptions);
-    } else
+    } else {
         includedOptions = deepComplete(includedOptions, includeOptions);
+    }
 
-    if (includeOptions.skipAssociationAttributes)
+    if (includeOptions.skipAssociationAttributes) {
         deepComplete(includedOptions, skipAssociationAttributes);
+    }
     
-    if (includeOptions.skipThroughAssociationAttributes)
+    if (includeOptions.skipThroughAssociationAttributes) {
         deepComplete(includedOptions, skipThroughAssociationAttributes);
+    }
 
-    if (options?.foreign)
+    if (options?.foreign) {
         replace(includedOptions, options?.foreign[name]);
+    }
 
     return options;
 }
@@ -285,7 +302,7 @@ export function addEnabledFilter(options) {
     return options;
 }
 
-export function addEnabledOnerModuleFilter(options, ownerModule, ownerModuleAlias) {
+export function addEnabledOwnerModuleFilter(options, ownerModule, ownerModuleAlias) {
     options = completeIncludeOptions(
         options,
         'ownerModuleId',
@@ -308,7 +325,7 @@ export function addEnabledOnerModuleFilter(options, ownerModule, ownerModuleAlia
 
 export function addEnabledWithOnerModuleFilter(options, ownerModule) {
     options = addEnabledFilter(options);
-    options = addEnabledOnerModuleFilter(options, ownerModule);
+    options = addEnabledOwnerModuleFilter(options, ownerModule);
 
     return options;
 }
@@ -337,8 +354,9 @@ export function includeCollaborators(options, object, models, collaboratorOption
         attributes: ['name', 'title'],
     };
 
-    if (collaboratorOptions.typeFilter !== undefined)
+    if (collaboratorOptions.typeFilter !== undefined) {
         user.where = {name: collaboratorOptions.typeFilter};
+    }
 
     const user = {
         model: models.User,
@@ -346,8 +364,9 @@ export function includeCollaborators(options, object, models, collaboratorOption
         attributes: ['uuid', 'userName', 'displayName'],
     };
 
-    if (collaboratorOptions.isEnabled !== undefined)
+    if (collaboratorOptions.isEnabled !== undefined) {
         user.where = {isEnabled: collaboratorOptions.isEnabled};
+    }
 
     return completeIncludeOptions(
         options,
@@ -364,7 +383,7 @@ export function includeCollaborators(options, object, models, collaboratorOption
 }
 
 export function arrangeOptions(options, sequelize) {
-    if (options.order?.length)
+    if (options.order?.length) {
         options.order = options.order.map(order => {
             let col = order[0];
             const sort = order[1];
@@ -372,6 +391,7 @@ export function arrangeOptions(options, sequelize) {
                 col = sequelize.col(col);
             return [col, sort];
         });
+    }
 
     return options;
 }

@@ -1,5 +1,5 @@
 import {conf} from '../conf.js';
-import {addEnabledFilter, addEnabledOnerModuleFilter, checkDataForMissingProperties} from 'sql-util';
+import {addEnabledFilter, addEnabledOwnerModuleFilter, checkDataForMissingProperties} from 'sql-util';
 
 export class ShareService {
     /**
@@ -8,8 +8,9 @@ export class ShareService {
      * @returns {Promise{data}}
      */
     static async completeObjectNameId(data) {
-        if (!data.objectNameId && data.objectName)
+        if (!data.objectNameId && data.objectName) {
             data.objectNameId = await conf.global.services.ObjectName.getIdForNameCreateIfNotExists({name: data.objectName});
+        }
 
         return data;
     }
@@ -20,8 +21,9 @@ export class ShareService {
      * @returns {Promise{data}}
      */
     static async completeUserId(data) {
-        if (!data.userId && (data.username || data.user))
+        if (!data.userId && (data.username || data.user)) {
             data.userId = await conf.global.services.User.singleton().getIdForUsername(data.username ?? data.user);
+        }
 
         return data;
     }
@@ -32,8 +34,9 @@ export class ShareService {
      * @returns {Promise{data}}
      */
     static async completeTypeId(data) {
-        if (!data.typeId && data.type)
+        if (!data.typeId && data.type) {
             data.typeId = await conf.global.services.ShareType.getIdForName(data.type);
+        }
 
         return data;
     }
@@ -44,8 +47,9 @@ export class ShareService {
      * @returns {Promise{data}}
      */
     static async completeOwnerModuleId(data) {
-        if (!data.ownerModuleId && data.ownerModule)
+        if (!data.ownerModuleId && data.ownerModule) {
             data.ownerModuleId = await conf.global.services.Module.getIdForName(data.ownerModule);
+        }
 
         return data;
     }
@@ -76,7 +80,7 @@ export class ShareService {
     static async getListOptions(options) {
         if (options.isEnabled !== undefined) {
             options = addEnabledFilter(options);
-            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+            options = addEnabledOwnerModuleFilter(options, conf.global.models.Module);
         }
 
         return options;

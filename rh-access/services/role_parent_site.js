@@ -1,8 +1,6 @@
-'use strict';
-
 import {RoleService} from './role.js';
 import {conf} from '../conf.js';
-import {addEnabledOnerModuleFilter, checkDataForMissingProperties} from 'sql-util';
+import {addEnabledOwnerModuleFilter, checkDataForMissingProperties} from 'sql-util';
 import {complete} from 'rf-util';
 
 export class RoleParentSiteService {
@@ -12,8 +10,9 @@ export class RoleParentSiteService {
      * @returns {Promise{data}}
      */
     static async completeRoleId(data) {
-        if (!data.roleId && data.role)
+        if (!data.roleId && data.role) {
             data.roleId = await RoleService.singleton().getIdForName(data.role);
+        }
     
         return data;
     }
@@ -24,8 +23,9 @@ export class RoleParentSiteService {
      * @returns {Promise{data}}
      */
     static async completeParentId(data) {
-        if (!data.parentId && data.parent)
+        if (!data.parentId && data.parent) {
             data.parentId = await RoleService.singleton().getIdForName(data.parent);
+        }
 
         return data;
     }
@@ -36,8 +36,9 @@ export class RoleParentSiteService {
      * @returns {Promise{data}}
      */
     static async completeSiteId(data) {
-        if (!data.siteId && data.site)
+        if (!data.siteId && data.site) {
             data.siteId = await conf.global.services.Site.singleton().getIdForName(data.site);
+        }
 
         return data;
     }
@@ -48,8 +49,9 @@ export class RoleParentSiteService {
      * @returns {Promise{data}}
      */
     static async completeOwnerModuleId(data) {
-        if (!data.ownerModuleId && data.ownerModule)
+        if (!data.ownerModuleId && data.ownerModule) {
             data.ownerModuleId = await conf.global.services.Module.getIdForName(data.ownerModule);
+        }
 
         return data;
     }
@@ -84,8 +86,9 @@ export class RoleParentSiteService {
      * @returns {options}
      */
     static async getListOptions(options) {
-        if (options.isEnabled !== undefined)
-            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+        if (options.isEnabled !== undefined) {
+            options = addEnabledOwnerModuleFilter(options, conf.global.models.Module);
+        }
 
         return options;
     }
@@ -133,8 +136,9 @@ export class RoleParentSiteService {
         await checkDataForMissingProperties(data, 'RoleParentSiteService', 'roleId', 'parentId', 'siteId');
         
         const rows = await RoleParentSiteService.getList(complete(options, {where:{roleId: data.roleId, parentId: data.parentId, siteId: data.siteId}}));
-        if (rows && rows.length)
+        if (rows && rows.length) {
             return true;
+        }
 
         return RoleParentSiteService.create(data);
     }

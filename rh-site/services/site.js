@@ -1,10 +1,8 @@
-'use strict';
-
 import {conf} from '../conf.js';
 import {ServiceIdUuidNameEnableTranslatable} from 'rf-service';
 import {
     addEnabledFilter,
-    addEnabledOnerModuleFilter, 
+    addEnabledOwnerModuleFilter, 
     checkDataForMissingProperties,
     getIncludedModelOptions,
     getSingle,
@@ -23,8 +21,9 @@ export class SiteService extends ServiceIdUuidNameEnableTranslatable {
     defaultTranslationContext = 'site';
 
     async validateForCreation(data) {
-        if (data.id)
+        if (data.id) {
             throw new CheckError(loc._cf('site', 'ID parameter is forbidden for creation.'));
+        }
 
         await checkDataForMissingProperties(data, 'Site', 'name', 'title');
 
@@ -33,16 +32,18 @@ export class SiteService extends ServiceIdUuidNameEnableTranslatable {
 
         checkValidUuidOrNull(data.uuid);
 
-        if (await this.getForName(data.name, {skipNoRowsError: true}))
+        if (await this.getForName(data.name, {skipNoRowsError: true})) {
             throw new ConflictError(loc._cf('site', 'Exists another test site with that name.'));
+        }
 
         return true;
     }
 
     async getListOptions(options) {
         if (options.view) {
-            if (!options.attributes)
+            if (!options.attributes) {
                 options.attributes = ['uuid', 'name', 'title'];
+            }
 
             const includedUserOptions = getIncludedModelOptions(options, conf.global.models.User);
             if (includedUserOptions) {
@@ -65,7 +66,7 @@ export class SiteService extends ServiceIdUuidNameEnableTranslatable {
 
         if (options.isEnabled !== undefined) {
             options = addEnabledFilter(options);
-            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+            options = addEnabledOwnerModuleFilter(options, conf.global.models.Module);
         }
 
         return options;
@@ -120,8 +121,9 @@ export class SiteService extends ServiceIdUuidNameEnableTranslatable {
      * @returns {Promise{[]Site]}}
      */
     async getNameForUsername(username, options) {
-        if (!username)
+        if (!username) {
             return [];
+        }
 
         return this.getForUsername(username, {...options, attributes: ['name'], skipThroughAssociationAttributes: true})
             .then(async list => list.map(role => role.name));

@@ -1,9 +1,7 @@
-'use strict';
-
 import {IdentityService} from '../services/identity.js';
 import {conf} from '../conf.js';
 import {ServiceIdUuidEnable} from 'rf-service';
-import {getSingle, addEnabledFilter, addEnabledOnerModuleFilter} from 'sql-util';
+import {getSingle, addEnabledFilter, addEnabledOwnerModuleFilter} from 'sql-util';
 import {ConflictError} from 'http-util';
 import {checkParameter} from 'rf-util';
 import {_Error} from 'rf-util';
@@ -18,15 +16,18 @@ export class UserService extends ServiceIdUuidEnable {
     defaultTranslationContext = 'user';
 
     async validateForCreation(data) {
-        if (!data.typeId && !data.type)
+        if (!data.typeId && !data.type) {
             data.type = 'user';
+        }
 
         checkParameter(data, {username: loc._cf('member', 'Username'), displayName: loc._cf('member', 'Display name')});
-        if (await this.getForUsername(data.username, {check: false, skipNoRowsError: true}))
+        if (await this.getForUsername(data.username, {check: false, skipNoRowsError: true})) {
             throw new ConflictError('Another user with the same username already exists.');
+        }
 
-        if (await this.getForDisplayName(data.displayName, {check: false, skipNoRowsError: true}))
+        if (await this.getForDisplayName(data.displayName, {check: false, skipNoRowsError: true})) {
             throw new ConflictError('Another user with the same display name already exists.');
+        }
 
         return true;
     }
@@ -61,12 +62,14 @@ export class UserService extends ServiceIdUuidEnable {
     async getListOptions(options) {
         options ??= {};
 
-        if (options.isEnabled !== undefined)
+        if (options.isEnabled !== undefined) {
             options = addEnabledFilter(options);
+        }
 
         if (options.view) {
-            if (!options.attributes)
+            if (!options.attributes) {
                 options.attributes = ['uuid', 'isEnabled', 'username', 'displayName'];
+            }
         }
 
         options.include ??= [];
@@ -91,8 +94,9 @@ export class UserService extends ServiceIdUuidEnable {
 
         if (options.isEnabled !== undefined) {
             options = addEnabledFilter(options);
-            if (conf.global.models.Module)
-                options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+            if (conf.global.models.Module) {
+                options = addEnabledOwnerModuleFilter(options, conf.global.models.Module);
+            }
         }
 
         return options;
@@ -107,8 +111,9 @@ export class UserService extends ServiceIdUuidEnable {
     async getForUsername(username, options) {
         options = {...options, where: {...options?.where, username}};
 
-        if (Array.isArray(username))
+        if (Array.isArray(username)) {
             return this.getList(options);
+        }
 
         options.limit ??= 2;
         const rows = await this.getList(options);
@@ -125,8 +130,9 @@ export class UserService extends ServiceIdUuidEnable {
     async getForDisplayName(displayName, options) {
         options = {...options, where: {...options?.where, displayName}};
 
-        if (Array.isArray(displayName))
+        if (Array.isArray(displayName)) {
             return this.getList(options);
+        }
 
         options.limit ??= 2;
         const rows = await this.getList(options);
@@ -142,8 +148,9 @@ export class UserService extends ServiceIdUuidEnable {
      */
     async getIdForUsername(username, options) {
         const result = await this.getForUsername(username, {attributes: ['id'], ...options});
-        if (Array.isArray(username))
+        if (Array.isArray(username)) {
             return result.map(row => row.id);
+        }
         
         return result.id;
     }
@@ -155,11 +162,13 @@ export class UserService extends ServiceIdUuidEnable {
      * @returns 
      */
     async checkEnabledUser(user, username) {
-        if (!user)
+        if (!user) {
             throw new _Error(loc._cf('user', 'User "%s" does not exist'), username);
+        }
 
-        if (!user.isEnabled)
+        if (!user.isEnabled) {
             throw new _Error(loc._cf('user', 'User "%s" is not enabled'), username);
+        }
 
         return true;
     }
@@ -199,8 +208,9 @@ export class UserService extends ServiceIdUuidEnable {
      */
     async createIfNotExists(data, options) {
         const row = await this.getForUsername(data.username, {attributes: ['id'], foreign: {module: {attributes:[]}}, skipNoRowsError: true, ...options});
-        if (row)
+        if (row) {
             return row;
+        }
 
         return this.create(data);
     }

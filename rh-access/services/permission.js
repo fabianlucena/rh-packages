@@ -1,6 +1,6 @@
 import {RolePermissionService} from './role_permission.js';
 import {conf} from '../conf.js';
-import {addEnabledFilter, addEnabledOnerModuleFilter, checkDataForMissingProperties, getSingle, completeAssociationOptions} from 'sql-util';
+import {addEnabledFilter, addEnabledOwnerModuleFilter, checkDataForMissingProperties, getSingle, completeAssociationOptions} from 'sql-util';
 import {deepComplete, runSequentially} from 'rf-util';
 
 export class PermissionService {
@@ -10,8 +10,9 @@ export class PermissionService {
      * @returns {Promise{data}}
      */
     static async completeOwnerModuleId(data) {
-        if (!data.ownerModuleId && data.ownerModule)
+        if (!data.ownerModuleId && data.ownerModule) {
             data.ownerModuleId = await conf.global.services.Module.getIdForName(data.ownerModule);
+        }
 
         return data;
     }
@@ -50,7 +51,7 @@ export class PermissionService {
 
         if (options.isEnabled !== undefined) {
             options = addEnabledFilter(options);
-            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+            options = addEnabledOwnerModuleFilter(options, conf.global.models.Module);
         }
 
         return options;
@@ -92,8 +93,9 @@ export class PermissionService {
      */
     static async createIfNotExists(data, options) {
         let permission = await PermissionService.getForName(data.name, {attributes: ['id'], foreign:{module:{attributes:[]}}, skipNoRowsError: true, ...options});
-        if (!permission)
+        if (!permission) {
             permission = await PermissionService.create(data);
+        }
 
         if (data.roles) {
             const roles = Array.isArray(data.roles)?

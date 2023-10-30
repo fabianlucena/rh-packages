@@ -1,6 +1,6 @@
 import {UserGroupService} from './user_group.js';
 import {conf} from '../conf.js';
-import {addEnabledFilter, addEnabledOnerModuleFilter, checkDataForMissingProperties, getSingle, completeAssociationOptions} from 'sql-util';
+import {addEnabledFilter, addEnabledOwnerModuleFilter, checkDataForMissingProperties, getSingle, completeAssociationOptions} from 'sql-util';
 import {complete, deepComplete} from 'rf-util';
 
 export class GroupService {
@@ -10,8 +10,9 @@ export class GroupService {
      * @returns {Promise{data}}
      */
     static async completeOwnerModuleId(data) {
-        if (!data.ownerModuleId && data.ownerModule)
+        if (!data.ownerModuleId && data.ownerModule) {
             data.ownerModuleId = await conf.global.services.Module.getIdForName(data.ownerModule);
+        }
 
         return data;
     }
@@ -66,7 +67,7 @@ export class GroupService {
 
         if (options.isEnabled !== undefined) {
             options = addEnabledFilter(options);
-            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
+            options = addEnabledOwnerModuleFilter(options, conf.global.models.Module);
         }
 
         return options;
