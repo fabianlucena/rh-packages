@@ -1,16 +1,12 @@
-'use strict';
-
 import {RoleParentSiteService} from './role_parent_site.js';
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameEnableTranslatable} from 'rf-service';
-import {addEnabledFilter, addEnabledOnerModuleFilter, checkDataForMissingProperties, completeAssociationOptions} from 'sql-util';
+import {ServiceIdUuidNameTitleModuleEnableTranslatable} from 'rf-service';
+import {checkDataForMissingProperties, completeAssociationOptions} from 'sql-util';
 
-export class RoleService extends ServiceIdUuidNameEnableTranslatable {
+export class RoleService extends ServiceIdUuidNameTitleModuleEnableTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Role;
-    references = {
-        ownerModule: conf.global.services.Module,
-    };
+    ModuleService = conf.global.services.Module;
     defaultTranslationContext = 'role';
 
     constructor() {
@@ -21,26 +17,6 @@ export class RoleService extends ServiceIdUuidNameEnableTranslatable {
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'Role', 'name', 'title');
         return true;
-    }
-
-    async getListOptions(options) {
-        if (options.q) {
-            const q = `%${options.q}%`;
-            const Op = conf.global.Sequelize.Op;
-            options.where = {
-                [Op.or]: [
-                    {username:    {[Op.like]: q}},
-                    {displayName: {[Op.like]: q}},
-                ],
-            };
-        }
-
-        if (options.isEnabled !== undefined) {
-            options = addEnabledFilter(options);
-            options = addEnabledOnerModuleFilter(options, conf.global.models.Module);
-        }
-
-        return options;
     }
 
     /**
