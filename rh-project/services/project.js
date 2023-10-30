@@ -1,11 +1,11 @@
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameSharedEnableTranslatable} from 'rf-service';
+import {ServiceIdUuidNameEnabledSharedTranslatable} from 'rf-service';
 import {addEnabledFilter, includeCollaborators, completeIncludeOptions} from 'sql-util';
 import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull} from 'rf-util';
 import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
-export class ProjectService extends ServiceIdUuidNameSharedEnableTranslatable {
+export class ProjectService extends ServiceIdUuidNameEnabledSharedTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Project;
     shareObject = 'Project';

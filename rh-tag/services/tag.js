@@ -1,11 +1,11 @@
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameEnableTranslatable} from 'rf-service';
+import {ServiceIdUuidNameEnabledTranslatable} from 'rf-service';
 import {addEnabledFilter, addEnabledOwnerModuleFilter, checkDataForMissingProperties, completeIncludeOptions} from 'sql-util';
 import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull} from 'rf-util';
 import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
-export class TagService extends ServiceIdUuidNameEnableTranslatable {
+export class TagService extends ServiceIdUuidNameEnabledTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Tag;
     references = {

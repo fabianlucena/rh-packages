@@ -1,7 +1,5 @@
-'use strict';
-
 import {conf} from '../conf.js';
-import {ServiceIdUuidEnable} from 'rf-service';
+import {ServiceIdUuidEnabled} from 'rf-service';
 import {SourceService} from './source.js';
 import {LanguageService} from './language.js';
 import {ContextService} from './context.js';
@@ -9,7 +7,7 @@ import {DomainService} from './domain.js';
 import {checkDataForMissingProperties, getSingle} from 'sql-util';
 import {deepComplete} from 'rf-util';
 
-export class TranslationService extends ServiceIdUuidEnable {
+export class TranslationService extends ServiceIdUuidEnabled {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Translation;
     references = {

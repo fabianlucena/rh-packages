@@ -1,11 +1,11 @@
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameEnableTranslatable} from 'rf-service';
+import {ServiceIdUuidNameEnabledTranslatable} from 'rf-service';
 import {addEnabledFilter} from 'sql-util';
 import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull} from 'rf-util';
 import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
-export class ResourceTypeService extends ServiceIdUuidNameEnableTranslatable {
+export class ResourceTypeService extends ServiceIdUuidNameEnabledTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.ResourceType;
     defaultTranslationContext = 'resourceType';

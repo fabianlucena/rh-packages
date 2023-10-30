@@ -1,7 +1,7 @@
 import {NoRowError, DisabledRowError} from './rf-service-errors.js';
 import {addEnabledFilter} from 'sql-util';
 
-export const ServiceMixinEnable = Service => class ServiceEnable extends Service {
+export const ServiceMixinEnabled = Service => class ServiceEnabled extends Service {
     /**
      * Gets the options to use in getList methos.
      * @param {object} options - options for the getList method.
@@ -26,11 +26,13 @@ export const ServiceMixinEnable = Service => class ServiceEnable extends Service
      * @returns 
      */
     async checkEnabled(row) {
-        if (!row)
+        if (!row) {
             throw new NoRowError();
+        }
 
-        if (!row.isEnabled)
+        if (!row.isEnabled) {
             throw new DisabledRowError();
+        }
 
         return true;
     }

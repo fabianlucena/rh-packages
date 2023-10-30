@@ -1,13 +1,13 @@
 import {IdentityService} from '../services/identity.js';
 import {conf} from '../conf.js';
-import {ServiceIdUuidEnable} from 'rf-service';
+import {ServiceIdUuidEnabled} from 'rf-service';
 import {getSingle, addEnabledFilter, addEnabledOwnerModuleFilter} from 'sql-util';
 import {ConflictError} from 'http-util';
 import {checkParameter} from 'rf-util';
 import {_Error} from 'rf-util';
 import {loc} from 'rf-locale';
 
-export class UserService extends ServiceIdUuidEnable {
+export class UserService extends ServiceIdUuidEnabled {
     sequelize = conf.global.sequelize;
     model = conf.global.models.User;
     references = {

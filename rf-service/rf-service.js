@@ -5,12 +5,13 @@ import {ServiceMixinUuid} from './rf-service-mixin-uuid.js';
 import {ServiceMixinIdUuid} from './rf-service-mixin-id-uuid.js';
 import {ServiceMixinName} from './rf-service-mixin-name.js';
 import {ServiceMixinIdName} from './rf-service-mixin-id-name.js';
-import {ServiceMixinEnable} from './rf-service-mixin-enable.js';
+import {ServiceMixinEnabled} from './rf-service-mixin-enabled.js';
 import {ServiceMixinUuidEnable} from './rf-service-mixin-uuid-enable.js';
 import {ServiceMixinShared} from './rf-service-mixin-shared.js';
 import {ServiceMixinModule} from './rf-service-mixin-module.js';
 import {ServiceMixinTitle} from './rf-service-mixin-title.js';
 import {ServiceMixinNameTitle} from './rf-service-mixin-name-title.js';
+import {ServiceMixinNameTitleDescription} from './rf-service-mixin-name-title-description.js';
 
 export {
     ServiceBase,
@@ -20,20 +21,22 @@ export {
     ServiceMixinIdUuid,
     ServiceMixinName,
     ServiceMixinIdName,
-    ServiceMixinEnable,
+    ServiceMixinEnabled,
     ServiceMixinUuidEnable,
     ServiceMixinShared,
     ServiceMixinTitle,
     ServiceMixinNameTitle,
+    ServiceMixinNameTitleDescription,
 };
 
 export class ServiceId extends ServiceMixinId(ServiceBase) {}
 export class ServiceIdTranslatable extends ServiceMixinTranslatable(ServiceMixinId(ServiceBase)) {}
 export class ServiceIdUuid extends ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))) {}
-export class ServiceIdUuidEnable extends ServiceMixinUuidEnable(ServiceMixinEnable(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))) {}
-export class ServiceIdUuidNameEnableTranslatable extends ServiceMixinTranslatable(ServiceMixinUuidEnable(ServiceMixinEnable(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase)))))))) {}
-export class ServiceIdUuidNameTitleEnableModuleTranslatable extends ServiceMixinTranslatable(ServiceMixinModule(ServiceMixinNameTitle(ServiceMixinTitle(ServiceMixinUuidEnable(ServiceMixinEnable(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))))))) {}
+export class ServiceIdUuidEnabled extends ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))) {}
+export class ServiceIdUuidNameEnabledTranslatable extends ServiceMixinTranslatable(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase)))))))) {}
+export class ServiceIdUuidNameTitleEnabledModuleTranslatable extends ServiceMixinTranslatable(ServiceMixinModule(ServiceMixinNameTitle(ServiceMixinTitle(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))))))) {}
+export class ServiceIdUuidNameTitleDescriptionEnabledSharedTranslatable extends ServiceMixinTranslatable(ServiceMixinShared(ServiceMixinNameTitleDescription(ServiceMixinTitle(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))))))) {}
 export class ServiceIdUuidTranslatable extends ServiceMixinTranslatable(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase)))) {}
 export class ServiceShared extends ServiceMixinShared(ServiceBase) {}
-export class ServiceSharedEnable extends ServiceMixinEnable(ServiceMixinShared(ServiceBase)) {}
-export class ServiceIdUuidNameSharedEnableTranslatable extends ServiceMixinTranslatable(ServiceMixinUuidEnable(ServiceMixinEnable(ServiceMixinShared(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))))) {}
+export class ServiceSharedEnabled extends ServiceMixinEnabled(ServiceMixinShared(ServiceBase)) {}
+export class ServiceIdUuidNameEnabledSharedTranslatable extends ServiceMixinTranslatable(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinShared(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))))) {}

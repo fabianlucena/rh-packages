@@ -1,11 +1,9 @@
-'use strict';
-
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameEnableTranslatable} from 'rf-service';
+import {ServiceIdUuidNameEnabledTranslatable} from 'rf-service';
 import {checkDataForMissingProperties} from 'sql-util';
 import {ucfirst} from 'rf-util';
 
-export class ContextService extends ServiceIdUuidNameEnableTranslatable {
+export class ContextService extends ServiceIdUuidNameEnabledTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Context;
 

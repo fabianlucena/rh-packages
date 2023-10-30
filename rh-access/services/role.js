@@ -1,9 +1,9 @@
 import {RoleParentSiteService} from './role_parent_site.js';
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameTitleEnableModuleTranslatable} from 'rf-service';
+import {ServiceIdUuidNameTitleEnabledModuleTranslatable} from 'rf-service';
 import {checkDataForMissingProperties, completeAssociationOptions} from 'sql-util';
 
-export class RoleService extends ServiceIdUuidNameTitleEnableModuleTranslatable {
+export class RoleService extends ServiceIdUuidNameTitleEnabledModuleTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Role;
     moduleModel = conf.global.models.Module;
@@ -125,8 +125,9 @@ export class RoleService extends ServiceIdUuidNameTitleEnableModuleTranslatable 
             parentOptions.where.parentId = {[Op.notIn]: allRoleIdList};
 
             newRoleList = await RoleParentSiteService.getList(parentOptions);
-            if (!newRoleList.length)
+            if (!newRoleList.length) {
                 break;
+            }
 
             newRoleIdList = await newRoleList.map(roleParent => roleParent.parentId);
             allRoleIdList = [...allRoleIdList, ...newRoleIdList];

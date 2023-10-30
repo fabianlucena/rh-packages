@@ -1,12 +1,12 @@
 import {PageFormatService} from './page_format.js';
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameTitleEnableModuleTranslatable} from 'rf-service';
+import {ServiceIdUuidNameTitleEnabledModuleTranslatable} from 'rf-service';
 import {completeIncludeOptions, checkViewOptions} from 'sql-util';
 import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull} from 'rf-util';
 import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
-export class PageService extends ServiceIdUuidNameTitleEnableModuleTranslatable {
+export class PageService extends ServiceIdUuidNameTitleEnabledModuleTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Page;
     shareObject = 'Page';

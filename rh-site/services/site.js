@@ -1,5 +1,5 @@
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameEnableTranslatable} from 'rf-service';
+import {ServiceIdUuidNameEnabledTranslatable} from 'rf-service';
 import {
     addEnabledFilter,
     addEnabledOwnerModuleFilter, 
@@ -12,7 +12,7 @@ import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull, co
 import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
-export class SiteService extends ServiceIdUuidNameEnableTranslatable {
+export class SiteService extends ServiceIdUuidNameEnabledTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Site;
     references = {

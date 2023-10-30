@@ -1,9 +1,9 @@
 import {conf} from '../conf.js';
-import {ServiceSharedEnable} from 'rf-service';
+import {ServiceSharedEnabled} from 'rf-service';
 import {addEnabledOwnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes, completeIncludeOptions, getIncludedModelOptions} from 'sql-util';
 import {complete} from 'rf-util';
 
-export class UserSiteRoleService extends ServiceSharedEnable {
+export class UserSiteRoleService extends ServiceSharedEnabled {
     sequelize = conf.global.sequelize;
     model = conf.global.models.UserSiteRole;
     references = {

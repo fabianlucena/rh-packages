@@ -1,11 +1,9 @@
-'use strict';
-
 import {conf} from '../conf.js';
-import {ServiceIdUuidEnable} from 'rf-service';
+import {ServiceIdUuidEnabled} from 'rf-service';
 import {checkDataForMissingProperties, MissingPropertyError, completeAssociationOptions, addEnabledFilter, getSingle} from 'sql-util';
 import crypto from 'crypto';
 
-export class IdentityService extends ServiceIdUuidEnable {
+export class IdentityService extends ServiceIdUuidEnabled {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Identity;
     references = {
@@ -45,14 +43,16 @@ export class IdentityService extends ServiceIdUuidEnable {
      * @returns {Promise[data]}
      */
     async completeDataFromPassword(data) {
-        if (!data.password)
+        if (!data.password) {
             return data;
+        }
 
         let jsonData;
-        if (data.data)
+        if (data.data) {
             jsonData = JSON.parse(data.data);
-        else
+        } else {
             jsonData = {};
+        }
 
         jsonData.password = await this.hashPassword(data.password);
         data.data = JSON.stringify(jsonData);
@@ -63,8 +63,9 @@ export class IdentityService extends ServiceIdUuidEnable {
     async validateForCreation(data) {
         await this.completeDataFromPassword(data);
 
-        if (!data.data)
+        if (!data.data) {
             throw new MissingPropertyError('Identity', 'password');
+        }
 
         checkDataForMissingProperties(data, 'Identity', 'typeId', 'userId');
 
@@ -90,8 +91,9 @@ export class IdentityService extends ServiceIdUuidEnable {
      * @returns {options}
      */
     async getListOptions(options) {
-        if (options.isEnabled !== undefined)
+        if (options.isEnabled !== undefined) {
             options = addEnabledFilter(options);
+        }
 
         return options;
     }
@@ -156,18 +158,22 @@ export class IdentityService extends ServiceIdUuidEnable {
     async checkLocalPasswordForUsername(username, rawPassword, loc) {
         const identity = await this.getLocalForUsername(username);
 
-        if (!identity)
+        if (!identity) {
             return loc._c('identity', 'User "%s" does not have local identity', username);
+        }
 
-        if (!identity.isEnabled)
+        if (!identity.isEnabled) {
             return loc._c('identity', 'User "%s" local identity is not enabled', username);
+        }
         
-        if (!identity.data)
+        if (!identity.data) {
             return loc._c('identity', 'User "%s" does not have local identity data', username);
+        }
             
         const data = JSON.parse(identity.data);
-        if (!data || !data.password)
+        if (!data || !data.password) {
             return loc._c('identity', 'User "%s" does not have local password', username);
+        }
 
         return this.checkRawPasswordAndEncryptedPassword(rawPassword, data.password);
     }
@@ -182,8 +188,9 @@ export class IdentityService extends ServiceIdUuidEnable {
         return new Promise(resolve => {
             const [salt, key] = encriptedPassword.split(':');
             crypto.scrypt(rawPassword, salt, 64, (err, derivedKey) => {
-                if (err)
+                if (err) {
                     resolve(err);
+                }
                 
                 resolve(key == derivedKey.toString('hex'));
             });
@@ -197,8 +204,9 @@ export class IdentityService extends ServiceIdUuidEnable {
      */
     async createIfNotExists(data, options) {
         const row = this.getForUsernameTypeName(data.username, data.type, {attributes: ['id'], skipNoRowsError: true, ...options});
-        if (row)
+        if (row) {
             return row;
+        }
 
         return this.create(data);
     }

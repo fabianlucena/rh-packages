@@ -1,10 +1,8 @@
-'use strict';
-
 import {conf} from '../conf.js';
-import {ServiceIdUuidEnable} from 'rf-service';
+import {ServiceIdUuidEnabled} from 'rf-service';
 import {checkDataForMissingProperties} from 'sql-util';
 
-export class SourceService extends ServiceIdUuidEnable {
+export class SourceService extends ServiceIdUuidEnabled {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Source;
     

@@ -1,13 +1,11 @@
-'use strict';
-
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameEnableTranslatable} from 'rf-service';
+import {ServiceIdUuidNameEnabledTranslatable} from 'rf-service';
 import {completeIncludeOptions, addEnabledFilter, checkViewOptions} from 'sql-util';
 import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull, spacialize, ucfirst} from 'rf-util';
 import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
-export class MenuItemService extends ServiceIdUuidNameEnableTranslatable {
+export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.MenuItem;
     references = {

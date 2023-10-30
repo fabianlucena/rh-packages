@@ -1,13 +1,11 @@
-'use strict';
-
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameEnableTranslatable} from 'rf-service';
+import {ServiceIdUuidNameEnabledTranslatable} from 'rf-service';
 import {addEnabledFilter, includeCollaborators} from 'sql-util';
 import {CheckError, checkParameterStringNotNullOrEmpty, checkValidUuidOrNull} from 'rf-util';
 import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
-export class CompanyService extends ServiceIdUuidNameEnableTranslatable {
+export class CompanyService extends ServiceIdUuidNameEnabledTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Company;
     shareObject = 'Company';
@@ -26,30 +24,33 @@ export class CompanyService extends ServiceIdUuidNameEnableTranslatable {
     defaultTranslationContext = 'company';
 
     async validateForCreation(data) {
-        if (data.id)
+        if (data.id) {
             throw new CheckError(loc._cf('company', 'ID parameter is forbidden for creation.'));
+        }
 
         checkParameterStringNotNullOrEmpty(data.name, loc._cf('company', 'Name'));
         checkParameterStringNotNullOrEmpty(data.title, loc._cf('company', 'Title'));
 
         checkValidUuidOrNull(data.uuid);
 
-        if (await this.getForName(data.name, {skipNoRowsError: true}))
+        if (await this.getForName(data.name, {skipNoRowsError: true})) {
             throw new ConflictError(loc._cf('company', 'Exists another test scenary with that name.'));
+        }
 
-        if (!data.owner && !data.ownerId)
+        if (!data.owner && !data.ownerId) {
             throw new CheckError(loc._cf('company', 'No owner specified.'));
+        }
 
         return true;
     }
 
     async getListOptions(options) {
-        if (!options)
-            options = {};
+        options ??= {};
 
         if (options.view) {
-            if (!options.attributes)
+            if (!options.attributes) {
                 options.attributes = ['uuid', 'isEnabled', 'name', 'title', 'description'];
+            }
         }
 
         if (options.includeOwner) {
@@ -68,8 +69,9 @@ export class CompanyService extends ServiceIdUuidNameEnableTranslatable {
             };
         }
 
-        if (options.isEnabled !== undefined)
+        if (options.isEnabled !== undefined) {
             options = addEnabledFilter(options);
+        }
 
         return options;
     }
