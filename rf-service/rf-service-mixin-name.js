@@ -59,8 +59,8 @@ export const ServiceMixinName = Service => class extends Service {
      */
     async createIfNotExists(data, options) {
         const row = await this.getForName(data.name, {skipNoRowsError: true, ...options});
-        if (row?.length) {
-            return row[0];
+        if (row) {
+            return row;
         }
             
         return this.create(data, {transacion: options?.transacion});

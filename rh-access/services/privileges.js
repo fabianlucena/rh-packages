@@ -2,7 +2,10 @@ import {GroupService} from './group.js';
 import {RoleService} from './role.js';
 import {PermissionService} from './permission.js';
 import {conf} from '../conf.js';
-import {complete} from 'rf-util';
+import {ServiceBase} from 'rf-service';
+import {complete, _Error} from 'rf-util';
+import {loc} from 'rf-locale';
+
 
 complete(
     conf,
@@ -34,20 +37,37 @@ complete(
 
 conf.init.push(() => conf.privilegesCacheMaintenance = setInterval(conf.privilegesCacheMaintenanceMethod, conf.privilegesCacheMaintenanceInterval));
 
-export class PrivilegesService {
+export class PrivilegesService extends ServiceBase {
+    async create() {
+        throw new _Error(loc._f('Cannot create privileges, privileges is a container not an entity.'));
+    }
+
+    async getList() {
+        throw new _Error(loc._f('Cannot get privileges, privileges is a container not an entity.'));
+    }
+
+    async update() {
+        throw new _Error(loc._f('Cannot update privileges, privileges is a container not an entity.'));
+    }
+
+    async delete() {
+        throw new _Error(loc._f('Cannot delete privileges, privileges is a container not an entity.'));
+    }
+
     /**
      * Gets the privileges data for a given username and site name.
      * @param {string} username - username for the privileges to get.
      * @param {string} siteName - siteName for the privileges to get.
      * @returns {Promise{{}}}
      */
-    static async getForUsernameAndSiteName(username, siteName) {
+    async getForUsernameAndSiteName(username, siteName) {
         const privileges = {};
 
-        if (username)
+        if (username) {
             privileges.sites = await conf.global.services.Site.singleton().getNameForUsername(username, {isEnabled: true});
-        else
+        } else {
             privileges.sites = [];
+        }
 
         privileges.site = siteName ?? null;
 
@@ -62,12 +82,14 @@ export class PrivilegesService {
                     [siteName]:
                 [];
 
-            if (!rolesSiteName.includes('system'))
+            if (!rolesSiteName.includes('system')) {
                 rolesSiteName.push('system');
+            }
                 
             privileges.roles = [...privileges.roles, ...await RoleService.singleton().getAllNamesForUsernameAndSiteName(username, rolesSiteName, {isEnabled: true})];
-        } else
+        } else {
             privileges.roles.push('anonymous');
+        }
 
         privileges.permissions = await PermissionService.singleton().getNamesForRolesName(privileges.roles, {isEnabled: true});
 
@@ -82,7 +104,7 @@ export class PrivilegesService {
      * @param {integer} sessionId - value for the ID to get the site.
      * @returns {Promise{privileges}}
      */
-    static async getJSONForUsernameAndSessionIdCached(username, sessionId) {
+    async getJSONForUsernameAndSessionIdCached(username, sessionId) {
         let site;
         if (sessionId) {
             if (conf.privilegesCache && conf.privilegesCache[sessionId]) {
@@ -94,19 +116,18 @@ export class PrivilegesService {
             const siteService = conf.global.services.Site.singleton();
             site = await siteService.getForSessionId(sessionId, {skipThroughAssociationAttributes: true, skipNoRowsError: true});
             if (!site) {
-                if (!site && conf.global.data.defaultSite)
+                if (!site && conf.global.data.defaultSite) {
                     site = await siteService.getForName(conf.global.data.defaultSite, {skipThroughAssociationAttributes: true, skipNoRowsError: true});
+                }
 
-                if (site && conf.global.services.SessionSite?.createOrUpdate) {
-                    await conf.global.services.SessionSite?.createOrUpdate({
-                        sessionId: sessionId,
-                        siteId: site.id,
-                    });
+                if (site) {
+                    const sessionSiteService = conf.global.services.SessionSite?.singleton();
+                    await sessionSiteService.createOrUpdate({sessionId, siteId: site.id});
                 }
             }
         }
         
-        const privileges = await PrivilegesService.getForUsernameAndSiteName(username, site?.name);
+        const privileges = await this.getForUsernameAndSiteName(username, site?.name);
         privileges.site = site?.toJSON();
 
         sessionId ||= privileges.site?.id;
@@ -121,7 +142,7 @@ export class PrivilegesService {
         return privileges;
     }
 
-    static deleteFromCacheForSessionId(sessionId) {
+    deleteFromCacheForSessionId(sessionId) {
         if (conf.privilegesCache[sessionId]) {
             delete conf.privilegesCache[sessionId];
         }

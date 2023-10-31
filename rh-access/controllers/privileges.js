@@ -20,10 +20,12 @@ import {errorHandler} from 'rf-util';
  *              example: Example error
  */
 
+const privilegesService = PrivilegesService.singleton();
+
 export class PrivilegesController {
     static middleware() {
         return (req, res, next) => {
-            PrivilegesService.getJSONForUsernameAndSessionIdCached(req?.user?.username, req?.session?.id)
+            privilegesService.getJSONForUsernameAndSessionIdCached(req?.user?.username, req?.session?.id)
                 .then(privileges => {
                     if (privileges) {
                         req.sites = privileges.sites;
@@ -78,8 +80,9 @@ export class PrivilegesController {
 
             if (!req.site?.name)
                 result.warning = await (req.loc ?? loc)._('No current site selected');
-        } else
+        } else {
             result = {};
+        }
 
         res.status(200).send({count: 1, rows: [result]});
     }

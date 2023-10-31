@@ -14,8 +14,9 @@ export class UserAccessService extends UserSiteRoleService {
     async completeReferences(data, clean) {
         await super.completeReferences(data, clean);
 
-        if (!data.rolesId?.length && data.rolesUuid?.length)
+        if (!data.rolesId?.length && data.rolesUuid?.length) {
             data.rolesId = await this.roleService.getIdForUuid(data.rolesUuid);
+        }
     }
 
     async validateForCreation(data) {
@@ -25,10 +26,11 @@ export class UserAccessService extends UserSiteRoleService {
             await this.userService.validateForCreation(data.User);
         }
 
-        if (!data.rolesId?.length)
+        if (!data.rolesId?.length) {
             throw new MissingPropertyError('UserAccess', 'roles');
+        }
         
-        return true;
+        return super.validateForCreation(data);
     }
 
     async create(data) {
@@ -37,18 +39,21 @@ export class UserAccessService extends UserSiteRoleService {
         const transaction = await this.createTransaction();
         try {
             let user;
-            if (data.userId)
+            if (data.userId) {
                 user = await this.userService.getForId(data.userId, {transaction});
-            else if (data.userUuid)
+            } else if (data.userUuid) {
                 user = await this.userService.getForUuid(data.userUuid, {transaction});
-            else
+            } else {
                 user = await this.userService.create(data.User, {transaction});
+            }
 
-            if (user.toJSON)
+            if (user.toJSON) {
                 user = user.toJSON();
+            }
             
-            if (!data.rolesId?.length && data.rolesUuid?.length)
+            if (!data.rolesId?.length && data.rolesUuid?.length) {
                 data.rolesId = await this.roleService.getIdForUuid(data.rolesUuid);
+            }
 
             user.rolesId = await this.updateRoles({
                 userId: user.id,
@@ -76,8 +81,9 @@ export class UserAccessService extends UserSiteRoleService {
             }
         };
         const queryOptions = {};
-        if (options.transaction)
+        if (options.transaction) {
             queryOptions.transaction = options.transaction;
+        }
             
         const rolesId = [];
         for (const roleId of options.rolesId) {
@@ -85,8 +91,9 @@ export class UserAccessService extends UserSiteRoleService {
                 rolesId.push(roleId);
                 getListOptions.where.roleId = roleId;
                 const result = await this.userSiteRoleService.getList(getListOptions);
-                if (!result?.length)
+                if (!result?.length) {
                     await this.userSiteRoleService.create(getListOptions.where, queryOptions);
+                }
             }
         }
 
@@ -94,8 +101,9 @@ export class UserAccessService extends UserSiteRoleService {
             userId: options.userId,
             siteId: options.siteId,
         };
-        if (options.assignableRolesId)
+        if (options.assignableRolesId) {
             deleteData.roleId = options.assignableRolesId;
+        }
 
         deleteData.notRoleId = options.rolesId;
         await this.userSiteRoleService.deleteFor(deleteData, queryOptions);
@@ -104,23 +112,28 @@ export class UserAccessService extends UserSiteRoleService {
     }
     
     async getList(options) {
-        if (!options.includeRoles)
+        if (!options.includeRoles) {
             return super.getList(options);
+        }
 
         options ??= {};
         options.view = true;
         options.attributes ??= [];
-        if (!options.attributes.includes('userId'))
+        if (!options.attributes.includes('userId')) {
             options.attributes.push('userId');
+        }
 
-        if (!options.attributes.includes('siteId'))
+        if (!options.attributes.includes('siteId')) {
             options.attributes.push('siteId');
+        }
         
-        if (!options.includeUser)
+        if (!options.includeUser) {
             options.includeUser = {attributes: ['uuid']};
+        }
         
-        if (!options.includeSite)
+        if (!options.includeSite) {
             options.includeSite = {attributes: ['uuid']};
+        }
 
         options.raw = true;
         options.nest = true;
@@ -144,8 +157,9 @@ export class UserAccessService extends UserSiteRoleService {
             loc: options.loc,
         };
 
-        if (options.includeRolesId)
+        if (options.includeRolesId) {
             roleQueryOptions.where = {roleId: options.includeRolesId};
+        }
 
         for (const row of rows) {
             row.uuid = row.User.uuid + ',' + row.Site.uuid;
@@ -165,8 +179,9 @@ export class UserAccessService extends UserSiteRoleService {
 
     async update(data, options) {
         await this.completeReferences(data);
-        if (options?.where)
+        if (options?.where) {
             await this.completeReferences(options.where);
+        }
 
         const userId = options?.where?.userId ?? data?.userId;
         const siteId = options?.where?.siteId ?? data?.siteId;
@@ -176,8 +191,9 @@ export class UserAccessService extends UserSiteRoleService {
         options ??= {};
 
         let transaction;
-        if (options.transaction !== true)
+        if (options.transaction !== true) {
             options.transaction = transaction = await this.createTransaction();
+        }
 
         try {
             const transactionOptions = {transaction: options.transaction};

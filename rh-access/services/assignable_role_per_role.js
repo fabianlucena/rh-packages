@@ -15,8 +15,7 @@ export class AssignableRolePerRoleService extends ServiceBase {
 
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'AssignableRolePerRole', 'roleId', 'assignableRoleId');
-
-        return true;
+        return super.validateForCreation(data);
     }
 
     /**
@@ -26,17 +25,21 @@ export class AssignableRolePerRoleService extends ServiceBase {
      */
     async createIfNotExists(data, options) {
         if (Array.isArray(data.assignableRole)) {
-            for (const assignableRole of data.assignableRole)
-                await this.createIfNotExists({...data, assignableRole}, options);
+            const rows = [];
+            for (const assignableRole of data.assignableRole) {
+                rows.push(await this.createIfNotExists({...data, assignableRole}, options));
+            }
 
-            return;
+            return rows;
         }
 
         if (Array.isArray(data.role)) {
-            for (const role of data.role)
-                await this.createIfNotExists({...data, role}, options);
+            const rows = [];
+            for (const role of data.role) {
+                rows.push(await this.createIfNotExists({...data, role}, options));
+            }
 
-            return;
+            return rows;
         }
         
         await this.completeReferences(data);
@@ -55,8 +58,9 @@ export class AssignableRolePerRoleService extends ServiceBase {
                 ...options
             }
         );
-        if (row)
+        if (row) {
             return row;
+        }
 
         return this.create(data);
     }

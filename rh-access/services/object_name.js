@@ -9,6 +9,6 @@ export class ObjectNameService extends ServiceIdUuidName {
 
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'ObjectName', 'name');
-        return data;
+        return super.validateForCreation(data);
     }
 }

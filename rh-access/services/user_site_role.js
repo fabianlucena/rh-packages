@@ -18,7 +18,7 @@ export class UserSiteRoleService extends ServiceModuleTranslatable {
 
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'UserSiteRole', 'userId', 'siteId', 'roleId');
-        return data;
+        return super.validateForCreation(data);
     }
 
     async getListOptions(options) {

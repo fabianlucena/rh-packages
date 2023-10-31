@@ -15,7 +15,7 @@ export class RolePermissionService extends ServiceModuleTranslatable {
 
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'Permission', 'roleId', 'permissionId');
-        return data;
+        return super.validateForCreation(data);
     }
 
     /**

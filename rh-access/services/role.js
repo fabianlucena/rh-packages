@@ -16,7 +16,7 @@ export class RoleService extends ServiceIdUuidNameTitleEnabledModuleTranslatable
 
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'Role', 'name', 'title');
-        return true;
+        return super.validateForCreation(data);
     }
 
     /**

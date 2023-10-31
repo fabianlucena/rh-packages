@@ -15,7 +15,7 @@ export class RoleParentSiteService extends ServiceModuleTranslatable {
 
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'RoleParentSiteService', 'roleId', 'parentId');
-        return data;
+        return super.validateForCreation(data);
     }
 
     /**

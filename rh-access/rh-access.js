@@ -83,21 +83,22 @@ async function login(data, options) {
         return;
     }
 
+    const sessionSiteService = SessionSiteService.singleton();
     const sessionId = options?.sessionId;
-    const currentSite = await SessionSiteService.getList({where: {sessionId}});
+    const currentSite = await sessionSiteService.getList({where: {sessionId}});
     if (currentSite?.length)  {
         return;
     }
 
-    const oldSite = await SessionSiteService.getList({where: {sessionId: options.oldSessionId}});
+    const oldSite = await sessionSiteService.getList({where: {sessionId: options.oldSessionId}});
     if (!oldSite?.length) {
         return;
     }
 
-    await SessionSiteService.createOrUpdate({sessionId, siteId: oldSite[0].siteId});
+    await sessionSiteService.createOrUpdate({sessionId, siteId: oldSite[0].siteId});
 }
 
 async function sessionUpdated(sessionId) {
-    await PrivilegesService.deleteFromCacheForSessionId(sessionId);
+    await PrivilegesService.singleton().deleteFromCacheForSessionId(sessionId);
 }
 

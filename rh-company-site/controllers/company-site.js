@@ -42,7 +42,7 @@ export class CompanySiteController {
         const sessionId = req.session.id;
         const siteId = companySite.siteId;
 
-        conf.global.services.SessionSite.createOrUpdate({sessionId, siteId});
+        conf.global.services.SessionSite.singleton().createOrUpdate({sessionId, siteId});
 
         if (companySite.Company.isTranslatable) {
             companySite.Company.title = await loc._(companySite.Company.title);

@@ -27,7 +27,7 @@ export class UserGroupService extends ServiceModuleTranslatable {
 
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'UserGroupService', 'userId', 'groupId');
-        return data;
+        return super.validateForCreation(data);
     }
 
     /**

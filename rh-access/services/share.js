@@ -18,7 +18,7 @@ export class ShareService extends ServiceEnabledModuleTranslatable {
     
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'Share', 'objectNameId', 'objectId', 'userId', 'typeId');
-        return data;
+        return super.validateForCreation(data);
     }
 
     /**
