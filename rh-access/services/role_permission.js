@@ -25,7 +25,7 @@ export class RolePermissionService {
      */
     static async completePermissionId(data) {
         if (!data.permissionId && data.permission) {
-            data.permissionId = await PermissionService.getIdForName(data.permission);
+            data.permissionId = await PermissionService.singleton().getIdForName(data.permission);
         }
 
         return data;

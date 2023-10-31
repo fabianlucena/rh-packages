@@ -1,5 +1,3 @@
-'use strict';
-
 import {GroupService} from './group.js';
 import {RoleService} from './role.js';
 import {PermissionService} from './permission.js';
@@ -71,7 +69,7 @@ export class PrivilegesService {
         } else
             privileges.roles.push('anonymous');
 
-        privileges.permissions = await PermissionService.getNamesForRolesName(privileges.roles, {isEnabled: true});
+        privileges.permissions = await PermissionService.singleton().getNamesForRolesName(privileges.roles, {isEnabled: true});
 
         privileges.groups = await GroupService.getAllNamesForUsername(username, {isEnabled: true});
         

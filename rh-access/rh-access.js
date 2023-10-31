@@ -69,7 +69,7 @@ async function checkPermissionForUsernameAndSiteName(privileges, ...requiredPerm
 async function updateData(global) {
     const data = global?.data;
     await runSequentially(data?.roles,                   async data => await RoleService.                 singleton().createIfNotExists(data));
-    await runSequentially(data?.permissions,             async data => await PermissionService.           createIfNotExists(data));
+    await runSequentially(data?.permissions,             async data => await PermissionService.           singleton().createIfNotExists(data));
     await runSequentially(data?.rolesPermissions,        async data => await RolePermissionService.       createIfNotExists(data));
     await runSequentially(data?.usersSitesRoles,         async data => await UserSiteRoleService.         singleton().createIfNotExists(data));
     await runSequentially(data?.rolesParentsSites,       async data => await RoleParentSiteService.       createIfNotExists(data));

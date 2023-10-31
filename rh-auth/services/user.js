@@ -14,7 +14,7 @@ export class UserService extends ServiceIdUuidEnabledModule {
         type: conf.global.services.UserType,
     };
     defaultTranslationContext = 'user';
-    searchColumns = [''];
+    searchColumns = ['username', 'displayName'];
 
     async validateForCreation(data) {
         data ??= {};
