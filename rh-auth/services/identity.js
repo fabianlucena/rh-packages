@@ -28,8 +28,9 @@ export class IdentityService extends ServiceIdUuidEnabled {
         return new Promise((resolve, reject) => {
             const salt = crypto.randomBytes(8).toString('hex');
             crypto.scrypt(password, salt, 64, (err, derivedKey) => {
-                if (err)
+                if (err) {
                     return reject(err);
+                }
 
                 resolve(salt + ':' + derivedKey.toString('hex'));
             });
@@ -69,7 +70,7 @@ export class IdentityService extends ServiceIdUuidEnabled {
 
         checkDataForMissingProperties(data, 'Identity', 'typeId', 'userId');
 
-        return true;
+        return super.validateForCreation(data);
     }
 
     /**

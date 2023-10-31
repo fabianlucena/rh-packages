@@ -9,7 +9,6 @@ export class IdentityTypeService extends ServiceIdUuidNameEnabledTranslatable {
 
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'IdentityType', 'name', 'title');
-
-        return true;
+        return super.validateForCreation(data);
     }
 }

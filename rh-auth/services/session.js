@@ -52,7 +52,7 @@ export class SessionService extends ServiceIdUuid {
             data.autoLoginToken = crypto.randomBytes(64).toString('hex');
         }
         
-        return true;
+        return super.validateForCreation(data);
     }
 
     /**

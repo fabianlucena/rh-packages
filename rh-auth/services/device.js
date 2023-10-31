@@ -40,11 +40,10 @@ export class DeviceService extends ServiceIdUuid {
     defaultTranslationContext = 'device';
 
     async validateForCreation(data) {
-        if (!data.token) {
-            data.token = crypto.randomBytes(64).toString('hex');
-        }
+        data ??= {};
+        data.token ||= crypto.randomBytes(64).toString('hex');
 
-        return true;
+        return super.validateForCreation(data);
     }
 
     /**
