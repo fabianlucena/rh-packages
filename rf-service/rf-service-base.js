@@ -1,7 +1,8 @@
 import {NoRowsError, ManyRowsError} from './rf-service-errors.js';
 import {ucfirst, lcfirst} from 'rf-util/rf-util-string.js';
 import {arrangeOptions} from 'sql-util';
-import {trim} from 'rf-util';
+import {trim, _Error} from 'rf-util';
+import {loc} from 'rf-locale';
 
 export class ServiceBase {
     /**
@@ -267,6 +268,10 @@ export class ServiceBase {
 
         const searchColumns = this.searchColumns = options.searchColumns || this.searchColumns;
         if (options.q && searchColumns) {
+            if (!this.Sequelize.Op) {
+                throw new _Error(loc._f('No Sequalize Op defined.'));
+            }
+            
             const Op = this.Sequelize.Op;
             const q = `%${options.q}%`;
             const qColumns = [];
