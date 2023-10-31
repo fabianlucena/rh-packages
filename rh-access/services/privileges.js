@@ -39,19 +39,19 @@ conf.init.push(() => conf.privilegesCacheMaintenance = setInterval(conf.privileg
 
 export class PrivilegesService extends ServiceBase {
     async create() {
-        throw new _Error(loc._f('Cannot create privileges, privileges is a container not an entity.'));
+        throw new _Error(loc._cf('privileges', 'Cannot create privileges, privileges is a container not an entity.'));
     }
 
     async getList() {
-        throw new _Error(loc._f('Cannot get privileges, privileges is a container not an entity.'));
+        throw new _Error(loc._cf('privileges', 'Cannot get privileges, privileges is a container not an entity.'));
     }
 
     async update() {
-        throw new _Error(loc._f('Cannot update privileges, privileges is a container not an entity.'));
+        throw new _Error(loc._cf('privileges', 'Cannot update privileges, privileges is a container not an entity.'));
     }
 
     async delete() {
-        throw new _Error(loc._f('Cannot delete privileges, privileges is a container not an entity.'));
+        throw new _Error(loc._cf('privileges', 'Cannot delete privileges, privileges is a container not an entity.'));
     }
 
     /**

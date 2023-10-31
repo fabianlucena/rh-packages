@@ -4,42 +4,73 @@
         "language": "es",
         "context": "permission",
         "translation": "Agregar accesos de usuarios",
-        "ref": "..\\rh-access\\conf_data.js [32,88]"
+        "ref": "..\\rh-access\\conf_data.js [30,88]"
     },
     {
         "source": "Administration",
         "language": "es",
         "context": "premission",
-        "isDraft": false,
         "translation": "Administración",
-        "ref": "..\\rh-access\\conf_data.js [28,180]"
+        "ref": "..\\rh-access\\conf_data.js [26,180]"
     },
     {
         "source": "Assignable roles per role",
         "language": "es",
         "translation": "Roles asignables por rol",
-        "ref": "..\\rh-access\\services\\assignable_role_per_role.js [127,190]"
+        "ref": "..\\rh-access\\services\\assignable_role_per_role.js [129,190]"
+    },
+    {
+        "source": "Cannot create privileges, privileges is a container not an entity.",
+        "language": "es",
+        "context": "privileges",
+        "isDraft": false,
+        "translation": "No se puede crear privilegios, privilegios es un contenedor no una entidad.",
+        "ref": "..\\rh-access\\services\\privileges.js [42,117]"
+    },
+    {
+        "source": "Cannot delete privileges, privileges is a container not an entity.",
+        "language": "es",
+        "context": "privileges",
+        "isDraft": false,
+        "translation": "No se pueden eliminar privilegios, privilegios es un contenedor no una entidad.",
+        "ref": "..\\rh-access\\services\\privileges.js [54,117]"
+    },
+    {
+        "source": "Cannot get privileges, privileges is a container not an entity.",
+        "language": "es",
+        "context": "privileges",
+        "isDraft": false,
+        "translation": "No se pueden obtener privilegios, privilegios es un contenedor no una entidad.",
+        "ref": "..\\rh-access\\services\\privileges.js [46,114]"
+    },
+    {
+        "source": "Cannot update privileges, privileges is a container not an entity.",
+        "language": "es",
+        "context": "privileges",
+        "isDraft": false,
+        "translation": "No se pueden actualizar privilegios, privilegios es un contenedor no una entidad.",
+        "ref": "..\\rh-access\\services\\privileges.js [50,117]"
     },
     {
         "source": "Create members",
         "language": "es",
         "context": "permission",
         "translation": "Crear miembros",
-        "ref": "..\\rh-access\\conf_data.js [40,84]"
+        "ref": "..\\rh-access\\conf_data.js [38,84]"
     },
     {
         "source": "Delete members",
         "language": "es",
         "context": "permission",
         "translation": "Eliminar miembros",
-        "ref": "..\\rh-access\\conf_data.js [42,84]"
+        "ref": "..\\rh-access\\conf_data.js [40,84]"
     },
     {
         "source": "Delete users accesses",
         "language": "es",
         "context": "permission",
         "translation": "Eliminar accesos de usuarios ",
-        "ref": "..\\rh-access\\conf_data.js [35,91]"
+        "ref": "..\\rh-access\\conf_data.js [33,91]"
     },
     {
         "source": "Description",
@@ -52,28 +83,28 @@
         "language": "es",
         "context": "member",
         "translation": "Nombre mostrado",
-        "ref": "..\\rh-access\\controllers\\member.js [108,66]\n..\\rh-access\\controllers\\member.js [130,66]\n..\\rh-access\\controllers\\member.js [214,129]"
+        "ref": "..\\rh-access\\controllers\\member.js [114,66]\n..\\rh-access\\controllers\\member.js [136,66]\n..\\rh-access\\controllers\\member.js [220,129]"
     },
     {
         "source": "Edit members",
         "language": "es",
         "context": "permission",
         "translation": "Modificar miembros",
-        "ref": "..\\rh-access\\conf_data.js [41,82]"
+        "ref": "..\\rh-access\\conf_data.js [39,82]"
     },
     {
         "source": "Edit users accesses",
         "language": "es",
         "context": "permission",
         "translation": "Modificar accesos de usuarios ",
-        "ref": "..\\rh-access\\conf_data.js [34,89]"
+        "ref": "..\\rh-access\\conf_data.js [32,89]"
     },
     {
         "source": "Editor",
         "language": "es",
         "context": "shareType",
         "translation": "Editor ",
-        "ref": "..\\rh-access\\conf_data.js [15,63]"
+        "ref": "..\\rh-access\\conf_data.js [13,63]"
     },
     {
         "source": "Enabled",
@@ -86,71 +117,70 @@
         "language": "es",
         "context": "member",
         "translation": "Habilitado",
-        "ref": "..\\rh-access\\controllers\\member.js [148,61]\n..\\rh-access\\controllers\\member.js [149,67]"
+        "ref": "..\\rh-access\\controllers\\member.js [154,61]\n..\\rh-access\\controllers\\member.js [155,67]"
     },
     {
         "source": "Error to change the password",
         "language": "es",
         "context": "member",
         "translation": "Error al cambiar la contraseña",
-        "ref": "..\\rh-access\\controllers\\member.js [378,79]"
+        "ref": "..\\rh-access\\controllers\\member.js [384,79]"
     },
     {
         "source": "Error to get local identity",
         "language": "es",
         "context": "member",
         "translation": "Error al obtener la identidad local",
-        "ref": "..\\rh-access\\controllers\\member.js [372,82]"
+        "ref": "..\\rh-access\\controllers\\member.js [378,82]"
     },
     {
         "source": "Error you cannot set your own password. Please use change password option instead.",
         "language": "es",
         "context": "member",
-        "isDraft": false,
         "translation": "Error usted no puede especificar su propia contraseña. Por favor, en su lugar, use la opción cambiar contraseña.",
-        "ref": "..\\rh-access\\controllers\\member.js [299,137]"
+        "ref": "..\\rh-access\\controllers\\member.js [305,137]"
     },
     {
         "source": "Get members",
         "language": "es",
         "context": "permission",
         "translation": "Obtener miembros",
-        "ref": "..\\rh-access\\conf_data.js [39,81]"
+        "ref": "..\\rh-access\\conf_data.js [37,81]"
     },
     {
         "source": "Get users accesses",
         "language": "es",
         "context": "permission",
         "translation": "Obtener accesos de usuarios ",
-        "ref": "..\\rh-access\\conf_data.js [33,88]"
+        "ref": "..\\rh-access\\conf_data.js [31,88]"
     },
     {
         "source": "Member",
         "language": "es",
         "context": "member",
         "translation": "Miembro",
-        "ref": "..\\rh-access\\controllers\\member.js [124,52]\n..\\rh-access\\controllers\\member.js [346,60]"
+        "ref": "..\\rh-access\\controllers\\member.js [130,52]\n..\\rh-access\\controllers\\member.js [352,60]"
     },
     {
         "source": "Members",
         "language": "es",
         "context": "member",
         "translation": "Miembros",
-        "ref": "..\\rh-access\\controllers\\member.js [97,53]"
+        "ref": "..\\rh-access\\controllers\\member.js [103,53]"
     },
     {
         "source": "Members",
         "language": "es",
         "context": "menu",
         "translation": "Miembros",
-        "ref": "..\\rh-access\\conf_data.js [39,206]"
+        "ref": "..\\rh-access\\conf_data.js [37,206]"
     },
     {
         "source": "Members manager",
         "language": "es",
         "context": "role",
         "translation": "Administrador de miembros",
-        "ref": "..\\rh-access\\conf_data.js [10,78]"
+        "ref": "..\\rh-access\\conf_data.js [8,78]"
     },
     {
         "source": "Name",
@@ -162,107 +192,107 @@
         "source": "No current site selected",
         "language": "es",
         "translation": "No hay sitio actual seleccionado.",
-        "ref": "..\\rh-access\\controllers\\privileges.js [80,86]"
+        "ref": "..\\rh-access\\controllers\\privileges.js [82,86]"
     },
     {
         "source": "Owner",
         "language": "es",
         "context": "shareType",
         "translation": "Propietario ",
-        "ref": "..\\rh-access\\conf_data.js [14,62]"
+        "ref": "..\\rh-access\\conf_data.js [12,62]"
     },
     {
         "source": "Password",
         "language": "es",
         "context": "member",
         "translation": "Contraseña",
-        "ref": "..\\rh-access\\controllers\\member.js [168,62]\n..\\rh-access\\controllers\\member.js [353,62]"
+        "ref": "..\\rh-access\\controllers\\member.js [174,62]\n..\\rh-access\\controllers\\member.js [359,62]"
     },
     {
         "source": "Privileges",
         "language": "es",
         "context": "menu",
         "translation": "Privilegios ",
-        "ref": "..\\rh-access\\conf_data.js [37,209]"
+        "ref": "..\\rh-access\\conf_data.js [35,209]"
     },
     {
         "source": "Privileges",
         "language": "es",
         "context": "permission",
         "translation": "Privilegios ",
-        "ref": "..\\rh-access\\conf_data.js [37,80]"
-    },
-    {
-        "source": "Roles",
-        "language": "es",
-        "context": "userAccess",
-        "translation": "Roles",
-        "ref": "..\\rh-access\\controllers\\user-access.js [77,99]"
-    },
-    {
-        "source": "Roles",
-        "language": "es",
-        "translation": "Roles",
-        "ref": "..\\rh-access\\controllers\\user-access.js [210,48]\n..\\rh-access\\controllers\\user-access.js [261,48]"
+        "ref": "..\\rh-access\\conf_data.js [35,80]"
     },
     {
         "source": "Roles",
         "language": "es",
         "context": "member",
         "translation": "Roles",
-        "ref": "..\\rh-access\\controllers\\member.js [157,59]\n..\\rh-access\\controllers\\member.js [219,95]\n..\\rh-access\\controllers\\member.js [280,95]"
+        "ref": "..\\rh-access\\controllers\\member.js [163,59]\n..\\rh-access\\controllers\\member.js [225,95]\n..\\rh-access\\controllers\\member.js [286,95]"
+    },
+    {
+        "source": "Roles",
+        "language": "es",
+        "context": "userAccess",
+        "translation": "Roles",
+        "ref": "..\\rh-access\\controllers\\user-access.js [73,99]"
+    },
+    {
+        "source": "Roles",
+        "language": "es",
+        "translation": "Roles",
+        "ref": "..\\rh-access\\controllers\\user-access.js [222,48]\n..\\rh-access\\controllers\\user-access.js [273,48]"
     },
     {
         "source": "Set member\\'s password",
         "language": "es",
         "context": "member",
         "translation": "Establecer contraseña del miembro",
-        "ref": "..\\rh-access\\controllers\\member.js [339,68]"
+        "ref": "..\\rh-access\\controllers\\member.js [345,68]"
     },
     {
         "source": "Site",
         "language": "es",
         "context": "userAccess",
         "translation": "Sitio",
-        "ref": "..\\rh-access\\controllers\\user-access.js [76,86]\n..\\rh-access\\controllers\\user-access.js [371,100]\n..\\rh-access\\controllers\\user-access.js [384,86]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [72,86]\n..\\rh-access\\controllers\\user-access.js [77,93]\n..\\rh-access\\controllers\\user-access.js [383,100]\n..\\rh-access\\controllers\\user-access.js [396,86]"
     },
     {
         "source": "Site",
         "language": "es",
         "translation": "Sitio",
-        "ref": "..\\rh-access\\controllers\\user-access.js [205,47]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [217,47]"
     },
     {
         "source": "Site UUID param is missing.",
         "language": "es",
         "context": "userAccess",
         "translation": "Falta el parámetro UUID de sitio.",
-        "ref": "..\\rh-access\\controllers\\user-access.js [374,94]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [81,94]\n..\\rh-access\\controllers\\user-access.js [386,94]"
     },
     {
         "source": "Sites",
         "language": "es",
         "translation": "Sitios",
-        "ref": "..\\rh-access\\controllers\\user-access.js [244,48]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [256,48]"
     },
     {
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-access-es.js [20,41]"
+        "ref": "rh-access-es.js [18,41]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-access-es.js [21,57]"
+        "ref": "rh-access-es.js [19,57]"
     },
     {
         "source": "The member with UUID %s does not exists.",
         "language": "es",
         "context": "member",
         "translation": "El miembro con el UUID %s no existe.",
-        "ref": "..\\rh-access\\controllers\\member.js [21,99]\n..\\rh-access\\controllers\\member.js [243,99]\n..\\rh-access\\controllers\\member.js [254,99]\n..\\rh-access\\controllers\\member.js [265,99]\n..\\rh-access\\controllers\\member.js [288,99]"
+        "ref": "..\\rh-access\\controllers\\member.js [19,99]\n..\\rh-access\\controllers\\member.js [249,99]\n..\\rh-access\\controllers\\member.js [260,99]\n..\\rh-access\\controllers\\member.js [271,99]\n..\\rh-access\\controllers\\member.js [294,99]"
     },
     {
         "source": "Title",
@@ -275,135 +305,135 @@
         "language": "es",
         "context": "member",
         "translation": "Escriba aquí la nueva contraseña para el miembro\n",
-        "ref": "..\\rh-access\\controllers\\member.js [169,97]\n..\\rh-access\\controllers\\member.js [354,97]"
+        "ref": "..\\rh-access\\controllers\\member.js [175,97]\n..\\rh-access\\controllers\\member.js [360,97]"
     },
     {
         "source": "Type the display name here",
         "language": "es",
         "context": "member",
         "translation": "Escriba el nombre mostrado aquí",
-        "ref": "..\\rh-access\\controllers\\member.js [131,86]"
+        "ref": "..\\rh-access\\controllers\\member.js [137,86]"
     },
     {
         "source": "UUID",
         "language": "es",
         "context": "member",
         "translation": "UUID",
-        "ref": "..\\rh-access\\controllers\\member.js [230,131]\n..\\rh-access\\controllers\\member.js [249,131]\n..\\rh-access\\controllers\\member.js [260,131]\n..\\rh-access\\controllers\\member.js [272,131]\n..\\rh-access\\controllers\\member.js [295,131]"
+        "ref": "..\\rh-access\\controllers\\member.js [236,131]\n..\\rh-access\\controllers\\member.js [255,131]\n..\\rh-access\\controllers\\member.js [266,131]\n..\\rh-access\\controllers\\member.js [278,131]\n..\\rh-access\\controllers\\member.js [301,131]"
     },
     {
         "source": "UUID",
         "language": "es",
         "context": "switchSite",
         "translation": "UUID",
-        "ref": "..\\rh-access\\controllers\\switch_site.js [83,139]"
+        "ref": "..\\rh-access\\controllers\\switch_site.js [82,139]"
     },
     {
         "source": "UUID",
         "language": "es",
         "context": "userAccess",
         "translation": "UUID",
-        "ref": "..\\rh-access\\controllers\\user-access.js [378,140]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [390,156]"
     },
     {
         "source": "User",
         "language": "es",
         "context": "userAccess",
         "translation": "Usuario",
-        "ref": "..\\rh-access\\controllers\\user-access.js [75,86]\n..\\rh-access\\controllers\\user-access.js [370,100]\n..\\rh-access\\controllers\\user-access.js [383,86]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [71,86]\n..\\rh-access\\controllers\\user-access.js [382,100]\n..\\rh-access\\controllers\\user-access.js [395,86]"
     },
     {
         "source": "User",
         "language": "es",
         "translation": "Usuario",
-        "ref": "..\\rh-access\\controllers\\user-access.js [200,47]\n..\\rh-access\\controllers\\user-access.js [229,47]\n..\\rh-access\\controllers\\switch_site.js [143,39]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [212,47]\n..\\rh-access\\controllers\\user-access.js [241,47]\n..\\rh-access\\controllers\\switch_site.js [143,39]"
     },
     {
         "source": "User UUID param is missing.",
         "language": "es",
         "context": "userAccess",
         "translation": "Falta el parámetro UUID de usuario.",
-        "ref": "..\\rh-access\\controllers\\user-access.js [376,90]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [388,90]"
     },
     {
         "source": "User access",
         "language": "es",
         "translation": "Acceso de usuario",
-        "ref": "..\\rh-access\\controllers\\user-access.js [222,46]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [234,46]"
     },
     {
         "source": "User access manager",
         "language": "es",
         "context": "role",
         "translation": "Administrador de accesos de usuarios ",
-        "ref": "..\\rh-access\\conf_data.js [9,82]"
+        "ref": "..\\rh-access\\conf_data.js [7,82]"
     },
     {
         "source": "User with UUID %s has not access to the site with UUID %s.",
         "language": "es",
         "context": "userAccess",
         "translation": "El usuario con el UUID %s no tiene acceso al sitio con el UUID %s.",
-        "ref": "..\\rh-access\\controllers\\user-access.js [395,121]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [407,121]"
     },
     {
         "source": "Username",
         "language": "es",
         "context": "member",
         "translation": "Nombre de usuario",
-        "ref": "..\\rh-access\\controllers\\member.js [113,62]\n..\\rh-access\\controllers\\member.js [137,62]\n..\\rh-access\\controllers\\member.js [138,68]\n..\\rh-access\\controllers\\member.js [214,81]"
+        "ref": "..\\rh-access\\controllers\\member.js [119,62]\n..\\rh-access\\controllers\\member.js [143,62]\n..\\rh-access\\controllers\\member.js [144,68]\n..\\rh-access\\controllers\\member.js [220,81]"
     },
     {
         "source": "Users accesses",
         "language": "es",
         "context": "menu",
         "translation": "Accesos de usuarios ",
-        "ref": "..\\rh-access\\conf_data.js [33,213]"
+        "ref": "..\\rh-access\\conf_data.js [31,213]"
     },
     {
         "source": "Users accesses",
         "language": "es",
         "translation": "Accesos de usuarios",
-        "ref": "..\\rh-access\\controllers\\user-access.js [190,49]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [202,49]"
     },
     {
         "source": "Viewer",
         "language": "es",
         "context": "shareType",
         "translation": "Visor ",
-        "ref": "..\\rh-access\\conf_data.js [16,63]"
+        "ref": "..\\rh-access\\conf_data.js [14,63]"
     },
     {
         "source": "Wrong UUID format.",
         "language": "es",
         "context": "userAccess",
         "translation": "UUID mal formado.",
-        "ref": "..\\rh-access\\controllers\\user-access.js [381,85]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [393,85]"
     },
     {
         "source": "You cannot change the member password because the member has another accesses. Please contact the asministrator.",
         "language": "es",
         "context": "member",
         "translation": "Usted no puede cambiar la contraseña porque el miembro tiene otros accesos. Por favor contacte al administrdor.",
-        "ref": "..\\rh-access\\controllers\\member.js [304,172]\n..\\rh-access\\controllers\\member.js [317,171]"
+        "ref": "..\\rh-access\\controllers\\member.js [310,172]\n..\\rh-access\\controllers\\member.js [323,171]"
     },
     {
         "source": "You cannot change the member password because the member the user belongs to another site. Please contact the asministrator.",
         "language": "es",
         "context": "member",
         "translation": "Usted no puede cambiar la contraseá del miembro porque el miembro pertenece a otro sitio. Por favor contacte al administrador.",
-        "ref": "..\\rh-access\\controllers\\member.js [308,184]"
+        "ref": "..\\rh-access\\controllers\\member.js [314,184]"
     },
     {
         "source": "assignable roles",
         "language": "es",
         "translation": "roles asignables",
-        "ref": "..\\rh-access\\services\\assignable_role_per_role.js [127,83]"
+        "ref": "..\\rh-access\\services\\assignable_role_per_role.js [129,83]"
     },
     {
         "source": "password",
         "language": "es",
         "context": "member",
         "translation": "contraseña",
-        "ref": "..\\rh-access\\controllers\\member.js [363,75]\n..\\rh-access\\controllers\\member.js [366,82]"
+        "ref": "..\\rh-access\\controllers\\member.js [369,75]\n..\\rh-access\\controllers\\member.js [372,82]"
     }
 ]
