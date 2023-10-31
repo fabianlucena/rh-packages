@@ -1,7 +1,7 @@
 import {IdentityService} from '../services/identity.js';
 import {conf} from '../conf.js';
 import {ServiceIdUuidEnabledModule} from 'rf-service';
-import {getSingle, addEnabledFilter} from 'sql-util';
+import {getSingle} from 'sql-util';
 import {ConflictError} from 'http-util';
 import {checkParameter} from 'rf-util';
 import {_Error} from 'rf-util';
@@ -65,10 +65,6 @@ export class UserService extends ServiceIdUuidEnabledModule {
     async getListOptions(options) {
         options ??= {};
 
-        if (options.isEnabled !== undefined) {
-            options = addEnabledFilter(options);
-        }
-
         if (options.view) {
             if (!options.attributes) {
                 options.attributes = ['uuid', 'isEnabled', 'username', 'displayName'];
@@ -84,7 +80,7 @@ export class UserService extends ServiceIdUuidEnabledModule {
             });
         }
 
-        return options;
+        return super.getListOptions(options);
     }
 
     /**

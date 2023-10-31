@@ -9,11 +9,11 @@ export class CompanySiteService extends ServiceBase {
     model = conf.global.models.CompanySite;
     references = {
         company: {
-            service: conf.global.services.Company,
+            service: conf.global.services.Company.singleton(),
             otherName: 'name',
         },
         site: {
-            service: conf.global.services.Site,
+            service: conf.global.services.Site.singleton(),
             otherName: 'name',
         },
         ownerModule: conf.global.services.Module,

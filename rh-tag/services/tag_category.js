@@ -5,7 +5,7 @@ export class TagCategoryService extends ServiceIdUuidNameTitleEnabledTranslatabl
     sequelize = conf.global.sequelize;
     model = conf.global.models.TagCategory;
     shareObject = 'Tag';
-    shareService = conf.global.services.Share;
+    shareService = conf.global.services.Share.singleton();
     references = {
         ownerModule: conf.global.services.Module,
     };

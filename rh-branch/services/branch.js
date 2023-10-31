@@ -8,7 +8,7 @@ export class BranchService extends ServiceIdUuidNameEnabledSharedTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Branch;
     shareObject = 'Branch';
-    shareService = conf.global.services.Share;
+    shareService = conf.global.services.Share.singleton();
     references = {
         company: conf.global.services.Company,
         ownerModule: conf.global.services.Module,

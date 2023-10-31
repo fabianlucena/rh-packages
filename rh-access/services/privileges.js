@@ -71,7 +71,7 @@ export class PrivilegesService {
 
         privileges.permissions = await PermissionService.singleton().getNamesForRolesName(privileges.roles, {isEnabled: true});
 
-        privileges.groups = await GroupService.getAllNamesForUsername(username, {isEnabled: true});
+        privileges.groups = await GroupService.singleton().getAllNamesForUsername(username, {isEnabled: true});
         
         return privileges;
     }

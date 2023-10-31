@@ -7,9 +7,9 @@ export class AssignableRolePerRoleService extends ServiceBase {
     sequelize = conf.global.sequelize;
     model = conf.global.models.AssignableRolePerRole;
     references = {
-        role: conf.global.services.Role,
-        assignableRole: conf.global.services.Role,
-        ownerModule: conf.global.services.Module,
+        role: conf.global.services.Role.singleton(),
+        assignableRole: conf.global.services.Role.singleton(),
+        ownerModule: conf.global.services.Module.singleton(),
     };
     defaultTranslationContext = 'assignableRolePerRole';
 

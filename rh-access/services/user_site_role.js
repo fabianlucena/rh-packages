@@ -1,9 +1,8 @@
 import {conf} from '../conf.js';
-import {ServiceSharedEnabled} from 'rf-service';
-import {addEnabledOwnerModuleFilter, MissingPropertyError, checkDataForMissingProperties, skipAssociationAttributes, completeIncludeOptions, getIncludedModelOptions} from 'sql-util';
-import {complete} from 'rf-util';
+import {ServiceModuleTranslatable} from 'rf-service';
+import {addEnabledOwnerModuleFilter, checkDataForMissingProperties, completeIncludeOptions, getIncludedModelOptions} from 'sql-util';
 
-export class UserSiteRoleService extends ServiceSharedEnabled {
+export class UserSiteRoleService extends ServiceModuleTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.UserSiteRole;
     references = {
@@ -12,15 +11,14 @@ export class UserSiteRoleService extends ServiceSharedEnabled {
             getIdForName: 'getIdForUsername',
             otherName: 'username',
         },
-        site: conf.global.services.Site,
-        role: conf.global.services.Role,
+        site: conf.global.services.Site.singleton(),
+        role: conf.global.services.Role.singleton(),
     };
     defaultTranslationContext = 'userSiteRole';
 
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'UserSiteRole', 'userId', 'siteId', 'roleId');
-
-        return true;
+        return data;
     }
 
     async getListOptions(options) {
@@ -184,35 +182,23 @@ export class UserSiteRoleService extends ServiceSharedEnabled {
      * @returns {Promise{UserSiteRole}}
      */
     async createIfNotExists(data, options) {
-        options = {...options, attributes: ['userId', 'siteId', 'roleId'], where: {}, include: [], limit: 1};
+        this.completeReferences(data);
+        await checkDataForMissingProperties(data, 'UserSiteRole', 'userId', 'siteId', 'roleId');
 
-        if (data.userId) {
-            options.where.userId = data.userId;
-        } else if (data.user || data.username || data.name) {
-            options.include.push(complete({model: conf.global.models.User, where: {username: data.user ?? data.username ?? data.name}}, skipAssociationAttributes));
-        } else {
-            throw new MissingPropertyError('UserSiteRole', 'user', 'userId');
-        }
-        
-        if (data.siteId) {
-            options.where.siteId = data.siteId;
-        } else if (data.site) {
-            options.include.push(complete({model: conf.global.models.Site, where: {name: data.site}}, skipAssociationAttributes));
-        } else {
-            throw new MissingPropertyError('UserSiteRole', 'site', 'siteId');
-        }
-
-        if (data.roleId) {
-            options.where.roleId = data.roleId;
-        } else if (data.role) {
-            options.include.push(complete({model: conf.global.models.Role, where: {name: data.role}}, skipAssociationAttributes));
-        } else {
-            throw new MissingPropertyError('UserSiteRole', 'role', 'roleId');
-        }
-
-        const rowList = await this.getList(options);
-        if (rowList.length) {
-            return rowList[0];
+        const rows = await this.getList({
+            ...options,
+            attributes: ['userId', 'siteId', 'roleId'],
+            where: {
+                ...options?.where,
+                userId: data.userId,
+                siteId: data.siteId,
+                roleId: data.roleId,
+            },
+            include: [],
+            limit: 1
+        });
+        if (rows?.length) {
+            return rows[0];
         }
 
         return this.create(data);
@@ -234,6 +220,6 @@ export class UserSiteRoleService extends ServiceSharedEnabled {
             delete where.notRoleId;
         }
 
-        return conf.global.models.UserSiteRole.destroy(options);
+        return this.model.destroy(options);
     }
 }

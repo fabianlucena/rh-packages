@@ -1,94 +1,67 @@
 import {UserGroupService} from './user_group.js';
 import {conf} from '../conf.js';
-import {addEnabledFilter, addEnabledOwnerModuleFilter, checkDataForMissingProperties, getSingle, completeAssociationOptions} from 'sql-util';
-import {complete, deepComplete} from 'rf-util';
+import {ServiceIdUuidEnabledModule} from 'rf-service';
+import {getSingle} from 'sql-util';
+import {checkDataForMissingProperties, completeAssociationOptions} from 'sql-util';
 
-export class GroupService {
-    /**
-     * Complete the data object with the ownerModuleId property if not exists. 
-     * @param {{module: string, moduleId: integer, ...}} data 
-     * @returns {Promise{data}}
-     */
-    static async completeOwnerModuleId(data) {
-        if (!data.ownerModuleId && data.ownerModule) {
-            data.ownerModuleId = await conf.global.services.Module.getIdForName(data.ownerModule);
+export class GroupService extends ServiceIdUuidEnabledModule {
+    sequelize = conf.global.sequelize;
+    model = conf.global.models.User;
+    moduleModel = conf.global.models.Module;
+    references = {
+        type: conf.global.services.UserType.singleton(),
+    };
+    defaultTranslationContext = 'group';
+    searchColumns = ['username', 'displayName'];
+
+    async validateForCreation(data) {
+        data ??= {};
+        if (!data.typeId && !data.type) {
+            data.type = 'group';
         }
 
-        return data;
+        return super.validateForCreation(data);
     }
 
     /**
-     * Creates a new Group row into DB.
-     * @param {{
-     *  username: string,
-     *  title: string,
-     * }} data - data for the new Group.
-     *  - username must be unique.
-     * @returns {Promise{Group}}
+     * Creates a new Groups row into DB if not exists.
+     * @param {data} data - data for the new Role @see create.
+     * @returns {Promise{Role}}
      */
-    static async create(data) {
-        await checkDataForMissingProperties(data, 'Group', 'username', 'displayName');
-        await GroupService.completeOwnerModuleId(data);
-        return conf.global.models.User.create(data);
-    }
+    async createIfNotExists(data, options) {
+        const row = await this.getForUsername(data.username, {attributes: ['id'], foreign: {module: {attributes:[]}}, skipNoRowsError: true, ...options});
+        if (row) {
+            return row;
+        }
 
-    /**
-     * Creates a new Group row into DB if not exists.
-     * @param {data} data - data for the new Group @see create.
-     * @returns {Promise{Group}}
-     */
-    static createIfNotExists(data, options) {
-        return GroupService.getForUsername(data.username, {attributes: ['id'], foreign:{module:{attributes:[]}}, skipNoRowsError: true, ...options})
-            .then(element => {
-                if (element)
-                    return element;
-
-                return GroupService.create(data);
-            });
+        return this.create(data);
     }
 
     /**
      * Gets the options for use in the getList and getListAndCount methods.
-     * @param {Options} options - options for the @see sequelize.findAll method.
+     * @param {object} options - options for the @see sequelize.findAll method.
      *  - view: show visible peoperties.
-     * @returns {options}
+     * @returns {object}
      */
-    static async getListOptions(options) {
-        if (options.q) {
-            const q = `%${options.q}%`;
-            const Op = conf.global.Sequelize.Op;
-            options.where = {
-                [Op.or]: [
-                    {username:    {[Op.like]: q}},
-                    {displayName: {[Op.like]: q}},
-                ],
-            };
+    async getListOptions(options) {
+        options ??= {};
+
+        if (options.view) {
+            if (!options.attributes) {
+                options.attributes = ['uuid', 'isEnabled', 'username', 'displayName'];
+            }
         }
 
-        if (options.isEnabled !== undefined) {
-            options = addEnabledFilter(options);
-            options = addEnabledOwnerModuleFilter(options, conf.global.models.Module);
+        options.include ??= [];
+
+        if (options.includeType) {
+            options.include.push({ 
+                model: conf.global.models.UserType, 
+                attributes: ['uuid', 'name', 'title']
+            });
         }
 
-        return options;
-    }
-
-    /**
-     * Gets a list of groups.
-     * @param {Options} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{GroupList}}
-     */
-    static async getList(options) {
-        return conf.global.models.User.findAll(await GroupService.getListOptions(options));
-    }
-
-    /**
-     * Gets a list of groups and the rows count.
-     * @param {Options} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{GroupList, count}}
-     */
-    static async getListAndCount(options) {
-        return conf.global.models.User.findAndCountAll(await GroupService.getListOptions(options));
+        return super.getListOptions(options);
     }
 
     /**
@@ -97,9 +70,17 @@ export class GroupService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Group}}
      */
-    static async getForUsername(username, options) {
-        const rowList = await GroupService.getList(deepComplete(options, {where:{username}, limit: 2}));
-        return getSingle(rowList, deepComplete(options, {params: ['groups', ['username = %s', username], 'Group']}));
+    async getForUsername(username, options) {
+        options = {...options, where: {...options?.where, username}};
+
+        if (Array.isArray(username)) {
+            return this.getList(options);
+        }
+
+        options.limit ??= 2;
+        const rows = await this.getList(options);
+
+        return getSingle(rows, {params: ['groups', ['username = %s', username], 'Group'], ...options});
     }
 
     /**
@@ -108,8 +89,8 @@ export class GroupService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{Permission}}
      */
-    static async getIdForUsername(username, options) {
-        return (await GroupService.getForUsername(username, {...options, attributes: ['id']})).id;
+    async getIdForUsername(username, options) {
+        return (await this.getForUsername(username, {...options, attributes: ['id']})).id;
     }
 
     /**
@@ -118,12 +99,12 @@ export class GroupService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{GroupList}}
      */
-    static async getParentsForUsername(username, options) {
+    async getParentsForUsername(username, options) {
         await checkDataForMissingProperties({username}, 'Group', 'username');
         
         const isEnabled = options?.isEnabled ?? true;
         const Op = conf.global.Sequelize.Op;
-        options = complete(options, {include: []});
+        options = {...options, include: []};
         options.include = [
             {
                 model: conf.global.models.User,
@@ -164,8 +145,8 @@ export class GroupService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{[]string}}
      */
-    static async getParentsNameForUsername(username, options) {
-        const rowList = await GroupService.getParentsForUsername(username, {...options, attributes: ['username'], skipThroughAssociationAttributes: true});
+    async getParentsNameForUsername(username, options) {
+        const rowList = await this.getParentsForUsername(username, {...options, attributes: ['username'], skipThroughAssociationAttributes: true});
         return rowList.map(row => row.username);
     }
 
@@ -175,7 +156,7 @@ export class GroupService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{GroupList}}
      */
-    static async getAllIdsForUsername(username, options) {
+    async getAllIdsForUsername(username, options) {
         const isEnabled = options?.isEnabled ?? true;
         const Op = conf.global.Sequelize.Op;
         const parentOptions = {
@@ -223,15 +204,16 @@ export class GroupService {
             ]
         };
         
-        let newGroupList = await GroupService.getParentsForUsername(username, {attributes: ['groupId'], skipAssociationAttributes: true});
+        let newGroupList = await this.getParentsForUsername(username, {attributes: ['groupId'], skipAssociationAttributes: true});
         let allGroupIdList = await newGroupList.map(group => group.id);
         let newGroupIdList = allGroupIdList;
-            
+        
+        const userGroupService = UserGroupService.singleton();
         while(newGroupList.length) {
             parentOptions.where.userId = {[Op.in]: newGroupIdList};
             parentOptions.where.groupId = {[Op.notIn]: allGroupIdList};
 
-            newGroupList = await UserGroupService.singleton().getList(parentOptions);
+            newGroupList = await userGroupService.getList(parentOptions);
             if (!newGroupList?.length) {
                 break;
             }
@@ -249,9 +231,9 @@ export class GroupService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{GroupList}}
      */
-    static async getAllForUsername(username, options) {
-        const groupIdList = await GroupService.getAllIdsForUsername(username);
-        return GroupService.getList(complete(options, {where:{id:groupIdList}}));
+    async getAllForUsername(username, options) {
+        const groupIdList = await this.getAllIdsForUsername(username);
+        return this.getList({...options, where: {...options?.where, id: groupIdList}});
     }
 
     /**
@@ -260,11 +242,12 @@ export class GroupService {
      * @param {Options} options - Options for the @ref getList method.
      * @returns {Promise{[]string}}
      */
-    static async getAllNamesForUsername(username, options) {
-        if (!username)
+    async getAllNamesForUsername(username, options) {
+        if (!username) {
             return [];
+        }
             
-        const groupsList = await GroupService.getAllForUsername(username, {...options, attributes: ['username'], skipThroughAssociationAttributes: true});
+        const groupsList = await this.getAllForUsername(username, {...options, attributes: ['username'], skipThroughAssociationAttributes: true});
         return Promise.all(await groupsList.map(group => group.username));
     }
 }

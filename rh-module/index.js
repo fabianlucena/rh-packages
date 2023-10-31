@@ -14,6 +14,6 @@ conf.updateData = async function() {
     }
 
     for (const moduleName in conf?.global?.modules) {
-        await ModuleService.createIfNotExists(conf.global.modules[moduleName]);
+        await ModuleService.singleton().createIfNotExists(conf.global.modules[moduleName]);
     }
 };

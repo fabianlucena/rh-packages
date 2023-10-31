@@ -1,114 +1,21 @@
-import {RoleService} from './role.js';
+import {ServiceModuleTranslatable} from 'rf-service';
 import {conf} from '../conf.js';
-import {addEnabledOwnerModuleFilter, checkDataForMissingProperties} from 'sql-util';
-import {complete} from 'rf-util';
+import {checkDataForMissingProperties} from 'sql-util';
 
-export class RoleParentSiteService {
-    /**
-     * Complete the data object with the roleId property if not exists. 
-     * @param {{role: string, roleId: integer, ...}} data 
-     * @returns {Promise{data}}
-     */
-    static async completeRoleId(data) {
-        if (!data.roleId && data.role) {
-            data.roleId = await RoleService.singleton().getIdForName(data.role);
-        }
-    
-        return data;
-    }
+export class RoleParentSiteService extends ServiceModuleTranslatable {
+    sequelize = conf.global.sequelize;
+    model = conf.global.models.RoleParentSite;
+    moduleModel = conf.global.models.Module;
+    references = {
+        role: conf.global.services.Role.singleton(),
+        parent: conf.global.services.Role.singleton(),
+        site: conf.global.services.Site.singleton(),
+    };
+    defaultTranslationContext = 'roleParentSite';
 
-    /**
-     * Complete the data object with the parentId property if not exists. 
-     * @param {{parent: string, parentId: integer, ...}} data 
-     * @returns {Promise{data}}
-     */
-    static async completeParentId(data) {
-        if (!data.parentId && data.parent) {
-            data.parentId = await RoleService.singleton().getIdForName(data.parent);
-        }
-
-        return data;
-    }
-
-    /**
-     * Complete the data object with the siteId property if not exists. 
-     * @param {{site: string, siteId: integer, ...}} data 
-     * @returns {Promise{data}}
-     */
-    static async completeSiteId(data) {
-        if (!data.siteId && data.site) {
-            data.siteId = await conf.global.services.Site.singleton().getIdForName(data.site);
-        }
-
-        return data;
-    }
-
-    /**
-     * Complete the data object with the ownerModuleId property if not exists. 
-     * @param {{module: string, moduleId: integer, ...}} data 
-     * @returns {Promise{data}}
-     */
-    static async completeOwnerModuleId(data) {
-        if (!data.ownerModuleId && data.ownerModule) {
-            data.ownerModuleId = await conf.global.services.Module.getIdForName(data.ownerModule);
-        }
-
-        return data;
-    }
-
-    /**
-     * Creates a new role parent per site row into DB.
-     * @param {{
-     *  role: string,
-     *  roleId: int,
-     *  parent: string,
-     *  parentId: int,
-     *  site: string,
-     *  siteId: int,
-     * }} data - data for the new Role.
-     * @returns {Promise{Role}}
-     */
-    static async create(data) {
-        await RoleParentSiteService.completeRoleId(data);
-        await RoleParentSiteService.completeParentId(data);
-        await RoleParentSiteService.completeSiteId(data);
-        await RoleParentSiteService.completeOwnerModuleId(data);
-
+    async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'RoleParentSiteService', 'roleId', 'parentId');
-
-        return conf.global.models.RoleParentSite.create(data);
-    }
-
-    /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {options}
-     */
-    static async getListOptions(options) {
-        if (options.isEnabled !== undefined) {
-            options = addEnabledOwnerModuleFilter(options, conf.global.models.Module);
-        }
-
-        return options;
-    }
-
-    /**
-     * Gets a list of parent roles per site.
-     * @param {Options} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{RoleList}}
-     */
-    static async getList(options) {
-        return conf.global.models.RoleParentSite.findAll(await RoleParentSiteService.getListOptions(options));
-    }
-
-    /**
-     * Gets a list of parent roles per site and the rows count.
-     * @param {Options} options - options for the @ref sequelize.findAll method.
-     * @returns {Promise{RoleList, count}}
-     */
-    static async getListAndCount(options) {
-        return conf.global.models.RoleParentSite.findAndCountAll(await RoleParentSiteService.getListOptions(options));
+        return data;
     }
 
     /**
@@ -118,8 +25,8 @@ export class RoleParentSiteService {
      * @param {Options} options - options for the @ref sequelize.findAll method.
      * @returns {Promise{RoleList}}
      */
-    static getForRoleIdAndSiteId(roleId, siteId, options) {
-        return RoleParentSiteService.getList(complete(options, {where:{roleId, siteId}}));
+    getForRoleIdAndSiteId(roleId, siteId, options) {
+        return this.getList({...options, where: {...options?.where, roleId, siteId}});
     }
 
     /**
@@ -127,19 +34,23 @@ export class RoleParentSiteService {
      * @param {data} data - data for the new Role @see create.
      * @returns {Promise{Role}}
      */
-    static async createIfNotExists(data, options) {
-        await RoleParentSiteService.completeRoleId(data);
-        await RoleParentSiteService.completeParentId(data);
-        await RoleParentSiteService.completeSiteId(data);
-        await RoleParentSiteService.completeOwnerModuleId(data);
-
+    async createIfNotExists(data, options) {
+        this.completeReferences(data);
         await checkDataForMissingProperties(data, 'RoleParentSiteService', 'roleId', 'parentId', 'siteId');
         
-        const rows = await RoleParentSiteService.getList(complete(options, {where:{roleId: data.roleId, parentId: data.parentId, siteId: data.siteId}}));
-        if (rows && rows.length) {
-            return true;
+        const rows = await this.getList({
+            ...options,
+            where: {
+                ...options?.where,
+                roleId: data.roleId,
+                parentId: data.parentId,
+                siteId: data.siteId
+            },
+        });
+        if (rows?.length) {
+            return rows[0];
         }
 
-        return RoleParentSiteService.create(data);
+        return this.create(data);
     }
 }

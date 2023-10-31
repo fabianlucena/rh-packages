@@ -6,18 +6,7 @@ export class CompanyService extends ServiceIdUuidNameEnabledSharedTranslatable {
     model = conf.global.models.Company;
     models = conf.global.models;
     shareObject = 'Company';
-    shareService = conf.global.services.Share;
-    references = {
-        company: {
-            service: conf.global.services.Company,
-            otherName: 'name',
-        },
-        site: {
-            service: conf.global.services.Site,
-            otherName: 'name',
-        },
-        ownerModule: conf.global.services.Module,
-    };
+    shareService = conf.global.services.Share.singleton();
     defaultTranslationContext = 'company';
 
     async getListOptions(options) {

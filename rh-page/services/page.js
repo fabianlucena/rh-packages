@@ -9,7 +9,7 @@ export class PageService extends ServiceIdUuidNameTitleEnabledModuleTranslatable
     sequelize = conf.global.sequelize;
     model = conf.global.models.Page;
     shareObject = 'Page';
-    shareService = conf.global.services.Share;
+    shareService = conf.global.services.Share.singleton();
     references = {
         format: {
             service: conf.global.services.PageFormat,

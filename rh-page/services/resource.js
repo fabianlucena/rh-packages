@@ -9,7 +9,7 @@ export class ResourceService extends ServiceIdUuidNameEnabledTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Resource;
     shareObject = 'Resource';
-    shareService = conf.global.services.Share;
+    shareService = conf.global.services.Share.singleton();
     references = {
         type: {
             service: conf.global.services.ResourceType,

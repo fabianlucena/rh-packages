@@ -1,4 +1,6 @@
+import {_Error} from 'rf-util';
 import {addEnabledOwnerModuleFilter} from 'sql-util';
+import {loc} from 'rf-locale';
 
 export const ServiceMixinModule = Service => class ServiceModule extends Service {
     /**
@@ -27,6 +29,10 @@ export const ServiceMixinModule = Service => class ServiceModule extends Service
      */
     async getListOptions(options) {
         if (options?.isEnabled !== undefined) {
+            if (!this.moduleModel) {
+                throw new _Error(loc._f('No moduleModel defined.'));
+            }
+
             options = addEnabledOwnerModuleFilter(options, this.moduleModel);
         }
 

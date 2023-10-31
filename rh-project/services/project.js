@@ -9,7 +9,7 @@ export class ProjectService extends ServiceIdUuidNameEnabledSharedTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Project;
     shareObject = 'Project';
-    shareService = conf.global.services.Share;
+    shareService = conf.global.services.Share.singleton();
     references = {
         company: conf.global.services.Company,
         ownerModule: conf.global.services.Module,

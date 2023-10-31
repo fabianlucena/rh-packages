@@ -119,12 +119,13 @@ export class RoleService extends ServiceIdUuidNameTitleEnabledModuleTranslatable
         let newRoleList = await this.getForUsernameAndSiteName(username, siteName, {attributes: ['id'], skipThroughAssociationAttributes: true});
         let allRoleIdList = await newRoleList.map(role => role.id);
         let newRoleIdList = allRoleIdList;
-            
+        
+        const roleParentSiteService = RoleParentSiteService.singleton();
         while(newRoleList.length) {
             parentOptions.where.roleId = {[Op.in]: newRoleIdList};
             parentOptions.where.parentId = {[Op.notIn]: allRoleIdList};
 
-            newRoleList = await RoleParentSiteService.getList(parentOptions);
+            newRoleList = await roleParentSiteService.getList(parentOptions);
             if (!newRoleList.length) {
                 break;
             }

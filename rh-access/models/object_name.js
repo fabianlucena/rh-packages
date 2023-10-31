@@ -1,5 +1,3 @@
-'use strict';
-
 import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {

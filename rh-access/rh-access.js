@@ -72,7 +72,7 @@ async function updateData(global) {
     await runSequentially(data?.permissions,             async data => await PermissionService.           singleton().createIfNotExists(data));
     await runSequentially(data?.rolesPermissions,        async data => await RolePermissionService.       singleton().createIfNotExists(data));
     await runSequentially(data?.usersSitesRoles,         async data => await UserSiteRoleService.         singleton().createIfNotExists(data));
-    await runSequentially(data?.rolesParentsSites,       async data => await RoleParentSiteService.       createIfNotExists(data));
+    await runSequentially(data?.rolesParentsSites,       async data => await RoleParentSiteService.       singleton().createIfNotExists(data));
     await runSequentially(data?.userGroups,              async data => await UserGroupService.            singleton().createIfNotExists(data));
     await runSequentially(data?.shareTypes,              async data => await ShareTypeService.            singleton().createIfNotExists(data));
     await runSequentially(data?.assignableRolesPerRoles, async data => await AssignableRolePerRoleService.singleton().createIfNotExists(data));
