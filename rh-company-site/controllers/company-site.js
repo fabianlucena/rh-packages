@@ -69,9 +69,9 @@ export class CompanySiteController {
             menu: [menuItem],
         };
 
-        const SessionDataService = conf.global.services.SessionData;
-        if (SessionDataService) {
-            const sessionData = await SessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
+        const sessionDataService = conf.global.services.SessionData.singleton();
+        if (sessionDataService) {
+            const sessionData = await sessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
 
             sessionData.api ??= {};
             sessionData.api.data = {};
@@ -81,7 +81,7 @@ export class CompanySiteController {
             sessionData.menu = sessionData.menu.filter(item => item.parent != 'breadcrumb' && item.name != 'company-site');
             sessionData.menu.push(menuItem);
 
-            await SessionDataService?.setData(sessionId, sessionData);
+            await sessionDataService.setData(sessionId, sessionData);
         }
 
         data.count = 1;

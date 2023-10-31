@@ -1,5 +1,3 @@
-'use strict';
-
 import {SessionDataService} from './services/session-data.js';
 import {conf as localConf} from './conf.js';
 import {deepComplete} from 'rf-util';
@@ -14,24 +12,28 @@ function configure (global) {
 }
 
 async function login(data, options) {
-    if (!options?.sessionId || !options?.oldSessionId)
+    if (!options?.sessionId || !options?.oldSessionId) {
         return;
+    }
 
-    const oldData = await SessionDataService.getDataIfExistsForSessionId(options.oldSessionId);
-    if (!oldData)
+    const sessionDataService = SessionDataService.singleton();
+    const oldData = await sessionDataService.getDataIfExistsForSessionId(options.oldSessionId);
+    if (!oldData) {
         return;
+    }
 
     const sessionId = options.sessionId;
-    await SessionDataService.addData(sessionId, oldData);
+    await sessionDataService.addData(sessionId, oldData);
 
-    return SessionDataService.getDataIfExistsForSessionId(sessionId);
+    return sessionDataService.getDataIfExistsForSessionId(sessionId);
 }
 
 async function menuGet(data, options) {
-    if (!options?.sessionId)
+    if (!options?.sessionId) {
         return;
+    }
 
-    const thisData = await SessionDataService.getDataIfExistsForSessionId(options.sessionId);
+    const thisData = await SessionDataService.singleton().getDataIfExistsForSessionId(options.sessionId);
     deepComplete(data, thisData);
 
     return thisData;

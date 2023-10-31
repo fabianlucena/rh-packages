@@ -25,19 +25,22 @@ export class ProjectSelectController {
         if (project.toJSON)
             project = project.toJSON();
 
-        const SessionDataService = conf.global.services.SessionData;
-        if (!SessionDataService)
+        const sessionDataService = conf.global.services.SessionData.singleton();
+        if (!sessionDataService) {
             throw new _HttpError(loc._cf('projectSelect', 'You do not have permission to select this project.'), 400);
+        }
 
         const sessionId = req.session.id;
 
         if (!req.roles.includes('admin')) {
             let companyId;
-            if (conf.filters?.getCurrentCompanyId)
+            if (conf.filters?.getCurrentCompanyId) {
                 companyId = await conf.filters.getCurrentCompanyId(req);
+            }
 
-            if (companyId != project.companyId)
+            if (companyId != project.companyId) {
                 throw new _HttpError(loc._cf('projectSelect', 'You do not have permission to select this project.'), 400);
+            }
         }
 
         if (project.isTranslatable) {
@@ -65,7 +68,7 @@ export class ProjectSelectController {
             menu: [menuItem],
         };
 
-        const sessionData = await SessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
+        const sessionData = await sessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
 
         sessionData.api ??= {};
         sessionData.api.data ??= {};
@@ -75,7 +78,7 @@ export class ProjectSelectController {
         sessionData.menu = sessionData.menu.filter(item => item.name != 'project-select');
         sessionData.menu.push(menuItem);
 
-        await SessionDataService.setData(sessionId, sessionData);
+        await sessionDataService.setData(sessionId, sessionData);
 
         await conf.global.eventBus?.$emit('projectSwitch', data, {sessionId});
         await conf.global.eventBus?.$emit('sessionUpdated', sessionId);

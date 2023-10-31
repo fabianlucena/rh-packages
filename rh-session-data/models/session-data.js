@@ -1,5 +1,3 @@
-'use strict';
-
 import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {
@@ -22,8 +20,9 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.VIRTUAL,
             get() {
                 const jsonData = this.getDataValue('jsonData');
-                if (!jsonData)
+                if (!jsonData) {
                     return null;
+                }
 
                 return JSON.parse(jsonData);
             },

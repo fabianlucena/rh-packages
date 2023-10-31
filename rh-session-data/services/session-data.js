@@ -1,60 +1,30 @@
 import {conf} from '../conf.js';
+import {ServiceBase} from 'rf-service';
 import {checkDataForMissingProperties, getSingle} from 'sql-util';
 import {deepMerge} from 'rf-util';
 import {loc} from 'rf-locale';
 
-export class SessionDataService {
-    static async completeJsonData(data) {
-        if (!data.jsonData && data.data)
+export class SessionDataService extends ServiceBase {
+    sequelize = conf.global.sequelize;
+    model = conf.global.models.SessionData;
+    references = {
+        session: conf.global.services.Session.singleton(),
+    };
+    defaultTranslationContext = 'page';
+
+    async completeJsonData(data) {
+        if (!data.jsonData && data.data) {
             data.jsonData = JSON.stringify(data.data);
+        }
 
         return data;
     }
 
-    /**
-     * Creates a new Site row into DB.
-     * @param {{
-     *  isEnabled: boolean,
-     *  name: string,
-     *  title: string,
-     * }} data - data for the new Site.
-     *  - name must be unique.
-     * @returns {Promise[Site]}
-     */
-    static async create(data) {
-        await SessionDataService.completeJsonData(data);
+    async validate(data, operation) {
+        await this.completeJsonData(data);
         await checkDataForMissingProperties(data, 'SessionData', 'sessionId', 'jsonData');
 
-        return conf.global.models.SessionData.create(data);
-    }
-
-    static async updateForSessionId(data, sessionId) {
-        await SessionDataService.completeJsonData(data);
-        await checkDataForMissingProperties({sessionId}, 'SessionData', 'sessionId');
-        await checkDataForMissingProperties(data, 'SessionData', 'jsonData');
-
-        return conf.global.models.SessionData.update(data, {where: {sessionId}});
-    }
-
-    static async updateForSessionIdOrcreate(sessionId, data) {
-        const rows = await SessionDataService.getList({where: {...data?.where, sessionId}, limit: 1});
-        if (rows?.length)
-            return SessionDataService.updateForSessionId({data}, sessionId);
-        else
-            return SessionDataService.create({data, sessionId});
-    }
-
-    /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {options}
-     */
-    static async getListOptions(options) {
-        if (!options)
-            options = {};
-
-        return options;
+        return super.validate(data, operation);
     }
 
     /**
@@ -62,12 +32,8 @@ export class SessionDataService {
      * @param {Options} options - options for the @see sequelize.findAll method.
      * @returns {Promise{ProjectList}}
      */
-    static async getList(options) {
-        return conf.global.models.SessionData.findAll(await SessionDataService.getListOptions(options));
-    }
-
-    static async getForSessionId(sessionId, options) {
-        const rows = await SessionDataService.getList({...options, where: {...options?.where, sessionId}, limit: 2});
+    async getForSessionId(sessionId, options) {
+        const rows = await this.getList({...options, where: {...options?.where, sessionId}, limit: 2});
         return getSingle(rows, {...options, params: ['SessionData', [loc._cf('sessionData', 'Session ID = %s'), sessionId], 'SessionData']});
     }
 
@@ -76,12 +42,25 @@ export class SessionDataService {
      * @param {string} sessionId - Session ID to retrive the data.
      * @returns {Promise[Site]}
      */
-    static async getDataForSessionId(sessionId, options) {
-        return (await SessionDataService.getForSessionId(sessionId, options)).data;
+    async getDataForSessionId(sessionId, options) {
+        return (await this.getForSessionId(sessionId, options)).data;
     }
 
-    static async getDataIfExistsForSessionId(sessionId, options) {
-        return (await SessionDataService.getForSessionId(sessionId, {...options, skipNoRowsError: true}))?.data;
+    async getDataIfExistsForSessionId(sessionId, options) {
+        return (await this.getForSessionId(sessionId, {...options, skipNoRowsError: true}))?.data;
+    }
+
+    async updateForSessionId(data, sessionId) {
+        return this.updateFor(data, {sessionId});
+    }
+
+    async updateForSessionIdOrcreate(sessionId, data) {
+        const rows = await this.getList({where: {...data?.where, sessionId}, limit: 1});
+        if (rows?.length) {
+            return this.updateForSessionId({data}, sessionId);
+        }
+        
+        return this.create({data, sessionId});
     }
 
     /**
@@ -90,13 +69,13 @@ export class SessionDataService {
      * @param {object} sessionData - Data to add or replace.
      * @returns {Promise[Site]}
      */
-    static async addData(sessionId, sessionData) {
+    async addData(sessionId, sessionData) {
         const mergedData = deepMerge(
-            await SessionDataService.getDataIfExistsForSessionId(sessionId) ?? {},
+            await this.getDataIfExistsForSessionId(sessionId) ?? {},
             sessionData
         );
 
-        return SessionDataService.setData(sessionId, mergedData);
+        return this.setData(sessionId, mergedData);
     }
     
     /**
@@ -105,7 +84,7 @@ export class SessionDataService {
     * @param {object} sessionData - Data to add or replace.
     * @returns {Promise[Site]}
     */
-    static async setData(sessionId, sessionData) {
-        return SessionDataService.updateForSessionIdOrcreate(sessionId, sessionData);
+    async setData(sessionId, sessionData) {
+        return this.updateForSessionIdOrcreate(sessionId, sessionData);
     }
 }

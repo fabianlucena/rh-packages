@@ -27,8 +27,8 @@ export class BranchSelectController {
             branch = branch.toJSON();
         }
 
-        const SessionDataService = conf.global.services.SessionData;
-        if (!SessionDataService) {
+        const sessionDataService = conf.global.services.SessionData.singleton();
+        if (!sessionDataService) {
             throw new _HttpError(loc._cf('branchSelect', 'You do not have permission to select this branch.'), 400);
         }
 
@@ -70,7 +70,7 @@ export class BranchSelectController {
             menu: [menuItem],
         };
 
-        const sessionData = await SessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
+        const sessionData = await sessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
 
         sessionData.api ??= {};
         sessionData.api.data ??= {};
@@ -80,7 +80,7 @@ export class BranchSelectController {
         sessionData.menu = sessionData.menu.filter(item => item.name != 'branch-select');
         sessionData.menu.push(menuItem);
 
-        await SessionDataService.setData(sessionId, sessionData);
+        await sessionDataService.setData(sessionId, sessionData);
 
         await conf.global.eventBus?.$emit('branchSwitch', data, {sessionId});
         await conf.global.eventBus?.$emit('sessionUpdated', sessionId);
