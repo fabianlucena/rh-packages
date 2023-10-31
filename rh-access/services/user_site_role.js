@@ -8,7 +8,7 @@ export class UserSiteRoleService extends ServiceSharedEnabled {
     model = conf.global.models.UserSiteRole;
     references = {
         user: {
-            service: conf.global.services.User,
+            service: conf.global.services.User.singleton(),
             getIdForName: 'getIdForUsername',
             otherName: 'username',
         },

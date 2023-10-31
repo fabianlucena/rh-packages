@@ -11,7 +11,7 @@ export class UserService extends ServiceIdUuidEnabledModule {
     sequelize = conf.global.sequelize;
     model = conf.global.models.User;
     references = {
-        type: conf.global.services.UserType,
+        type: conf.global.services.UserType.singleton(),
     };
     defaultTranslationContext = 'user';
     searchColumns = ['username', 'displayName'];
@@ -166,8 +166,9 @@ export class UserService extends ServiceIdUuidEnabledModule {
      */
     async update(data, where) {
         const result = await super.update(data, where);
-        if (!result)
+        if (!result) {
             return result;
+        }
 
         if (data.password) {
             const identityService = IdentityService.singleton();

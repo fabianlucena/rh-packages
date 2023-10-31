@@ -22,7 +22,7 @@ export class PermissionService extends ServiceIdUuidNameTitleDescriptionEnabledM
                 data.roles:
                 data.roles.split(',');
 
-            await runSequentially(roles, async roleName => await RolePermissionService.createIfNotExists({role: roleName, permission: data.name, ownerModule: data.ownerModule}));
+            await runSequentially(roles, async roleName => await RolePermissionService.singleton().createIfNotExists({role: roleName, permission: data.name, ownerModule: data.ownerModule}));
         }
 
         return result;

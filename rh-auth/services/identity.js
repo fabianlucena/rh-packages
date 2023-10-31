@@ -9,7 +9,7 @@ export class IdentityService extends ServiceIdUuidEnabled {
     references = {
         type: conf.global.services.IdentityType,
         username: {
-            service: conf.global.services.User,
+            service: conf.global.services.User.singleton(),
             name: 'username',
             Name: 'User',
             idPropertyName: 'userId',

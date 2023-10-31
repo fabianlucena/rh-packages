@@ -231,9 +231,10 @@ export class GroupService {
             parentOptions.where.userId = {[Op.in]: newGroupIdList};
             parentOptions.where.groupId = {[Op.notIn]: allGroupIdList};
 
-            newGroupList = await UserGroupService.getList(parentOptions);
-            if (!newGroupList.length)
+            newGroupList = await UserGroupService.singleton().getList(parentOptions);
+            if (!newGroupList?.length) {
                 break;
+            }
 
             newGroupIdList = await newGroupList.map(group => group.groupId);
             allGroupIdList = [...allGroupIdList, ...newGroupIdList];

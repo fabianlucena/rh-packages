@@ -1,5 +1,3 @@
-'use strict';
-
 import {UserSiteRoleService} from './user_site_role.js';
 import {RoleService} from './role.js';
 import {conf} from '../conf.js';
