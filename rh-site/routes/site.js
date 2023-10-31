@@ -1,5 +1,3 @@
-'use strict';
-
 import {SiteController} from '../controllers/site.js';
 import {methodNotAllowed, corsSimplePreflight} from 'http-util';
 

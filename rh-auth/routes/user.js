@@ -1,5 +1,3 @@
-'use strict';
-
 import {UserController} from '../controllers/user.js';
 import {methodNotAllowed, corsSimplePreflight, asyncHandler} from 'http-util';
 

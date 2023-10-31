@@ -1,5 +1,3 @@
-'use strict';
-
 import {conf} from '../conf.js';
 
 export class MainCompanyService {
@@ -8,8 +6,9 @@ export class MainCompanyService {
     siteService = null;
 
     static singleton() {
-        if (!this.singletonInstance)
+        if (!this.singletonInstance) {
             this.singletonInstance = new this();
+        }
 
         return this.singletonInstance;
     }
@@ -31,8 +30,9 @@ export class MainCompanyService {
             row = row.toJSON();
 
             const result = row.Company;
-            if (row.Collaborators?.length) 
+            if (row.Collaborators?.length) {
                 result.ownerDisplayName = row.Collaborators[0]?.User?.displayName;
+            }
             
             return result;
         });
@@ -100,8 +100,9 @@ export class MainCompanyService {
 
     async createIfNotExists(data, options) {
         const row = await this.getForName(data.name, {skipNoRowsError: true, ...options});
-        if (row)
+        if (row) {
             return row;
+        }
 
         return this.create(data);
     }

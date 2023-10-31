@@ -1,17 +1,18 @@
-'use strinct';
-
 export async function runSequentially(arr, func) {
-    if (!arr)
+    if (!arr) {
         return;
+    }
 
     let result;
-    if (Array.isArray(arr))
+    if (Array.isArray(arr)) {
         result = [];
-    else
+    } else {
         result = {};
+    }
 
-    for(let key in arr)
+    for (let key in arr) {
         result[key] = await func(arr[key], key);
+    }
 
     return result;
 }

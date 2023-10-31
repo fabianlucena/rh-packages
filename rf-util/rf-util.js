@@ -1,5 +1,3 @@
-'use strict';
-
 export * from './rf-util-check.js';
 export * from './rf-util-error.js';
 export * from './rf-util-filter.js';

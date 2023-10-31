@@ -1,5 +1,3 @@
-'use strict';
-
 import url from 'url';
 import path from 'path';
 

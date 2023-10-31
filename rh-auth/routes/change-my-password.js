@@ -1,5 +1,3 @@
-'use strict';
-
 import {ChangeMyPasswordController} from '../controllers/change-my-password.js';
 import {corsSimplePreflight, methodNotAllowed, asyncHandler} from 'http-util';
 

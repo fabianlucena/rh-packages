@@ -1,5 +1,3 @@
-'use strict';
-
 import {SessionController} from '../controllers/session.js';
 import {methodNotAllowed, corsSimplePreflight, asyncHandler} from 'http-util';
 

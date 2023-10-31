@@ -20,11 +20,18 @@ export class SessionDataService extends ServiceBase {
         return data;
     }
 
-    async validate(data, operation) {
+    async validateForCreation(data) {
         await this.completeJsonData(data);
         await checkDataForMissingProperties(data, 'SessionData', 'sessionId', 'jsonData');
 
-        return super.validate(data, operation);
+        return super.validateForCreation(data);
+    }
+
+    async validateForUpdate(data) {
+        await this.completeJsonData(data);
+        await checkDataForMissingProperties(data, 'SessionData', 'jsonData');
+
+        return super.validateForUpdate(data);
     }
 
     /**

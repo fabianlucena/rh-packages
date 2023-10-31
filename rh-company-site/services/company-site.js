@@ -1,5 +1,3 @@
-'use strict';
-
 import {conf} from '../conf.js';
 import {ServiceBase} from 'rf-service';
 import {checkDataForMissingProperties, completeIncludeOptions, getSingle} from 'sql-util';
@@ -53,11 +51,13 @@ export class CompanySiteService extends ServiceBase {
             let siteData;
             if (data.name && data.title) {
                 siteData = {...data};
-                if (siteData.siteDescription)
+                if (siteData.siteDescription) {
                     siteData.description = siteData.siteDescription;
+                }
             } else {
-                if (!company)
+                if (!company) {
                     company = await conf.global.services.Company.singleton().get(data.companyId);
+                }
 
                 siteData.name = company.name;
                 siteData.title = company.title;
@@ -83,14 +83,16 @@ export class CompanySiteService extends ServiceBase {
         options ??= {};
 
         if (options.view) {
-            if (!options.attributes)
+            if (!options.attributes) {
                 options.attributes = [];
+            }
         }
 
         if (options.includeCompany || options.where.companyName || options.where.companyUuid) {
             let where;
-            if (options.isEnabled !== undefined)
+            if (options.isEnabled !== undefined) {
                 where = {isEnabled: options.isEnabled};
+            }
 
             if (options.where) {
                 if (options.where.companyName) {
@@ -110,8 +112,9 @@ export class CompanySiteService extends ServiceBase {
             if (options.includeCompany) {
                 attributes = ['uuid', 'name', 'title', 'description', 'isTranslatable', 'isEnabled'];
                 delete options.includeCompany;
-            } else 
+            } else {
                 attributes = [];
+            }
 
             completeIncludeOptions(
                 options,
@@ -126,8 +129,9 @@ export class CompanySiteService extends ServiceBase {
 
         if (options.includeSite || options.where?.siteName || options.where?.siteUuid) {
             let where;
-            if (options.isEnabled !== undefined)
+            if (options.isEnabled !== undefined) {
                 where = {isEnabled: options.isEnabled};
+            }
 
             if (options.where.siteName) {
                 where ??= {};
@@ -145,8 +149,9 @@ export class CompanySiteService extends ServiceBase {
             if (options.includeSite) {
                 attributes = ['uuid', 'name', 'title', 'isTranslatable', 'isEnabled'];
                 delete options.includeSite;
-            } else 
+            } else {
                 attributes = [];
+            }
 
             completeIncludeOptions(
                 options,
@@ -180,16 +185,18 @@ export class CompanySiteService extends ServiceBase {
         });
 
         let item;
-        if (rows?.length)
+        if (rows?.length) {
             item = rows[0];
-        else
+        } else {
             item = await this.create(data);
+        }
 
         if (data.users) {
             const userSiteRoleService = conf.global.services.UserSiteRole.singleton();
             const siteId = item.siteId;
-            for (const userRole of data.users)
+            for (const userRole of data.users) {
                 await userSiteRoleService.createIfNotExists({...userRole, siteId, owner: data.owner});
+            }
         }
 
         return item;

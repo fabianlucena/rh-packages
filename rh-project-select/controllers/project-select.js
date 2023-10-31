@@ -1,5 +1,3 @@
-'use strict';
-
 import {conf} from '../conf.js';
 import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
 import {checkParameter, MissingParameterError} from 'rf-util';
@@ -11,19 +9,23 @@ export class ProjectSelectController {
         const loc = req.loc;
 
         const projectUuid = req.query?.projectUuid ?? req.params?.projectUuid ?? req.body?.projectUuid;
-        if (!projectUuid)
+        if (!projectUuid) {
             throw new MissingParameterError(loc._cf('projectSelect', 'Project UUID'));
+        }
 
         const options = {skipNoRowsError: true};
         let project = await projectService.getForUuid(projectUuid, options);
-        if (!project)
+        if (!project) {
             throw new _HttpError(loc._cf('projectSelect', 'The selected project does not exist or you do not have permission to access it.'), 400);
+        }
 
-        if (!project.isEnabled)
+        if (!project.isEnabled) {
             throw new _HttpError(loc._cf('projectSelect', 'The selected project is disabled.'), 403);
+        }
 
-        if (project.toJSON)
+        if (project.toJSON) {
             project = project.toJSON();
+        }
 
         const sessionDataService = conf.global.services.SessionData.singleton();
         if (!sessionDataService) {
@@ -89,8 +91,9 @@ export class ProjectSelectController {
     }
 
     static async get(req, res) {
-        if ('$object' in req.query)
+        if ('$object' in req.query) {
             return ProjectSelectController.getObject(req, res);
+        }
 
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {view: true, limit: 10, offset: 0};

@@ -1,5 +1,3 @@
-'use strict';
-
 import {ProjectTagService} from './services/project_tag.js';
 import {conf as localConf} from './conf.js';
 import {loc} from 'rf-locale';
@@ -17,15 +15,17 @@ async function configure(global, options) {
         const transferProperties = ['tagCategory', 'tagsTitle', 'permissions'];
         for (const propertyName of transferProperties) {
             const value = options[propertyName];
-            if (value !== undefined)
+            if (value !== undefined) {
                 conf[propertyName] = value;
+            }
         }
     }
 
-    if (!options.permissions)
+    if (!options.permissions) {
         options.permissions = [];
-    else if (!Array.isArray(options.permissions))
+    } else if (!Array.isArray(options.permissions)) {
         options.permissions = [options.permissions];
+    }
 
     global.eventBus?.$on('project.interface.grid.get', projectInterfaceGridGet);
     global.eventBus?.$on('project.interface.form.get', projectInterfaceFormGet);

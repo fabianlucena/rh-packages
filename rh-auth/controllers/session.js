@@ -1,20 +1,20 @@
-'use strict';
-
 import {SessionService, SessionClosedError, NoSessionForAuthTokenError} from '../services/session.js';
 import {getOptionsFromParamsAndOData, deleteHandler} from 'http-util';
 import {getErrorMessage, checkParameter, checkParameterUuid} from 'rf-util';
 
 function hidePrivateData(data) {
-    if (typeof data !== 'object')
+    if (typeof data !== 'object') {
         return data;
+    }
 
     const result = {};
 
     for (const k in data) {
-        if (/password/.test(k))
+        if (/password/.test(k)) {
             result[k] = '****';
-        else
+        } else {
             result[k] = hidePrivateData(data[k]);
+        }
     }
 
     return result;
@@ -25,11 +25,13 @@ export class SessionController {
         return async (req, res, next) => {
             let logLine = `${req.method} ${req.path}`;
             const logOptions = {};
-            if (Object.keys(req.query).length)
+            if (Object.keys(req.query).length) {
                 logOptions.query = hidePrivateData(req.query);
+            }
 
-            if (Object.keys(req.body).length)
+            if (Object.keys(req.body).length) {
                 logOptions.body = hidePrivateData(req.body);
+            }
 
             const authorization = req.header('Authorization');
             if (!authorization || authorization.length < 8 || !authorization.startsWith('Bearer ')) {
@@ -54,21 +56,23 @@ export class SessionController {
                 })
                 .catch(async err => {
                     let error;
-                    if (err instanceof SessionClosedError)
+                    if (err instanceof SessionClosedError) {
                         error = {error: await req.loc._c('session', 'HTTP error 403 forbidden, session is closed.')};
-                    else if (err instanceof NoSessionForAuthTokenError)
+                    } else if (err instanceof NoSessionForAuthTokenError) {
                         error = {error: await req.loc._c('session', 'HTTP error 403 forbidden, authorization token error.')};
-                    else {
+                    } else {
                         let msg;
-                        if (err instanceof Error)
+                        if (err instanceof Error) {
                             msg = await getErrorMessage(err, req.loc);
-                        else
+                        } else {
                             msg = err;
+                        }
 
-                        if (msg)
+                        if (msg) {
                             error = {error: 'Unauthorized', message: await req.loc._c('session', 'HTTP error 401 unauthorized: %s', msg)};
-                        else
+                        } else {
                             error = {error: 'Unauthorized', message: await req.loc._c('session', 'HTTP error 401 unauthorized')};
+                        }
                     }
 
                     req.log.error(logLine, {...logOptions, error: err, result: error});
@@ -150,10 +154,11 @@ export class SessionController {
      *                  $ref: '#/definitions/Error'
      */
     static async get(req, res) {
-        if ('$grid' in req.query)
+        if ('$grid' in req.query) {
             return SessionController.getGrid(req, res);
-        else if ('$form' in req.query)
+        } else if ('$form' in req.query) {
             return SessionController.getForm(req, res);
+        }
             
         const definitions = {uuid: 'uuid', open: 'date', close: 'date', authToken: 'string', index: 'int'};
         let options = {view: true, limit: 10, offset: 0};
@@ -167,12 +172,14 @@ export class SessionController {
 
         const data = await SessionService.singleton().getListAndCount(options);
         data.rows = await Promise.all(data.rows.map(async row => {
-            if (row.toJSON)
+            if (row.toJSON) {
                 row = row.toJSON();
+            }
                 
             row.open = await req.loc.strftime('%x %X', row.open);
-            if (row.close)
+            if (row.close) {
                 row.close = await req.loc.strftime('%x %X', row.close);
+            }
 
             return row;
         }));

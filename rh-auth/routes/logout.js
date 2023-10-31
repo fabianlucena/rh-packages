@@ -1,5 +1,3 @@
-'use strict';
-
 import {LogoutController} from '../controllers/logout.js';
 import {corsSimplePreflight, methodNotAllowed, asyncHandler} from 'http-util';
 

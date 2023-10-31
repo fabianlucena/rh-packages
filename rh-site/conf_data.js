@@ -1,5 +1,3 @@
-'use strict';
-
 import {loc} from 'rf-locale';
 
 const name = 'rhSite';

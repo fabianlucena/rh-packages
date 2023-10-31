@@ -1,5 +1,3 @@
-'use strict';
-
 import {SwitchSiteController} from '../controllers/switch_site.js';
 import {methodNotAllowed, corsSimplePreflight, asyncHandler} from 'http-util';
 

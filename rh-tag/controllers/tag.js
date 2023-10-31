@@ -1,5 +1,3 @@
-'use strict';
-
 import {TagService} from '../services/tag.js';
 import {getOptionsFromParamsAndOData} from 'http-util';
 
@@ -41,10 +39,11 @@ export class TagController {
      *                  $ref: '#/definitions/Error'
      */
     static async get(req, res) {
-        if ('$grid' in req.query)
+        if ('$grid' in req.query) {
             return TagController.getGrid(req, res);
-        else if ('$form' in req.query)
+        } else if ('$form' in req.query) {
             return TagController.getForm(req, res);
+        }
 
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {view: true, limit: 10, offset: 0};

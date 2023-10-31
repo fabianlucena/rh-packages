@@ -1,5 +1,3 @@
-'use strict';
-
 import {conf as localConf} from './conf.js';
 import {LogService} from './services/log.js';
 import {Log} from './log.js';

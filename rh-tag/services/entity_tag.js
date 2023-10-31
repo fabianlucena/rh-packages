@@ -1,5 +1,3 @@
-'use strict';
-
 import {TagService} from './tag.js';
 import {TagCategoryService} from './tag_category.js';
 import {ServiceBase} from 'rf-service';
@@ -18,22 +16,25 @@ export class EntityTagService extends ServiceBase {
 
     constructor(options) {
         super();
-        for (const k in options)
+        for (const k in options) {
             this[k] = options[k];
+        }
 
         this.references[this.entityName] = this.entityModel;
         this.tagCategoryService = TagCategoryService.singleton();
         this.tagService = TagService.singleton();
 
-        if (this.entityId)
+        if (this.entityId) {
             this.notEntityId ||= 'not' + ucfirst(this.entityId);
+        }
     }
 
     async completeTagsIdInData(data) {
         if (data.tags) {
             let tags = data.tags;
-            if (!Array.isArray(tags))
+            if (!Array.isArray(tags)) {
                 tags = [tags];
+            }
 
             const tagCategory = await this.tagCategoryService.createIfNotExists({
                 name: this.tagCategory,
@@ -61,8 +62,9 @@ export class EntityTagService extends ServiceBase {
         checkParameterStringNotNullOrEmpty(data.tagId, loc._cf('entityTag', 'Tag'));
 
         const rows = await this.getFor(data, {skipNoRowsError: true});
-        if (rows.length)
+        if (rows.length) {
             throw new ConflictError(loc._cf('entityTag', 'The tag is already linked to the %s.', this.entityName));
+        }
 
         return true;
     }
@@ -162,8 +164,9 @@ export class EntityTagService extends ServiceBase {
     }
 
     async delete(options) {
-        if (!options.where)
+        if (!options.where) {
             throw new Error(loc._cf('tag', 'Delete without where is forbiden.'));
+        }
 
         const Op = this.Sequelize.Op;
         const where = options.where;
@@ -225,16 +228,18 @@ export class EntityTagService extends ServiceBase {
     }
 
     async completeForEntities(result, options) {
-        if (!options.includeTags)
+        if (!options.includeTags) {
             return result;
+        }
 
         result = await result;
         let rows = options.withCount? result.rows: result;
 
         for (const i in rows) {
             let row = rows[i];
-            if (row.toJSON)
+            if (row.toJSON) {
                 row = row.toJSON();
+            }
 
             const tags = await this.getForEntityId(row.id);
             row.tags = tags.map(tag => tag.Tag.name);
@@ -242,10 +247,11 @@ export class EntityTagService extends ServiceBase {
             rows[i] = row;
         }
 
-        if (options.withCount)
+        if (options.withCount) {
             result.rows = rows;
-        else
+        } else {
             result = rows;
+        }
 
         return result;
     }
@@ -259,8 +265,9 @@ export class EntityTagService extends ServiceBase {
         const result = [];
         rows.map(rows => {
             const id = rows[this.entityId];
-            if (!result.includes(id))
+            if (!result.includes(id)) {
                 result.push(id);
+            }
         });
 
         return result;

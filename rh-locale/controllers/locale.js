@@ -1,5 +1,3 @@
-'use strict';
-
 import {TranslationService} from '../services/translation.js';
 import {Locale} from 'rf-locale';
 
@@ -10,9 +8,9 @@ export class LocaleController {
     static middleware() {
         return async (req, res, next) => {
             const acceptLanguage = req.header('accept-language');
-            if (languageCache[acceptLanguage])
+            if (languageCache[acceptLanguage]) {
                 req.loc = languageCache[acceptLanguage];
-            else {
+            } else {
                 if (!loc) {
                     loc = new Locale({
                         driver: TranslationService.singleton()._gt,

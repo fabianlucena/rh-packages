@@ -1,5 +1,3 @@
-'use strict';
-
 import {projectTagController} from '../controllers/project-tag.js';
 import {conf} from '../conf.js';
 import {corsSimplePreflight, methodNotAllowed, asyncHandler} from 'http-util';

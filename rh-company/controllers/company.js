@@ -1,5 +1,3 @@
-'use strict';
-
 import {CompanyService} from '../services/company.js';
 import {conf} from '../conf.js';
 import {getOptionsFromParamsAndOData, _HttpError, ConflictError} from 'http-util';

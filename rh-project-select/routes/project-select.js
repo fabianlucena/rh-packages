@@ -1,5 +1,3 @@
-'use strict';
-
 import {ProjectSelectController} from '../controllers/project-select.js';
 import {methodNotAllowed, corsSimplePreflight, asyncHandler} from 'http-util';
 

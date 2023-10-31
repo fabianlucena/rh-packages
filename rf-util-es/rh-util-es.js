@@ -1,5 +1,3 @@
-'use strict';
-
 import {loadJson} from 'rf-util';
 import url from 'url';
 import path from 'path';

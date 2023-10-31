@@ -1,5 +1,3 @@
-'use strict';
-
 import {SiteService} from './services/site.js';
 import {conf as localConf} from './conf.js';
 import {runSequentially} from 'rf-util';

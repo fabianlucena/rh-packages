@@ -1,12 +1,11 @@
-'use strict';
-
 export class EventBus {
     handlers = {};
 
     $on(event, handler) {
         const sanitEvent = event.toLowerCase();
-        if (!this.handlers[sanitEvent])
+        if (!this.handlers[sanitEvent]) {
             this.handlers[sanitEvent] = [];
+        }
 
         this.handlers[sanitEvent].push(handler);
     }
@@ -27,12 +26,14 @@ export class EventBus {
     async $emit(event, ...params) {
         const sanitEvent = event.toLowerCase();
         const handlers = this.handlers[sanitEvent];
-        if (!handlers)
+        if (!handlers) {
             return;
+        }
 
         const result = [];
-        for (const handler of handlers)
+        for (const handler of handlers) {
             result.push(await handler(...params));
+        }
 
         return result;
     }

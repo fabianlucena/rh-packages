@@ -1,5 +1,3 @@
-'use strict';
-
 import {ProjectService} from './services/project.js';
 import {conf as localConf} from './conf.js';
 import {runSequentially} from 'rf-util';

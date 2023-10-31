@@ -1,5 +1,3 @@
-'use strict';
-
 export function tokens(text) {
     return text.split(/[ _-]/);
 }
@@ -22,8 +20,9 @@ export function lcfirst(text) {
 }
 
 export function isEnquoted(text, quotes) {
-    if (!quotes)
+    if (!quotes) {
         quotes = ['"', '\'', '`'];
+    }
 
     return (text.length > 1)
         && text[0] === text[text.length - 1]
@@ -31,8 +30,9 @@ export function isEnquoted(text, quotes) {
 }
 
 export function stripQuotes(text, quotes) {
-    if (!isEnquoted(text, quotes))
+    if (!isEnquoted(text, quotes)) {
         return;
+    }
 
     return text.substring(1, text.length - 1);
 }

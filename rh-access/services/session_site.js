@@ -1,5 +1,3 @@
-'use strict';
-
 import {conf} from '../conf.js';
 import {checkDataForMissingProperties, addEnabledFilter} from 'sql-util';
 
@@ -11,10 +9,11 @@ export class SessionSiteService {
      */
     static async completeSessionId(data) {
         if (!data.sessionId) {
-            if (data.sessionUuid)
+            if (data.sessionUuid) {
                 data.sessionId = await conf.global.services.Session.getIdForUuid(data.sessionUuid);
-            else if (data.session)
+            } else if (data.session) {
                 data.sessionId = await conf.global.services.Session.getIdForName(data.session);
+            }
         }
 
         return data;
@@ -28,10 +27,11 @@ export class SessionSiteService {
     static async completeSiteId(data) {
         if (!data.siteId) {
             const siteService = conf.global.services.Site.singleton();
-            if (data.siteUuid)
+            if (data.siteUuid) {
                 data.siteId = await siteService.getIdForUuid(data.siteUuid, {foreign: {module: false}});
-            else if (data.site)
+            } else if (data.site) {
                 data.siteId = await siteService.getIdForName(data.site, {foreign: {module: false}});
+            }
         }
 
         return data;
@@ -88,8 +88,9 @@ export class SessionSiteService {
      * @returns {options}
      */
     static async getListOptions(options) {
-        if (options.isEnabled !== undefined)
+        if (options.isEnabled !== undefined) {
             options = addEnabledFilter(options);
+        }
 
         if (!options.includes) {
             options.include = [];
@@ -137,8 +138,9 @@ export class SessionSiteService {
         await SessionSiteService.completeSessionIdAndSiteId(data);
         
         const rowList = await conf.global.models.SessionSite.findAll({where: {sessionId: data.sessionId}});
-        if (rowList.length)
+        if (rowList.length) {
             return SessionSiteService.update({siteId: data.siteId}, {where: {sessionId: data.sessionId}});
+        }
 
         return SessionSiteService.create(data);
     }

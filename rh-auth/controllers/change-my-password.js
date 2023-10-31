@@ -1,5 +1,3 @@
-'use strict';
-
 import {IdentityService} from '../services/identity.js';
 import {_HttpError} from 'http-util';
 import {checkParameter, checkParameterNotNullOrEmpty} from 'rf-util';
@@ -53,24 +51,29 @@ export class ChangeMyPasswordController {
         checkParameterNotNullOrEmpty(data.newPassword, loc._cf('changeMyPassword', 'new password'));
         checkParameterNotNullOrEmpty(data.newPasswordConfirmation, loc._cf('changeMyPassword', 'new password confirmation'));
 
-        if (data.newPassword != data.newPasswordConfirmation)
+        if (data.newPassword != data.newPasswordConfirmation) {
             throw new _HttpError(loc._cf('changeMyPassword', 'The new password and its confirmation are distinct'), 400);
+        }
 
-        if (data.newPassword == data.currentPassword)
+        if (data.newPassword == data.currentPassword) {
             throw new _HttpError(loc._cf('changeMyPassword', 'The new password and the current password are the same'), 400);
+        }
 
         const identityService = IdentityService.singleton();
         const checkResult = await identityService.checkLocalPasswordForUsername(req.user.username, data.currentPassword, loc);
-        if (checkResult !== true)
+        if (checkResult !== true) {
             throw new _HttpError(checkResult || loc._cf('changeMyPassword', checkResult || 'Error invalid password'), 403);
+        }
 
         const identity = await identityService.getLocalForUsername(req.user.username);
-        if (!identity)
+        if (!identity) {
             throw new _HttpError(checkResult || loc._cf('changeMyPassword', 'Error to get local identity'), 404);
+        }
 
         const result = await identityService.updateForId({password: data.newPassword}, identity.id);
-        if (result)
+        if (result) {
             return res.status(204).send();
+        }
 
         throw new _HttpError(checkResult || loc._cf('changeMyPassword', 'Error to change the password'), 500);
     }

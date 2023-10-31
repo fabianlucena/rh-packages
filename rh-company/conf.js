@@ -1,5 +1,3 @@
-'use strict';
-
 import {loc} from 'rf-locale';
 import url from 'url';
 import path from 'path';

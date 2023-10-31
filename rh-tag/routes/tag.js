@@ -1,5 +1,3 @@
-'use strict';
-
 import {TagController} from '../controllers/tag.js';
 import {methodNotAllowed, corsSimplePreflight} from 'http-util';
 

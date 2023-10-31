@@ -1,5 +1,3 @@
-'use strict';
-
 import {MergeTypeError} from './rf-util-error.js';
 
 /**
@@ -14,45 +12,52 @@ import {MergeTypeError} from './rf-util-error.js';
  * @returns {object} - the merged object.
  */
 export function merge(dst, src, options) {
-    if (!src)
+    if (!src) {
         return dst;
+    }
 
     if (Array.isArray(src)) {
-        if (!dst)
+        if (!dst) {
             dst = [];
-        else if (!Array.isArray(dst))
+        } else if (!Array.isArray(dst)) {
             throw new MergeTypeError(typeof dst, typeof src);
+        }
 
         let result;
-        if (options?.replace)
+        if (options?.replace) {
             result = dst;
-        else
+        } else {
             result = [...dst];
+        }
 
         if (options?.deep) {
             const deepOptions = merge(options, {});
-            if (deepOptions.deep > 0)
+            if (deepOptions.deep > 0) {
                 deepOptions.deep--;
+            }
                 
             for (let i = 0, e = src.length; i < e; i++) {
                 let v = src[i];
-                if (v && typeof v === 'object')
-                    if (Array.isArray(v))
+                if (v && typeof v === 'object') {
+                    if (Array.isArray(v)) {
                         v = merge([], v, deepOptions);
-                    else
+                    } else {
                         v = merge({}, v, deepOptions);
+                    }
+                }
 
                 result.push(v);
             }
-        } else
+        } else {
             result.push(...src);
+        }
 
         return result;
     }
 
-    if (!dst)
+    if (!dst) {
         dst = {};
-    else if (Array.isArray(dst)) {
+    } else if (Array.isArray(dst)) {
         throw new MergeTypeError(typeof dst, typeof src);
     }
 
@@ -60,26 +65,29 @@ export function merge(dst, src, options) {
     if (Array.isArray(options)) {
         properties = options;
         options = {};
-    }
-    else
+    } else {
         properties = options?.properties;
+    }
         
-    if (properties === undefined)
+    if (properties === undefined) {
         properties = Object.keys(src);
+    }
 
     let result;
-    if (options?.replace)
+    if (options?.replace) {
         result = dst;
-    else {
+    } else {
         result = {};
-        for (const k in dst)
+        for (const k in dst) {
             result[k] = dst[k];
+        }
     }
 
     if (options?.deep) {
         const deepOptions = merge(options, {});
-        if (deepOptions.deep > 0)
+        if (deepOptions.deep > 0) {
             deepOptions.deep--;
+        }
 
         for(let i = 0, e = properties.length; i < e; i++) {
             const p = properties[i];
@@ -87,31 +95,35 @@ export function merge(dst, src, options) {
             let v;
 
             if (dst[p] === undefined) {
-                if (isSrcObject)
-                    if (Array.isArray(src[p]))
+                if (isSrcObject) {
+                    if (Array.isArray(src[p])) {
                         v = merge([], src[p], deepOptions);
-                    else if (Buffer.isBuffer(src[p]))
+                    } else if (Buffer.isBuffer(src[p])) {
                         v = Buffer.from(src[p]);
-                    else if (src[p] === null)
+                    } else if (src[p] === null) {
                         v = null;
-                    else
+                    } else {
                         v = merge({}, src[p], deepOptions);
-                else
+                    }
+                } else {
                     v = src[p];
+                }
             } else {
                 let isDstObject = typeof dst[p] === 'object';
 
-                if (isDstObject)
-                    if (isSrcObject && deepOptions.deep && !Buffer.isBuffer(src[p]))
+                if (isDstObject) {
+                    if (isSrcObject && deepOptions.deep && !Buffer.isBuffer(src[p])) {
                         v = merge(dst[p], src[p], deepOptions);
-                    else if (options?.skipExistent)
+                    } else if (options?.skipExistent) {
                         v = dst[p];
-                    else
+                    } else {
                         v = src[p];
-                else if (options?.skipExistent)
+                    }
+                } else if (options?.skipExistent) {
                     v = dst[p] || src[p];
-                else
+                } else {
                     v = src[p] || dst[p];
+                }
             }
 
             result[p] = v;

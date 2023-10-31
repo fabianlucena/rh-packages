@@ -1,5 +1,3 @@
-'use strict';
-
 import {conf} from './conf.js';
 
 const loc = conf.loc;

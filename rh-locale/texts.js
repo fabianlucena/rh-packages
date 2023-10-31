@@ -1,5 +1,3 @@
-'use strict';
-
 import {loc} from 'rf-locale';
 
 loc._f('Actions');
@@ -18,6 +16,7 @@ loc._f('Enable');
 loc._f('Expand');
 loc._f('First');
 loc._f('Last');
+loc._f('Loading...');
 loc._f('Next');
 loc._f('Prior');
 loc._f('Remove');
@@ -28,6 +27,4 @@ loc._f('Selected');
 loc._f('Submit');
 loc._f('Total pages %s\nTotal rows founded %s\nShowing %s rows from %s to %s');
 loc._f('View');
-
 loc._f('-- Select an option --');
-loc._f('Loading...');

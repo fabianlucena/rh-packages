@@ -1,5 +1,3 @@
-'use strict';
-
 import {LoginService} from '../services/login.js';
 import {conf} from '../conf.js';
 import {_HttpError} from 'http-util';
@@ -111,10 +109,11 @@ export class LoginController {
      */
     static async post(req, res) {
         const loc = req.loc;
-        if (req?.body?.autoLoginToken)
+        if (req?.body?.autoLoginToken) {
             checkParameter(req?.body, 'autoLoginToken', 'deviceToken');
-        else
+        } else {
             checkParameter(req?.body, {username: loc._cf('login', 'Username'), password: loc._cf('login', 'Password')});
+        }
 
         try {
             const loginService = LoginService.singleton();
@@ -167,10 +166,11 @@ export class LoginController {
             res.cookie('autoLoginToken', session.autoLoginToken, {expire: expires30});
             res.status(201).send(result);
         } catch (error) {
-            if (req.body.autoLoginToken)
+            if (req.body.autoLoginToken) {
                 req.log?.info(`Error trying logged by autoLoginToken: ${error}.`, {autoLoginToken: req.body.autoLoginToken, error});
-            else
+            } else {
                 req.log?.info(`Error in login: ${error}.`, {username: req.body.username, error});
+            }
 
             throw new _HttpError(req.loc._cf('login', 'Invalid login'), 403);
         }

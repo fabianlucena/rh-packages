@@ -1,5 +1,3 @@
-'use strict';
-
 import {MainCompanyService} from '../services/main-company.js';
 import {conf} from '../conf.js';
 import {getOptionsFromParamsAndOData, _HttpError, ConflictError} from 'http-util';
@@ -12,17 +10,19 @@ const siteService = conf.global.services.Site.singleton();
 export class MainCompanyController {
     static async checkUuid(req, uuid) {
         const maincompany = await mainCompanyService.getForUuid(uuid, {skipNoRowsError: true});
-        if (!maincompany)
+        if (!maincompany) {
             throw new _HttpError(req.loc._cf('mainCompany', 'The main company with UUID %s does not exists.'), 404, uuid);
+        }
 
         return true;
     }
 
     static async get(req, res) {
-        if ('$grid' in req.query)
+        if ('$grid' in req.query) {
             return this.getGrid(req, res);
-        else if ('$form' in req.query)
+        } else if ('$form' in req.query) {
             return this.getForm(req, res);
+        }
             
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {
@@ -122,17 +122,20 @@ export class MainCompanyController {
     static async post(req, res) {
         const loc = req.loc;
         checkParameter(req?.body, {name: loc._cf('mainCompany', 'Name'), title: loc._cf('mainCompany', 'Title')});
-        if (await companyService.getForName(req.body.name, {skipNoRowsError: true}))
+        if (await companyService.getForName(req.body.name, {skipNoRowsError: true})) {
             throw new ConflictError();
+        }
 
-        if (await siteService.getForName(req.body.name, {skipNoRowsError: true}))
+        if (await siteService.getForName(req.body.name, {skipNoRowsError: true})) {
             throw new ConflictError();
+        }
 
         const data = {...req.body};
         if (!data.owner && !data.ownerId) {
             data.ownerId = req.user.id;
-            if (!data.ownerId)
+            if (!data.ownerId) {
                 throw new _HttpError(req.loc._cf('mainCompany', 'The main company data does not have a owner.'));
+            }
         }
 
         await mainCompanyService.create(data);
@@ -145,8 +148,9 @@ export class MainCompanyController {
         await this.checkUuid(req, uuid);
 
         const rowsDeleted = await mainCompanyService.deleteForUuid(uuid);
-        if (!rowsDeleted)
+        if (!rowsDeleted) {
             throw new _HttpError(req.loc._cf('mainCompany', 'The main company with UUID %s does not exists.'), 403, uuid);
+        }
 
         res.sendStatus(204);
     }
@@ -156,8 +160,9 @@ export class MainCompanyController {
         await this.checkUuid(req, uuid);
 
         const rowsUpdated = await mainCompanyService.enableForUuid(uuid);
-        if (!rowsUpdated)
+        if (!rowsUpdated) {
             throw new _HttpError(req.loc._cf('mainCompany', 'The main company with UUID %s does not exists.'), 403, uuid);
+        }
 
         res.sendStatus(204);
     }
@@ -167,8 +172,9 @@ export class MainCompanyController {
         await this.checkUuid(req, uuid);
 
         const rowsUpdated = await mainCompanyService.disableForUuid(uuid);
-        if (!rowsUpdated)
+        if (!rowsUpdated) {
             throw new _HttpError(req.loc._cf('mainCompany', 'The main company with UUID %s does not exists.'), 403, uuid);
+        }
 
         res.sendStatus(204);
     }
@@ -178,8 +184,9 @@ export class MainCompanyController {
         await this.checkUuid(req, uuid);
 
         const rowsUpdated = await mainCompanyService.updateForUuid(req.body, uuid);
-        if (!rowsUpdated)
+        if (!rowsUpdated) {
             throw new _HttpError(req.loc._cf('mainCompany', 'The main company with UUID %s does not exists.'), 403, uuid);
+        }
 
         res.sendStatus(204);
     }

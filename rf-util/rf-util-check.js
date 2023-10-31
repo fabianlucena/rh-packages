@@ -1,5 +1,3 @@
-'use strict';
-
 import {MissingParameterError, CheckError} from './rf-util-error.js';
 import {loc} from 'rf-locale';
 import * as uuid from 'uuid';
@@ -13,29 +11,34 @@ export function checkParameter(value, params, ...freeParams) {
 
     freeParams.forEach(p => params[p] = p);
 
-    if (!value)
+    if (!value) {
         throw new MissingParameterError(...Object.values(params));
+    }
 
     const missing = [];
     for (let name in params) {
-        if (value[name] === undefined)
+        if (value[name] === undefined) {
             missing.push(params[name]);
+        }
     }
 
-    if (missing.length)
+    if (missing.length) {
         throw new MissingParameterError(...missing);
+    }
 
     return value;
 }
 
 export function checkNull(obj, errMsj) {
-    if (obj)
+    if (obj) {
         throw errMsj;
+    }
 }
 
 export function checkNotNull(obj, errMsj) {
-    if (obj)
+    if (obj) {
         return obj;
+    }
 
     throw errMsj;
 }
@@ -68,8 +71,9 @@ export function check(value, options) {
 }
 
 function getCheckOptionsFromParams(options, moreOptions) {
-    if (typeof options === 'string' || typeof options === 'function')
+    if (typeof options === 'string' || typeof options === 'function') {
         options = {paramTitle: options};
+    }
 
     return {...options, ...moreOptions};
 }

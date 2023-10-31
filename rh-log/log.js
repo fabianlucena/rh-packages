@@ -1,19 +1,19 @@
-'use strict';
-
-
 function pad02(number) {
-    if (number < 10)
+    if (number < 10) {
         return '0' + number;
+    }
 
     return number;
 }
 
 function pad03(number) {
-    if (number < 10)
+    if (number < 10) {
         return '00' + number;
+    }
 
-    if (number < 100)
+    if (number < 100) {
         return '0' + number;
+    }
 
     return number;
 }
@@ -36,20 +36,23 @@ export class Log {
         if (!Log.refSeed) {
             try {
                 let newRef = await logService.getMaxRef();
-                if (!newRef || isNaN(newRef))
+                if (!newRef || isNaN(newRef)) {
                     Log.refSeed = 1;
-                else
+                } else {
                     Log.refSeed = parseInt(newRef) + 1;
+                }
                 
                 if (this.ref) {
-                    if (this.ref > Log.refSeed)
+                    if (this.ref > Log.refSeed) {
                         Log.refSeed = this.ref + 1;
-                    else
+                    } else {
                         this.ref = (Log.refSeed++);
+                    }
                 }
             } catch(e) {
-                if (!Log.refSeed)
-                    Log.refSeed = 1;                        
+                if (!Log.refSeed) {
+                    Log.refSeed = 1;
+                }
             }
         }
 
@@ -62,8 +65,9 @@ export class Log {
 
         const log = new Log();
         for (const k in this) {
-            if (k !== 'ref')
+            if (k !== 'ref') {
                 log[k] = this[k];
+            }
         }
 
         log.ref = ref;
@@ -73,14 +77,17 @@ export class Log {
 
     async flushCache() {
         try {
-            if (!this.logService)
+            if (!this.logService) {
                 return;
+            }
 
-            if (!this.ref || isNaN(this.ref))
+            if (!this.ref || isNaN(this.ref)) {
                 this.ref = (Log.refSeed++);
+            }
                 
-            for (const line of this.cache)
+            for (const line of this.cache) {
                 await this.logService.create({...line, ref: this.ref});
+            }
 
             this.cache = [];
             this.checkCache = false;
@@ -94,8 +101,9 @@ export class Log {
     }
 
     async msg(type, message, data) {
-        if (!this.ref || isNaN(this.ref))
+        if (!this.ref || isNaN(this.ref)) {
             this.ref = (Log.refSeed++);
+        }
 
         const line = {
             dateTime: new Date,
@@ -105,14 +113,16 @@ export class Log {
             message,
         };
 
-        if (data)
+        if (data) {
             line.data = JSON.parse(JSON.stringify(data));
+        }
 
         if (typeof line.message !== 'string') {
-            if (line.message.toString)
+            if (line.message.toString) {
                 line.message = line.message.toString();
-            else
+            } else {
                 line.message = JSON.stringify(line.message);
+            }
         }
 
         const TYPE = type.toUpperCase();
@@ -128,8 +138,9 @@ export class Log {
 
         if (this.console) {
             let text = `${this.dateFormat(line.dateTime)} - ${type ?? '{NO TYPE}'} - ${line.session ?? '{NO SESSION}'} - ${message ?? '{NO MESSAGE}'}`;
-            if (data)
+            if (data) {
                 text += ' - ' + JSON.stringify(data);
+            }
 
             switch (TYPE) {
             case 'ERROR':   console.error(text); break;
@@ -142,8 +153,9 @@ export class Log {
 
         try {
             if (this.logService) {
-                if (this.checkCache)
+                if (this.checkCache) {
                     await this.flushCache();
+                }
 
                 await this.logService.create(line);
             } else {

@@ -1,5 +1,3 @@
-'use strict';
-
 import {LocaleController} from './controllers/locale.js';
 import {conf as localConf} from './conf.js';
 import {LanguageService} from './services/language.js';

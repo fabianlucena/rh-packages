@@ -1,5 +1,3 @@
-'use strict';
-
 import {LogService} from '../services/log.js';
 import {getOptionsFromParamsAndOData} from 'http-util';
 import {checkParameter} from 'rf-util';
@@ -8,8 +6,9 @@ const logService = LogService.singleton();
 
 export class LogController {
     static async get(req, res) {
-        if ('$grid' in req.query)
+        if ('$grid' in req.query) {
             return LogController.getGrid(req, res);
+        }
 
         let options = {
             view: true,

@@ -1,5 +1,3 @@
-'use strict';
-
 import {LogController} from '../controllers/log.js';
 import {methodNotAllowed, corsSimplePreflight, asyncHandler} from 'http-util';
 

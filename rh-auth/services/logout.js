@@ -1,11 +1,10 @@
-'use strict';
-
 import {SessionService} from './session.js';
 
 export class LogoutService {
     static singleton() {
-        if (!this.singletonInstance)
+        if (!this.singletonInstance) {
             this.singletonInstance = new this();
+        }
 
         return this.singletonInstance;
     }

@@ -1,5 +1,3 @@
-'use strict';
-
 import {MainCompanyController} from '../controllers/main-company.js';
 import {methodNotAllowed, corsSimplePreflight, asyncHandler} from 'http-util';
 

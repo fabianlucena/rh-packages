@@ -1,5 +1,3 @@
-'use strict';
-
 import {conf} from '../conf.js';
 import {ServiceIdUuid} from 'rf-service';
 import {checkViewOptions, getSingle} from 'sql-util';
@@ -46,11 +44,13 @@ export class SessionService extends ServiceIdUuid {
     defaultTranslationContext = 'session';
 
     async validateForCreation(data) {
-        if (!data.authToken)
+        if (!data.authToken) {
             data.authToken = crypto.randomBytes(64).toString('hex');
+        }
 
-        if (!data.autoLoginToken)
+        if (!data.autoLoginToken) {
             data.autoLoginToken = crypto.randomBytes(64).toString('hex');
+        }
         
         return true;
     }
@@ -62,12 +62,14 @@ export class SessionService extends ServiceIdUuid {
      * @returns {t}
      */
     async getListOptions(options) {
-        if (!options)
+        if (!options) {
             options = {};
+        }
 
         if (options.view) {
-            if (!options.attributes)
+            if (!options.attributes) {
                 options.attributes = ['uuid', 'index', 'open', 'close'];
+            }
             
             if (!options.include) {
                 options.include = [
@@ -113,11 +115,13 @@ export class SessionService extends ServiceIdUuid {
         }
 
         let session = await this.getForAuthToken(authToken, {skipNoRowsError: true, include: [{model: conf.global.models.User}]});
-        if (!session)
+        if (!session) {
             throw new NoSessionForAuthTokenError();
+        }
             
-        if (session.close)
+        if (session.close) {
             throw new SessionClosedError();
+        }
 
         session = session.toJSON();
 
@@ -148,8 +152,9 @@ export class SessionService extends ServiceIdUuid {
 
         const session = await this.getForId(id);
         const authToken = session.authToken;
-        if (conf.sessionCache[authToken])
+        if (conf.sessionCache[authToken]) {
             delete conf.sessionCache[authToken];
+        }
 
         return this.updateForId({close: Date.now()}, id);
     }
@@ -162,8 +167,9 @@ export class SessionService extends ServiceIdUuid {
     async deleteForUuid(uuid) {
         const session = await this.getForUuid(uuid, {_noRowsError: loc._cf('session', 'Row for UUID %s does not exist', uuid)});
         if (session) {
-            if (conf.sessionCache[session.authToken])
+            if (conf.sessionCache[session.authToken]) {
                 delete conf.sessionCache[session.authToken];
+            }
 
             return this.deleteForUuid(uuid);
         }

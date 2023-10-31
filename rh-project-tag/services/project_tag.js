@@ -1,5 +1,3 @@
-'use strict';
-
 import {conf} from '../conf.js';
 import {EntityTagService} from 'rh-tag';
 

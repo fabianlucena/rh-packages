@@ -1,5 +1,3 @@
-'use strict';
-
 import {SwitchSiteService} from '../services/switch_site.js';
 import {SessionSiteService} from '../services/session_site.js';
 import {conf} from '../conf.js';
@@ -47,8 +45,9 @@ export class SwitchSiteController {
      */
     static currentSiteGet(req, res) {
         const siteId = req?.site?.id;
-        if (!siteId)
+        if (!siteId) {
             return res.status(204).send();
+        }
 
         const definitions = {uuid: 'uuid', name: 'string'},
             options = {view: true, limit: 10, offset: 0};
@@ -109,8 +108,9 @@ export class SwitchSiteController {
      *                  $ref: '#/definitions/Error'
      */
     static async get(req, res) {
-        if ('$object' in req.query)
+        if ('$object' in req.query) {
             return SwitchSiteController.getObject(req, res);
+        }
 
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {view: true, limit: 10, offset: 0};

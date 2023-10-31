@@ -1,5 +1,3 @@
-'use strict';
-
 import {SiteService} from '../services/site.js';
 import {getOptionsFromParamsAndOData} from 'http-util';
 

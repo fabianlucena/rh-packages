@@ -1,5 +1,3 @@
-'use strict';
-
 import {UserService} from './services/user.js';
 import {UserTypeService} from './services/user_type.js';
 import {IdentityService} from './services/identity.js';

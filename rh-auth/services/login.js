@@ -1,5 +1,3 @@
-'use strict';
-
 import {UserService} from '../services/user.js';
 import {DeviceService} from '../services/device.js';
 import {IdentityService} from '../services/identity.js';
@@ -10,8 +8,9 @@ import {loc} from 'rf-locale';
 
 export class LoginService {
     static singleton() {
-        if (!this.singletonInstance)
+        if (!this.singletonInstance) {
             this.singletonInstance = new this();
+        }
 
         return this.singletonInstance;
     }
@@ -33,24 +32,28 @@ export class LoginService {
         const userService = UserService.singleton();
 
         const user = await userService.getForUsername(username);
-        if (!user)
+        if (!user) {
             throw new _Error(loc._cf('login', 'Error to get user to create session'));
+        }
 
         await userService.checkEnabledUser(user, username);
         const checkPasswordResult = await IdentityService.singleton().checkLocalPasswordForUsername(username, password, loc);
-        if (checkPasswordResult !== true)
+        if (checkPasswordResult !== true) {
             throw new HttpError('Invalid login', 403);
+        }
 
         const deviceService = DeviceService.singleton();
         let device;
         if (deviceToken) {
             device = await deviceService.getForToken(deviceToken);
-            if (!device)
+            if (!device) {
                 throw new HttpError('Invalid device', 400);                
+            }
         }
         
-        if (!device)
+        if (!device) {
             device = await deviceService.create({data: ''});
+        }
 
         const session = await SessionService.singleton().create({
             deviceId: device.id,
@@ -85,18 +88,22 @@ export class LoginService {
         const sessionService = SessionService.singleton();
 
         const oldSession = await sessionService.getForAutoLoginToken(autoLoginToken);
-        if (!oldSession)
+        if (!oldSession) {
             throw new _Error(loc._cf('login', 'Error to get old session to create session'));
+        }
 
-        if (oldSession.close)
+        if (oldSession.close) {
             throw new _Error(loc._cf('login', 'The auto login token is invalid becasuse the session is closed'));
+        }
 
         const device = await DeviceService.singleton().getForToken(deviceToken);
-        if (!device)
+        if (!device) {
             throw new HttpError('Invalid device', 400);
+        }
 
-        if (oldSession.deviceId != device.id)
+        if (oldSession.deviceId != device.id) {
             throw new _Error(loc._cf('login', 'The device is not the same'));
+        }
 
         const userService = UserService.singleton();
         const user = await userService.getForId(oldSession.userId);
