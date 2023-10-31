@@ -61,16 +61,14 @@
         "language": "es",
         "context": "branchSelect",
         "translation": "La sucursal seleccionada no existe o usted no tiene permiso para accederla.",
-        "ref": "..\\rh-branch-select\\controllers\\branch-select.js [19,139]",
-        "isDraft": false
+        "ref": "..\\rh-branch-select\\controllers\\branch-select.js [19,139]"
     },
     {
         "source": "The selected branch is disabled.",
         "language": "es",
         "context": "branchSelect",
         "translation": "La sucursal seleccionada está deshabilitado.",
-        "ref": "..\\rh-branch-select\\controllers\\branch-select.js [23,93]",
-        "isDraft": false
+        "ref": "..\\rh-branch-select\\controllers\\branch-select.js [23,93]"
     },
     {
         "source": "Title",

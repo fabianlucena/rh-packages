@@ -38,7 +38,7 @@
         "language": "es",
         "context": "branch",
         "translation": "No se encuentra el parámetro empresa.",
-        "ref": "..\\rh-branch\\services\\branch.js [30,84]"
+        "ref": "..\\rh-branch\\services\\branch.js [23,84]"
     },
     {
         "source": "Create branches",
@@ -76,13 +76,6 @@
         "ref": "..\\rh-branch\\controllers\\branch.js [300,58]\n..\\rh-branch\\controllers\\branch.js [301,64]"
     },
     {
-        "source": "Exists another branch with that name in this company.",
-        "language": "es",
-        "context": "branch",
-        "translation": "Existe otra sucursal con ese nombre en esta empresa.",
-        "ref": "..\\rh-branch\\services\\branch.js [37,111]"
-    },
-    {
         "source": "Get branches",
         "language": "es",
         "context": "permission",
@@ -90,18 +83,11 @@
         "ref": "..\\rh-branch\\conf_data.js [15,77]"
     },
     {
-        "source": "ID parameter is forbidden for creation.",
-        "language": "es",
-        "context": "branch",
-        "translation": "El parámetro ID está prohibido durante la creación.",
-        "ref": "..\\rh-branch\\services\\branch.js [23,94]"
-    },
-    {
         "source": "Name",
         "language": "es",
         "context": "branch",
         "translation": "Nombre ",
-        "ref": "..\\rh-branch\\services\\branch.js [26,80]\n..\\rh-branch\\controllers\\branch.js [103,67]\n..\\rh-branch\\controllers\\branch.js [229,55]\n..\\rh-branch\\controllers\\branch.js [275,55]\n..\\rh-branch\\controllers\\branch.js [276,61]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [103,67]\n..\\rh-branch\\controllers\\branch.js [229,55]\n..\\rh-branch\\controllers\\branch.js [275,55]\n..\\rh-branch\\controllers\\branch.js [276,61]"
     },
     {
         "source": "Owner",
@@ -148,7 +134,7 @@
         "language": "es",
         "context": "branch",
         "translation": "Título ",
-        "ref": "..\\rh-branch\\services\\branch.js [27,82]\n..\\rh-branch\\controllers\\branch.js [103,102]\n..\\rh-branch\\controllers\\branch.js [224,56]\n..\\rh-branch\\controllers\\branch.js [268,56]\n..\\rh-branch\\controllers\\branch.js [269,62]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [103,102]\n..\\rh-branch\\controllers\\branch.js [224,56]\n..\\rh-branch\\controllers\\branch.js [268,56]\n..\\rh-branch\\controllers\\branch.js [269,62]"
     },
     {
         "source": "UUID",

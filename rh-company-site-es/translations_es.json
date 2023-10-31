@@ -4,72 +4,72 @@
         "language": "es",
         "context": "companySite",
         "translation": "UUID de empresa",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [16,83]\n..\\rh-company-site\\controllers\\company-site.js [20,89]"
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [14,83]\n..\\rh-company-site\\controllers\\company-site.js [19,89]"
     },
     {
         "source": "Company: %s",
         "language": "es",
         "translation": "Empresa: %s",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [57,73]"
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [59,73]"
     },
     {
         "source": "Description",
         "language": "es",
         "translation": "Descripción",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [151,54]"
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [154,54]"
     },
     {
         "source": "Name",
         "language": "es",
         "translation": "Nombre",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [146,47]"
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [149,47]"
     },
     {
         "source": "Select company",
         "language": "es",
         "context": "companySite",
         "translation": "Seleccionar empresa",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [131,65]"
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [134,65]"
     },
     {
         "source": "Select company",
         "language": "es",
         "context": "menu",
         "translation": "Seleccionar empresa ",
-        "ref": "..\\rh-company-site\\conf_data.js [9,179]"
+        "ref": "..\\rh-company-site\\conf_data.js [7,199]"
     },
     {
         "source": "Select company",
         "language": "es",
         "context": "permission",
         "translation": "Seleccionar empresa ",
-        "ref": "..\\rh-company-site\\conf_data.js [9,85]"
+        "ref": "..\\rh-company-site\\conf_data.js [7,85]"
     },
     {
         "source": "Site UUID",
         "language": "es",
         "context": "companySite",
         "translation": "UUID de sitio",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [16,120]\n..\\rh-company-site\\controllers\\company-site.js [25,86]"
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [14,120]\n..\\rh-company-site\\controllers\\company-site.js [24,86]"
     },
     {
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-company-site-es.js [20,41]"
+        "ref": "rh-company-site-es.js [18,41]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-company-site-es.js [21,57]"
+        "ref": "rh-company-site-es.js [19,57]"
     },
     {
         "source": "The selected company is disabled.",
         "language": "es",
         "context": "companySite",
         "translation": "La empresa seleccionada está deshabilitada.",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [38,93]"
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [39,93]"
     },
     {
         "source": "The selected object does not exist or you do not have permission.",
@@ -82,6 +82,6 @@
         "source": "Title",
         "language": "es",
         "translation": "Título",
-        "ref": "..\\rh-company-site\\controllers\\company-site.js [141,48]"
+        "ref": "..\\rh-company-site\\controllers\\company-site.js [144,48]"
     }
 ]
