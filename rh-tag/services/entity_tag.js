@@ -66,7 +66,7 @@ export class EntityTagService extends ServiceBase {
             throw new ConflictError(loc._cf('entityTag', 'The tag is already linked to the %s.', this.entityName));
         }
 
-        return true;
+        return super.validateForCreation(data);
     }
 
     async getListOptions(options) {
@@ -121,7 +121,7 @@ export class EntityTagService extends ServiceBase {
             );
         }
 
-        return options;
+        return super.getListOptions(options);
     }
 
     async updateTagsForEntityId(tags, entityId, options) {

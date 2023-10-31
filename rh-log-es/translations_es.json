@@ -18,21 +18,21 @@
         "language": "es",
         "context": "permission",
         "translation": "Obtener registro",
-        "ref": "..\\rh-log\\conf_data.js [9,66]"
+        "ref": "..\\rh-log\\conf_data.js [7,66]"
     },
     {
         "source": "Log",
         "language": "es",
         "context": "log",
         "translation": "Registro",
-        "ref": "..\\rh-log\\controllers\\log.js [45,46]"
+        "ref": "..\\rh-log\\controllers\\log.js [44,46]"
     },
     {
         "source": "Log",
         "language": "es",
         "context": "menu",
         "translation": "Registro",
-        "ref": "..\\rh-log\\conf_data.js [9,165]"
+        "ref": "..\\rh-log\\conf_data.js [7,165]"
     },
     {
         "source": "Message",
@@ -45,7 +45,6 @@
         "source": "Ref",
         "language": "es",
         "context": "log",
-        "isDraft": false,
         "translation": "Ref",
         "ref": "..\\rh-log\\controllers\\log.js [60,54]"
     },
@@ -60,13 +59,13 @@
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-log-es.js [20,41]"
+        "ref": "rh-log-es.js [18,41]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-log-es.js [21,57]"
+        "ref": "rh-log-es.js [19,57]"
     },
     {
         "source": "Type",
@@ -79,7 +78,6 @@
         "source": "User",
         "language": "es",
         "context": "log",
-        "isDraft": false,
         "translation": "Usuario",
         "ref": "..\\rh-log\\controllers\\log.js [70,55]"
     }

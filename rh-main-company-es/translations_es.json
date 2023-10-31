@@ -4,14 +4,14 @@
         "language": "es",
         "context": "permission",
         "translation": "Crear empresas titulares",
-        "ref": "..\\rh-main-company\\conf_data.js [18,92]"
+        "ref": "..\\rh-main-company\\conf_data.js [16,92]"
     },
     {
         "source": "Delete main companies",
         "language": "es",
         "context": "permission",
         "translation": "Eliminar empresas titulares",
-        "ref": "..\\rh-main-company\\conf_data.js [20,92]"
+        "ref": "..\\rh-main-company\\conf_data.js [18,92]"
     },
     {
         "source": "Description",
@@ -25,7 +25,7 @@
         "language": "es",
         "context": "permission",
         "translation": "Modificar empresas titulares",
-        "ref": "..\\rh-main-company\\conf_data.js [19,90]"
+        "ref": "..\\rh-main-company\\conf_data.js [17,90]"
     },
     {
         "source": "Enabled",
@@ -39,21 +39,21 @@
         "language": "es",
         "context": "permission",
         "translation": "Obtener empresas titulares",
-        "ref": "..\\rh-main-company\\conf_data.js [17,89]"
+        "ref": "..\\rh-main-company\\conf_data.js [15,89]"
     },
     {
         "source": "Main companies",
         "language": "es",
         "context": "mainCompany",
         "translation": "Empresas titulares",
-        "ref": "..\\rh-main-company\\conf_data.js [17,223]\n..\\rh-main-company\\controllers\\main-company.js [63,65]"
+        "ref": "..\\rh-main-company\\conf_data.js [15,223]\n..\\rh-main-company\\controllers\\main-company.js [63,65]"
     },
     {
         "source": "Main companies manager",
         "language": "es",
         "context": "role",
         "translation": "Administrador de empresas titulares",
-        "ref": "..\\rh-main-company\\conf_data.js [9,87]"
+        "ref": "..\\rh-main-company\\conf_data.js [7,87]"
     },
     {
         "source": "Main company",
@@ -73,27 +73,27 @@
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-main-company-es.js [20,41]"
+        "ref": "rh-main-company-es.js [18,41]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-main-company-es.js [21,57]"
+        "ref": "rh-main-company-es.js [19,57]"
     },
     {
         "source": "The main company data does not have a owner.",
         "language": "es",
         "context": "mainCompany",
         "translation": "Los datos para la empresa titular no tienen propietario. ",
-        "ref": "..\\rh-main-company\\controllers\\main-company.js [135,112]"
+        "ref": "..\\rh-main-company\\controllers\\main-company.js [137,112]"
     },
     {
         "source": "The main company with UUID %s does not exists.",
         "language": "es",
         "context": "mainCompany",
         "translation": "La empresa titular con el UUID %s no existe.",
-        "ref": "..\\rh-main-company\\controllers\\main-company.js [16,110]\n..\\rh-main-company\\controllers\\main-company.js [149,110]\n..\\rh-main-company\\controllers\\main-company.js [160,110]\n..\\rh-main-company\\controllers\\main-company.js [171,110]\n..\\rh-main-company\\controllers\\main-company.js [182,110]"
+        "ref": "..\\rh-main-company\\controllers\\main-company.js [14,110]\n..\\rh-main-company\\controllers\\main-company.js [152,110]\n..\\rh-main-company\\controllers\\main-company.js [164,110]\n..\\rh-main-company\\controllers\\main-company.js [176,110]\n..\\rh-main-company\\controllers\\main-company.js [188,110]"
     },
     {
         "source": "Title",
@@ -107,13 +107,13 @@
         "language": "es",
         "context": "mainCompany",
         "translation": "UUID",
-        "ref": "..\\rh-main-company\\controllers\\main-company.js [144,136]\n..\\rh-main-company\\controllers\\main-company.js [155,136]\n..\\rh-main-company\\controllers\\main-company.js [166,136]"
+        "ref": "..\\rh-main-company\\controllers\\main-company.js [147,136]\n..\\rh-main-company\\controllers\\main-company.js [159,136]\n..\\rh-main-company\\controllers\\main-company.js [171,136]"
     },
     {
         "source": "UUID",
         "language": "es",
         "context": "scenario",
         "translation": "UUID",
-        "ref": "..\\rh-main-company\\controllers\\main-company.js [177,133]"
+        "ref": "..\\rh-main-company\\controllers\\main-company.js [183,133]"
     }
 ]

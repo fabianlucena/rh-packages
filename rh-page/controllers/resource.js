@@ -43,7 +43,7 @@ export class ResourceController {
         }
 
         if (result.count > 1) {
-            throw new _HttpError(req.loc._cf('resource', 'Many resources for that criteria.'), 400);
+            throw new _HttpError(req.loc._cf('resource', 'There are many resources for that criteria.'), 400);
         }
 
         let row = result.rows[0];

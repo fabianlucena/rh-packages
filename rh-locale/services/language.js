@@ -27,6 +27,6 @@ export class LanguageService extends ServiceIdUuidNameEnabledTranslatable {
             }
         }
 
-        return true;
+        return super.validateForCreation(data);
     }
 }

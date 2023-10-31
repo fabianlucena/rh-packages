@@ -12,12 +12,14 @@ export class TagCategoryService extends ServiceIdUuidNameTitleEnabledTranslatabl
     defaultTranslationContext = 'tag';
 
     async getListOptions(options) {
-        if (!options)
+        if (!options) {
             options = {};
+        }
 
         if (options?.view) {
-            if (!options.attributes)
+            if (!options.attributes) {
                 options.attributes = ['uuid', 'isEnabled', 'name', 'title', 'description', 'isTranslatable'];
+            }
         }
 
         return super.getListOptions(options);

@@ -307,8 +307,7 @@ export function asyncHandler(methodContainer, method) {
             } else {
                 await methodContainer(req, res, next);
             }
-        }
-        catch(err) {
+        } catch(err) {
             next(err);
         }
     };

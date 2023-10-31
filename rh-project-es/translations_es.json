@@ -11,21 +11,21 @@
         "language": "es",
         "context": "project",
         "translation": "Falta el parámetro empresa.",
-        "ref": "..\\rh-project\\services\\project.js [32,85]"
+        "ref": "..\\rh-project\\services\\project.js [23,85]"
     },
     {
         "source": "Create projects",
         "language": "es",
         "context": "permission",
         "translation": "Crear proyectos ",
-        "ref": "..\\rh-project\\conf_data.js [18,81]"
+        "ref": "..\\rh-project\\conf_data.js [16,81]"
     },
     {
         "source": "Delete projects",
         "language": "es",
         "context": "permission",
         "translation": "Eliminar proyectos ",
-        "ref": "..\\rh-project\\conf_data.js [20,81]"
+        "ref": "..\\rh-project\\conf_data.js [18,81]"
     },
     {
         "source": "Description",
@@ -39,7 +39,7 @@
         "language": "es",
         "context": "permission",
         "translation": "Modificar proyectos ",
-        "ref": "..\\rh-project\\conf_data.js [19,79]"
+        "ref": "..\\rh-project\\conf_data.js [17,79]"
     },
     {
         "source": "Enabled",
@@ -53,28 +53,21 @@
         "language": "es",
         "context": "project",
         "translation": "Existe otro proyecto con ese nombre en esta empresa.",
-        "ref": "..\\rh-project\\services\\project.js [39,113]"
+        "ref": "..\\rh-project\\services\\project.js [32,113]"
     },
     {
         "source": "Get projects",
         "language": "es",
         "context": "permission",
         "translation": "Obtener proyectos ",
-        "ref": "..\\rh-project\\conf_data.js [17,78]"
-    },
-    {
-        "source": "ID parameter is forbidden for creation.",
-        "language": "es",
-        "context": "project",
-        "translation": "El parámetro ID está prohibido durante la creación.",
-        "ref": "..\\rh-project\\services\\project.js [25,95]"
+        "ref": "..\\rh-project\\conf_data.js [15,78]"
     },
     {
         "source": "Name",
         "language": "es",
         "context": "project",
         "translation": "Nombre ",
-        "ref": "..\\rh-project\\services\\project.js [28,81]\n..\\rh-project\\controllers\\project.js [102,68]\n..\\rh-project\\controllers\\project.js [228,56]\n..\\rh-project\\controllers\\project.js [274,56]\n..\\rh-project\\controllers\\project.js [275,62]"
+        "ref": "..\\rh-project\\controllers\\project.js [102,68]\n..\\rh-project\\controllers\\project.js [228,56]\n..\\rh-project\\controllers\\project.js [274,56]\n..\\rh-project\\controllers\\project.js [275,62]"
     },
     {
         "source": "Owner",
@@ -88,7 +81,7 @@
         "language": "es",
         "context": "role",
         "translation": "Administrador de proyectos ",
-        "ref": "..\\rh-project\\conf_data.js [9,75]"
+        "ref": "..\\rh-project\\conf_data.js [7,75]"
     },
     {
         "source": "Project with UUID %s does not exists.",
@@ -102,7 +95,7 @@
         "language": "es",
         "context": "menu",
         "translation": "Proyectos ",
-        "ref": "..\\rh-project\\conf_data.js [17,194]"
+        "ref": "..\\rh-project\\conf_data.js [15,194]"
     },
     {
         "source": "Projects",
@@ -114,13 +107,13 @@
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-project-es.js [20,41]"
+        "ref": "rh-project-es.js [18,41]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-project-es.js [21,57]"
+        "ref": "rh-project-es.js [19,57]"
     },
     {
         "source": "The company does not exist or you do not have permission to access it.",
@@ -148,7 +141,7 @@
         "language": "es",
         "context": "project",
         "translation": "Título ",
-        "ref": "..\\rh-project\\services\\project.js [29,83]\n..\\rh-project\\controllers\\project.js [102,104]\n..\\rh-project\\controllers\\project.js [223,57]\n..\\rh-project\\controllers\\project.js [267,57]\n..\\rh-project\\controllers\\project.js [268,63]"
+        "ref": "..\\rh-project\\controllers\\project.js [102,104]\n..\\rh-project\\controllers\\project.js [223,57]\n..\\rh-project\\controllers\\project.js [267,57]\n..\\rh-project\\controllers\\project.js [268,63]"
     },
     {
         "source": "UUID",

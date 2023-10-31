@@ -9,6 +9,6 @@ export const data = {
     ],
     
     resourceTypes: [
-        {name: 'image/png', title: loc._cf('resourceType', 'Imagen PNG'),  isTranslatable: true, ownerModule: name},
+        {name: 'image/png', title: loc._cf('resourceType', 'PNG image'),  isTranslatable: true, ownerModule: name},
     ],
 };

@@ -25,8 +25,9 @@ export const rt = {
     },
 
     getAgent(app) {
-        if (app || !rt.agent)
+        if (app || !rt.agent) {
             rt.initAgent(app);
+        }
 
         return rt.agent;
     },
@@ -159,23 +160,26 @@ export const rt = {
 
             const defaultOptions = {};
             for (const k in options) {
-                if (!['notAllowedMethods', 'send', 'get', 'post', 'put', 'patch', 'options', 'delete'].includes(k))
+                if (!['notAllowedMethods', 'send', 'get', 'post', 'put', 'patch', 'options', 'delete'].includes(k)) {
                     defaultOptions[k] = options[k];
+                }
             }
 
             if (options.notAllowedMethods) {
                 let notAllowedMethods = options.notAllowedMethods;
-                if (typeof notAllowedMethods === 'string')
+                if (typeof notAllowedMethods === 'string') {
                     notAllowedMethods = notAllowedMethods.split(/[,;]/);
+                }
 
                 if (Array.isArray(notAllowedMethods)) {
                     let notAllowedMethodsOptions = {};
                     for (const i in notAllowedMethods) {
                         let method = notAllowedMethods[i].trim();
-                        if (method[0] == '!')
+                        if (method[0] == '!') {
                             notAllowedMethodsOptions[method.substring(1)] = false;
-                        else
+                        } else {
                             notAllowedMethodsOptions[method] = true;
+                        }
                     }
     
                     notAllowedMethods = notAllowedMethodsOptions;
@@ -184,31 +188,39 @@ export const rt = {
                 for (const notAllowedMethod in notAllowedMethods) {
                     const testOptions = notAllowedMethods[notAllowedMethod];
                     const test = {};
-                    if (!testOptions)
+                    if (!testOptions) {
                         test.skip = true;
-                    else if (typeof testOptions === 'object')
-                        for (const k in testOptions)
+                    } else if (typeof testOptions === 'object') {
+                        for (const k in testOptions) {
                             test[k] = testOptions[k];
-
-                    if (test.status === undefined)
-                        test.status = 405;
-
-                    if (test.method === undefined)
-                        test.method = notAllowedMethod.trim().toLowerCase();
-    
-                    if (test.json === undefined && test.haveProperties === undefined && test.empty === undefined) {
-                        if (test.method === 'head')
-                            test.empty = true;
-                        else
-                            test.haveProperties = ['error'];
+                        }
                     }
 
-                    for (const k in defaultOptions)
-                        if (test[k] === undefined)
-                            test[k] = defaultOptions[k];
+                    if (test.status === undefined) {
+                        test.status = 405;
+                    }
 
-                    if (test.title === undefined)
+                    if (test.method === undefined) {
+                        test.method = notAllowedMethod.trim().toLowerCase();
+                    }
+    
+                    if (test.json === undefined && test.haveProperties === undefined && test.empty === undefined) {
+                        if (test.method === 'head') {
+                            test.empty = true;
+                        } else {
+                            test.haveProperties = ['error'];
+                        }
+                    }
+
+                    for (const k in defaultOptions) {
+                        if (test[k] === undefined) {
+                            test[k] = defaultOptions[k];
+                        }
+                    }
+
+                    if (test.title === undefined) {
                         test.title = `${test.method.toUpperCase()} HTTP method not allowed`;
+                    }
 
                     tests.push(test);
                 }
@@ -223,32 +235,38 @@ export const rt = {
             }
 
             if (!haveAnyMethod) {
-                if (options.method && options[options.method] === undefined)
+                if (options.method && options[options.method] === undefined) {
                     options[options.method] = true;
-                else
+                } else {
                     options.get = true;
+                }
             }
 
-            if (options.trace)
+            if (options.trace) {
                 console.log(options);
+            }
 
             for (const method in {send: true, get: true, post: true, put: true, patch: true, delete: true, options: true, head: true}) {
                 let methodOptions = options[method];
-                if (methodOptions === undefined)
+                if (methodOptions === undefined) {
                     continue;
+                }
 
-                if (methodOptions.trace)
+                if (methodOptions.trace) {
                     console.log(methodOptions);
+                }
 
-                if (Array.isArray(methodOptions))
+                if (Array.isArray(methodOptions)) {
                     methodOptions = {send: methodOptions};
-                else if (methodOptions === false)
+                } else if (methodOptions === false) {
                     methodOptions = {skip: true};
-                else if (typeof methodOptions !== 'object')
+                } else if (typeof methodOptions !== 'object') {
                     methodOptions = {};
+                }
 
-                if (methodOptions.send === undefined)
+                if (methodOptions.send === undefined) {
                     methodOptions.send = [{}];
+                }
 
                 const send = methodOptions.send;
                 for (const i in send) {
@@ -265,21 +283,27 @@ export const rt = {
                         }
                     }
 
-                    if (test.method === undefined)
-                        if (method !== 'send')
+                    if (test.method === undefined) {
+                        if (method !== 'send') {
                             test.method = method;
-                        else if (defaultOptions.method)
+                        } else if (defaultOptions.method) {
                             test.method = defaultOptions.method;
-                        else
+                        } else {
                             test.method = 'get';
+                        }
+                    }
     
-                    for (const k in methodOptions)
-                        if (test[k] === undefined && k !== 'send')
+                    for (const k in methodOptions) {
+                        if (test[k] === undefined && k !== 'send') {
                             test[k] = methodOptions[k];
+                        }
+                    }
 
-                    for (const k in defaultOptions)
-                        if (test[k] === undefined)
+                    for (const k in defaultOptions) {
+                        if (test[k] === undefined) {
                             test[k] = defaultOptions[k];
+                        }
+                    }
 
                     const paramTypes = {
                         missingParameters: {
@@ -291,57 +315,71 @@ export const rt = {
                     };
                     let pushed = false;
                     for (const paramType in paramTypes) {
-                        if (test[paramType] === undefined)
+                        if (test[paramType] === undefined) {
                             continue;
+                        }
 
                         const paramOptions = paramTypes[paramType];
                         const containerName = paramOptions.container;
 
-                        if (!test[containerName])
+                        if (!test[containerName]) {
                             throw new Error (`trying to define a missing ${containerName} test without ${containerName}.`);
+                        }
 
-                        if (!test[paramType])
+                        if (!test[paramType]) {
                             test.skip = true;
+                        }
 
                         let missing = test[paramType];
                         delete test[paramType];
-                        if (!Array.isArray(missing))
+                        if (!Array.isArray(missing)) {
                             missing = [missing];
+                        }
 
                         for (const i in missing) {
                             const thisTest = {};
                             thisTest[containerName] = {};
-                            for (const k in test)
-                                if (k !== 'title' && k !== containerName)
+                            for (const k in test) {
+                                if (k !== 'title' && k !== containerName) {
                                     thisTest[k] = test[k];
+                                }
+                            }
 
                             let thisMissing = missing[i];
-                            if (!Array.isArray(thisMissing))
+                            if (!Array.isArray(thisMissing)) {
                                 thisMissing = thisMissing.split(',');
+                            }
 
-                            for (const k in test[containerName])
-                                if (!thisMissing.includes(k))
+                            for (const k in test[containerName]) {
+                                if (!thisMissing.includes(k)) {
                                     thisTest[containerName][k] = test[containerName][k];
+                                }
+                            }
 
-                            if (!thisTest.title)
+                            if (!thisTest.title) {
                                 thisTest.title = `${thisTest.method.toUpperCase()} should get a missing parameter in ${containerName} error for parameters: ${thisMissing.join(', ')}`;
+                            }
                             
-                            if (thisTest.status === undefined)
+                            if (thisTest.status === undefined) {
                                 thisTest.status = 400;
+                            }
 
-                            if (thisTest.haveProperties === undefined)
+                            if (thisTest.haveProperties === undefined) {
                                 thisTest.haveProperties = 'error';
+                            }
 
-                            if (thisTest.propertyContains === undefined)
+                            if (thisTest.propertyContains === undefined) {
                                 thisTest.propertyContains = {missingParameters: thisMissing};
+                            }
 
                             pushed = true;
                             tests.push(thisTest);
                         }
                     }
 
-                    if (!pushed || test.get || test.post || test.put || test.patch || test.delete || test.options || test.head)
+                    if (!pushed || test.get || test.post || test.put || test.patch || test.delete || test.options || test.head) {
                         tests.push(test);
+                    }
                 }
             }
         }
@@ -394,45 +432,54 @@ export const rt = {
             const test = tests[i];
             for (const helper in helpers) {
                 if (test[helper] !== undefined) {
-                    if (typeof test[helper] === 'object')
-                        for (const k in test[helper])
+                    if (typeof test[helper] === 'object') {
+                        for (const k in test[helper]) {
                             test[k] = test[helper][k];
-                    else if (!test[helper])
+                        }
+                    } else if (!test[helper]) {
                         test.skip = false;
+                    }
 
                     const defaultData = helpers[helper];
                     for (const k in defaultData) {
                         if (test[k] === undefined && k !== 'helperMethod') {
-                            if (k === 'title')
+                            if (k === 'title') {
                                 test[k] = `${test.method.toUpperCase()} ${defaultData[k]}`;
-                            else
+                            } else {
                                 test[k] = defaultData[k];
+                            }
                         }
                     }
 
-                    if (defaultData.helperMethod)
+                    if (defaultData.helperMethod) {
                         defaultData.helperMethod(test);
+                    }
 
                     delete test[helper];
                 }
             }
             const defaultMethodOptions = defaultMethodsOptions[test.method];
-            if (defaultMethodOptions)
-                for (const k in defaultMethodOptions)
-                    if (test[k] === undefined)
+            if (defaultMethodOptions) {
+                for (const k in defaultMethodOptions) {
+                    if (test[k] === undefined) {
                         test[k] = defaultMethodOptions[k];
+                    }
+                }
+            }
 
-            if (rt.cors?.prefligth !== undefined && test.corsPrefligth === undefined)
+            if (rt.cors?.prefligth !== undefined && test.corsPrefligth === undefined) {
                 test.corsPrefligth = rt.cors?.prefligth;
+            }
 
             if (test.corsPrefligth && test.method.toLowerCase() != 'options') {
                 let corsPrefligthTest;
-                if (typeof test.corsPrefligth === 'string')
+                if (typeof test.corsPrefligth === 'string') {
                     corsPrefligthTest = {title: test.corsPrefligth};
-                else if (typeof test.corsPrefligth === 'object')
+                } else if (typeof test.corsPrefligth === 'object') {
                     corsPrefligthTest = {...test.corsPrefligt};
-                else
+                } else {
                     corsPrefligthTest = {};
+                }
 
                 corsPrefligthTest = {
                     title: 'Pregfligth for ' + test.title,
@@ -449,10 +496,11 @@ export const rt = {
                     ...corsPrefligthTest,
                 };
 
-                if (test.status === 405)
+                if (test.status === 405) {
                     corsPrefligthTest.noHaveHeaders = {'Access-Control-Allow-Methods': new RegExp(`\\b${test.method.toUpperCase()}\\b`, 'i')};
-                else
+                } else {
                     corsPrefligthTest.haveHeaders['Access-Control-Allow-Methods'] = new RegExp(`\\b${test.method.toUpperCase()}\\b`, 'i');
+                }
 
                 if (test.headers?.Authorization) {
                     corsPrefligthTest.headers['Access-Control-Request-Headers'] = 
@@ -475,8 +523,9 @@ export const rt = {
         }
         tests = newTests;
 
-        for (const i in tests)
+        for (const i in tests) {
             rt.testEndPointMethodSend(tests[i]);
+        }
     },
 
     /**
@@ -495,53 +544,65 @@ export const rt = {
      * }
      */
     testEndPointMethodSend(test) {
-        if (test.test === undefined)
-            if (test.only)
+        if (test.test === undefined) {
+            if (test.only) {
                 test.test = it.only;
-            else if (test.skip)
+            } else if (test.skip) {
                 test.test = it.skip;
-            else
+            } else {
                 test.test = it;
+            }
+        }
 
         if (!test.title) {
             test.title = `${test.method.toUpperCase()} ${test.url}`;
-            if (test.status)
+            if (test.status) {
                 test.title += ` should return a ${test.status} HTTP status code`;
+            }
         }
             
-        if (!test.method)
+        if (!test.method) {
             test.method = 'get';
+        }
 
         test.test(test.title, done => {
             if (!test.agent) {
                 test.agent = rt.agent;
 
-                if (!test.agent && rt.app)
+                if (!test.agent && rt.app) {
                     test.agent = chai.request(rt.app);
+                }
             }
             
-            if (test.base === undefined)
+            if (test.base === undefined) {
                 test.base = rt.base;
+            }
 
-            if (!test.headers)
+            if (!test.headers) {
                 test.headers = rt.headers ?? {};
+            }
 
-            if (!test.query)
+            if (!test.query) {
                 test.query = {};
+            }
 
-            if (!test.parameters)
+            if (!test.parameters) {
                 test.parameters = {};
+            }
                 
-            if (test.before)
+            if (test.before) {
                 test.before(test);
+            }
 
-            if (test.requestLog === undefined && test.logRequest !== undefined)
+            if (test.requestLog === undefined && test.logRequest !== undefined) {
                 test.requestLog = test.logRequest;
+            }
 
             if (test.requestLog) {
                 let requestLog = test.requestLog;
-                if (typeof requestLog === 'string')
+                if (typeof requestLog === 'string') {
                     requestLog = requestLog.split(',');
+                }
     
                 const message = {};
                 if (Array.isArray(requestLog)) {
@@ -550,19 +611,22 @@ export const rt = {
                         message[k] = test[k];
                     }
                 } else if (requestLog === true) {
-                    for (const k in test)
+                    for (const k in test) {
                         message[k] = test[k];
+                    }
 
                     if (message.agent) {
-                        if (message.agent === rt.agent)
+                        if (message.agent === rt.agent) {
                             message.agent = 'custom';
-                        else
+                        } else {
                             message.agent = true;
+                        }
                     }
                 }
 
-                if (message)
+                if (message) {
                     console.log(message);
+                }
             }
 
             test.agent[test.method]((test.base ?? '') + test.url)
@@ -570,12 +634,13 @@ export const rt = {
                 .query(test.query ?? {})
                 .send(test.parameters ?? {})
                 .end((err, res) => {
-                    if (err)
+                    if (err) {
                         console.log(err);
-                    else if (test.check)
+                    } else if (test.check) {
                         test.check(res, test);
-                    else
+                    } else {
                         rt.checkReponse(res, test);
+                    }
 
                     done();
                 });
@@ -607,10 +672,11 @@ export const rt = {
     checkReponse(res, options) {
         if (options.log) {
             let log = options.log;
-            if (log === true)
+            if (log === true) {
                 log = ['status', 'body'];
-            else if (typeof log === 'string')
+            } else if (typeof log === 'string') {
                 log = log.split(',');
+            }
 
             const message = {};
             for (const i in log) {
@@ -625,9 +691,9 @@ export const rt = {
 
         if (options.haveHeaders) {
             let haveHeaders = options.haveHeaders;
-            if (typeof haveHeaders === 'string')
+            if (typeof haveHeaders === 'string') {
                 haveHeaders = {haveHeaders: true};
-            else if (Array.isArray(haveHeaders)) {
+            } else if (Array.isArray(haveHeaders)) {
                 const newHaveHeaders = {};
                 haveHeaders.forEach(header => newHaveHeaders[header] = true);
                 haveHeaders = newHaveHeaders;
@@ -635,25 +701,27 @@ export const rt = {
 
             for (let header in haveHeaders) {
                 let values = haveHeaders[header];
-                if (!Array.isArray(values))
+                if (!Array.isArray(values)) {
                     values = [values];
+                }
 
                 values.forEach(value => {
-                    if (value === true)
+                    if (value === true) {
                         expect(res).to.have.header(header);
-                    else if (value === false)
+                    } else if (value === false) {
                         expect(res).to.not.have.header(header);
-                    else
+                    } else {
                         expect(res).to.have.header(header, value);
+                    }
                 });
             }
         }
 
         if (options.noHaveHeaders) {
             let noHaveHeaders = options.noHaveHeaders;
-            if (typeof noHaveHeaders === 'string')
+            if (typeof noHaveHeaders === 'string') {
                 noHaveHeaders = {noHaveHeaders: true};
-            else if (Array.isArray(noHaveHeaders)) {
+            } else if (Array.isArray(noHaveHeaders)) {
                 const newNoHaveHeaders = {};
                 noHaveHeaders.forEach(header => newNoHaveHeaders[header] = true);
                 noHaveHeaders = newNoHaveHeaders;
@@ -661,16 +729,18 @@ export const rt = {
 
             for (let header in noHaveHeaders) {
                 let values = noHaveHeaders[header];
-                if (!Array.isArray(values))
+                if (!Array.isArray(values)) {
                     values = [values];
+                }
 
                 values.forEach(value => {
-                    if (value === true)
+                    if (value === true) {
                         expect(res).to.not.have.header(header);
-                    else if (value === false)
+                    } else if (value === false) {
                         expect(res).to.have.header(header);
-                    else
+                    } else {
                         expect(res).to.not.have.header(header, value);
+                    }
                 });
             }
         }
@@ -681,94 +751,119 @@ export const rt = {
                 haveCookies = [haveCookies];
 
             if (Array.isArray(haveCookies)) {
-                for (const i in haveCookies)
+                for (const i in haveCookies) {
                     expect(res).to.have.cookie(haveCookies[i]);
+                }
             } else if (typeof haveCookies === 'object') {
-                for (const cookie in haveCookies)
+                for (const cookie in haveCookies) {
                     expect(res).to.have.cookie(cookie, haveCookies[cookie]);
-            } else
+                }
+            } else {
                 throw new Error('error to check cookies values. haveCookies option must be a string for a single cookie, a list or a object');
+            }
         }
 
         if (options.noHaveCookies) {
             let noHaveCookies = options.noHaveCookies;
-            if (typeof noHaveCookies === 'string')
+            if (typeof noHaveCookies === 'string') {
                 noHaveCookies = [noHaveCookies];
+            }
 
             if (Array.isArray(noHaveCookies)) {
-                for (const i in noHaveCookies)
+                for (const i in noHaveCookies) {
                     expect(res).to.not.have.cookie(noHaveCookies[i]);
+                }
             } else if (typeof noHaveCookies === 'object') {
-                for (const cookie in noHaveCookies)
+                for (const cookie in noHaveCookies) {
                     expect(res).to.not.have.cookie(cookie, noHaveCookies[cookie]);
-            } else
+                }
+            } else {
                 throw new Error('error to check cookies values. noHaveCookies option must be a string for a single cookie, a list or a object');
+            }
         }
 
-        if (options.empty)
+        if (options.empty) {
             expect(res.text).to.be.empty;
+        }
 
-        if (options.haveProperties || options.noHaveProperties || options.bodyLengthOf || options.lengthOf)
-            if (options.json === undefined)
+        if (options.haveProperties || options.noHaveProperties || options.bodyLengthOf || options.lengthOf) {
+            if (options.json === undefined) {
                 options.json = true;
+            }
+        }
 
-        if (options.json)
+        if (options.json) {
             expect(res).to.be.json;
+        }
 
-        if (options.bodyLengthOf)
+        if (options.bodyLengthOf) {
             expect(res.body).to.have.lengthOf(options.bodyLengthOf);
+        }
 
         let value = res.body;
-        if (options.checkItem !== undefined)
+        if (options.checkItem !== undefined) {
             value = value[options.checkItem];
+        }
 
-        if (options.lengthOf)
+        if (options.lengthOf) {
             expect(value).to.have.lengthOf(options.lengthOf);
+        }
 
         if (options.haveProperties) {
             let haveProperties = options.haveProperties;
-            if (typeof haveProperties === 'string')
+            if (typeof haveProperties === 'string') {
                 haveProperties = haveProperties.split(',').map(item => item.trim());
+            }
 
             if (Array.isArray(haveProperties)) {
-                for (const i in haveProperties)
+                for (const i in haveProperties) {
                     expect(value).to.have.property(haveProperties[i]);
+                }
             } else if (typeof haveProperties === 'object') {
-                for (const cookie in haveProperties)
+                for (const cookie in haveProperties) {
                     expect(value).to.have.property(cookie, haveProperties[cookie]);
-            } else
+                }
+            } else {
                 throw new Error('error to check body result values. haveProperties option must be a string for a single property, a list or a object');
+            }
         }
 
         if (options.noHaveProperties) {
             let noHaveProperties = options.noHaveProperties;
-            if (typeof noHaveProperties === 'string')
+            if (typeof noHaveProperties === 'string') {
                 noHaveProperties = noHaveProperties.split(',').map(item => item.trim());
+            }
 
             if (Array.isArray(noHaveProperties)) {
-                for (const i in noHaveProperties)
+                for (const i in noHaveProperties) {
                     expect(value).to.not.have.property(noHaveProperties[i]);
+                }
             } else if (typeof noHaveProperties === 'object') {
-                for (const property in noHaveProperties)
+                for (const property in noHaveProperties) {
                     expect(value).to.not.have.property(property, noHaveProperties[property]);
-            } else
+                }
+            } else {
                 throw new Error('error to check body result values. noHaveProperties option must be a string for a single property, a list or a object');
+            }
         }
 
         if (options.propertyContains) {
             for (const property in options.propertyContains) {
                 const properties = expect(value).to.have.property(property);
                 const contains = options.propertyContains[property];
-                if (Array.isArray(contains))
-                    for (const i in contains)
+                if (Array.isArray(contains)) {
+                    for (const i in contains) {
                         properties.contains(contains[i]);
-                else
+                    }
+                } else {
                     properties.contains(contains);
+                }
             }
         }
 
-        if (options.after)
+        if (options.after) {
             options.after(res);
+        }
     },
 
     /**
@@ -788,47 +883,54 @@ export const rt = {
      * @returns 
      */
     checkStatus(res, options) {
-        if (!options.status)
+        if (!options.status) {
             return;
+        }
 
         if (Number.isInteger(options.status)) {
-            if (options.status > 0)
+            if (options.status > 0) {
                 expect(res).to.have.status(options.status);
-            else
+            } else {
                 expect(res).to.not.have.status(-options.status);
+            }
 
             return;
         }
         
         let expectedStatusList = options.status;
         if (!Array.isArray(expectedStatusList)) {
-            if (typeof expectedStatusList === 'string')
+            if (typeof expectedStatusList === 'string') {
                 expectedStatusList = expectedStatusList.split(',').map(s => s.trim());
-            else if (expectedStatusList instanceof RegExp)
+            } else if (expectedStatusList instanceof RegExp) {
                 expectedStatusList = [expectedStatusList];
-            else 
+            } else {
                 throw new Error(`cheking for status ${expectedStatusList} is unknown`);
+            }
         }
 
         const status = res.status;
         for (const i in expectedStatusList) {
             const expectedStatus = expectedStatusList[i];
             if (expectedStatus instanceof RegExp) {
-                if (expectedStatus.test(status))
+                if (expectedStatus.test(status)) {
                     return expect(res).to.have.status(status);
+                }
             } else if (Number.isInteger(expectedStatus)) {
                 if (expectedStatus > 0) {
-                    if (expectedStatus === status)
+                    if (expectedStatus === status) {
                         return expect(res).to.have.status(status);
+                    }
                 } else {
-                    if (-expectedStatus === status)
+                    if (-expectedStatus === status) {
                         expect(res).to.not.have.status(status);
+                    }
                 }
             } else if (typeof expectedStatus === 'string') {
                 const checkType = expectedStatus[0] !== '!';
                 let expectedStatusRegExp = expectedStatus.replaceAll('x', '\\d');
-                if (!checkType)
+                if (!checkType) {
                     expectedStatusRegExp = expectedStatusRegExp.substring(1);
+                }
 
                 expectedStatusRegExp = new RegExp('^' + expectedStatusRegExp + '$');
                 if (expectedStatusRegExp.test(status)) {
@@ -940,12 +1042,14 @@ export const rt = {
      * This method test the existence of the rt.headers?.Authorization value if the value does not exists perform a new login.
      */
     autoLogin(options) {
-        if (rt.headers?.Authorization)
+        if (rt.headers?.Authorization) {
             return;
+        }
             
         options = {headers: {Authorization: null}, after: res => rt.headers.Authorization = `Bearer ${res.body.authToken}`, ...options};
-        if (!options.agent)
+        if (!options.agent) {
             rt.getAgent(options.app);
+        }
 
         rt.testLogin(options);
     },
@@ -1063,8 +1167,9 @@ export const rt = {
                 });
             }
 
-            if (!options.id)
+            if (!options.id) {
                 options.id = 'uuid';
+            }
 
             const gets = {
                 getByQuery: {inQuery: true}, 
@@ -1074,11 +1179,13 @@ export const rt = {
             };
 
             for (const getName in gets) {
-                if (!options[getName])
+                if (!options[getName]) {
                     continue;
+                }
 
-                if (!options.getCreated)
+                if (!options.getCreated) {
                     throw new Error(`cannot test ${getName} because no getCreated is defined.`);
+                }
 
                 const getOptions = gets[getName];
                 const sendOptions = {
@@ -1089,69 +1196,81 @@ export const rt = {
                 };
 
                 let getByPropertiesList = options[getName];
-                if (!Array.isArray(getByPropertiesList))
+                if (!Array.isArray(getByPropertiesList)) {
                     getByPropertiesList = [getByPropertiesList];
+                }
 
                 for (let i in getByPropertiesList)  {
                     let properties = getByPropertiesList[i];
-                    if (!Array.isArray(properties))
+                    if (!Array.isArray(properties)) {
                         properties = [properties];
+                    }
 
                     const query = {};
-                    for (const i in properties)
+                    for (const i in properties) {
                         query[properties[i]] = '';
+                    }
 
-                    if (!sendOptions.get.method)
+                    if (!sendOptions.get.method) {
                         sendOptions.get.method = 'get';
+                    }
 
                     if (getOptions.inQuery) {
                         sendOptions.get.title = `${sendOptions.get.method.toUpperCase()} should get a single object by ${properties.join(', ')} in query`;
                         sendOptions.get.before = test => {
-                            for (const k in query)
+                            for (const k in query) {
                                 test.query[k] = createdObject[k];
+                            }
                         };
                     }
 
                     if (getOptions.inUrl) {
                         sendOptions.get.title = `${sendOptions.get.method.toUpperCase()} should get a single object by ${properties.join(', ')} in URL`;
                         sendOptions.get.before = test => {
-                            if (properties.length === 1 && properties[0] === options.id)
+                            if (properties.length === 1 && properties[0] === options.id) {
                                 test.url += '/' + createdObject[options.id];
-                            else 
-                                for (const k in query)
+                            } else {
+                                for (const k in query) {
                                     test.url += '/' + k + '/' + createdObject[k];
+                                }
+                            }
                         };
                     }
 
-                    if (getOptions.single)
+                    if (getOptions.single) {
                         sendOptions.get.bodyLengthOf = 1;
-                    else if (sendOptions.get.bodyLengthOf !== undefined)
+                    } else if (sendOptions.get.bodyLengthOf !== undefined) {
                         delete sendOptions.get.bodyLengthOf;
+                    }
 
                     rt.testEndPoint(sendOptions);
                 }
             }
 
             let isDeleteMethodNotAllowed;
-            if (!options.notAllowedMethods)
+            if (!options.notAllowedMethods) {
                 isDeleteMethodNotAllowed = false;
-            else if (typeof options.notAllowedMethods === 'string')
+            } else if (typeof options.notAllowedMethods === 'string') {
                 isDeleteMethodNotAllowed = options.notAllowedMethods.toUpperCase().indexOf('DELETE') >= 0;
-            else if (Array.isArray(options.notAllowedMethods))
+            } else if (Array.isArray(options.notAllowedMethods)) {
                 options.notAllowedMethods.forEach(method => {
-                    if (method.toUpperCase() === 'DELETE') 
+                    if (method.toUpperCase() === 'DELETE') {
                         isDeleteMethodNotAllowed = true;
+                    }
                 });
-            else
+            } else {
                 throw new Error('notAllowedMethods option is not a string or Array');
+            }
 
             if (options.patchParameters) {
-                if (!options.getCreated)
+                if (!options.getCreated) {
                     throw new Error('cannot test PATCH because no getCreated is defined.');
+                }
                     
                 let patchParameters = options.patchParameters;
-                if (!Array.isArray(patchParameters))
+                if (!Array.isArray(patchParameters)) {
                     patchParameters = [patchParameters];
+                }
                 
                 for (const i in patchParameters) {
                     rt.testEndPoint({
@@ -1177,16 +1296,18 @@ export const rt = {
             }
 
             if (!isDeleteMethodNotAllowed) {
-                if (!options.getCreated)
+                if (!options.getCreated) {
                     throw new Error('cannot test DELETE because no getCreated is defined.');
+                }
 
                 if (!options.deleteQuery) {
                     options.deleteQuery = {};
                     options.deleteQuery[options.id] = '';
                 }
                 
-                if (!options.deleteMissingQuery)
+                if (!options.deleteMissingQuery) {
                     options.deleteMissingQuery = options.id;
+                }
 
                 rt.testEndPoint({
                     url: options.url,

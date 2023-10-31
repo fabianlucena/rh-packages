@@ -3,26 +3,26 @@
         "source": "Description",
         "language": "es",
         "translation": "Descripción",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [155,54]"
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [161,54]"
     },
     {
         "source": "Name",
         "language": "es",
         "translation": "Nombre",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [150,47]"
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [156,47]"
     },
     {
         "source": "Project UUID",
         "language": "es",
         "context": "projectSelect",
         "translation": "UUID de proyecto",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [15,85]"
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [13,85]"
     },
     {
         "source": "Project: %s",
         "language": "es",
         "translation": "Proyecto: %s",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [55,61]"
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [60,61]"
     },
     {
         "source": "Select project",
@@ -42,26 +42,26 @@
         "source": "Select project",
         "language": "es",
         "translation": "Seleccionar proyecto",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [132,49]"
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [138,49]"
     },
     {
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-project-select-es.js [20,41]"
+        "ref": "rh-project-select-es.js [18,41]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-project-select-es.js [21,57]"
+        "ref": "rh-project-select-es.js [19,57]"
     },
     {
         "source": "The selected project does not exist or you do not have permission to access it.",
         "language": "es",
         "context": "projectSelect",
         "translation": "El proyecto seleccionado no existe o usted no tiene permiso para accederlo.",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [20,141]"
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [19,141]"
     },
     {
         "source": "The selected project is disabled.",
@@ -74,13 +74,13 @@
         "source": "Title",
         "language": "es",
         "translation": "Título",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [145,48]"
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [151,48]"
     },
     {
         "source": "You do not have permission to select this project.",
         "language": "es",
         "context": "projectSelect",
         "translation": "Usted no tiene permiso para seleccionar este proyecto.",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [30,112]\n..\\rh-project-select\\controllers\\project-select.js [40,116]"
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [32,112]\n..\\rh-project-select\\controllers\\project-select.js [44,116]"
     }
 ]

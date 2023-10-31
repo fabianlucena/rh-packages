@@ -8,5 +8,6 @@ export class DomainService extends ServiceIdUuidNameEnabledTranslatable {
 
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'Domain', 'name', 'title');
+        return super.validateForCreation(data);
     }
 }

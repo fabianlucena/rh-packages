@@ -8,14 +8,7 @@ export class SourceService extends ServiceIdUuidEnabled {
     
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'Source', 'text');
-
-        return true;
-    }
-
-    async getListOptions(options) {
-        options ||= {};
-
-        return options;
+        return super.validateForCreation(data);
     }
 
     /**
@@ -37,7 +30,7 @@ export class SourceService extends ServiceIdUuidEnabled {
     /**
     * Gets a source ID for its text. For many coincidences and for no rows this method fails.
     * @param {string} text - text for the source to get.
-    * * @param {boolean} isJson - indicates if the text is a object in JSON format.
+    * @param {boolean} isJson - indicates if the text is a object in JSON format.
     * @param {Options} options - Options for the @ref getList method.
     * @returns {Promise{ID}}
     */

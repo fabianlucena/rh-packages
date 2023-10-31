@@ -4,147 +4,130 @@
         "language": "es",
         "context": "permission",
         "translation": "Crear etiquetas",
-        "ref": "..\\rh-tag\\conf_data.js [18,73]"
+        "ref": "..\\rh-tag\\conf_data.js [16,73]"
     },
     {
         "source": "Delete tags",
         "language": "es",
         "context": "permission",
         "translation": "Eliminar etiquetas",
-        "ref": "..\\rh-tag\\conf_data.js [20,73]"
+        "ref": "..\\rh-tag\\conf_data.js [18,73]"
     },
     {
         "source": "Delete without where is forbiden.",
         "language": "es",
         "context": "tag",
-        "isDraft": false,
         "translation": "Eliminar sin la opción where está prohibido.",
-        "ref": "..\\rh-tag\\services\\entity_tag.js [161,80]"
+        "ref": "..\\rh-tag\\services\\entity_tag.js [168,80]"
     },
     {
         "source": "Description",
         "language": "es",
         "context": "tag",
         "translation": "Descripción",
-        "ref": "..\\rh-tag\\controllers\\tag.js [130,62]\n..\\rh-tag\\controllers\\tag.js [131,68]"
+        "ref": "..\\rh-tag\\controllers\\tag.js [129,62]\n..\\rh-tag\\controllers\\tag.js [130,68]"
     },
     {
         "source": "Edit tags",
         "language": "es",
         "context": "permission",
         "translation": "Modificar etiquetas",
-        "ref": "..\\rh-tag\\conf_data.js [19,71]"
+        "ref": "..\\rh-tag\\conf_data.js [17,71]"
     },
     {
         "source": "Enabled",
         "language": "es",
         "context": "tag",
         "translation": "Habilitado",
-        "ref": "..\\rh-tag\\controllers\\tag.js [123,58]\n..\\rh-tag\\controllers\\tag.js [124,64]"
-    },
-    {
-        "source": "Exists another tag category with that name.",
-        "language": "es",
-        "context": "tag",
-        "translation": "Existe otra etiqueta con ese nombre.",
-        "ref": "..\\rh-tag\\services\\tag_category.js [30,98]"
+        "ref": "..\\rh-tag\\controllers\\tag.js [122,58]\n..\\rh-tag\\controllers\\tag.js [123,64]"
     },
     {
         "source": "Exists another tag with that name.",
         "language": "es",
         "context": "tag",
         "translation": "Ya existe otra etiqueta con ese nombre.",
-        "ref": "..\\rh-tag\\services\\tag.js [34,89]"
+        "ref": "..\\rh-tag\\services\\tag.js [27,89]"
     },
     {
         "source": "Get tags",
         "language": "es",
         "context": "permission",
         "translation": "Obtener etiquetas",
-        "ref": "..\\rh-tag\\conf_data.js [17,70]"
-    },
-    {
-        "source": "ID parameter is forbidden for creation.",
-        "language": "es",
-        "context": "tag",
-        "translation": "El parámetro ID está prohibido durante la creación.",
-        "ref": "..\\rh-tag\\services\\tag_category.js [22,91]\n..\\rh-tag\\services\\tag.js [24,91]"
+        "ref": "..\\rh-tag\\conf_data.js [15,70]"
     },
     {
         "source": "Name",
         "language": "es",
         "context": "tag",
         "translation": "Nombre",
-        "ref": "..\\rh-tag\\services\\tag_category.js [24,78]\n..\\rh-tag\\services\\tag.js [28,86]\n..\\rh-tag\\controllers\\tag.js [85,55]\n..\\rh-tag\\controllers\\tag.js [113,55]\n..\\rh-tag\\controllers\\tag.js [114,61]"
+        "ref": "..\\rh-tag\\controllers\\tag.js [84,55]\n..\\rh-tag\\controllers\\tag.js [112,55]\n..\\rh-tag\\controllers\\tag.js [113,61]"
     },
     {
         "source": "Owner",
         "language": "es",
         "context": "tag",
         "translation": "Propietario",
-        "ref": "..\\rh-tag\\controllers\\tag.js [90,56]"
+        "ref": "..\\rh-tag\\controllers\\tag.js [89,56]"
     },
     {
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-tag-es.js [20,41]"
+        "ref": "rh-tag-es.js [18,41]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-tag-es.js [21,57]"
+        "ref": "rh-tag-es.js [19,57]"
     },
     {
         "source": "Tag",
         "language": "es",
         "context": "entityTag",
-        "isDraft": false,
         "translation": "Etiqueta",
-        "ref": "..\\rh-tag\\services\\entity_tag.js [61,83]"
+        "ref": "..\\rh-tag\\services\\entity_tag.js [62,83]"
     },
     {
         "source": "Tag category",
         "language": "es",
         "context": "tag",
         "translation": "Categoría de etiqueta",
-        "ref": "..\\rh-tag\\services\\tag.js [29,94]"
+        "ref": "..\\rh-tag\\services\\tag.js [21,94]"
     },
     {
         "source": "Tag manager",
         "language": "es",
         "context": "role",
         "translation": "Administrador de etiquetas",
-        "ref": "..\\rh-tag\\conf_data.js [9,68]"
+        "ref": "..\\rh-tag\\conf_data.js [7,68]"
     },
     {
         "source": "Tags",
         "language": "es",
         "context": "menu",
         "translation": "Etiquetas",
-        "ref": "..\\rh-tag\\conf_data.js [17,179]"
+        "ref": "..\\rh-tag\\conf_data.js [15,179]"
     },
     {
         "source": "Tags",
         "language": "es",
         "context": "tag",
         "translation": "Etiquetas",
-        "ref": "..\\rh-tag\\controllers\\tag.js [70,47]\n..\\rh-tag\\controllers\\tag.js [101,47]"
+        "ref": "..\\rh-tag\\controllers\\tag.js [69,47]\n..\\rh-tag\\controllers\\tag.js [100,47]"
     },
     {
         "source": "The tag is already linked to the %s.",
         "language": "es",
         "context": "entityTag",
-        "isDraft": false,
         "translation": "La etiqueta ya está enlazada a %s.",
-        "ref": "..\\rh-tag\\services\\entity_tag.js [65,114]"
+        "ref": "..\\rh-tag\\services\\entity_tag.js [66,114]"
     },
     {
         "source": "Title",
         "language": "es",
         "context": "tag",
         "translation": "Título",
-        "ref": "..\\rh-tag\\services\\tag_category.js [25,79]\n..\\rh-tag\\controllers\\tag.js [80,56]\n..\\rh-tag\\controllers\\tag.js [107,56]\n..\\rh-tag\\controllers\\tag.js [108,62]"
+        "ref": "..\\rh-tag\\controllers\\tag.js [79,56]\n..\\rh-tag\\controllers\\tag.js [106,56]\n..\\rh-tag\\controllers\\tag.js [107,62]"
     }
 ]

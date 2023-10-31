@@ -1,71 +1,43 @@
 [
     {
-        "source": "Exists another test site with that name.",
-        "language": "es",
-        "context": "site",
-        "translation": "Existe otro sitio con ese nombre.",
-        "ref": "..\\rh-site\\services\\site.js [37,96]"
-    },
-    {
         "source": "Get sites",
         "language": "es",
         "context": "permission",
         "translation": "Obtener sitios",
-        "ref": "..\\rh-site\\conf_data.js [21,69]"
-    },
-    {
-        "source": "ID parameter is forbidden for creation.",
-        "language": "es",
-        "context": "site",
-        "translation": "El parámetro ID está prohibido durante la creación.",
-        "ref": "..\\rh-site\\services\\site.js [27,92]"
-    },
-    {
-        "source": "Name",
-        "language": "es",
-        "context": "site",
-        "translation": "Nombre",
-        "ref": "..\\rh-site\\services\\site.js [31,78]"
+        "ref": "..\\rh-site\\conf_data.js [19,69]"
     },
     {
         "source": "Sites",
         "language": "es",
         "context": "menu",
-        "isDraft": true,
-        "translation": null,
-        "ref": "..\\rh-site\\conf_data.js [21,177]"
+        "isDraft": false,
+        "translation": "Sitios",
+        "ref": "..\\rh-site\\conf_data.js [19,177]"
     },
     {
         "source": "Sites manager",
         "language": "es",
         "context": "role",
         "translation": "Administrador de sitios",
-        "ref": "..\\rh-site\\conf_data.js [13,71]"
+        "ref": "..\\rh-site\\conf_data.js [11,71]"
     },
     {
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-site-es.js [20,41]"
+        "ref": "rh-site-es.js [18,41]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-site-es.js [21,57]"
+        "ref": "rh-site-es.js [19,57]"
     },
     {
         "source": "System",
         "language": "es",
         "context": "site",
         "translation": "Sistema",
-        "ref": "..\\rh-site\\conf_data.js [9,58]"
-    },
-    {
-        "source": "Title",
-        "language": "es",
-        "context": "site",
-        "translation": "Título",
-        "ref": "..\\rh-site\\services\\site.js [32,80]"
+        "ref": "..\\rh-site\\conf_data.js [7,58]"
     }
 ]

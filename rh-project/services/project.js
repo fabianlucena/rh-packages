@@ -44,8 +44,9 @@ export class ProjectService extends ServiceIdUuidNameEnabledSharedTranslatable {
         if (options.includeCompany || options.where?.companyUuid !== undefined) {
             let where;
 
-            if (options.isEnabled !== undefined)
+            if (options.isEnabled !== undefined) {
                 where = {isEnabled: options.isEnabled};
+            }
 
             if (options.where?.companyUuid !== undefined) {
                 where ??= {};

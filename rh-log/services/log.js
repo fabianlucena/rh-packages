@@ -9,10 +9,11 @@ export class LogService extends ServiceId {
     models = conf.global.models;
 
     async validateForCreation(data) {
-        if (data.ref !== undefined && isNaN(data.ref))
+        if (data.ref !== undefined && isNaN(data.ref)) {
             delete data.ref;
-            
-        return data;
+        }
+        
+        return super.validateForCreation(data);
     }
 
     async getListOptions(options) {
@@ -44,8 +45,9 @@ export class LogService extends ServiceId {
     async getMaxRef() {
         const sequelize = this.sequelize;
         const result = await this.model.findAll({attributes:[[sequelize.fn('max', sequelize.col('ref')), 'maxRef']]});
-        if (!result?.length)
+        if (!result?.length) {
             return;
+        }
 
         const row = result[0];
         const maxRef = row.toJSON().maxRef;

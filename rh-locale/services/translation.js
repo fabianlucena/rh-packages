@@ -42,8 +42,7 @@ export class TranslationService extends ServiceIdUuidEnabled {
 
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'Translation', 'sourceId', 'languageId');
-
-        return true;
+        return super.validateForCreation(data);
     }
 
     /**
@@ -55,23 +54,27 @@ export class TranslationService extends ServiceIdUuidEnabled {
     async getListOptions(options) {
         await this.completeReferences(options.where, true);
 
-        if (options.where.domainId === undefined && Object.prototype.hasOwnProperty.call(options.where, 'domainId'))
+        if (options.where.domainId === undefined && Object.prototype.hasOwnProperty.call(options.where, 'domainId')) {
             options.where.domainId = null;
+        }
 
-        if (options.where.contextId === undefined && Object.prototype.hasOwnProperty.call(options.where, 'contextId'))
+        if (options.where.contextId === undefined && Object.prototype.hasOwnProperty.call(options.where, 'contextId')) {
             options.where.contextId = null;
+        }
 
         return options;
     }
 
     async _gt(language, texts, options) {
-        if (!texts?.length)
+        if (!texts?.length) {
             return {};
+        }
 
         const translations = {};
         if (!language) {
-            for (const text of texts)
+            for (const text of texts) {
                 translations[text] = text;
+            }
 
             return translations;
         }
@@ -92,8 +95,9 @@ export class TranslationService extends ServiceIdUuidEnabled {
                     if (Array.isArray(text)) {
                         options.isJson = true;
                         arrangedText = JSON.stringify(text);
-                    } else
+                    } else {
                         arrangedText = text;
+                    }
 
                     if (arrangedText === null || arrangedText === undefined) {
                         translations[arrangedText] = arrangedText;
@@ -120,12 +124,12 @@ export class TranslationService extends ServiceIdUuidEnabled {
                         }
                     }
 
-                    if (translationObject.isJson)
+                    if (translationObject.isJson) {
                         translation = JSON.parse(translationObject.translation);
-                    else
+                    } else {
                         translation = translationObject.translation;
-                }
-                catch(err) {
+                    }
+                } catch(err) {
                     conf.global.log.error(err);
                     translations[text] = text;
                 }
@@ -138,8 +142,9 @@ export class TranslationService extends ServiceIdUuidEnabled {
     }
 
     async getBestMatchForLanguageTextIsJsonContextsAndDomains(language, text, isJson, contexts, domains) {
-        if (!language)
+        if (!language) {
             return {translation: text, isTranslated: false, isDraft: true};
+        }
 
         const sourceId = await SourceService.singleton().getIdOrCreateForTextAndIsJson(text, isJson);
         let contextsId = [];
@@ -152,8 +157,9 @@ export class TranslationService extends ServiceIdUuidEnabled {
             
             contextsId = await ContextService.singleton().getIdOrCreateForName(contexts);
         }
-        if (!contextsId.length || !contextsId.some(context => context === null))
+        if (!contextsId.length || !contextsId.some(context => context === null)) {
             contextsId.push(null);
+        }
 
         if (domains) {
             if (!Array.isArray(domains)) {

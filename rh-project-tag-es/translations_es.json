@@ -3,20 +3,19 @@
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-project-tag-es.js [20,41]"
+        "ref": "rh-project-tag-es.js [18,41]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-project-tag-es.js [21,57]"
+        "ref": "rh-project-tag-es.js [19,57]"
     },
     {
         "source": "Tag",
         "language": "es",
         "context": "project",
-        "isDraft": false,
         "translation": "Etiqueta",
-        "ref": "..\\rh-project-tag\\rh-project-tag.js [44,26]"
+        "ref": "..\\rh-project-tag\\rh-project-tag.js [45,26]"
     }
 ]
