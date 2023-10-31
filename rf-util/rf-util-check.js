@@ -106,7 +106,7 @@ export function checkParameterNotNullOrEmpty(value, options) {
         value,
         {
             statusCode: 400,
-            _message: [loc._f('"%s" parameter is undefiend, null or empty'), options?.paramTitle ?? 'value'],
+            _message: [loc._f('"%s" parameter is undefined, null or empty'), options?.paramTitle ?? 'value'],
             ...options,
         }
     );
@@ -148,7 +148,7 @@ export function checkParameterStringUndefinedOrNotNullAndNotEmpty(value, options
         value,
         {
             statusCode: 400,
-            _message: [loc._f('"%s" parameter is null, or empty'), options?.paramTitle ?? 'value'],
+            _message: [loc._f('"%s" parameter is null or empty'), options?.paramTitle ?? 'value'],
             ...options,
         }
     ) && checkString(
