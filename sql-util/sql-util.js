@@ -205,20 +205,18 @@ export async function checkDataForMissingProperties(data, objectName, ...propert
 }
 
 export async function checkViewOptions(options) {
-    if (!options) {
-        options = {};
+    if (!options?.view) {
+        return options;
     }
 
-    if (options.view) {
-        if (options.include) {
-            options.include = await options.include.map(include => {
-                if (!include.attributes) {
-                    include.attributes = [];
-                }
+    if (options.include) {
+        options.include = await options.include.map(include => {
+            if (!include.attributes) {
+                include.attributes = [];
+            }
 
-                return include;
-            });
-        }
+            return include;
+        });
     }
 
     return options;
