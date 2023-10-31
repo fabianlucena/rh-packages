@@ -7,6 +7,7 @@ import {loc} from 'rf-locale';
 
 export class TagService extends ServiceIdUuidNameEnabledModuleTranslatable {
     sequelize = conf.global.sequelize;
+    Sequelize = conf.global.Sequelize;
     model = conf.global.models.Tag;
     references = {
         tagCategory: {
