@@ -267,6 +267,16 @@ export class ProjectController {
                 label: await loc._cf('project', 'Title'),
                 placeholder: await loc._cf('project', 'Title'),
                 required: true,
+                onValueChanged: {
+                    action: 'setValues',
+                    override: false,
+                    source: {
+                        name: 'title'
+                    },
+                    sanitize: {
+                        name: 'dasherize',
+                    },
+                },
             },
             {
                 name: 'name',
@@ -513,7 +523,7 @@ export class ProjectController {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('project', 'UUID'));
         await ProjectController.checkUuid(req, uuid);
 
-        const rowsUpdated = await projectService.updateForUuid(req.body, uuid);
+        const rowsUpdated = await projectService.updateForUuid({...req.body, name: undefined, uuid: undefined}, uuid);
         if (!rowsUpdated) {
             throw new _HttpError(req.loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
         }
