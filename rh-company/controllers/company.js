@@ -270,7 +270,7 @@ export class CompanyController {
                     label: await loc._('Name'),
                     placeholder: await loc._('Name'),
                     required: true,
-                    readonly: {
+                    disabled: {
                         create: false,
                         defaultValue: true,
                     },

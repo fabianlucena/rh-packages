@@ -185,7 +185,7 @@ export class UserController {
                     label: await loc._c('user', 'Username'),
                     placeholder: await loc._c('user', 'Username'),
                     autocomplete: 'off',
-                    readonly: {
+                    disabled: {
                         create: false,
                         defaultValue: true,
                     },

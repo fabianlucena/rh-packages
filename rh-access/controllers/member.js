@@ -136,6 +136,10 @@ export class MemberController {
                     label: await loc._c('member', 'Display name'),
                     placeholder: await loc._c('member', 'Type the display name here'),
                     autocomplete: 'off',
+                    disabled: {
+                        create: false,
+                        defaultValue: true,
+                    },
                 },
                 {
                     name: 'User.username',
@@ -143,7 +147,7 @@ export class MemberController {
                     label: await loc._c('member', 'Username'),
                     placeholder: await loc._c('member', 'Username'),
                     autocomplete: 'off',
-                    readonly: {
+                    disabled: {
                         create: false,
                         defaultValue: true,
                     },

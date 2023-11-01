@@ -91,13 +91,29 @@ export class MainCompanyController {
                     type: 'text',
                     label: await loc._c('mainCompany', 'Title'),
                     placeholder: await loc._c('mainCompany', 'Title'),
+                    required: true,
+                    onValueChanged: {
+                        mode: {
+                            create: true,
+                            defaultValue: false,
+                        },
+                        action: 'setValues',
+                        override: false,
+                        source: {
+                            name: 'title'
+                        },
+                        sanitize: {
+                            name: 'dasherize',
+                        },
+                    },
                 },
                 {
                     name: 'name',
                     type: 'text',
                     label: await loc._c('mainCompany', 'Name'),
                     placeholder: await loc._c('mainCompany', 'Name'),
-                    readonly: {
+                    required: true,
+                    disabled: {
                         create: false,
                         defaultValue: true,
                     },

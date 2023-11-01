@@ -268,6 +268,20 @@ export class BranchController {
                 label: await loc._cf('branch', 'Title'),
                 placeholder: await loc._cf('branch', 'Title'),
                 required: true,
+                onValueChanged: {
+                    mode: {
+                        create: true,
+                        defaultValue: false,
+                    },
+                    action: 'setValues',
+                    override: false,
+                    source: {
+                        name: 'title'
+                    },
+                    sanitize: {
+                        name: 'dasherize',
+                    },
+                },
             },
             {
                 name: 'name',
@@ -275,7 +289,7 @@ export class BranchController {
                 label: await loc._cf('branch', 'Name'),
                 placeholder: await loc._cf('branch', 'Name'),
                 required: true,
-                readonly: {
+                disabled: {
                     create: false,
                     defaultValue: true,
                 },

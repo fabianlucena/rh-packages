@@ -105,13 +105,29 @@ export class TagController {
                     type: 'text',
                     label: await loc._c('tag', 'Title'),
                     placeholder: await loc._c('tag', 'Title'),
+                    required: true,
+                    onValueChanged: {
+                        mode: {
+                            create: true,
+                            defaultValue: false,
+                        },
+                        action: 'setValues',
+                        override: false,
+                        source: {
+                            name: 'title'
+                        },
+                        sanitize: {
+                            name: 'dasherize',
+                        },
+                    },
                 },
                 {
                     name: 'name',
                     type: 'text',
                     label: await loc._c('tag', 'Name'),
                     placeholder: await loc._c('tag', 'Name'),
-                    readonly: {
+                    required: true,
+                    disabled: {
                         create: false,
                         defaultValue: true,
                     },

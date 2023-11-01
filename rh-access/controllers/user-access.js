@@ -245,7 +245,7 @@ export class UserAccessController {
                         text: 'displayName',
                         title: 'username',
                     },
-                    readonly: {
+                    disabled: {
                         create: false,
                         defaultValue: true,
                     },
@@ -260,7 +260,7 @@ export class UserAccessController {
                         text: 'title',
                         title: 'description',
                     },
-                    readonly: {
+                    disabled: {
                         create: false,
                         defaultValue: true,
                     },
