@@ -1,11 +1,11 @@
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameEnabledSharedTranslatable} from 'rf-service';
+import {ServiceIdUuidNameTitleEnabledSharedTranslatable} from 'rf-service';
 import {completeIncludeOptions} from 'sql-util';
 import {CheckError} from 'rf-util';
 import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
-export class ProjectService extends ServiceIdUuidNameEnabledSharedTranslatable {
+export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Project;
     shareObject = 'Project';
@@ -33,12 +33,21 @@ export class ProjectService extends ServiceIdUuidNameEnabledSharedTranslatable {
         }
     }
 
+    async checkTitleForConflict(title, data, where) {
+        const Op = conf.global.Sequelize.Op;
+        const rows = await this.getFor({title, companyId: where.companyId, uuid: {[Op.ne]: where.uuid}}, {skipNoRowsError: true});
+        if (rows?.length) {
+            throw new ConflictError(loc._cf('project', 'Exists another project with that title in this company.'));
+        }
+    }
+
     async getListOptions(options) {
         options ??= {};
 
         if (options.view) {
-            if (!options.attributes)
+            if (!options.attributes) {
                 options.attributes = ['uuid', 'isEnabled', 'name', 'title', 'description'];
+            }
         }
 
         if (options.includeCompany || options.where?.companyUuid !== undefined) {

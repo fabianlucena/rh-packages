@@ -27,9 +27,11 @@ const projectService = ProjectService.singleton();
     
 export class ProjectController {
     static async checkDataForCompanyId(req, data) {
-        if (!conf.filters?.getCurrentCompanyId)
+        if (!conf.filters?.getCurrentCompanyId) {
             return;
-            
+        }
+         
+        data ??= {};
         if (!data.companyId) {
             if (data.companyUuid) {
                 data.companyId = await conf.global.services.Company.singleton().getIdForUuid(data.companyUuid);
@@ -268,6 +270,10 @@ export class ProjectController {
                 placeholder: await loc._cf('project', 'Title'),
                 required: true,
                 onValueChanged: {
+                    mode: {
+                        create: true,
+                        defaultValue: false,
+                    },
                     action: 'setValues',
                     override: false,
                     source: {
@@ -284,7 +290,7 @@ export class ProjectController {
                 label: await loc._cf('project', 'Name'),
                 placeholder: await loc._cf('project', 'Name'),
                 required: true,
-                readonly: {
+                disabled: {
                     create: false,
                     defaultValue: true,
                 },
@@ -523,7 +529,18 @@ export class ProjectController {
         const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('project', 'UUID'));
         await ProjectController.checkUuid(req, uuid);
 
-        const rowsUpdated = await projectService.updateForUuid({...req.body, name: undefined, uuid: undefined}, uuid);
+        const data = {...req.body};
+        if (data.uuid) {
+            if (uuid !== data.uuid) {
+                throw new _HttpError(req.loc._cf('project', 'Project UUID inconsistence. The UUID received in the body is distinct.'), 400, uuid);
+            }
+
+            delete data.uuid;
+        }
+        const companyId = await ProjectController.checkDataForCompanyId(req);
+        const where = {uuid, companyId};
+
+        const rowsUpdated = await projectService.updateFor(data, where);
         if (!rowsUpdated) {
             throw new _HttpError(req.loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
         }
