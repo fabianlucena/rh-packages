@@ -397,8 +397,8 @@ export class ServiceBase {
      * @param {object} data - data to update in entity.
      * @returns {Promise[data]} - the data.
      */
-    async validateForUpdate(data) {
-        return this.validate(data, 'update');
+    async validateForUpdate(data, where) {
+        return this.validate(data, 'update', where);
     }
 
     /**
@@ -409,7 +409,7 @@ export class ServiceBase {
      */
     async update(data, options) {
         await this.completeReferences(data);
-        await this.validateForUpdate(data);
+        await this.validateForUpdate(data, options.where);
 
         await this.emit('updating', options?.emitEvent, data, options);
         const result = await this.model.update(data, options);

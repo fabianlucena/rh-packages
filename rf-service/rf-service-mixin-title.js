@@ -7,7 +7,7 @@ export const ServiceMixinTitle = Service => class extends Service {
 
     async validateForCreation(data) {
         checkParameterStringNotNullOrEmpty(data?.title, loc._f('Title'));
-        this.checkTitleForConflict(data);
+        await this.checkTitleForConflict(data);
         return super.validateForCreation(data.title, data);
     }
 
@@ -17,10 +17,10 @@ export const ServiceMixinTitle = Service => class extends Service {
         }
     }
 
-    async validateForUpdate(data) {
+    async validateForUpdate(data, where) {
         checkParameterStringUndefinedOrNotNullAndNotEmpty(data.title, loc._f('Title'));
         if (data.title) {
-            this.checkTitleForConflict(data.title, data);
+            await this.checkTitleForConflict(data.title, data, where);
         }
 
         return super.validateForUpdate(data);
