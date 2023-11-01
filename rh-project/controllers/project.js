@@ -1,6 +1,6 @@
 import {ProjectService} from '../services/project.js';
 import {conf} from '../conf.js';
-import {getOptionsFromParamsAndOData, _HttpError, ConflictError} from 'http-util';
+import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
 import {checkParameter, checkParameterUuid, filterVisualItemsByAliasName} from 'rf-util';
 
 const projectService = ProjectService.singleton();
@@ -106,10 +106,6 @@ export class ProjectController {
         const data = {...req.body};
 
         await ProjectController.checkDataForCompanyId(req, data);
-
-        if (await projectService.getForName(data.name, {skipNoRowsError: true})) {
-            throw new ConflictError();
-        }
 
         if (!data.owner && !data.ownerId) {
             data.ownerId = req.user.id;
