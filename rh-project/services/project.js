@@ -34,8 +34,11 @@ export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslata
     }
 
     async checkTitleForConflict(title, data, where) {
-        const Op = conf.global.Sequelize.Op;
-        const rows = await this.getFor({title, companyId: where.companyId, uuid: {[Op.ne]: where.uuid}}, {skipNoRowsError: true});
+        const whereOptions = {title};
+        if (where?.companyId) {whereOptions.companyId = where.companyId;}
+        else if (data?.companyId) {whereOptions.companyId = data.companyId;}
+        if (where?.uuid) {whereOptions.uuid = {[conf.global.Sequelize.Op.ne]: where.uuid};}
+        const rows = await this.getFor(whereOptions, {skipNoRowsError: true});
         if (rows?.length) {
             throw new ConflictError(loc._cf('project', 'Exists another project with that title in this company.'));
         }

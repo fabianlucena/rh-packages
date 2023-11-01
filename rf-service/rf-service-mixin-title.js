@@ -7,8 +7,8 @@ export const ServiceMixinTitle = Service => class extends Service {
 
     async validateForCreation(data) {
         checkParameterStringNotNullOrEmpty(data?.title, loc._f('Title'));
-        await this.checkTitleForConflict(data);
-        return super.validateForCreation(data.title, data);
+        await this.checkTitleForConflict(data.title, data);
+        return super.validateForCreation(data);
     }
 
     async checkTitleForConflict(title) {
