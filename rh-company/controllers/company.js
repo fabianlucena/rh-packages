@@ -250,6 +250,10 @@ export class CompanyController {
                     placeholder: await loc._('Title'),
                     required: true,
                     onValueChanged: {
+                        mode: {
+                            create: true,
+                            defaultValue: false,
+                        },
                         action: 'setValues',
                         override: false,
                         source: {
