@@ -125,7 +125,7 @@ export class EntityTagService extends ServiceBase {
     }
 
     async updateTagsForEntityId(tags, entityId, options) {
-        if (!entityId) {
+        if (!entityId || tags === undefined) {
             return;
         }
 
