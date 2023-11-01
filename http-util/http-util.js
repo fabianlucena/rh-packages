@@ -1,6 +1,6 @@
 import {setUpError, errorHandler, deepComplete} from 'rf-util';
 import {loc} from 'rf-locale';
-import {runSequentially, stripQuotes} from 'rf-util';
+import {runSequentially, stripQuotes, checkParameterUuid} from 'rf-util';
 import * as uuid from 'uuid';
 import fs from 'fs';
 import path from 'path';
@@ -957,4 +957,33 @@ export function corsPreflight(options) {
 
 export function corsSimplePreflight(methods) {
     return corsPreflight({headers: 'Content-Type,Authorization', methods: methods});
+}
+
+export async function getUuidFromRequest(req) {
+    let uuid;
+    if (req.params?.uuid) {
+        if (uuid === undefined) {
+            uuid = req.params.uuid;
+        } else if (uuid.toUpperCase() !== req.params.uuid.toUpperCase()) {
+            throw new _HttpError(loc._f('UUID inconsistence. Many UUIDs were received but they are different.'), 400, uuid);
+        }
+    }
+
+    if (req.query?.uuid) {
+        if (uuid === undefined) {
+            uuid = req.query.uuid;
+        } else if (uuid.toUpperCase() !== req.query.uuid.toUpperCase()) {
+            throw new _HttpError(loc._f('UUID inconsistence. Many UUIDs were received but they are different.'), 400, uuid);
+        }
+    }
+
+    if (req.body?.uuid) {
+        if (uuid === undefined) {
+            uuid = req.body.uuid;
+        } else if (uuid.toUpperCase() !== req.body.uuid.toUpperCase()) {
+            throw new _HttpError(loc._f('UUID inconsistence. Many UUIDs were received but they are different.'), 400, uuid);
+        }
+    }
+
+    return checkParameterUuid(uuid, req.loc._f('UUID'));
 }

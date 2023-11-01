@@ -1,7 +1,7 @@
 import {ProjectService} from '../services/project.js';
 import {conf} from '../conf.js';
-import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
-import {checkParameter, checkParameterUuid, filterVisualItemsByAliasName} from 'rf-util';
+import {getOptionsFromParamsAndOData, _HttpError, getUuidFromRequest} from 'http-util';
+import {checkParameter, filterVisualItemsByAliasName} from 'rf-util';
 
 const projectService = ProjectService.singleton();
 
@@ -55,13 +55,16 @@ export class ProjectController {
         return data.companyId;
     }
 
-    static async checkUuid(req, uuid) {
+    static async checkUuid(req) {
+        const uuid = await getUuidFromRequest(req);
         const project = await projectService.getForUuid(uuid, {skipNoRowsError: true});
         if (!project) {
             throw new _HttpError(req.loc._cf('project', 'The project with UUID %s does not exists.'), 404, uuid);
         }
 
-        return await ProjectController.checkDataForCompanyId(req, {companyId: project.companyId});
+        const companyId = await ProjectController.checkDataForCompanyId(req, {companyId: project.companyId});
+
+        return {uuid, companyId};
     }
 
     /**
@@ -371,8 +374,7 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async delete(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('project', 'UUID'));
-        await ProjectController.checkUuid(req, uuid);
+        const {uuid} = await this.checkUuid(req);
 
         const rowsDeleted = await projectService.deleteForUuid(uuid);
         if (!rowsDeleted) {
@@ -422,8 +424,7 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async enablePost(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('project', 'UUID'));
-        await ProjectController.checkUuid(req, uuid);
+        const {uuid} = await this.checkUuid(req);
 
         const rowsUpdated = await projectService.enableForUuid(uuid);
         if (!rowsUpdated) {
@@ -473,8 +474,7 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async disablePost(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('project', 'UUID'));
-        await ProjectController.checkUuid(req, uuid);
+        const {uuid} = await this.checkUuid(req);
 
         const rowsUpdated = await projectService.disableForUuid(uuid);
         if (!rowsUpdated) {
@@ -522,18 +522,9 @@ export class ProjectController {
      *                  $ref: '#/definitions/Error'
      */
     static async patch(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('project', 'UUID'));
-        await ProjectController.checkUuid(req, uuid);
+        const {uuid, companyId} = await this.checkUuid(req);
 
-        const data = {...req.body};
-        if (data.uuid) {
-            if (uuid !== data.uuid) {
-                throw new _HttpError(req.loc._cf('project', 'Project UUID inconsistence. The UUID received in the body is distinct.'), 400, uuid);
-            }
-
-            delete data.uuid;
-        }
-        const companyId = await ProjectController.checkDataForCompanyId(req);
+        const data = {...req.body, uuid: undefined};
         const where = {uuid, companyId};
 
         const rowsUpdated = await projectService.updateFor(data, where);
