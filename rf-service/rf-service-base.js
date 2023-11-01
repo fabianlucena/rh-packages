@@ -209,7 +209,7 @@ export class ServiceBase {
      */
     // eslint-disable-next-line no-unused-vars
     async validate(data, operation) {
-        trim(data);
+        return trim(data);
     }
 
     /**
