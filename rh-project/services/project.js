@@ -35,8 +35,8 @@ export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslata
 
     async checkTitleForConflict(title, data, where) {
         const whereOptions = {title};
-        if (where?.companyId) {whereOptions.companyId = where.companyId;}
-        else if (data?.companyId) {whereOptions.companyId = data.companyId;}
+        const companyId = where?.companyId ?? data?.companyId;
+        if (companyId) {whereOptions.companyId = companyId;}
         if (where?.uuid) {whereOptions.uuid = {[conf.global.Sequelize.Op.ne]: where.uuid};}
         const rows = await this.getFor(whereOptions, {skipNoRowsError: true});
         if (rows?.length) {
