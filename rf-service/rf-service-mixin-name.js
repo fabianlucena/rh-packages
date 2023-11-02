@@ -7,7 +7,7 @@ export const ServiceMixinName = Service => class extends Service {
 
     async validateForCreation(data) {
         checkParameterStringNotNullOrEmpty(data?.name, loc._f('Name'));
-        this.checkNameForConflict(data.name, data);
+        await this.checkNameForConflict(data.name, data);
         return super.validateForCreation(data);
     }
 
