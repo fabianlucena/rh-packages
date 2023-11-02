@@ -1,7 +1,7 @@
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameEnabledSharedTranslatable} from 'rf-service';
+import {ServiceIdUuidNameTitleEnabledSharedTranslatable} from 'rf-service';
 
-export class CompanyService extends ServiceIdUuidNameEnabledSharedTranslatable {
+export class CompanyService extends ServiceIdUuidNameTitleEnabledSharedTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Company;
     models = conf.global.models;

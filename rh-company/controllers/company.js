@@ -1,7 +1,7 @@
 import {CompanyService} from '../services/company.js';
 import {conf} from '../conf.js';
-import {getOptionsFromParamsAndOData, _HttpError, ConflictError} from 'http-util';
-import {checkParameter, checkParameterUuid} from 'rf-util';
+import {getOptionsFromParamsAndOData, _HttpError, getUuidFromRequest} from 'http-util';
+import {checkParameter} from 'rf-util';
 
 /**
  * @swagger
@@ -51,13 +51,16 @@ export class CompanyController {
         return true;
     }
 
-    static async checkUuid(req, uuid) {
+    static async checkUuid(req) {
+        const uuid = await getUuidFromRequest(req);
         const company = await companyService.getForUuid(uuid, {skipNoRowsError: true});
         if (!company) {
             throw new _HttpError(req.loc._cf('company', 'The company with UUID %s does not exists.'), 404, uuid);
         }
 
         await CompanyController.checkData(req, {id: company.id});
+
+        return {uuid};
     }
 
     /**
@@ -98,10 +101,7 @@ export class CompanyController {
     static async post(req, res) {
         const loc = req.loc;
         checkParameter(req?.body, {name: loc._cf('company', 'Name'), title: loc._cf('company', 'Title')});
-        if (await companyService.getForName(req.body.name, {skipNoRowsError: true})) {
-            throw new ConflictError();
-        }
-
+        
         const data = {...req.body};
         if (!data.owner && !data.ownerId) {
             data.ownerId = req.user.id;
@@ -332,9 +332,7 @@ export class CompanyController {
      *                  $ref: '#/definitions/Error'
      */
     static async delete(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('company', 'UUID'));
-        await CompanyController.checkUuid(req, uuid);
-
+        const {uuid} = await CompanyController.checkUuid(req);
         const rowsDeleted = await companyService.deleteForUuid(uuid);
         if (!rowsDeleted) {
             throw new _HttpError(req.loc._cf('company', 'Company with UUID %s does not exists.'), 403, uuid);
@@ -383,9 +381,7 @@ export class CompanyController {
      *                  $ref: '#/definitions/Error'
      */
     static async enablePost(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('company', 'UUID'));
-        await CompanyController.checkUuid(req, uuid);
-
+        const {uuid} = await CompanyController.checkUuid(req);
         const rowsUpdated = await companyService.enableForUuid(uuid);
         if (!rowsUpdated) {
             throw new _HttpError(req.loc._cf('company', 'Company with UUID %s does not exists.'), 403, uuid);
@@ -434,9 +430,7 @@ export class CompanyController {
      *                  $ref: '#/definitions/Error'
      */
     static async disablePost(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('company', 'UUID'));
-        await CompanyController.checkUuid(req, uuid);
-
+        const {uuid} = await CompanyController.checkUuid(req);
         const rowsUpdated = await companyService.disableForUuid(uuid);
         if (!rowsUpdated) {
             throw new _HttpError(req.loc._cf('company', 'Company with UUID %s does not exists.'), 403, uuid);
@@ -483,10 +477,12 @@ export class CompanyController {
      *                  $ref: '#/definitions/Error'
      */
     static async patch(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('company', 'UUID'));
-        await CompanyController.checkUuid(req, uuid);
+        const {uuid} = await CompanyController.checkUuid(req);
 
-        const rowsUpdated = await companyService.updateForUuid(req.body, uuid);
+        const data = {...req.body, uuid: undefined};
+        const where = {uuid};
+
+        const rowsUpdated = await companyService.updateFor(data, where);
         if (!rowsUpdated) {
             throw new _HttpError(req.loc._cf('company', 'Company with UUID %s does not exists.'), 403, uuid);
         }

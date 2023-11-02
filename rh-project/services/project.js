@@ -38,7 +38,7 @@ export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslata
         const companyId = where?.companyId ?? data?.companyId;
         if (companyId) {whereOptions.companyId = companyId;}
         if (where?.uuid) {whereOptions.uuid = {[conf.global.Sequelize.Op.ne]: where.uuid};}
-        const rows = await this.getFor(whereOptions, {skipNoRowsError: true});
+        const rows = await this.getFor(whereOptions, {limit: 1});
         if (rows?.length) {
             throw new ConflictError(loc._cf('project', 'Exists another project with that title in this company.'));
         }

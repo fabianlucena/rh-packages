@@ -107,9 +107,7 @@ export class ProjectController {
         checkParameter(req?.body, {name: loc._cf('project', 'Name'), title: loc._cf('project', 'Title')});
         
         const data = {...req.body};
-
         await ProjectController.checkDataForCompanyId(req, data);
-
         if (!data.owner && !data.ownerId) {
             data.ownerId = req.user.id;
             if (!data.ownerId) {
@@ -118,6 +116,7 @@ export class ProjectController {
         }
 
         await projectService.create(data);
+
         res.status(204).send();
     }
 
