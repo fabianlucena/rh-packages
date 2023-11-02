@@ -1,4 +1,4 @@
-import {CheckError, checkParameterStringNotNullOrEmpty} from 'rf-util';
+import {CheckError, checkParameterStringNotNullOrEmpty, trim} from 'rf-util';
 import {ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
@@ -6,13 +6,13 @@ export const ServiceMixinName = Service => class extends Service {
     searchColumns = ['name'];
 
     async validateForCreation(data) {
-        checkParameterStringNotNullOrEmpty(data?.name, loc._f('Name'));
+        checkParameterStringNotNullOrEmpty(trim(data?.name), loc._f('Name'));
         await this.checkNameForConflict(data.name, data);
         return super.validateForCreation(data);
     }
 
     async checkNameForConflict(name) {
-        const rows = await this.getForName(name, {skipNoRowsError: true});
+        const rows = await this.getFor({name}, {limit: 1});
         if (rows?.length) {
             throw new ConflictError(loc._f('Exists another row with that name.'));
         }

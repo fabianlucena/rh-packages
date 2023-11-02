@@ -1,18 +1,19 @@
-import {loc} from 'rf-locale';
-import {checkParameterStringNotNullOrEmpty, checkParameterStringUndefinedOrNotNullAndNotEmpty} from 'rf-util';
+import {checkParameterStringNotNullOrEmpty, checkParameterStringUndefinedOrNotNullAndNotEmpty, trim} from 'rf-util';
 import {ConflictError} from 'http-util';
+import {loc} from 'rf-locale';
 
 export const ServiceMixinTitle = Service => class extends Service {
     searchColumns = ['title'];
 
     async validateForCreation(data) {
-        checkParameterStringNotNullOrEmpty(data?.title, loc._f('Title'));
+        checkParameterStringNotNullOrEmpty(trim(data?.title), loc._f('Title'));
         await this.checkTitleForConflict(data.title, data);
         return super.validateForCreation(data);
     }
 
     async checkTitleForConflict(title) {
-        if (await this.getForTitle(title, {skipNoRowsError: true})) {
+        const rows = await this.getFor({title}, {limit: 1});
+        if (rows?.length) {
             throw new ConflictError(loc._f('Exists another data with that title.'));
         }
     }

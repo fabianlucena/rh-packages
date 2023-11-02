@@ -229,7 +229,7 @@ export class ServiceBase {
      */
     async create(data, options) {
         await this.completeReferences(data, true);
-        await this.validateForCreation(data);
+        data = await this.validateForCreation(data);
 
         let transaction;
         if (options?.transaction || this.transaction) {
@@ -409,7 +409,7 @@ export class ServiceBase {
      */
     async update(data, options) {
         await this.completeReferences(data);
-        await this.validateForUpdate(data, options.where);
+        data = await this.validateForUpdate(data, options.where);
 
         await this.emit('updating', options?.emitEvent, data, options);
         const result = await this.model.update(data, options);
