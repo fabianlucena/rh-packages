@@ -1,11 +1,11 @@
 import {PageFormatService} from './page_format.js';
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameTitleEnabledModuleTranslatable} from 'rf-service';
+import {ServiceIdUuidNameTitleEnabledModuleSharedTranslatable} from 'rf-service';
 import {completeIncludeOptions, checkViewOptions} from 'sql-util';
 import {checkParameterStringNotNullOrEmpty} from 'rf-util';
 import {loc} from 'rf-locale';
 
-export class PageService extends ServiceIdUuidNameTitleEnabledModuleTranslatable {
+export class PageService extends ServiceIdUuidNameTitleEnabledModuleSharedTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Page;
     shareObject = 'Page';
@@ -55,7 +55,7 @@ export class PageService extends ServiceIdUuidNameTitleEnabledModuleTranslatable
                 }
             );
 
-            checkViewOptions(options);
+            await checkViewOptions(options);
         }
 
         return super.getListOptions(options);
