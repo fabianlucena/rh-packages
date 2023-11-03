@@ -33,20 +33,24 @@ export class ServiceId extends ServiceMixinId(ServiceBase) {}
 export class ServiceIdTranslatable extends ServiceMixinTranslatable(ServiceMixinId(ServiceBase)) {}
 export class ServiceIdUuid extends ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))) {}
 export class ServiceIdUuidEnabled extends ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))) {}
-export class ServiceIdUuidEnabledModule extends ServiceMixinModule(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase)))))) {}
-export class ServiceIdUuidName extends ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))) {}
+export class ServiceIdUuidTranslatable extends ServiceMixinTranslatable(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase)))) {}
 export class ServiceIdUuidNameEnabledTranslatable extends ServiceMixinTranslatable(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase)))))))) {}
-export class ServiceIdUuidNameEnabledModuleTranslatable extends ServiceMixinTranslatable(ServiceMixinModule(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))))) {}
 export class ServiceIdUuidNameTitleTranslatable extends ServiceMixinTranslatable(ServiceMixinNameTitle(ServiceMixinTitle(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase)))))))) {}
 export class ServiceIdUuidNameTitleEnabledTranslatable extends ServiceMixinTranslatable(ServiceMixinNameTitle(ServiceMixinTitle(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase)))))))))) {}
+
+export class ServiceModule extends ServiceMixinModule(ServiceBase) {}
+export class ServiceModuleTranslatable extends ServiceMixinTranslatable(ServiceMixinModule(ServiceBase)) {}
+export class ServiceIdUuidEnabledModule extends ServiceMixinModule(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase)))))) {}
+export class ServiceIdUuidName extends ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))) {}
+export class ServiceIdUuidNameEnabledModuleTranslatable extends ServiceMixinTranslatable(ServiceMixinModule(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))))) {}
 export class ServiceIdUuidNameTitleEnabledModuleTranslatable extends ServiceMixinTranslatable(ServiceMixinModule(ServiceMixinNameTitle(ServiceMixinTitle(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))))))) {}
 export class ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable extends ServiceMixinTranslatable(ServiceMixinModule(ServiceMixinNameTitleDescription(ServiceMixinTitle(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))))))) {}
-export class ServiceIdUuidNameTitleDescriptionEnabledSharedTranslatable extends ServiceMixinTranslatable(ServiceMixinShared(ServiceMixinNameTitleDescription(ServiceMixinTitle(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))))))) {}
-export class ServiceIdUuidTranslatable extends ServiceMixinTranslatable(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase)))) {}
 export class ServiceEnabledModuleTranslatable extends ServiceMixinTranslatable(ServiceMixinModule(ServiceMixinEnabled(ServiceBase))) {}
+
 export class ServiceShared extends ServiceMixinShared(ServiceBase) {}
 export class ServiceSharedEnabled extends ServiceMixinEnabled(ServiceMixinShared(ServiceBase)) {}
 export class ServiceIdUuidNameEnabledSharedTranslatable extends ServiceMixinTranslatable(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinShared(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))))) {}
 export class ServiceIdUuidNameTitleEnabledSharedTranslatable extends ServiceMixinTranslatable(ServiceMixinNameTitle(ServiceMixinTitle(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinShared(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))))))) {}
-export class ServiceModule extends ServiceMixinModule(ServiceBase) {}
-export class ServiceModuleTranslatable extends ServiceMixinTranslatable(ServiceMixinModule(ServiceBase)) {}
+export class ServiceIdUuidNameTitleDescriptionEnabledSharedTranslatable extends ServiceMixinTranslatable(ServiceMixinShared(ServiceMixinNameTitleDescription(ServiceMixinTitle(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))))))) {}
+
+export class ServiceIdUuidNameTitleEnabledModuleSharedTranslatable extends ServiceMixinTranslatable(ServiceMixinShared(ServiceMixinModule(ServiceMixinNameTitle(ServiceMixinTitle(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase)))))))))))) {}

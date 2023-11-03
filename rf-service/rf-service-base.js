@@ -269,7 +269,7 @@ export class ServiceBase {
         const searchColumns = this.searchColumns = options.searchColumns || this.searchColumns;
         if (options.q && searchColumns) {
             if (!this.Sequelize.Op) {
-                throw new _Error(loc._f('No Sequalize Op defined.'));
+                throw new _Error(loc._f('No Sequalize.Op defined on %s. Try adding "Sequelize = conf.global.Sequelize" to the class.', this.constructor.name));
             }
             
             const Op = this.Sequelize.Op;

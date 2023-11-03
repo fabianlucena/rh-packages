@@ -16,7 +16,7 @@ export class NoRowsError extends Error {
 }
 
 export class NoRowError extends Error {
-    static _message = loc._f('There are no row.');
+    static _message = loc._f('There are no rows.');
 
     constructor(message) {
         super();

@@ -10,6 +10,10 @@ export const ServiceMixinModule = Service => class ServiceModule extends Service
      */
     async completeOwnerModuleId(data) {
         if (!data.ownerModuleId && data.ownerModule) {
+            if (!this.moduleService) {
+                throw new _Error(loc._f('No moduleService defined on %s. Try adding "moduleService = conf.global.services.Module.singleton()" to the class.', this.constructor.name));
+            }
+
             data.ownerModuleId = await this.moduleService.getIdForName(data.ownerModule);
         }
 
@@ -17,7 +21,7 @@ export const ServiceMixinModule = Service => class ServiceModule extends Service
     }
 
     async validate(data) {
-        this.completeOwnerModuleId(data);
+        await this.completeOwnerModuleId(data);
         return super.validate(data);
     }
 
@@ -30,7 +34,7 @@ export const ServiceMixinModule = Service => class ServiceModule extends Service
     async getListOptions(options) {
         if (options?.isEnabled !== undefined) {
             if (!this.moduleModel) {
-                throw new _Error(loc._f('No moduleModel defined.'));
+                throw new _Error(loc._f('No moduleModel defined on %s. Try adding "moduleModel = conf.global.models.Module" to the class.', this.constructor.name));
             }
 
             options = addEnabledOwnerModuleFilter(options, this.moduleModel);
