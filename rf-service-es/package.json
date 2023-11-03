@@ -1,0 +1,18 @@
+{
+  "name": "rh-service-es",
+  "version": "1.0.0",
+  "description": "Translation to Spanish for package rh-service.",
+  "main": "rh-service-es.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "update": "rf-locale --update-translations-file ../rf-service/**/*.js **/*.js --translations-filename ./translations_es.json --language es",
+    "extract": "rf-locale --extract-translations-file ../rf-service/**/*.js **/*.js --translations-filename ./translations_es.json --language es",
+    "validate": "rf-locale --validate-translations-file --translations-filename ./translations_es.json",
+    "show": "rf-locale --show-translations-file --translations-filename ./translations_es.json",
+    "edit": "rf-locale --html-edit-translations-file --translations-filename ./translations_es.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
