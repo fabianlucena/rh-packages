@@ -25,7 +25,7 @@
         "language": "es",
         "context": "tag",
         "translation": "Descripción",
-        "ref": "..\\rh-tag\\controllers\\tag.js [129,62]\n..\\rh-tag\\controllers\\tag.js [130,68]"
+        "ref": "..\\rh-tag\\controllers\\tag.js [145,62]\n..\\rh-tag\\controllers\\tag.js [146,68]"
     },
     {
         "source": "Edit tags",
@@ -39,14 +39,14 @@
         "language": "es",
         "context": "tag",
         "translation": "Habilitado",
-        "ref": "..\\rh-tag\\controllers\\tag.js [122,58]\n..\\rh-tag\\controllers\\tag.js [123,64]"
+        "ref": "..\\rh-tag\\controllers\\tag.js [138,58]\n..\\rh-tag\\controllers\\tag.js [139,64]"
     },
     {
         "source": "Exists another tag with that name.",
         "language": "es",
         "context": "tag",
         "translation": "Ya existe otra etiqueta con ese nombre.",
-        "ref": "..\\rh-tag\\services\\tag.js [27,89]"
+        "ref": "..\\rh-tag\\services\\tag.js [28,89]"
     },
     {
         "source": "Get tags",
@@ -60,7 +60,7 @@
         "language": "es",
         "context": "tag",
         "translation": "Nombre",
-        "ref": "..\\rh-tag\\controllers\\tag.js [84,55]\n..\\rh-tag\\controllers\\tag.js [112,55]\n..\\rh-tag\\controllers\\tag.js [113,61]"
+        "ref": "..\\rh-tag\\controllers\\tag.js [84,55]\n..\\rh-tag\\controllers\\tag.js [127,55]\n..\\rh-tag\\controllers\\tag.js [128,61]"
     },
     {
         "source": "Owner",
@@ -93,7 +93,7 @@
         "language": "es",
         "context": "tag",
         "translation": "Categoría de etiqueta",
-        "ref": "..\\rh-tag\\services\\tag.js [21,94]"
+        "ref": "..\\rh-tag\\services\\tag.js [22,94]"
     },
     {
         "source": "Tag manager",

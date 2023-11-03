@@ -10,7 +10,6 @@
         "source": "Sites",
         "language": "es",
         "context": "menu",
-        "isDraft": false,
         "translation": "Sitios",
         "ref": "..\\rh-site\\conf_data.js [19,177]"
     },

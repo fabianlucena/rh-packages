@@ -23,7 +23,6 @@
         "source": "Cannot create privileges, privileges is a container not an entity.",
         "language": "es",
         "context": "privileges",
-        "isDraft": false,
         "translation": "No se puede crear privilegios, privilegios es un contenedor no una entidad.",
         "ref": "..\\rh-access\\services\\privileges.js [42,117]"
     },
@@ -31,7 +30,6 @@
         "source": "Cannot delete privileges, privileges is a container not an entity.",
         "language": "es",
         "context": "privileges",
-        "isDraft": false,
         "translation": "No se pueden eliminar privilegios, privilegios es un contenedor no una entidad.",
         "ref": "..\\rh-access\\services\\privileges.js [54,117]"
     },
@@ -39,7 +37,6 @@
         "source": "Cannot get privileges, privileges is a container not an entity.",
         "language": "es",
         "context": "privileges",
-        "isDraft": false,
         "translation": "No se pueden obtener privilegios, privilegios es un contenedor no una entidad.",
         "ref": "..\\rh-access\\services\\privileges.js [46,114]"
     },
@@ -47,7 +44,6 @@
         "source": "Cannot update privileges, privileges is a container not an entity.",
         "language": "es",
         "context": "privileges",
-        "isDraft": false,
         "translation": "No se pueden actualizar privilegios, privilegios es un contenedor no una entidad.",
         "ref": "..\\rh-access\\services\\privileges.js [50,117]"
     },
@@ -83,7 +79,7 @@
         "language": "es",
         "context": "member",
         "translation": "Nombre mostrado",
-        "ref": "..\\rh-access\\controllers\\member.js [114,66]\n..\\rh-access\\controllers\\member.js [136,66]\n..\\rh-access\\controllers\\member.js [220,129]"
+        "ref": "..\\rh-access\\controllers\\member.js [114,66]\n..\\rh-access\\controllers\\member.js [136,66]\n..\\rh-access\\controllers\\member.js [224,129]"
     },
     {
         "source": "Edit members",
@@ -117,28 +113,28 @@
         "language": "es",
         "context": "member",
         "translation": "Habilitado",
-        "ref": "..\\rh-access\\controllers\\member.js [154,61]\n..\\rh-access\\controllers\\member.js [155,67]"
+        "ref": "..\\rh-access\\controllers\\member.js [158,61]\n..\\rh-access\\controllers\\member.js [159,67]"
     },
     {
         "source": "Error to change the password",
         "language": "es",
         "context": "member",
         "translation": "Error al cambiar la contraseña",
-        "ref": "..\\rh-access\\controllers\\member.js [384,79]"
+        "ref": "..\\rh-access\\controllers\\member.js [388,79]"
     },
     {
         "source": "Error to get local identity",
         "language": "es",
         "context": "member",
         "translation": "Error al obtener la identidad local",
-        "ref": "..\\rh-access\\controllers\\member.js [378,82]"
+        "ref": "..\\rh-access\\controllers\\member.js [382,82]"
     },
     {
         "source": "Error you cannot set your own password. Please use change password option instead.",
         "language": "es",
         "context": "member",
         "translation": "Error usted no puede especificar su propia contraseña. Por favor, en su lugar, use la opción cambiar contraseña.",
-        "ref": "..\\rh-access\\controllers\\member.js [305,137]"
+        "ref": "..\\rh-access\\controllers\\member.js [309,137]"
     },
     {
         "source": "Get members",
@@ -159,7 +155,7 @@
         "language": "es",
         "context": "member",
         "translation": "Miembro",
-        "ref": "..\\rh-access\\controllers\\member.js [130,52]\n..\\rh-access\\controllers\\member.js [352,60]"
+        "ref": "..\\rh-access\\controllers\\member.js [130,52]\n..\\rh-access\\controllers\\member.js [356,60]"
     },
     {
         "source": "Members",
@@ -206,7 +202,7 @@
         "language": "es",
         "context": "member",
         "translation": "Contraseña",
-        "ref": "..\\rh-access\\controllers\\member.js [174,62]\n..\\rh-access\\controllers\\member.js [359,62]"
+        "ref": "..\\rh-access\\controllers\\member.js [178,62]\n..\\rh-access\\controllers\\member.js [363,62]"
     },
     {
         "source": "Privileges",
@@ -227,7 +223,7 @@
         "language": "es",
         "context": "member",
         "translation": "Roles",
-        "ref": "..\\rh-access\\controllers\\member.js [163,59]\n..\\rh-access\\controllers\\member.js [225,95]\n..\\rh-access\\controllers\\member.js [286,95]"
+        "ref": "..\\rh-access\\controllers\\member.js [167,59]\n..\\rh-access\\controllers\\member.js [229,95]\n..\\rh-access\\controllers\\member.js [290,95]"
     },
     {
         "source": "Roles",
@@ -247,7 +243,7 @@
         "language": "es",
         "context": "member",
         "translation": "Establecer contraseña del miembro",
-        "ref": "..\\rh-access\\controllers\\member.js [345,68]"
+        "ref": "..\\rh-access\\controllers\\member.js [349,68]"
     },
     {
         "source": "Site",
@@ -292,7 +288,7 @@
         "language": "es",
         "context": "member",
         "translation": "El miembro con el UUID %s no existe.",
-        "ref": "..\\rh-access\\controllers\\member.js [19,99]\n..\\rh-access\\controllers\\member.js [249,99]\n..\\rh-access\\controllers\\member.js [260,99]\n..\\rh-access\\controllers\\member.js [271,99]\n..\\rh-access\\controllers\\member.js [294,99]"
+        "ref": "..\\rh-access\\controllers\\member.js [19,99]\n..\\rh-access\\controllers\\member.js [253,99]\n..\\rh-access\\controllers\\member.js [264,99]\n..\\rh-access\\controllers\\member.js [275,99]\n..\\rh-access\\controllers\\member.js [298,99]"
     },
     {
         "source": "Title",
@@ -305,7 +301,7 @@
         "language": "es",
         "context": "member",
         "translation": "Escriba aquí la nueva contraseña para el miembro\n",
-        "ref": "..\\rh-access\\controllers\\member.js [175,97]\n..\\rh-access\\controllers\\member.js [360,97]"
+        "ref": "..\\rh-access\\controllers\\member.js [179,97]\n..\\rh-access\\controllers\\member.js [364,97]"
     },
     {
         "source": "Type the display name here",
@@ -319,7 +315,7 @@
         "language": "es",
         "context": "member",
         "translation": "UUID",
-        "ref": "..\\rh-access\\controllers\\member.js [236,131]\n..\\rh-access\\controllers\\member.js [255,131]\n..\\rh-access\\controllers\\member.js [266,131]\n..\\rh-access\\controllers\\member.js [278,131]\n..\\rh-access\\controllers\\member.js [301,131]"
+        "ref": "..\\rh-access\\controllers\\member.js [240,131]\n..\\rh-access\\controllers\\member.js [259,131]\n..\\rh-access\\controllers\\member.js [270,131]\n..\\rh-access\\controllers\\member.js [282,131]\n..\\rh-access\\controllers\\member.js [305,131]"
     },
     {
         "source": "UUID",
@@ -380,7 +376,7 @@
         "language": "es",
         "context": "member",
         "translation": "Nombre de usuario",
-        "ref": "..\\rh-access\\controllers\\member.js [119,62]\n..\\rh-access\\controllers\\member.js [143,62]\n..\\rh-access\\controllers\\member.js [144,68]\n..\\rh-access\\controllers\\member.js [220,81]"
+        "ref": "..\\rh-access\\controllers\\member.js [119,62]\n..\\rh-access\\controllers\\member.js [147,62]\n..\\rh-access\\controllers\\member.js [148,68]\n..\\rh-access\\controllers\\member.js [224,81]"
     },
     {
         "source": "Users accesses",
@@ -414,14 +410,14 @@
         "language": "es",
         "context": "member",
         "translation": "Usted no puede cambiar la contraseña porque el miembro tiene otros accesos. Por favor contacte al administrdor.",
-        "ref": "..\\rh-access\\controllers\\member.js [310,172]\n..\\rh-access\\controllers\\member.js [323,171]"
+        "ref": "..\\rh-access\\controllers\\member.js [314,172]\n..\\rh-access\\controllers\\member.js [327,171]"
     },
     {
         "source": "You cannot change the member password because the member the user belongs to another site. Please contact the asministrator.",
         "language": "es",
         "context": "member",
         "translation": "Usted no puede cambiar la contraseá del miembro porque el miembro pertenece a otro sitio. Por favor contacte al administrador.",
-        "ref": "..\\rh-access\\controllers\\member.js [314,184]"
+        "ref": "..\\rh-access\\controllers\\member.js [318,184]"
     },
     {
         "source": "assignable roles",
@@ -434,6 +430,6 @@
         "language": "es",
         "context": "member",
         "translation": "contraseña",
-        "ref": "..\\rh-access\\controllers\\member.js [369,75]\n..\\rh-access\\controllers\\member.js [372,82]"
+        "ref": "..\\rh-access\\controllers\\member.js [373,75]\n..\\rh-access\\controllers\\member.js [376,82]"
     }
 ]

@@ -24,7 +24,7 @@
         "language": "es",
         "context": "company",
         "translation": "La empresa con el UUID %s no existe.",
-        "ref": "..\\rh-company\\controllers\\company.js [324,97]\n..\\rh-company\\controllers\\company.js [375,97]\n..\\rh-company\\controllers\\company.js [426,97]\n..\\rh-company\\controllers\\company.js [475,97]"
+        "ref": "..\\rh-company\\controllers\\company.js [338,97]\n..\\rh-company\\controllers\\company.js [387,97]\n..\\rh-company\\controllers\\company.js [436,97]\n..\\rh-company\\controllers\\company.js [487,97]"
     },
     {
         "source": "Create companies",
@@ -44,7 +44,7 @@
         "source": "Description",
         "language": "es",
         "translation": "Descripción",
-        "ref": "..\\rh-company\\controllers\\company.js [272,54]\n..\\rh-company\\controllers\\company.js [273,60]"
+        "ref": "..\\rh-company\\controllers\\company.js [288,54]\n..\\rh-company\\controllers\\company.js [289,60]"
     },
     {
         "source": "Edit companies",
@@ -57,7 +57,7 @@
         "source": "Enabled",
         "language": "es",
         "translation": "Habilitado",
-        "ref": "..\\rh-company\\controllers\\company.js [265,50]\n..\\rh-company\\controllers\\company.js [266,56]"
+        "ref": "..\\rh-company\\controllers\\company.js [281,50]\n..\\rh-company\\controllers\\company.js [282,56]"
     },
     {
         "source": "Get companies",
@@ -71,13 +71,13 @@
         "language": "es",
         "context": "company",
         "translation": "Nombre",
-        "ref": "..\\rh-company\\controllers\\company.js [100,68]"
+        "ref": "..\\rh-company\\controllers\\company.js [103,68]"
     },
     {
         "source": "Name",
         "language": "es",
         "translation": "Nombre",
-        "ref": "..\\rh-company\\controllers\\company.js [227,47]\n..\\rh-company\\controllers\\company.js [255,47]\n..\\rh-company\\controllers\\company.js [256,53]"
+        "ref": "..\\rh-company\\controllers\\company.js [227,47]\n..\\rh-company\\controllers\\company.js [270,47]\n..\\rh-company\\controllers\\company.js [271,53]"
     },
     {
         "source": "Owner",
@@ -116,26 +116,19 @@
         "language": "es",
         "context": "company",
         "translation": "La empresa con el UUID %s no existe.",
-        "ref": "..\\rh-company\\controllers\\company.js [57,101]"
+        "ref": "..\\rh-company\\controllers\\company.js [58,101]"
     },
     {
         "source": "Title",
         "language": "es",
         "context": "company",
         "translation": "Título",
-        "ref": "..\\rh-company\\controllers\\company.js [100,104]"
+        "ref": "..\\rh-company\\controllers\\company.js [103,104]"
     },
     {
         "source": "Title",
         "language": "es",
         "translation": "Título",
         "ref": "..\\rh-company\\controllers\\company.js [222,48]\n..\\rh-company\\controllers\\company.js [249,48]\n..\\rh-company\\controllers\\company.js [250,54]"
-    },
-    {
-        "source": "UUID",
-        "language": "es",
-        "context": "company",
-        "translation": "UUID",
-        "ref": "..\\rh-company\\controllers\\company.js [319,132]\n..\\rh-company\\controllers\\company.js [370,132]\n..\\rh-company\\controllers\\company.js [421,132]\n..\\rh-company\\controllers\\company.js [470,132]"
     }
 ]

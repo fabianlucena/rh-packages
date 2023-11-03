@@ -31,7 +31,6 @@
         "source": "PNG image",
         "language": "es",
         "context": "resourceType",
-        "isDraft": false,
         "translation": "Imagen PNG",
         "ref": "..\\rh-page\\conf_data.js [12,72]"
     },
@@ -53,7 +52,6 @@
         "source": "Resource not found.",
         "language": "es",
         "context": "resource",
-        "isDraft": false,
         "translation": "Recurso no encontrado.",
         "ref": "..\\rh-page\\controllers\\resource.js [42,80]"
     },
@@ -73,7 +71,6 @@
         "source": "There are many resources for that criteria.",
         "language": "es",
         "context": "resource",
-        "isDraft": false,
         "translation": "Hay mucho recursos para ese criterio.",
         "ref": "..\\rh-page\\controllers\\resource.js [46,104]"
     }

@@ -11,7 +11,7 @@
         "language": "es",
         "context": "branch",
         "translation": "La sucursal con el UUID %s no existe. ",
-        "ref": "..\\rh-branch\\controllers\\branch.js [368,95]\n..\\rh-branch\\controllers\\branch.js [419,95]\n..\\rh-branch\\controllers\\branch.js [470,95]\n..\\rh-branch\\controllers\\branch.js [519,95]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [382,95]\n..\\rh-branch\\controllers\\branch.js [433,95]\n..\\rh-branch\\controllers\\branch.js [484,95]\n..\\rh-branch\\controllers\\branch.js [533,95]"
     },
     {
         "source": "Branches",
@@ -24,14 +24,14 @@
         "source": "Branches",
         "language": "es",
         "translation": "Sucursales",
-        "ref": "..\\rh-branch\\controllers\\branch.js [246,43]\n..\\rh-branch\\controllers\\branch.js [313,43]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [246,43]\n..\\rh-branch\\controllers\\branch.js [327,43]"
     },
     {
         "source": "Company",
         "language": "es",
         "context": "branch",
         "translation": "Empresa",
-        "ref": "..\\rh-branch\\controllers\\branch.js [235,58]\n..\\rh-branch\\controllers\\branch.js [287,58]\n..\\rh-branch\\controllers\\branch.js [288,64]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [235,58]\n..\\rh-branch\\controllers\\branch.js [301,58]\n..\\rh-branch\\controllers\\branch.js [302,64]"
     },
     {
         "source": "Company parameter is missing.",
@@ -59,7 +59,7 @@
         "language": "es",
         "context": "branch",
         "translation": "Descripción ",
-        "ref": "..\\rh-branch\\controllers\\branch.js [307,62]\n..\\rh-branch\\controllers\\branch.js [308,68]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [321,62]\n..\\rh-branch\\controllers\\branch.js [322,68]"
     },
     {
         "source": "Edit branches",
@@ -73,7 +73,7 @@
         "language": "es",
         "context": "branch",
         "translation": "Habilitado ",
-        "ref": "..\\rh-branch\\controllers\\branch.js [300,58]\n..\\rh-branch\\controllers\\branch.js [301,64]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [314,58]\n..\\rh-branch\\controllers\\branch.js [315,64]"
     },
     {
         "source": "Get branches",
@@ -87,7 +87,7 @@
         "language": "es",
         "context": "branch",
         "translation": "Nombre ",
-        "ref": "..\\rh-branch\\controllers\\branch.js [103,67]\n..\\rh-branch\\controllers\\branch.js [229,55]\n..\\rh-branch\\controllers\\branch.js [275,55]\n..\\rh-branch\\controllers\\branch.js [276,61]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [103,67]\n..\\rh-branch\\controllers\\branch.js [229,55]\n..\\rh-branch\\controllers\\branch.js [289,55]\n..\\rh-branch\\controllers\\branch.js [290,61]"
     },
     {
         "source": "Owner",
@@ -141,6 +141,6 @@
         "language": "es",
         "context": "branch",
         "translation": "UUID ",
-        "ref": "..\\rh-branch\\controllers\\branch.js [363,131]\n..\\rh-branch\\controllers\\branch.js [414,131]\n..\\rh-branch\\controllers\\branch.js [465,131]\n..\\rh-branch\\controllers\\branch.js [514,131]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [377,131]\n..\\rh-branch\\controllers\\branch.js [428,131]\n..\\rh-branch\\controllers\\branch.js [479,131]\n..\\rh-branch\\controllers\\branch.js [528,131]"
     }
 ]

@@ -18,7 +18,7 @@
         "language": "es",
         "context": "mainCompany",
         "translation": "Descripción",
-        "ref": "..\\rh-main-company\\controllers\\main-company.js [115,70]\n..\\rh-main-company\\controllers\\main-company.js [116,76]"
+        "ref": "..\\rh-main-company\\controllers\\main-company.js [131,70]\n..\\rh-main-company\\controllers\\main-company.js [132,76]"
     },
     {
         "source": "Edit main companies",
@@ -32,7 +32,7 @@
         "language": "es",
         "context": "mainCompany",
         "translation": "Habilitado",
-        "ref": "..\\rh-main-company\\controllers\\main-company.js [108,66]\n..\\rh-main-company\\controllers\\main-company.js [109,72]"
+        "ref": "..\\rh-main-company\\controllers\\main-company.js [124,66]\n..\\rh-main-company\\controllers\\main-company.js [125,72]"
     },
     {
         "source": "Get main companies",
@@ -67,7 +67,7 @@
         "language": "es",
         "context": "mainCompany",
         "translation": "Nombre",
-        "ref": "..\\rh-main-company\\controllers\\main-company.js [75,63]\n..\\rh-main-company\\controllers\\main-company.js [98,63]\n..\\rh-main-company\\controllers\\main-company.js [99,69]\n..\\rh-main-company\\controllers\\main-company.js [124,72]"
+        "ref": "..\\rh-main-company\\controllers\\main-company.js [75,63]\n..\\rh-main-company\\controllers\\main-company.js [113,63]\n..\\rh-main-company\\controllers\\main-company.js [114,69]\n..\\rh-main-company\\controllers\\main-company.js [140,72]"
     },
     {
         "source": "Spanish",
@@ -86,34 +86,34 @@
         "language": "es",
         "context": "mainCompany",
         "translation": "Los datos para la empresa titular no tienen propietario. ",
-        "ref": "..\\rh-main-company\\controllers\\main-company.js [137,112]"
+        "ref": "..\\rh-main-company\\controllers\\main-company.js [153,112]"
     },
     {
         "source": "The main company with UUID %s does not exists.",
         "language": "es",
         "context": "mainCompany",
         "translation": "La empresa titular con el UUID %s no existe.",
-        "ref": "..\\rh-main-company\\controllers\\main-company.js [14,110]\n..\\rh-main-company\\controllers\\main-company.js [152,110]\n..\\rh-main-company\\controllers\\main-company.js [164,110]\n..\\rh-main-company\\controllers\\main-company.js [176,110]\n..\\rh-main-company\\controllers\\main-company.js [188,110]"
+        "ref": "..\\rh-main-company\\controllers\\main-company.js [14,110]\n..\\rh-main-company\\controllers\\main-company.js [168,110]\n..\\rh-main-company\\controllers\\main-company.js [180,110]\n..\\rh-main-company\\controllers\\main-company.js [192,110]\n..\\rh-main-company\\controllers\\main-company.js [204,110]"
     },
     {
         "source": "Title",
         "language": "es",
         "context": "mainCompany",
         "translation": "Título",
-        "ref": "..\\rh-main-company\\controllers\\main-company.js [70,64]\n..\\rh-main-company\\controllers\\main-company.js [92,64]\n..\\rh-main-company\\controllers\\main-company.js [93,70]\n..\\rh-main-company\\controllers\\main-company.js [124,112]"
+        "ref": "..\\rh-main-company\\controllers\\main-company.js [70,64]\n..\\rh-main-company\\controllers\\main-company.js [92,64]\n..\\rh-main-company\\controllers\\main-company.js [93,70]\n..\\rh-main-company\\controllers\\main-company.js [140,112]"
     },
     {
         "source": "UUID",
         "language": "es",
         "context": "mainCompany",
         "translation": "UUID",
-        "ref": "..\\rh-main-company\\controllers\\main-company.js [147,136]\n..\\rh-main-company\\controllers\\main-company.js [159,136]\n..\\rh-main-company\\controllers\\main-company.js [171,136]"
+        "ref": "..\\rh-main-company\\controllers\\main-company.js [163,136]\n..\\rh-main-company\\controllers\\main-company.js [175,136]\n..\\rh-main-company\\controllers\\main-company.js [187,136]"
     },
     {
         "source": "UUID",
         "language": "es",
         "context": "scenario",
         "translation": "UUID",
-        "ref": "..\\rh-main-company\\controllers\\main-company.js [183,133]"
+        "ref": "..\\rh-main-company\\controllers\\main-company.js [199,133]"
     }
 ]
