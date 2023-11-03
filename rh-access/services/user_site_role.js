@@ -182,7 +182,7 @@ export class UserSiteRoleService extends ServiceModuleTranslatable {
      * @returns {Promise{UserSiteRole}}
      */
     async createIfNotExists(data, options) {
-        this.completeReferences(data);
+        await this.completeReferences(data);
         await checkDataForMissingProperties(data, 'UserSiteRole', 'userId', 'siteId', 'roleId');
 
         const rows = await this.getList({

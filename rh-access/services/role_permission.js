@@ -7,6 +7,8 @@ import {checkDataForMissingProperties} from 'sql-util';
 export class RolePermissionService extends ServiceModuleTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.RolePermission;
+    moduleModel = conf.global.models.Module;
+    moduleService = conf.global.services.Module.singleton();
     references = {
         role: RoleService.singleton(),
         permission: PermissionService.singleton(),
