@@ -2,7 +2,7 @@ import {TagService} from './tag.js';
 import {TagCategoryService} from './tag_category.js';
 import {ServiceBase} from 'rf-service';
 import {ucfirst, checkParameterStringNotNullOrEmpty} from 'rf-util';
-import {ConflictError} from 'http-util';
+import {_ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 import {completeIncludeOptions, getIncludedModelOptions} from 'sql-util';
 
@@ -63,7 +63,7 @@ export class EntityTagService extends ServiceBase {
 
         const rows = await this.getFor(data, {skipNoRowsError: true});
         if (rows.length) {
-            throw new ConflictError(loc._cf('entityTag', 'The tag is already linked to the %s.', this.entityName));
+            throw new _ConflictError(loc._cf('entityTag', 'The tag is already linked to the %s.', this.entityName));
         }
 
         return super.validateForCreation(data);

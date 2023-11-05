@@ -2,7 +2,7 @@ import {IdentityService} from '../services/identity.js';
 import {conf} from '../conf.js';
 import {ServiceIdUuidEnabledModule} from 'rf-service';
 import {getSingle} from 'sql-util';
-import {ConflictError} from 'http-util';
+import {_ConflictError} from 'http-util';
 import {checkParameter} from 'rf-util';
 import {_Error} from 'rf-util';
 import {loc} from 'rf-locale';
@@ -23,13 +23,13 @@ export class UserService extends ServiceIdUuidEnabledModule {
             data.type = 'user';
         }
 
-        checkParameter(data, {username: loc._cf('member', 'Username'), displayName: loc._cf('member', 'Display name')});
+        checkParameter(data, {username: loc._cf('user', 'Username'), displayName: loc._cf('user', 'Display name')});
         if (await this.getForUsername(data.username, {check: false, skipNoRowsError: true})) {
-            throw new ConflictError('Another user with the same username already exists.');
+            throw new _ConflictError(loc._cf('user', 'Another user with the same username already exists.'));
         }
 
         if (await this.getForDisplayName(data.displayName, {check: false, skipNoRowsError: true})) {
-            throw new ConflictError('Another user with the same display name already exists.');
+            throw new _ConflictError(loc._cf('user', 'Another user with the same display name already exists.'));
         }
 
         return super.validateForCreation(data);

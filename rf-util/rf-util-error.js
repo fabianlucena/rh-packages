@@ -15,8 +15,9 @@ export function setUpError(error, options) {
         arranged[name] = value;
     }
 
-    for (const k in arranged)
+    for (const k in arranged) {
         error[k] = arranged[k];
+    }
 }
 
 export class _Error extends Error {
@@ -137,29 +138,33 @@ export async function getErrorMessage(error, loc) {
     let message;
     if (error.getMessage) {
         message = await error.getMessage(loc);
-        if (message)
+        if (message) {
             return message;
+        }
     }
 
     let _message = error._message;
     if (!_message) {
         let message = error.message;
-        if (!message)
+        if (!message) {
             _message = error.constructor._message;
+        }
 
         if (!_message) {
             if (!message) {
                 message = error.constructor.message;
-                if (!message)
+                if (!message) {
                     return;
+                }
             }
 
             let params;
             if (Array.isArray(error.message)) {
                 params = await getTranslatedParams(message.slice(1), false, loc);
                 message = message[0];
-            } else
+            } else {
                 params = await getErrorMessageParams(error, loc);
+            }
 
             return format(message, ...params);
         }
@@ -172,11 +177,12 @@ export async function getErrorMessage(error, loc) {
             const _params = _message.slice(1);
             _message = _message[0];
 
-            if (_params)
+            if (_params) {
                 params = await getTranslatedParams(_params, true, loc);
-        }
-        else
+            }
+        } else {
             params = await getErrorMessageParams(error, loc);
+        }
 
         return await loc._(_message, ...params);
     }
@@ -187,23 +193,25 @@ export async function getErrorMessage(error, loc) {
         error._n;
 
     if (!_n) {
-        if (error._zeroMessage)
+        if (error._zeroMessage) {
             _message = error._zeroMessage;
-        else if (error.zeroMessage)
+        } else if (error.zeroMessage) {
             message = error.zeroMessage;
-        else if (!error._message) {
-            if (error.constructor._zeroMessage)
+        } else if (!error._message) {
+            if (error.constructor._zeroMessage) {
                 _message = error.constructor._zeroMessage;
-            else
+            } else {
                 message = error.constructor.zeroMessage;
+            }
         }
 
         if (_message) {
             if (Array.isArray(_message)) {
                 params = await getTranslatedParams(_message.slice(1), false, loc);
                 _message = message[0];
-            } else
+            } else {
                 params = await getErrorMessageParams(error, loc);
+            }
 
             return await loc._(_message, params);
         }
@@ -212,8 +220,9 @@ export async function getErrorMessage(error, loc) {
             if (Array.isArray(message)) {
                 params = await getTranslatedParams(message.slice(1), false, loc);
                 message = message[0];
-            } else
+            } else {
                 params = await getErrorMessageParams(error, loc);
+            }
 
             return format(message, params);
         }
@@ -226,12 +235,13 @@ export async function getErrorMessage(error, loc) {
         _params = _message.slice(2),
         params;
 
-    if (_params && _params.length > 0)
+    if (_params && _params.length > 0) {
         params = await getTranslatedParams(_params, true, loc);
-    else if (error.getMessageParams)
+    } else if (error.getMessageParams) {
         params = await error.getMessageParams(loc) || [];
-    else
+    } else {
         params = await getErrorMessageParams(error, loc);
+    }
 
     return loc._n(_n, _singular, _plural, ...params);
 }
@@ -240,18 +250,21 @@ export async function getErrorData(error, loc, options) {
     let data = {};
     if (error instanceof Error) {
         data.name = error.constructor.name;
-        if (data.name[0] == '_')
+        if (data.name[0] == '_') {
             data.name = data.name.substring(1);
+        }
 
         const visibleProperties = options?.properties ?? error.constructor?.VisibleProperties ?? ['message', 'length', 'fileName', 'lineNumber', 'columnNumber', 'stack'];
         visibleProperties.forEach(n => data[n] = error[n]);
 
-        if (error.statusCode)
+        if (error.statusCode) {
             data.statusCode = error.statusCode;
+        }
 
         data.message = await getErrorMessage(error, loc);
-    } else
+    } else {
         data.message = error;
+    }
 
     if (data.stack && typeof data.stack === 'string')
         data.stack = data.stack.split('\n');

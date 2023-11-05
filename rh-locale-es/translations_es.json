@@ -33,7 +33,7 @@
         "source": "Cannot create the language because already exists.",
         "language": "es",
         "translation": "No se puede crear el idioma porque ya existe.",
-        "ref": "..\\rh-locale\\services\\language.js [19,97]"
+        "ref": "..\\rh-locale\\services\\language.js [19,98]"
     },
     {
         "source": "Click to hide details",

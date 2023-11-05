@@ -46,7 +46,7 @@
         "language": "es",
         "context": "tag",
         "translation": "Ya existe otra etiqueta con ese nombre.",
-        "ref": "..\\rh-tag\\services\\tag.js [28,89]"
+        "ref": "..\\rh-tag\\services\\tag.js [28,90]"
     },
     {
         "source": "Get tags",
@@ -121,7 +121,7 @@
         "language": "es",
         "context": "entityTag",
         "translation": "La etiqueta ya está enlazada a %s.",
-        "ref": "..\\rh-tag\\services\\entity_tag.js [66,114]"
+        "ref": "..\\rh-tag\\services\\entity_tag.js [66,115]"
     },
     {
         "source": "Title",

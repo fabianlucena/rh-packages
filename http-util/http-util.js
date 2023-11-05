@@ -38,6 +38,24 @@ export class UnauthorizedError extends Error {
 
     statusCode = 401;
 
+    constructor(message, options, ...params) {
+        super();
+        setUpError(
+            this,
+            {
+                message,
+                options,
+                params
+            }
+        );
+    }
+}
+
+export class _UnauthorizedError extends Error {
+    static VisibleProperties = ['message'];
+
+    statusCode = 401;
+
     constructor(_message, options, ...params) {
         super();
         setUpError(
@@ -130,6 +148,18 @@ export class ConflictError extends Error {
     }
 }
 
+export class _ConflictError extends Error {
+    static VisibleProperties = ['message'];
+    static _message = loc._f('Conflict.');
+
+    statusCode = 409;
+
+    constructor(_message) {
+        super();
+        setUpError(this, {_message});
+    }
+}
+
 function log(message) {
     if (typeof message === 'string') {
         message = {message};
@@ -217,8 +247,9 @@ export function configureRouter(routesPath, router, checkPermission, options) {
         return;
     }
 
-    if (!fs.existsSync(routesPath))
+    if (!fs.existsSync(routesPath)) {
         throw new Error(`The routes path does not exists: ${routesPath}`);
+    }
         
     fs
         .readdirSync(routesPath)

@@ -2,7 +2,7 @@ import {conf} from '../conf.js';
 import {ServiceIdUuidNameTitleEnabledSharedTranslatable} from 'rf-service';
 import {completeIncludeOptions} from 'sql-util';
 import {CheckError} from 'rf-util';
-import {ConflictError} from 'http-util';
+import {_ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
 export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslatable {
@@ -29,7 +29,7 @@ export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslata
     async checkNameForConflict(name, data) {
         const rows = await this.getFor({name, companyId: data.companyId}, {skipNoRowsError: true});
         if (rows?.length) {
-            throw new ConflictError(loc._cf('project', 'Exists another project with that name in this company.'));
+            throw new _ConflictError(loc._cf('project', 'Exists another project with that name in this company.'));
         }
     }
 
@@ -40,7 +40,7 @@ export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslata
         if (where?.uuid) {whereOptions.uuid = {[conf.global.Sequelize.Op.ne]: where.uuid};}
         const rows = await this.getFor(whereOptions, {limit: 1});
         if (rows?.length) {
-            throw new ConflictError(loc._cf('project', 'Exists another project with that title in this company.'));
+            throw new _ConflictError(loc._cf('project', 'Exists another project with that title in this company.'));
         }
     }
 

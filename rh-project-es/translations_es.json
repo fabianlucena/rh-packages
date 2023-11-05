@@ -53,14 +53,14 @@
         "language": "es",
         "context": "project",
         "translation": "Existe otro proyecto con ese nombre en esta empresa.",
-        "ref": "..\\rh-project\\services\\project.js [32,113]"
+        "ref": "..\\rh-project\\services\\project.js [32,114]"
     },
     {
         "source": "Exists another project with that title in this company.",
         "language": "es",
         "context": "project",
         "translation": "Existe otro proyecto con ese título en esta empresa.",
-        "ref": "..\\rh-project\\services\\project.js [43,114]"
+        "ref": "..\\rh-project\\services\\project.js [43,115]"
     },
     {
         "source": "Get projects",

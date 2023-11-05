@@ -1,6 +1,6 @@
 import {BranchService} from '../services/branch.js';
 import {conf} from '../conf.js';
-import {getOptionsFromParamsAndOData, _HttpError, ConflictError} from 'http-util';
+import {getOptionsFromParamsAndOData, _HttpError, _ConflictError} from 'http-util';
 import {checkParameter, checkParameterUuid, filterVisualItemsByAliasName} from 'rf-util';
 
 const branchService = BranchService.singleton();
@@ -107,7 +107,7 @@ export class BranchController {
         await BranchController.checkDataForCompanyId(req, data);
 
         if (await branchService.getForName(data.name, {skipNoRowsError: true})) {
-            throw new ConflictError();
+            throw new _ConflictError(req.loc._cf('branch', 'Exists another branch with that name.'));
         }
 
         if (!data.owner && !data.ownerId) {

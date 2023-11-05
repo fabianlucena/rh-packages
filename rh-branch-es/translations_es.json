@@ -76,6 +76,14 @@
         "ref": "..\\rh-branch\\controllers\\branch.js [314,58]\n..\\rh-branch\\controllers\\branch.js [315,64]"
     },
     {
+        "source": "Exists another branch with that name.",
+        "language": "es",
+        "context": "branch",
+        "isDraft": false,
+        "translation": "Existe otra sucursal con ese nombre.",
+        "ref": "..\\rh-branch\\controllers\\branch.js [110,100]"
+    },
+    {
         "source": "Get branches",
         "language": "es",
         "context": "permission",

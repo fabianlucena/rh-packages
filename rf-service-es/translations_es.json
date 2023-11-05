@@ -3,13 +3,13 @@
         "source": "Exists another row with that UUID.",
         "language": "es",
         "translation": "Existe otra fila con ese UUID.",
-        "ref": "..\\rf-service\\rf-service-mixin-uuid.js [18,81]"
+        "ref": "..\\rf-service\\rf-service-mixin-uuid.js [18,82]"
     },
     {
         "source": "Exists another row with that name.",
         "language": "es",
         "translation": "Existe otra fila con ese nombre.",
-        "ref": "..\\rf-service\\rf-service-mixin-name.js [17,81]"
+        "ref": "..\\rf-service\\rf-service-mixin-name.js [17,82]"
     },
     {
         "source": "Exists another row with that title.",
@@ -56,7 +56,7 @@
     {
         "source": "No Sequalize.Op defined on %s. Try adding \"Sequelize = conf.global.Sequelize\" to the class.",
         "language": "es",
-        "isDraft": true,
+        "isDraft": false,
         "translation": "No hay Sequelize.Op definido en %s. Intente añadiendo \"Sequelize = conf.global.Sequelize\" a la clase.",
         "ref": "..\\rf-service\\rf-service-base.js [272,158]"
     },

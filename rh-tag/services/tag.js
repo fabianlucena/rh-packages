@@ -2,7 +2,7 @@ import {conf} from '../conf.js';
 import {ServiceIdUuidNameEnabledModuleTranslatable} from 'rf-service';
 import {completeIncludeOptions} from 'sql-util';
 import {checkParameterStringNotNullOrEmpty} from 'rf-util';
-import {ConflictError} from 'http-util';
+import {_ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
 export class TagService extends ServiceIdUuidNameEnabledModuleTranslatable {
@@ -25,7 +25,7 @@ export class TagService extends ServiceIdUuidNameEnabledModuleTranslatable {
 
     async checkNameForConflict(name, data) {
         if (await this.getForName(name, {where: {tagCategoryId: data.tagCategoryId}, skipNoRowsError: true})) {
-            throw new ConflictError(loc._cf('tag', 'Exists another tag with that name.'));
+            throw new _ConflictError(loc._cf('tag', 'Exists another tag with that name.'));
         }
     }
 

@@ -7,7 +7,7 @@ import './services/device.js';
 import {SessionService} from './services/session.js';
 import {SessionController} from './controllers/session.js';
 import {loc} from 'rf-locale';
-import {UnauthorizedError, NoPermissionError} from 'http-util';
+import {_UnauthorizedError, NoPermissionError} from 'http-util';
 import {runSequentially} from 'rf-util';
 
 export const conf = localConf;
@@ -30,11 +30,11 @@ function getCheckPermissionHandler(chain) {
         if (!req.authToken) {
             const authorization = req.header('Authorization');
             if (!authorization) {
-                throw new UnauthorizedError(loc._cf('auth', 'HTTP error 401 unauthorized, no authorization header.'));
+                throw new _UnauthorizedError(loc._cf('auth', 'HTTP error 401 unauthorized, no authorization header.'));
             }
             
             if (!authorization.startsWith('Bearer ')) {
-                throw new UnauthorizedError(loc._cf('auth', 'HTTP error 401 unauthorized, authorization schema is no Bearer.'));
+                throw new _UnauthorizedError(loc._cf('auth', 'HTTP error 401 unauthorized, authorization schema is no Bearer.'));
             }
         }
 

@@ -35,6 +35,22 @@
         "ref": "..\\rh-main-company\\controllers\\main-company.js [124,66]\n..\\rh-main-company\\controllers\\main-company.js [125,72]"
     },
     {
+        "source": "Exists another company with that name.",
+        "language": "es",
+        "context": "mainCompany",
+        "isDraft": false,
+        "translation": "Existe otra empresa con ese nombre.",
+        "ref": "..\\rh-main-company\\controllers\\main-company.js [142,106]"
+    },
+    {
+        "source": "Exists another site with that name. The site it is necesary for the main company.",
+        "language": "es",
+        "context": "mainCompany",
+        "isDraft": false,
+        "translation": "Existe otro sitio con ese nombre. El sitio es necesario para la empresa titular.",
+        "ref": "..\\rh-main-company\\controllers\\main-company.js [146,149]"
+    },
+    {
         "source": "Get main companies",
         "language": "es",
         "context": "permission",

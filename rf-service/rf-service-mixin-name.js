@@ -1,5 +1,5 @@
 import {CheckError, checkParameterStringNotNullOrEmpty, trim} from 'rf-util';
-import {ConflictError} from 'http-util';
+import {_ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
 export const ServiceMixinName = Service => class extends Service {
@@ -14,7 +14,7 @@ export const ServiceMixinName = Service => class extends Service {
     async checkNameForConflict(name) {
         const rows = await this.getFor({name}, {limit: 1});
         if (rows?.length) {
-            throw new ConflictError(loc._f('Exists another row with that name.'));
+            throw new _ConflictError(loc._f('Exists another row with that name.'));
         }
     }
 

@@ -21,6 +21,22 @@
         "ref": "..\\rh-auth\\conf_data.js [21,66]"
     },
     {
+        "source": "Another user with the same display name already exists.",
+        "language": "es",
+        "context": "user",
+        "isDraft": false,
+        "translation": "Ya existe otro usuario con el mismo nombre mostrado.",
+        "ref": "..\\rh-auth\\services\\user.js [32,112]"
+    },
+    {
+        "source": "Another user with the same username already exists.",
+        "language": "es",
+        "context": "user",
+        "isDraft": false,
+        "translation": "Ya existe otro usuario con el mismo nombre de usuario.",
+        "ref": "..\\rh-auth\\services\\user.js [28,108]"
+    },
+    {
         "source": "Change my password",
         "language": "es",
         "context": "menu",
@@ -86,16 +102,9 @@
     {
         "source": "Display name",
         "language": "es",
-        "context": "member",
-        "translation": "Nombre mostrado",
-        "ref": "..\\rh-auth\\services\\user.js [26,118]"
-    },
-    {
-        "source": "Display name",
-        "language": "es",
         "context": "user",
         "translation": "Nombre mostrado",
-        "ref": "..\\rh-auth\\controllers\\user.js [156,64]\n..\\rh-auth\\controllers\\user.js [178,64]"
+        "ref": "..\\rh-auth\\services\\user.js [26,114]\n..\\rh-auth\\controllers\\user.js [156,64]\n..\\rh-auth\\controllers\\user.js [178,64]"
     },
     {
         "source": "Edit user",
@@ -546,16 +555,9 @@
     {
         "source": "Username",
         "language": "es",
-        "context": "member",
-        "translation": "Nombre de usuario ",
-        "ref": "..\\rh-auth\\services\\user.js [26,70]"
-    },
-    {
-        "source": "Username",
-        "language": "es",
         "context": "user",
         "translation": "Nombre de usuario",
-        "ref": "..\\rh-auth\\controllers\\user.js [161,60]\n..\\rh-auth\\controllers\\user.js [185,60]\n..\\rh-auth\\controllers\\user.js [186,66]"
+        "ref": "..\\rh-auth\\services\\user.js [26,68]\n..\\rh-auth\\controllers\\user.js [161,60]\n..\\rh-auth\\controllers\\user.js [185,60]\n..\\rh-auth\\controllers\\user.js [186,66]"
     },
     {
         "source": "Users",

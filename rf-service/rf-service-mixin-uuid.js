@@ -1,5 +1,5 @@
 import {CheckError, checkValidUuidOrNull} from 'rf-util';
-import {ConflictError} from 'http-util';
+import {_ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
 export const ServiceMixinUuid = Service => class ServiceUuid extends Service {
@@ -15,7 +15,7 @@ export const ServiceMixinUuid = Service => class ServiceUuid extends Service {
     async checkUuidForConflict(uuid) {
         const rows = await this.getForUuid(uuid, {skipNoRowsError: true});
         if (rows?.length) {
-            throw new ConflictError(loc._f('Exists another row with that UUID.'));
+            throw new _ConflictError(loc._f('Exists another row with that UUID.'));
         }
     }
 

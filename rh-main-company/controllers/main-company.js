@@ -1,6 +1,6 @@
 import {MainCompanyService} from '../services/main-company.js';
 import {conf} from '../conf.js';
-import {getOptionsFromParamsAndOData, _HttpError, ConflictError} from 'http-util';
+import {getOptionsFromParamsAndOData, _HttpError, _ConflictError} from 'http-util';
 import {checkParameter, checkParameterUuid} from 'rf-util';
 
 const mainCompanyService = MainCompanyService.singleton();
@@ -139,11 +139,11 @@ export class MainCompanyController {
         const loc = req.loc;
         checkParameter(req?.body, {name: loc._cf('mainCompany', 'Name'), title: loc._cf('mainCompany', 'Title')});
         if (await companyService.getForName(req.body.name, {skipNoRowsError: true})) {
-            throw new ConflictError();
+            throw new _ConflictError(req.loc._cf('mainCompany', 'Exists another company with that name.'));
         }
 
         if (await siteService.getForName(req.body.name, {skipNoRowsError: true})) {
-            throw new ConflictError();
+            throw new _ConflictError(req.loc._cf('mainCompany', 'Exists another site with that name. The site it is necesary for the main company.'));
         }
 
         const data = {...req.body};
