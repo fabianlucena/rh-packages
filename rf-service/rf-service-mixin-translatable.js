@@ -30,15 +30,11 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
             row = row.toJSON();
         }
 
-        if (row.isTranslatable) {
+        if (row.isTranslatable && this.translatableColumns?.length) {
             const translationContext = row.translationContext ?? this.defaultTranslationContext ?? null;
-            if (row.title) {
-                row.title = await loc._c(translationContext, row.title);
-            }
-
-            if (row.description) {
-                row.description = await loc._c(translationContext, row.description);
-            }
+            await Promise.all(this.translatableColumns.map(async field => {
+                row[field] = await loc._c(translationContext, row[field]);
+            }));
         }
 
         if (!options?.skipDeleteIsTranslatable) {

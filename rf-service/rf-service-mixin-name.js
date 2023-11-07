@@ -3,7 +3,12 @@ import {_ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
 export const ServiceMixinName = Service => class extends Service {
-    searchColumns = ['name'];
+    constructor() {
+        super();
+
+        this.searchColumns ??= [];
+        this.searchColumns.push('name');
+    }
 
     async validateForCreation(data) {
         checkParameterStringNotNullOrEmpty(trim(data?.name), loc._f('Name'));
