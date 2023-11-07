@@ -124,7 +124,7 @@ export class CompanySiteController {
             icon: 'get-into',
             actionData: {
                 bodyParam: {companyUuid: 'Company.uuid'},
-                onSuccess: 'reloadMenu();',
+                onSuccess: {reloadMenu: true},
             },
         }];
                 

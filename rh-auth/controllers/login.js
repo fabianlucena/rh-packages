@@ -56,7 +56,10 @@ export class LoginController {
             title: await loc._c('login', 'Login'),
             action: 'login',
             method: 'post',
-            onSuccess: 'setBearerAuthorizationFromResponseProperty("authToken"); reloadMenu();',
+            onSuccess: {
+                setBearerAuthorizationFromResponseProperty: 'authToken',
+                reloadMenu: true,
+            },
             includeSessionIndexInBody: true,
             skipConfirmation: true,
             fields: [

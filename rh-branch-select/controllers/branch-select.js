@@ -127,7 +127,7 @@ export class BranchSelectController {
                 icon: 'get-into',
                 actionData: {
                     bodyParam: {branchUuid: 'uuid'},
-                    onSuccess: 'reloadMenu();',
+                    onSuccess: {reloadMenu: true},
                 },
             },
         ];

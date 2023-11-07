@@ -127,7 +127,7 @@ export class ProjectSelectController {
                 icon: 'get-into',
                 actionData: {
                     bodyParam: {projectUuid: 'uuid'},
-                    onSuccess: 'reloadMenu();',
+                    onSuccess: {reloadMenu: true},
                 },
             },
         ];
