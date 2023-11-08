@@ -52,6 +52,10 @@ export function trim(data) {
     if (typeof data === 'string') {
         return data.trim();
     } else if (typeof data === 'object') {
+        if (data instanceof Buffer) {
+            return data;
+        }
+
         for (const k in data) {
             data[k] = trim(data[k]);
         }
