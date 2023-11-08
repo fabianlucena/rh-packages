@@ -4,7 +4,7 @@ import {loc} from 'rf-locale';
 
 export const ServiceMixinShared = Service => class ServiceShared extends Service {
     async validateForCreation(data) {
-        if (!data.owner && !data.ownerId) {
+        if (!data.owner && !data.ownerId && !this.skipNoOwnerCheck) {
             throw new CheckError(loc._f('No owner specified.'));
         }
 
