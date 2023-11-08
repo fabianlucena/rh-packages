@@ -6,7 +6,6 @@ export default (sequelize, DataTypes) => {
             this.belongsTo(models.Module,     {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
             this.belongsTo(models.Language,   {foreignKey: 'languageId',                       allowNull: true});
             this.belongsTo(models.PageFormat, {foreignKey: 'formatId',      as: 'Format',      allowNull: false});
-
         }
 
         static postAssociate(models) {
