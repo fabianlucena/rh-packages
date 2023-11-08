@@ -32,7 +32,7 @@
         "language": "es",
         "context": "resourceType",
         "translation": "Imagen PNG",
-        "ref": "..\\rh-page\\conf_data.js [12,72]"
+        "ref": "..\\rh-page\\conf_data.js [12,76]"
     },
     {
         "source": "Page not found.",
@@ -54,6 +54,14 @@
         "context": "resource",
         "translation": "Recurso no encontrado.",
         "ref": "..\\rh-page\\controllers\\resource.js [42,80]"
+    },
+    {
+        "source": "SVG image",
+        "language": "es",
+        "context": "resourceType",
+        "isDraft": false,
+        "translation": "Imagen SVG",
+        "ref": "..\\rh-page\\conf_data.js [13,76]"
     },
     {
         "source": "Spanish",

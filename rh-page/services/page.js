@@ -18,6 +18,7 @@ export class PageService extends ServiceIdUuidNameTitleEnabledModuleSharedTransl
         language: conf.global.services.Language,
     };
     defaultTranslationContext = 'page';
+    skipNoOwnerCheck = true;
 
     constructor() {
         super();
