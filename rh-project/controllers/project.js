@@ -274,11 +274,11 @@ export class ProjectController {
                     },
                     action: 'setValues',
                     override: false,
-                    source: {
-                        name: 'title'
-                    },
-                    sanitize: {
-                        name: 'dasherize',
+                    map: {
+                        name: {
+                            source: 'title',
+                            sanitize: 'dasherize',
+                        },
                     },
                 },
             },
