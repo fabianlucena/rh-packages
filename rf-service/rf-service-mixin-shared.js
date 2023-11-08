@@ -1,5 +1,5 @@
 import {includeCollaborators} from 'sql-util';
-import {CheckError} from 'rf-util';
+import {_Error, CheckError} from 'rf-util';
 import {loc} from 'rf-locale';
 
 export const ServiceMixinShared = Service => class ServiceShared extends Service {
@@ -67,7 +67,15 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
      * @returns {Promise[row]}
      */
     async addCollaborator(data, options) {
-        if (!this.shareObject || !this.shareService || (!data.userId && !data.user)) {
+        if (!this.shareObject) {
+            throw new _Error(loc._f('No shareObject defined on %s. Try adding "shareObject = %s" to the class.', this.constructor.name, this.constructor.name));
+        }
+
+        if (!this.shareService) {
+            throw new _Error(loc._f('No shareService defined on %s. Try adding "shareService = conf.global.services.Share.singleton()" to the class.', this.constructor.name));
+        }
+
+        if (!data.userId && !data.user) {
             return;
         }
 
