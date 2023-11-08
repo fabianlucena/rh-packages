@@ -90,8 +90,8 @@ export class MenuController {
         });
 
         const data = {menu};
-        await conf.global.eventBus?.$emit('menuGet', data, {sessionId: req.session?.id, params: req.query});
-        await conf.global.eventBus?.$emit('menuFilter', data, {sessionId: req.session?.id, params: req.query});
+        await conf.global.eventBus?.$emit('menuGet', data, {loc, sessionId: req.session?.id, params: req.query});
+        await conf.global.eventBus?.$emit('menuFilter', data, {loc, sessionId: req.session?.id, params: req.query});
 
         res.status(200).send(data);
     }
