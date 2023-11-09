@@ -3,8 +3,40 @@ import {Locale} from 'rf-locale';
 
 let loc;
 const languageCache = {};
+const translationsCache = {};
 
 export class LocaleController {
+    static translationService;
+
+    static async driver(language, texts, options) {
+        options ??= {};
+        options.domain ??= null;
+        options.context ??= null;
+
+        if (!translationsCache[language]) {
+            translationsCache[language] = {};
+        }
+        const tl = translationsCache[language];
+
+        if (!tl[options.domain]) {
+            tl[options.domain] = {};
+        }
+        const tld = tl[options.domain];
+        
+        if (!tld[options.context]) {
+            tld[options.context] = {};
+        }
+        const tldc = tld[options.context];
+
+        const s = JSON.stringify(texts);
+        
+        if (!tldc[s]) {
+            tldc[s] = await TranslationService.singleton()._gt(language, texts, options);
+        }
+
+        return tldc[s];
+    }
+
     static middleware() {
         return async (req, res, next) => {
             const acceptLanguage = req.header('accept-language');
@@ -12,10 +44,7 @@ export class LocaleController {
                 req.loc = languageCache[acceptLanguage];
             } else {
                 if (!loc) {
-                    loc = new Locale({
-                        driver: TranslationService.singleton()._gt,
-                    });
-                    
+                    loc = new Locale({driver: this.driver});
                     await loc.init();
                 }
 
