@@ -327,7 +327,7 @@
         "source": "Session menu",
         "language": "es",
         "context": "premission",
-        "translation": "Menú se sessión",
+        "translation": "Menú se sesión",
         "ref": "..\\rh-auth\\conf_data.js [37,83]"
     },
     {
