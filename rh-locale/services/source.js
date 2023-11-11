@@ -5,10 +5,28 @@ import {checkDataForMissingProperties} from 'sql-util';
 export class SourceService extends ServiceIdUuidEnabled {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Source;
+
+    async sanitizeText(text) {
+        return text.trim().replace(/\r/g, '\\r').replace(/\n/g, '\\n');
+    }
+
+    async unsanitizeText(text) {
+        return text.trim().replace(/\\r/g, '\r').replace(/\\n/g, '\n');
+    }
     
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'Source', 'text');
+        data.text = await this.sanitizeText(data.text);
+
         return super.validateForCreation(data);
+    }
+
+    async getListOptions(options) {
+        if (options.where?.text) {
+            options.where.text = await this.sanitizeText(options.where.text);
+        }
+
+        return await super.getListOptions(options);
     }
 
     /**

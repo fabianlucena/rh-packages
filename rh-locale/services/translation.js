@@ -27,6 +27,14 @@ export class TranslationService extends ServiceIdUuidEnabled {
         },
     };
 
+    async sanitizeText(text) {
+        return text.trim().replace(/\r/g, '\\r').replace(/\n/g, '\\n');
+    }
+
+    async unsanitizeText(text) {
+        return text.trim().replace(/\\r/g, '\r').replace(/\\n/g, '\n');
+    }
+
     /**
      * Complete the data object with the sourceId property if not exists. 
      * @param {{source: string, sourceId: integer, ...}} data 
@@ -41,7 +49,9 @@ export class TranslationService extends ServiceIdUuidEnabled {
     }
 
     async validateForCreation(data) {
-        await checkDataForMissingProperties(data, 'Translation', 'sourceId', 'languageId');
+        await checkDataForMissingProperties(data, 'Translation', 'sourceId', 'languageId', 'text');
+        data.text = await this.sanitizeText(data.text);
+
         return super.validateForCreation(data);
     }
 
@@ -104,7 +114,6 @@ export class TranslationService extends ServiceIdUuidEnabled {
                         continue;
                     }
                     
-                    arrangedText = arrangedText.trim().replace(/\r/g, '\\r').replace(/\n/g, '\\n');
                     let translationObject = await conf.global.models.TranslationCache.findOne({where: {language, context: options.context ?? null, domain: options.domain ?? null, source: arrangedText, isJson: options.isJson}});
                     if (!translationObject) {
                         const bestTranslation = await TranslationService.singleton().getBestMatchForLanguageTextIsJsonContextsAndDomains(language, arrangedText, options.isJson, options.context, options.domain);
@@ -127,7 +136,7 @@ export class TranslationService extends ServiceIdUuidEnabled {
                     if (translationObject.isJson) {
                         translation = JSON.parse(translationObject.translation);
                     } else {
-                        translation = translationObject.translation;
+                        translation = await this.unsanitizeText(translationObject.translation);
                     }
                 } catch(err) {
                     conf.global.log.error(err);
@@ -234,7 +243,7 @@ export class TranslationService extends ServiceIdUuidEnabled {
     async createIfNotExists(data, options) {
         await this.completeReferences(data);
 
-        const rows = await this.getList({where:{languageId: data.languageId, sourceId: data.sourceId, domainId: data.domainId, contextId: data.contextId, ...options?.where}, limit: 1, ...options});
+        const rows = await this.getList({where: {languageId: data.languageId, sourceId: data.sourceId, domainId: data.domainId, contextId: data.contextId, ...options?.where}, limit: 1, ...options});
         if (rows.length) {
             return rows[0];
         }
