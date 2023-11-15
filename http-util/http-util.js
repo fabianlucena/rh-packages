@@ -205,16 +205,8 @@ export async function httpUtilConfigure(global, ...modules) {
         };
     }
 
-    if (!global.sequelize.Sequelize && global.Sequelize) {
-        global.sequelize.Sequelize = global.Sequelize;
-    }
-
-    if (!global.models) {
-        global.models = global.sequelize.models;
-        if (!global.models) {
-            global.models = {};
-        }
-    }
+    global.sequelize.Sequelize ||= global.Sequelize;
+    global.models ||= global.sequelize.models || {};
 
     await beforeConfig(global);
     await configureModules(global, modules);

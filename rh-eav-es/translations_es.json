@@ -1,0 +1,42 @@
+[
+    {
+        "source": "Option",
+        "language": "es",
+        "context": "eav",
+        "translation": "Opción",
+        "ref": "..\\rh-eav\\conf_data.js [6,37]"
+    },
+    {
+        "source": "Spanish",
+        "language": "es",
+        "translation": "Español",
+        "ref": "rh-eav-es.js [18,28]"
+    },
+    {
+        "source": "Spanish language.",
+        "language": "es",
+        "translation": "Idioma español.",
+        "ref": "rh-eav-es.js [19,34]"
+    },
+    {
+        "source": "Text",
+        "language": "es",
+        "context": "eav",
+        "translation": "Texto",
+        "ref": "..\\rh-eav\\conf_data.js [5,37]"
+    },
+    {
+        "source": "The value is a free text.",
+        "language": "es",
+        "context": "eav",
+        "translation": "El valor es un texto libre.",
+        "ref": "..\\rh-eav\\conf_data.js [5,76]"
+    },
+    {
+        "source": "The value must be select from a set of options.",
+        "language": "es",
+        "context": "eav",
+        "translation": "El valor debe seleccionarse desde un conjunto de opciones.",
+        "ref": "..\\rh-eav\\conf_data.js [6,76]"
+    }
+]

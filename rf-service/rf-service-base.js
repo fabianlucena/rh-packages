@@ -52,9 +52,13 @@ export class ServiceBase {
     static singleton() {
         if (!this.singletonInstance) {
             this.singletonInstance = new this();
+            this.singletonInstance.init();
         }
 
         return this.singletonInstance;
+    }
+
+    init() {
     }
 
     /**

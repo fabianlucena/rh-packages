@@ -201,7 +201,11 @@ export class ProjectController {
             return row;
         });
 
-        await conf.global.eventBus?.$emit('project.response.getted', result, options);
+        await conf.global.eventBus?.$emit(
+            'response.getted',
+            result,
+            {loc: options.loc, entity: 'Project'}
+        );
 
         res.status(200).send(result);
     }
@@ -252,6 +256,7 @@ export class ProjectController {
         };
 
         await conf.global.eventBus?.$emit('project.interface.grid.get', grid, {loc});
+        await conf.global.eventBus?.$emit('interface.grid.get', grid, {loc, entity: 'Project'});
 
         res.status(200).send(grid);
     }
@@ -329,6 +334,7 @@ export class ProjectController {
         };
 
         await conf.global.eventBus?.$emit('project.interface.form.get', form, {loc});
+        await conf.global.eventBus?.$emit('interface.form.get', form, {loc, entity: 'Project'});
         
         res.status(200).send(form);
     }
