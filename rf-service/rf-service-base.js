@@ -59,6 +59,14 @@ export class ServiceBase {
     }
 
     init() {
+        let name = this.constructor.name;
+        if (name.endsWith('Service')) {
+            name = name.substring(0, name.length - 7);
+        }
+
+        this.shareObject ||= name;
+        this.defaultTranslationContext ||= name.toLocaleLowerCase();
+        this.eventName = name;
     }
 
     /**
@@ -72,9 +80,11 @@ export class ServiceBase {
         return error;
     }
 
-    async emit(eventSubName, condition, ...params) {
+    async emit(eventSubName, condition, result, ...params) {
         if (condition !== false && this.eventBus && this.eventName) {
-            return this.eventBus?.$emit(this.eventName + '.' + eventSubName, ...params);
+            let result1 = await this.eventBus?.$emit(this.eventName + '.' + eventSubName, result, ...params) ?? [];
+            let result2 = await this.eventBus?.$emit(eventSubName, this.eventName, result, ...params) ?? [];
+            return [...result1, ...result2];
         }
     }
 
@@ -243,9 +253,9 @@ export class ServiceBase {
         }
 
         try {
-            await this.emit('creating', options?.emitEvent, data, options);
+            await this.emit('creating', options?.emitEvent, data, options, this);
             const row = await this.model.create(data, options);
-            await this.emit('created', options?.emitEvent, row, data, options);
+            await this.emit('created', options?.emitEvent, row, data, options, this);
 
             await transaction?.commit();
 
@@ -303,7 +313,7 @@ export class ServiceBase {
      */
     async getList(options) {
         options = await this.getListOptions(options);
-        await this.emit('getting', options?.emitEvent, options);
+        await this.emit('getting', options?.emitEvent, options, this);
         let result;
         if (options.withCount) {
             result = this.model.findAndCountAll(options);
@@ -311,7 +321,7 @@ export class ServiceBase {
             result = this.model.findAll(options);
         }
 
-        await this.emit('getted', options?.emitEvent, result, options);
+        await this.emit('getted', options?.emitEvent, result, options, this);
 
         return result;
     }
@@ -415,9 +425,9 @@ export class ServiceBase {
         await this.completeReferences(data);
         data = await this.validateForUpdate(data, options.where);
 
-        await this.emit('updating', options?.emitEvent, data, options);
+        await this.emit('updating', options?.emitEvent, data, options, this);
         const result = await this.model.update(data, options);
-        await this.emit('updated', options?.emitEvent, result, data, options);
+        await this.emit('updated', options?.emitEvent, result, data, options, this);
 
         return result;
     }
@@ -441,9 +451,9 @@ export class ServiceBase {
     async delete(options) {        
         await this.completeReferences(options.where, true);
 
-        await this.emit('deleting', options?.emitEvent, options);
+        await this.emit('deleting', options?.emitEvent, options, this);
         const result = await this.model.destroy(options);
-        await this.emit('deleted', options?.emitEvent, result, options);
+        await this.emit('deleted', options?.emitEvent, result, options, this);
 
         return result;
     }

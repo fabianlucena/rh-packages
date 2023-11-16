@@ -27,12 +27,15 @@ export class EventBus {
         const sanitEvent = event.toLowerCase();
         const handlers = this.handlers[sanitEvent];
         if (!handlers) {
-            return;
+            return [];
         }
 
         const result = [];
         for (const handler of handlers) {
-            result.push(await handler(...params));
+            const thisResult = await handler(...params);
+            if (thisResult !== undefined) {
+                result.push(thisResult);
+            }
         }
 
         return result;
