@@ -406,6 +406,19 @@ export class ServiceBase {
         return this.getSingle({...options, where: {...options?.where, ...where}});
     }
 
+    async count(options) {
+        options = await this.getListOptions(options);
+        await this.emit('gettingCount', options?.emitEvent, options);
+        const result = this.model.count(options);
+        await this.emit('gettingCount', options?.emitEvent, result, options);
+
+        return result;
+    }
+
+    async countFor(where, options) {
+        return this.count({...options, where: {...options?.where, ...where}});
+    }
+
     /**
      * Performs the necesary validations before updating.
      * @param {object} data - data to update in entity.
