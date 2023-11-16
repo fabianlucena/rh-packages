@@ -16,7 +16,6 @@ export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslata
     };
     defaultTranslationContext = 'project';
     eventBus = conf.global.eventBus;
-    eventName = 'project';
 
     async validateForCreation(data) {
         if (!data?.companyId) {

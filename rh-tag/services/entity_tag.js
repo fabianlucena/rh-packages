@@ -3,6 +3,7 @@ import {TagCategoryService} from './tag_category.js';
 import {ServiceBase} from 'rf-service';
 import {ucfirst, checkParameterStringNotNullOrEmpty} from 'rf-util';
 import {_ConflictError} from 'http-util';
+import {_Error} from 'rf-util';
 import {loc} from 'rf-locale';
 import {completeIncludeOptions, getIncludedModelOptions} from 'sql-util';
 
@@ -166,6 +167,10 @@ export class EntityTagService extends ServiceBase {
     async delete(options) {
         if (!options.where) {
             throw new Error(loc._cf('tag', 'Delete without where is forbiden.'));
+        }
+
+        if (!this.Sequelize?.Op) {
+            throw new _Error(loc._f('No Sequalize.Op defined on %s. Try adding "Sequelize = conf.global.Sequelize" to the class.', this.constructor.name));
         }
 
         const Op = this.Sequelize.Op;

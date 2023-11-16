@@ -189,7 +189,7 @@ export class BranchController {
             options.where.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
         }
 
-        await conf.global.eventBus?.$emit('branch.response.getting', options);
+        await conf.global.eventBus?.$emit('Branch.response.getting', options);
 
         const result = await branchService.getListAndCount(options);
 
@@ -202,7 +202,7 @@ export class BranchController {
             return row;
         });
 
-        await conf.global.eventBus?.$emit('branch.response.getted', result, options);
+        await conf.global.eventBus?.$emit('Branch.response.getted', result, options);
 
         res.status(200).send(result);
     }
@@ -252,7 +252,7 @@ export class BranchController {
             columns: await filterVisualItemsByAliasName(columns, conf?.branch, {loc, entity: 'Branch', translationContext: 'branch', interface: 'grid'}),
         };
 
-        await conf.global.eventBus?.$emit('branch.interface.grid.get', grid, {loc});
+        await conf.global.eventBus?.$emit('Branch.interface.grid.get', grid, {loc});
 
         res.status(200).send(grid);
     }
@@ -329,7 +329,7 @@ export class BranchController {
             fields: await filterVisualItemsByAliasName(fields, conf?.branch, {loc, entity: 'Branch', translationContext: 'branch', interface: 'form'}),
         };
 
-        await conf.global.eventBus?.$emit('branch.interface.form.get', form, {loc});
+        await conf.global.eventBus?.$emit('Branch.interface.form.get', form, {loc});
         
         res.status(200).send(form);
     }

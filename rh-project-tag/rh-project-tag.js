@@ -27,14 +27,14 @@ async function configure(global, options) {
         options.permissions = [options.permissions];
     }
 
-    global.eventBus?.$on('project.interface.grid.get', projectInterfaceGridGet);
-    global.eventBus?.$on('project.interface.form.get', projectInterfaceFormGet);
-    global.eventBus?.$on('project.response.getting', projectResponseGetting);
-    global.eventBus?.$on('project.getting', projectGetting);
-    global.eventBus?.$on('project.getted', projectGetted);
-    global.eventBus?.$on('project.created', projectCreated);
-    global.eventBus?.$on('project.updated', projectUpdated);
-    global.eventBus?.$on('project.deleting', projectDeleting);
+    global.eventBus?.$on('Project.interface.grid.get', projectInterfaceGridGet);
+    global.eventBus?.$on('Project.interface.form.get', projectInterfaceFormGet);
+    global.eventBus?.$on('Project.response.getting', projectResponseGetting);
+    global.eventBus?.$on('Project.getting', projectGetting);
+    global.eventBus?.$on('Project.getted', projectGetted);
+    global.eventBus?.$on('Project.created', projectCreated);
+    global.eventBus?.$on('Project.updated', projectUpdated);
+    global.eventBus?.$on('Project.deleting', projectDeleting);
 }
 
 async function init() {

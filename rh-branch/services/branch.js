@@ -13,10 +13,8 @@ export class BranchService extends ServiceIdUuidNameEnabledSharedTranslatable {
         company: conf.global.services.Company,
         ownerModule: conf.global.services.Module,
     };
-    defaultTranslationContext = 'branch';
     searchColumns = ['name', 'title', 'description'];
     eventBus = conf.global.eventBus;
-    eventName = 'branch';
 
     async validateForCreation(data) {
         if (!data.companyId) {

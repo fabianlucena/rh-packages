@@ -57,7 +57,7 @@ export class ProjectController {
 
     static async checkUuid(req) {
         const uuid = await getUuidFromRequest(req);
-        const project = await projectService.getForUuid(uuid, {skipNoRowsError: true});
+        const project = await projectService.getForUuid(uuid, {skipNoRowsError: true, loc: req.loc});
         if (!project) {
             throw new _HttpError(req.loc._cf('project', 'The project with UUID %s does not exists.'), 404, uuid);
         }
@@ -180,7 +180,13 @@ export class ProjectController {
         }
 
         const definitions = {uuid: 'uuid', name: 'string'};
-        let options = {view: true, limit: 10, offset: 0, includeCompany: true};
+        let options = {
+            view: true,
+            limit: 10,
+            offset: 0,
+            includeCompany: true,
+            loc: req.loc,
+        };
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
         if (conf.filters?.getCurrentCompanyId) {
@@ -188,7 +194,7 @@ export class ProjectController {
             options.where.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
         }
 
-        await conf.global.eventBus?.$emit('project.response.getting', options);
+        await conf.global.eventBus?.$emit('Project.response.getting', options);
 
         const result = await projectService.getListAndCount(options);
 
@@ -201,11 +207,7 @@ export class ProjectController {
             return row;
         });
 
-        await conf.global.eventBus?.$emit(
-            'response.getted',
-            result,
-            {loc: options.loc, entity: 'Project'}
-        );
+        await conf.global.eventBus?.$emit('Project.response.getted', result, options);
 
         res.status(200).send(result);
     }
@@ -255,7 +257,7 @@ export class ProjectController {
             columns: await filterVisualItemsByAliasName(columns, conf?.project, {loc, entity: 'Project', translationContext: 'project', interface: 'grid'}),
         };
 
-        await conf.global.eventBus?.$emit('project.interface.grid.get', grid, {loc});
+        await conf.global.eventBus?.$emit('Project.interface.grid.get', grid, {loc});
         await conf.global.eventBus?.$emit('interface.grid.get', grid, {loc, entity: 'Project'});
 
         res.status(200).send(grid);
@@ -333,7 +335,7 @@ export class ProjectController {
             fields: await filterVisualItemsByAliasName(fields, conf?.project, {loc, entity: 'Project', interface: 'form'}),
         };
 
-        await conf.global.eventBus?.$emit('project.interface.form.get', form, {loc});
+        await conf.global.eventBus?.$emit('Project.interface.form.get', form, {loc});
         await conf.global.eventBus?.$emit('interface.form.get', form, {loc, entity: 'Project'});
         
         res.status(200).send(form);
