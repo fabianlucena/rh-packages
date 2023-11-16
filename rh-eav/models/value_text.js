@@ -32,7 +32,7 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.BIGINT,
             allowNull: false,
         },
-        text: {
+        value: {
             type: DataTypes.TEXT,
             allowNull: false,
         },
