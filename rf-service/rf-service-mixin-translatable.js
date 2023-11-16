@@ -41,6 +41,31 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
             delete row.isTranslatable;
         }
 
+        for (const referenceName in this.references) {
+            let reference = this.references[referenceName];
+            let service = reference;
+            if (!service.translateRow) {
+                if (reference.service) {
+                    service = reference.service;
+                }
+
+                if (!service.translateRow) {
+                    continue;
+                }
+            }
+            
+            let name = service.constructor?.name;
+            if (name.endsWith('Service')) {
+                name = name.substring(0, name.length - 7);
+            }
+
+            if (!row[name]) {
+                continue;
+            }
+
+            row[name] = await service.translateRow(row[name], loc, options);
+        }
+
         return row;
     }
 };
