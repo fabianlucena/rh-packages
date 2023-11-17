@@ -8,7 +8,10 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
         }
 
         if (loc) {
-            result = await result;
+            if (result.then) {
+                result = await result;
+            }
+            
             if (options.withCount) {
                 result.rows = await this.translateRows(await result.rows, loc);
             } else {
