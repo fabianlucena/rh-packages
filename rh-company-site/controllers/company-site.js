@@ -57,6 +57,7 @@ export class CompanySiteController {
             action: 'object',
             service: 'company-site',
             label: await loc._('Company: %s', companySite.Company.title),
+            icon: 'company',
         };
 
         const data = {

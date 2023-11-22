@@ -58,6 +58,7 @@ export class BranchSelectController {
             action: 'object',
             service: 'branch-select',
             label: await loc._('Branch: %s', branch.title),
+            icon: 'branch',
         };
         const data = {
             count: 1,

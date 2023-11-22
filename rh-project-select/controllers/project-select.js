@@ -58,6 +58,7 @@ export class ProjectSelectController {
             action: 'object',
             service: 'project-select',
             label: await loc._('Project: %s', project.title),
+            icon: 'project',
         };
         const data = {
             count: 1,
