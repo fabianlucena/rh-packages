@@ -439,7 +439,10 @@ export class ServiceBase {
         data = await this.validateForUpdate(data, options.where);
 
         await this.emit('updating', options?.emitEvent, data, options, this);
-        const result = await this.model.update(data, options);
+        let result = await this.model.update(data, options);
+        if (result.length) {
+            result = result[0];
+        }
         await this.emit('updated', options?.emitEvent, result, data, options, this);
 
         return result;
