@@ -41,8 +41,9 @@ export const ServiceMixinUuid = Service => class ServiceUuid extends Service {
      * function can be specified.
      */
     async getForUuid(uuid, options) {
-        if (Array.isArray(uuid))
+        if (Array.isArray(uuid)) {
             return this.getList({...options, where: {...options?.where, uuid}});
+        }
             
         return this.getSingleFor({uuid}, options);
     }
