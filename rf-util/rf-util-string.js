@@ -48,7 +48,14 @@ export function format(text, ...params) {
     return text;
 }
 
-export function trim(data) {
+export function trim(data, options) {
+    options ??= {};
+    options.deep ??= 10;
+
+    if (!options.deep) {
+        return data;
+    }
+
     if (typeof data === 'string') {
         return data.trim();
     } else if (typeof data === 'object') {
@@ -57,7 +64,7 @@ export function trim(data) {
         }
 
         for (const k in data) {
-            data[k] = trim(data[k]);
+            data[k] = trim(data[k], {...options, deep: options.deep - 1});
         }
     }
 
