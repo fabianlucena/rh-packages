@@ -30,11 +30,11 @@ function getCheckPermissionHandler(chain) {
         if (!req.authToken) {
             const authorization = req.header('Authorization');
             if (!authorization) {
-                throw new _UnauthorizedError(loc._cf('auth', 'HTTP error 401 unauthorized, no authorization header.'));
+                throw new _UnauthorizedError(loc._cf('auth', 'HTTP error 401 unauthorized, no authorization header.', {redirect: '#/form/login'}));
             }
             
             if (!authorization.startsWith('Bearer ')) {
-                throw new _UnauthorizedError(loc._cf('auth', 'HTTP error 401 unauthorized, authorization schema is no Bearer.'));
+                throw new _UnauthorizedError(loc._cf('auth', 'HTTP error 401 unauthorized, authorization schema is no Bearer.', {redirect: '#/form/login'}));
             }
         }
 

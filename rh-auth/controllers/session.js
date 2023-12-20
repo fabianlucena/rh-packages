@@ -55,11 +55,11 @@ export class SessionController {
                     next();
                 })
                 .catch(async err => {
-                    let error;
+                    let result;
                     if (err instanceof SessionClosedError) {
-                        error = {error: await req.loc._c('session', 'HTTP error 403 forbidden, session is closed.')};
+                        result = {message: await req.loc._c('session', 'HTTP error 401 unauthorized, session is closed.')};
                     } else if (err instanceof NoSessionForAuthTokenError) {
-                        error = {error: await req.loc._c('session', 'HTTP error 403 forbidden, authorization token error.')};
+                        result = {message: await req.loc._c('session', 'HTTP error 401 unauthorized, authorization token error.')};
                     } else {
                         let msg;
                         if (err instanceof Error) {
@@ -69,14 +69,18 @@ export class SessionController {
                         }
 
                         if (msg) {
-                            error = {error: 'Unauthorized', message: await req.loc._c('session', 'HTTP error 401 unauthorized: %s', msg)};
+                            result = {message: await req.loc._c('session', 'HTTP error 401 unauthorized: %s', msg)};
                         } else {
-                            error = {error: 'Unauthorized', message: await req.loc._c('session', 'HTTP error 401 unauthorized')};
+                            result = {message: await req.loc._c('session', 'HTTP error 401 unauthorized')};
                         }
                     }
 
-                    req.log.error(logLine, {...logOptions, error: err, result: error});
-                    res.status(401).send(error);
+                    result.error ??= 'Unauthorized';
+                    result.clearBearerAuthorization = true;
+                    result.redirect = '#/form/login';
+
+                    req.log.error(logLine, {...logOptions, error: err, result});
+                    res.status(401).send(result);
                 });
         };
     }
