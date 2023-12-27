@@ -53,7 +53,7 @@ export class CheckError extends Error {
 
 export class MissingParameterError extends Error {
     static NoObjectValues = ['missingParameters'];
-    static VisibleProperties = ['message', 'missingParameters'];
+    static VisibleProperties = ['message', 'title', 'missingParameters'];
     static _zeroMessage = loc._f('Missing parameters.');
     static _message = loc._nf(0, 'Missing parameter: "%s".', 'Missing parameters: "%s".');
 
@@ -254,7 +254,7 @@ export async function getErrorData(error, loc, options) {
             data.name = data.name.substring(1);
         }
 
-        const visibleProperties = options?.properties ?? error.constructor?.VisibleProperties ?? ['message', 'length', 'fileName', 'lineNumber', 'columnNumber', 'stack', 'redirectTo'];
+        const visibleProperties = options?.properties ?? error.constructor?.VisibleProperties ?? ['message', 'title', 'length', 'fileName', 'lineNumber', 'columnNumber', 'stack', 'redirectTo'];
         visibleProperties.forEach(n => data[n] = error[n]);
 
         if (error.statusCode) {
@@ -266,11 +266,17 @@ export async function getErrorData(error, loc, options) {
         data.message = error;
     }
 
-    if (data.stack && typeof data.stack === 'string')
-        data.stack = data.stack.split('\n');
+    if (error._title) {
+        data.title = await loc._(error._title);
+    }
 
-    if (!data.error)
+    if (data.stack && typeof data.stack === 'string') {
+        data.stack = data.stack.split('\n');
+    }
+
+    if (!data.error) {
         data.error = data.name || data.message || 'Error';
+    }
 
     return data;
 }

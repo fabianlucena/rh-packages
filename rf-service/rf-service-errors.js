@@ -31,7 +31,7 @@ export class NoRowError extends Error {
 
 export class ManyRowsError extends Error {
     static NoObjectValues = ['length'];
-    static VisibleProperties = ['message', 'length'];
+    static VisibleProperties = ['message', 'title', 'length'];
     static _message = loc._f('There are many rows.');
 
     constructor(message, length) {

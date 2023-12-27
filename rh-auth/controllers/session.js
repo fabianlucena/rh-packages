@@ -76,6 +76,7 @@ export class SessionController {
                     }
 
                     result.error ??= 'Unauthorized';
+                    result.title ??= await req.loc._c('Unauthorized');
                     result.clearBearerAuthorization = true;
                     result.redirectTo = '#login';
 

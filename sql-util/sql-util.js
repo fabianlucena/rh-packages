@@ -21,7 +21,7 @@ export class NoRowsError extends Error {
 
 export class ManyRowsError extends Error {
     static NoObjectValues = ['length'];
-    static VisibleProperties = ['message', 'length'];
+    static VisibleProperties = ['message', 'title', 'length'];
     static _message = loc._f('There are many "%s" for "%s" in "%s"');
     static _params = [loc._f('element'), loc._f('selector'), loc._f('model')];
 

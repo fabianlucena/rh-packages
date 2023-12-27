@@ -4,594 +4,600 @@
         "language": "es",
         "context": "premission",
         "translation": "Administración",
-        "ref": "..\\rh-auth\\conf_data.js [32,180]"
+        "ref": "..\\rh-auth\\conf_data.js [32,145]"
     },
     {
         "source": "Administrator",
         "language": "es",
         "context": "user",
         "translation": "Administrador",
-        "ref": "..\\rh-auth\\conf_data.js [16,74]"
+        "ref": "..\\rh-auth\\conf_data.js [16,46]"
     },
     {
         "source": "Anonymous",
         "language": "es",
         "context": "role",
         "translation": "Anónimo",
-        "ref": "..\\rh-auth\\conf_data.js [21,66]"
+        "ref": "..\\rh-auth\\conf_data.js [21,42]"
     },
     {
         "source": "Another user with the same display name already exists.",
         "language": "es",
         "context": "user",
-        "isDraft": false,
         "translation": "Ya existe otro usuario con el mismo nombre mostrado.",
-        "ref": "..\\rh-auth\\services\\user.js [32,112]"
+        "ref": "..\\rh-auth\\services\\user.js [32,42]"
     },
     {
         "source": "Another user with the same username already exists.",
         "language": "es",
         "context": "user",
-        "isDraft": false,
         "translation": "Ya existe otro usuario con el mismo nombre de usuario.",
-        "ref": "..\\rh-auth\\services\\user.js [28,108]"
+        "ref": "..\\rh-auth\\services\\user.js [28,42]"
     },
     {
         "source": "Change my password",
         "language": "es",
         "context": "menu",
         "translation": "Cambiar mi contraseña",
-        "ref": "..\\rh-auth\\conf_data.js [40,212]"
+        "ref": "..\\rh-auth\\conf_data.js [40,179]"
     },
     {
         "source": "Change own password",
         "language": "es",
         "context": "premission",
         "translation": "Cambiar contraseña propia",
-        "ref": "..\\rh-auth\\conf_data.js [40,90]"
+        "ref": "..\\rh-auth\\conf_data.js [40,50]"
     },
     {
         "source": "Change password",
         "language": "es",
         "context": "changeMyPassword",
         "translation": "Cambiar contraseña",
-        "ref": "..\\rh-auth\\controllers\\change-my-password.js [12,71]"
+        "ref": "..\\rh-auth\\controllers\\change-my-password.js [12,30]"
     },
     {
         "source": "Close",
         "language": "es",
         "context": "session",
         "translation": "Cerrado",
-        "ref": "..\\rh-auth\\controllers\\session.js [216,60]"
+        "ref": "..\\rh-auth\\controllers\\session.js [220,38]"
     },
     {
         "source": "Confirm new password",
         "language": "es",
         "context": "changeMyPassword",
         "translation": "Confirmar la nueva contraseña",
-        "ref": "..\\rh-auth\\controllers\\change-my-password.js [31,84]"
+        "ref": "..\\rh-auth\\controllers\\change-my-password.js [31,38]"
     },
     {
         "source": "Create user",
         "language": "es",
         "context": "premission",
         "translation": "Crear usuario",
-        "ref": "..\\rh-auth\\conf_data.js [44,82]"
+        "ref": "..\\rh-auth\\conf_data.js [44,50]"
     },
     {
         "source": "Current password",
         "language": "es",
         "context": "changeMyPassword",
         "translation": "Contraseña actual",
-        "ref": "..\\rh-auth\\controllers\\change-my-password.js [19,80]"
+        "ref": "..\\rh-auth\\controllers\\change-my-password.js [19,38]"
     },
     {
         "source": "Delete session",
         "language": "es",
         "context": "premission",
         "translation": "Eliminar sesiones",
-        "ref": "..\\rh-auth\\conf_data.js [48,85]"
+        "ref": "..\\rh-auth\\conf_data.js [48,50]"
     },
     {
         "source": "Delete user",
         "language": "es",
         "context": "premission",
         "translation": "Eliminar usuario",
-        "ref": "..\\rh-auth\\conf_data.js [46,82]"
+        "ref": "..\\rh-auth\\conf_data.js [46,50]"
     },
     {
         "source": "Display name",
         "language": "es",
         "context": "user",
         "translation": "Nombre mostrado",
-        "ref": "..\\rh-auth\\services\\user.js [26,114]\n..\\rh-auth\\controllers\\user.js [156,64]\n..\\rh-auth\\controllers\\user.js [178,64]"
+        "ref": "..\\rh-auth\\services\\user.js [26,87]\n..\\rh-auth\\controllers\\user.js [156,38]\n..\\rh-auth\\controllers\\user.js [178,38]"
     },
     {
         "source": "Edit user",
         "language": "es",
         "context": "premission",
         "translation": "Modificar usuario",
-        "ref": "..\\rh-auth\\conf_data.js [45,80]"
+        "ref": "..\\rh-auth\\conf_data.js [45,50]"
     },
     {
         "source": "Enabled",
         "language": "es",
         "context": "user",
         "translation": "Habilitado",
-        "ref": "..\\rh-auth\\controllers\\user.js [196,59]\n..\\rh-auth\\controllers\\user.js [197,65]"
+        "ref": "..\\rh-auth\\controllers\\user.js [196,38]\n..\\rh-auth\\controllers\\user.js [197,44]"
     },
     {
         "source": "Error to change the password",
         "language": "es",
         "context": "changeMyPassword",
         "translation": "Error al cambiar la contraseña",
-        "ref": "..\\rh-auth\\controllers\\change-my-password.js [78,104]"
+        "ref": "..\\rh-auth\\controllers\\change-my-password.js [78,49]"
     },
     {
         "source": "Error to get local identity",
         "language": "es",
         "context": "changeMyPassword",
         "translation": "Error al obtener la identidad local",
-        "ref": "..\\rh-auth\\controllers\\change-my-password.js [70,107]"
+        "ref": "..\\rh-auth\\controllers\\change-my-password.js [70,53]"
     },
     {
         "source": "Error to get old session to create session",
         "language": "es",
         "context": "login",
         "translation": "Error al obtener la sesión anterior para crear la sesión",
-        "ref": "..\\rh-auth\\services\\login.js [92,92]"
+        "ref": "..\\rh-auth\\services\\login.js [92,34]"
     },
     {
         "source": "Error to get user to create session",
         "language": "es",
         "context": "login",
         "translation": "Error al obtener el usuario para crear la sesión ",
-        "ref": "..\\rh-auth\\services\\login.js [36,85]"
+        "ref": "..\\rh-auth\\services\\login.js [36,34]"
     },
     {
         "source": "Everybody",
         "language": "es",
         "context": "role",
         "translation": "Todos",
-        "ref": "..\\rh-auth\\conf_data.js [20,66]"
+        "ref": "..\\rh-auth\\conf_data.js [20,42]"
     },
     {
         "source": "Get current site",
         "language": "es",
         "context": "premission",
         "translation": "Obtener sitio actual",
-        "ref": "..\\rh-auth\\conf_data.js [50,87]"
+        "ref": "..\\rh-auth\\conf_data.js [50,50]"
     },
     {
         "source": "Get own sessions only",
         "language": "es",
         "context": "premission",
         "translation": "Obtener únicamente la sesión propia",
-        "ref": "..\\rh-auth\\conf_data.js [39,92]"
+        "ref": "..\\rh-auth\\conf_data.js [39,50]"
     },
     {
         "source": "Get session(s)",
         "language": "es",
         "context": "premission",
         "translation": "Obtener sesion(es)",
-        "ref": "..\\rh-auth\\conf_data.js [47,85]"
+        "ref": "..\\rh-auth\\conf_data.js [47,50]"
     },
     {
         "source": "Get user(s)",
         "language": "es",
         "context": "premission",
         "translation": "Obtener usuario(s)",
-        "ref": "..\\rh-auth\\conf_data.js [43,82]"
+        "ref": "..\\rh-auth\\conf_data.js [43,50]"
     },
     {
         "source": "Group",
         "language": "es",
         "context": "userType",
         "translation": "Grupo",
-        "ref": "..\\rh-auth\\conf_data.js [8,60]"
+        "ref": "..\\rh-auth\\conf_data.js [8,36]"
     },
     {
         "source": "HTTP error 401 unauthorized",
         "language": "es",
         "context": "session",
         "translation": "Error HTTP 401 no autorizado",
-        "ref": "..\\rh-auth\\controllers\\session.js [74,128]"
+        "ref": "..\\rh-auth\\controllers\\session.js [74,62]"
     },
     {
         "source": "HTTP error 401 unauthorized, authorization schema is no Bearer.",
         "language": "es",
         "context": "auth",
         "translation": "Error HTTP 401 no autorizado, el esquema de autorización no es Bearer. ",
-        "ref": "..\\rh-auth\\rh-auth.js [37,127]"
+        "ref": "..\\rh-auth\\rh-auth.js [44,25]"
+    },
+    {
+        "source": "HTTP error 401 unauthorized, authorization token error.",
+        "language": "es",
+        "context": "session",
+        "translation": "HTTP error 401 no autorizado, error en el token de autorización.",
+        "ref": "..\\rh-auth\\controllers\\session.js [62,58]"
     },
     {
         "source": "HTTP error 401 unauthorized, no authorization header.",
         "language": "es",
         "context": "auth",
         "translation": "Error HTTP 401 no autorizado, no hay cabecera de autorización. ",
-        "ref": "..\\rh-auth\\rh-auth.js [33,117]"
+        "ref": "..\\rh-auth\\rh-auth.js [34,25]"
+    },
+    {
+        "source": "HTTP error 401 unauthorized, session is closed.",
+        "language": "es",
+        "context": "session",
+        "translation": "HTTP error 401 no autorizado, la sesión está cerrada.",
+        "ref": "..\\rh-auth\\controllers\\session.js [60,58]"
     },
     {
         "source": "HTTP error 401 unauthorized: %s",
         "language": "es",
         "context": "session",
         "translation": "Error HTTP 401 no autorizado: %s",
-        "ref": "..\\rh-auth\\controllers\\session.js [72,137]"
-    },
-    {
-        "source": "HTTP error 403 forbidden, authorization token error.",
-        "language": "es",
-        "context": "session",
-        "translation": "Error HTTP 403 prohibido, error en el identificador de autorización.\n\n",
-        "ref": "..\\rh-auth\\controllers\\session.js [62,124]"
-    },
-    {
-        "source": "HTTP error 403 forbidden, session is closed.",
-        "language": "es",
-        "context": "session",
-        "translation": "Error HTTP 403 prohibido, la sesión está cerrada.",
-        "ref": "..\\rh-auth\\controllers\\session.js [60,116]"
+        "ref": "..\\rh-auth\\controllers\\session.js [72,62]"
     },
     {
         "source": "Invalid login",
         "language": "es",
         "context": "login",
         "translation": "Ingreso inválido ",
-        "ref": "..\\rh-auth\\controllers\\login.js [175,71]"
+        "ref": "..\\rh-auth\\controllers\\login.js [178,42]"
     },
     {
         "source": "Local",
         "language": "es",
         "context": "identityType",
         "translation": "Local",
-        "ref": "..\\rh-auth\\conf_data.js [12,64]"
+        "ref": "..\\rh-auth\\conf_data.js [12,36]"
     },
     {
         "source": "Login",
         "language": "es",
         "context": "login",
         "translation": "Ingresar",
-        "ref": "..\\rh-auth\\controllers\\login.js [56,50]"
+        "ref": "..\\rh-auth\\controllers\\login.js [56,30]"
     },
     {
         "source": "Login menu",
         "language": "es",
         "context": "premission",
         "translation": "Menú de acceso",
-        "ref": "..\\rh-auth\\conf_data.js [36,81]"
+        "ref": "..\\rh-auth\\conf_data.js [36,50]"
     },
     {
         "source": "Logout",
         "language": "es",
         "context": "menu",
         "translation": "Salir",
-        "ref": "..\\rh-auth\\conf_data.js [41,200]"
+        "ref": "..\\rh-auth\\conf_data.js [41,179]"
     },
     {
         "source": "Logout",
         "language": "es",
         "context": "premission",
         "translation": "Salir",
-        "ref": "..\\rh-auth\\conf_data.js [41,77]"
+        "ref": "..\\rh-auth\\conf_data.js [41,50]"
     },
     {
         "source": "My sessions",
         "language": "es",
         "context": "menu",
         "translation": "Mis sesiones",
-        "ref": "..\\rh-auth\\conf_data.js [39,205]"
+        "ref": "..\\rh-auth\\conf_data.js [39,179]"
     },
     {
         "source": "New password",
         "language": "es",
         "context": "changeMyPassword",
         "translation": "Nueva contraseña",
-        "ref": "..\\rh-auth\\controllers\\change-my-password.js [25,76]"
+        "ref": "..\\rh-auth\\controllers\\change-my-password.js [25,38]"
     },
     {
         "source": "No session",
         "language": "es",
         "context": "logout",
         "translation": "No hay sesión",
-        "ref": "..\\rh-auth\\controllers\\logout.js [34,82]"
+        "ref": "..\\rh-auth\\controllers\\logout.js [34,56]"
     },
     {
         "source": "Open",
         "language": "es",
         "context": "session",
         "translation": "Abierto",
-        "ref": "..\\rh-auth\\controllers\\session.js [211,59]"
+        "ref": "..\\rh-auth\\controllers\\session.js [215,38]"
     },
     {
         "source": "Password",
         "language": "es",
         "context": "login",
         "translation": "Contraseña",
-        "ref": "..\\rh-auth\\controllers\\login.js [72,61]\n..\\rh-auth\\controllers\\login.js [115,118]"
+        "ref": "..\\rh-auth\\controllers\\login.js [75,38]\n..\\rh-auth\\controllers\\login.js [118,94]"
     },
     {
         "source": "Password",
         "language": "es",
         "context": "user",
         "translation": "Contraseña",
-        "ref": "..\\rh-auth\\controllers\\user.js [203,60]"
+        "ref": "..\\rh-auth\\controllers\\user.js [203,38]"
     },
     {
         "source": "Row for UUID %s does not exist",
         "language": "es",
         "context": "session",
         "translation": "La fila UUID %s no existe. ",
-        "ref": "..\\rh-auth\\services\\session.js [168,126]"
+        "ref": "..\\rh-auth\\services\\session.js [168,72]"
     },
     {
         "source": "Session menu",
         "language": "es",
         "context": "premission",
         "translation": "Menú se sesión",
-        "ref": "..\\rh-auth\\conf_data.js [37,83]"
+        "ref": "..\\rh-auth\\conf_data.js [37,50]"
     },
     {
         "source": "Sessions",
         "language": "es",
         "context": "menu",
         "translation": "Sesiones",
-        "ref": "..\\rh-auth\\conf_data.js [47,202]"
+        "ref": "..\\rh-auth\\conf_data.js [47,179]"
     },
     {
         "source": "Sessions",
         "language": "es",
         "context": "session",
         "translation": "Sesiones",
-        "ref": "..\\rh-auth\\controllers\\session.js [201,55]"
+        "ref": "..\\rh-auth\\controllers\\session.js [205,30]"
     },
     {
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-auth-es.js [18,41]"
+        "ref": "rh-auth-es.js [18,28]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-auth-es.js [19,57]"
+        "ref": "rh-auth-es.js [19,34]"
     },
     {
         "source": "Switch site",
         "language": "es",
         "context": "premission",
         "translation": "Cambiar de sitio",
-        "ref": "..\\rh-auth\\conf_data.js [49,82]"
+        "ref": "..\\rh-auth\\conf_data.js [49,50]"
     },
     {
         "source": "System administrator",
         "language": "es",
         "context": "role",
         "translation": "Administrador del sistema.",
-        "ref": "..\\rh-auth\\conf_data.js [23,77]"
+        "ref": "..\\rh-auth\\conf_data.js [23,42]"
     },
     {
         "source": "The auto login token is invalid becasuse the session is closed",
         "language": "es",
         "context": "login",
         "translation": "La seña (token) de ingreso automático es inválida porque la sesión está cerrada ",
-        "ref": "..\\rh-auth\\services\\login.js [96,112]"
+        "ref": "..\\rh-auth\\services\\login.js [96,34]"
     },
     {
         "source": "The device is not the same",
         "language": "es",
         "context": "login",
         "translation": "El dispositivo no es el mismo ",
-        "ref": "..\\rh-auth\\services\\login.js [105,76]"
+        "ref": "..\\rh-auth\\services\\login.js [105,34]"
     },
     {
         "source": "The new password and its confirmation are distinct",
         "language": "es",
         "context": "changeMyPassword",
         "translation": "La nueva contraseña es distinta de su confirmación",
-        "ref": "..\\rh-auth\\controllers\\change-my-password.js [55,115]"
+        "ref": "..\\rh-auth\\controllers\\change-my-password.js [55,38]"
     },
     {
         "source": "The new password and the current password are the same",
         "language": "es",
         "context": "changeMyPassword",
         "translation": "La nueva contraseña y la contraseña actual son la misma",
-        "ref": "..\\rh-auth\\controllers\\change-my-password.js [59,119]"
+        "ref": "..\\rh-auth\\controllers\\change-my-password.js [59,38]"
     },
     {
         "source": "There is no id for session",
         "language": "es",
         "context": "session",
         "translation": "No hay id para la sesión. ",
-        "ref": "..\\rh-auth\\services\\session.js [151,78]"
+        "ref": "..\\rh-auth\\services\\session.js [151,34]"
     },
     {
         "source": "Type here the new password for user",
         "language": "es",
         "context": "user",
         "translation": "Escriba aquí la nueva contraseña para el usuario",
-        "ref": "..\\rh-auth\\controllers\\user.js [204,93]"
+        "ref": "..\\rh-auth\\controllers\\user.js [204,44]"
     },
     {
         "source": "Type here your current password",
         "language": "es",
         "context": "changeMyPassword",
         "translation": " Escriba aquí su contraseña actual",
-        "ref": "..\\rh-auth\\controllers\\change-my-password.js [20,101]"
+        "ref": "..\\rh-auth\\controllers\\change-my-password.js [20,44]"
     },
     {
         "source": "Type here your new password",
         "language": "es",
         "context": "changeMyPassword",
         "translation": "Escriba aquí su nueva contraseña",
-        "ref": "..\\rh-auth\\controllers\\change-my-password.js [26,97]"
+        "ref": "..\\rh-auth\\controllers\\change-my-password.js [26,44]"
     },
     {
         "source": "Type here your new password again to confirm",
         "language": "es",
         "context": "changeMyPassword",
         "translation": "Escriba aquí su nueva contraseña nuevamente para confirmar",
-        "ref": "..\\rh-auth\\controllers\\change-my-password.js [32,114]"
+        "ref": "..\\rh-auth\\controllers\\change-my-password.js [32,44]"
     },
     {
         "source": "Type the display name here",
         "language": "es",
         "context": "user",
         "translation": "Escriba aquí el nombre mostrado",
-        "ref": "..\\rh-auth\\controllers\\user.js [179,84]"
+        "ref": "..\\rh-auth\\controllers\\user.js [179,44]"
     },
     {
         "source": "Type the password here",
         "language": "es",
         "context": "login",
         "translation": "Escriba la contraseña aquí",
-        "ref": "..\\rh-auth\\controllers\\login.js [73,81]"
+        "ref": "..\\rh-auth\\controllers\\login.js [76,44]"
     },
     {
         "source": "Type the username here",
         "language": "es",
         "context": "login",
         "translation": "Escriba el nombre de usuario aquí",
-        "ref": "..\\rh-auth\\controllers\\login.js [67,81]"
+        "ref": "..\\rh-auth\\controllers\\login.js [70,44]"
     },
     {
         "source": "UUID",
         "language": "es",
         "context": "session",
         "translation": "UUID",
-        "ref": "..\\rh-auth\\controllers\\session.js [262,89]"
+        "ref": "..\\rh-auth\\controllers\\session.js [266,67]"
     },
     {
         "source": "UUID",
         "language": "es",
         "context": "user",
         "translation": "UUID ",
-        "ref": "..\\rh-auth\\controllers\\user.js [251,129]\n..\\rh-auth\\controllers\\user.js [300,129]\n..\\rh-auth\\controllers\\user.js [349,129]\n..\\rh-auth\\controllers\\user.js [396,129]"
+        "ref": "..\\rh-auth\\controllers\\user.js [251,110]\n..\\rh-auth\\controllers\\user.js [300,110]\n..\\rh-auth\\controllers\\user.js [349,110]\n..\\rh-auth\\controllers\\user.js [396,110]"
+    },
+    {
+        "source": "Unauthorized error",
+        "language": "es",
+        "context": "auth",
+        "isDraft": false,
+        "translation": "Error no autorizado",
+        "ref": "..\\rh-auth\\rh-auth.js [36,36]\n..\\rh-auth\\rh-auth.js [46,36]"
     },
     {
         "source": "User",
         "language": "es",
         "context": "role",
         "translation": "Usuario",
-        "ref": "..\\rh-auth\\conf_data.js [22,61]"
+        "ref": "..\\rh-auth\\conf_data.js [22,42]"
     },
     {
         "source": "User",
         "language": "es",
         "context": "user",
         "translation": "Usuario",
-        "ref": "..\\rh-auth\\controllers\\user.js [146,48]"
+        "ref": "..\\rh-auth\\controllers\\user.js [146,30]"
     },
     {
         "source": "User",
         "language": "es",
         "context": "userType",
         "translation": "Usuario",
-        "ref": "..\\rh-auth\\conf_data.js [7,59]"
+        "ref": "..\\rh-auth\\conf_data.js [7,36]"
     },
     {
         "source": "User \"%s\" does not exist",
         "language": "es",
         "context": "user",
         "translation": "El usuario \"%s\" no existe ",
-        "ref": "..\\rh-auth\\services\\user.js [147,73]"
+        "ref": "..\\rh-auth\\services\\user.js [147,34]"
     },
     {
         "source": "User \"%s\" does not have local identity",
         "language": "es",
         "context": "identity",
         "translation": "El usuario \"%s\" no tiene identidad local",
-        "ref": "..\\rh-auth\\services\\identity.js [163,90]"
+        "ref": "..\\rh-auth\\services\\identity.js [163,24]"
     },
     {
         "source": "User \"%s\" does not have local identity data",
         "language": "es",
         "context": "identity",
         "translation": "El usuario \"%s\" no tiene datos de identidad local ",
-        "ref": "..\\rh-auth\\services\\identity.js [171,95]"
+        "ref": "..\\rh-auth\\services\\identity.js [171,24]"
     },
     {
         "source": "User \"%s\" does not have local password",
         "language": "es",
         "context": "identity",
         "translation": "El usuario \"%s\" no tiene contraseña local",
-        "ref": "..\\rh-auth\\services\\identity.js [176,90]"
+        "ref": "..\\rh-auth\\services\\identity.js [176,24]"
     },
     {
         "source": "User \"%s\" is not enabled",
         "language": "es",
         "context": "user",
         "translation": "El usuario \"%s no está habilitado ",
-        "ref": "..\\rh-auth\\services\\user.js [151,73]"
+        "ref": "..\\rh-auth\\services\\user.js [151,34]"
     },
     {
         "source": "User \"%s\" local identity is not enabled",
         "language": "es",
         "context": "identity",
         "translation": "La identidad local del usuario \"%s\" no está habilitada",
-        "ref": "..\\rh-auth\\services\\identity.js [167,91]"
+        "ref": "..\\rh-auth\\services\\identity.js [167,24]"
     },
     {
         "source": "User manager",
         "language": "es",
         "context": "role",
         "translation": "Administrador de usuarios",
-        "ref": "..\\rh-auth\\conf_data.js [24,69]"
+        "ref": "..\\rh-auth\\conf_data.js [24,42]"
     },
     {
         "source": "User with UUID %s does not exists.",
         "language": "es",
         "context": "user",
         "translation": "No existe el usuario con el UUID %s. ",
-        "ref": "..\\rh-auth\\controllers\\user.js [254,91]\n..\\rh-auth\\controllers\\user.js [303,91]\n..\\rh-auth\\controllers\\user.js [352,91]\n..\\rh-auth\\controllers\\user.js [399,91]"
+        "ref": "..\\rh-auth\\controllers\\user.js [254,42]\n..\\rh-auth\\controllers\\user.js [303,42]\n..\\rh-auth\\controllers\\user.js [352,42]\n..\\rh-auth\\controllers\\user.js [399,42]"
     },
     {
         "source": "Username",
         "language": "es",
         "context": "login",
         "translation": "Nombre de usuario ",
-        "ref": "..\\rh-auth\\controllers\\login.js [66,61]\n..\\rh-auth\\controllers\\login.js [115,78]"
+        "ref": "..\\rh-auth\\controllers\\login.js [69,38]\n..\\rh-auth\\controllers\\login.js [118,54]"
     },
     {
         "source": "Username",
         "language": "es",
         "context": "user",
         "translation": "Nombre de usuario",
-        "ref": "..\\rh-auth\\services\\user.js [26,68]\n..\\rh-auth\\controllers\\user.js [161,60]\n..\\rh-auth\\controllers\\user.js [185,60]\n..\\rh-auth\\controllers\\user.js [186,66]"
+        "ref": "..\\rh-auth\\services\\user.js [26,45]\n..\\rh-auth\\controllers\\user.js [161,38]\n..\\rh-auth\\controllers\\user.js [185,38]\n..\\rh-auth\\controllers\\user.js [186,44]"
     },
     {
         "source": "Users",
         "language": "es",
         "context": "menu",
         "translation": "Usuarios",
-        "ref": "..\\rh-auth\\conf_data.js [43,199]"
+        "ref": "..\\rh-auth\\conf_data.js [43,179]"
     },
     {
         "source": "Users",
         "language": "es",
         "context": "user",
         "translation": "Usuarios",
-        "ref": "..\\rh-auth\\controllers\\user.js [172,49]"
+        "ref": "..\\rh-auth\\controllers\\user.js [172,30]"
     },
     {
         "source": "current password",
         "language": "es",
         "context": "changeMyPassword",
         "translation": "contraseña actual",
-        "ref": "..\\rh-auth\\controllers\\change-my-password.js [43,81]\n..\\rh-auth\\controllers\\change-my-password.js [50,107]"
+        "ref": "..\\rh-auth\\controllers\\change-my-password.js [43,38]\n..\\rh-auth\\controllers\\change-my-password.js [50,64]"
     },
     {
         "source": "new password",
         "language": "es",
         "context": "changeMyPassword",
         "translation": "contraseña nueva",
-        "ref": "..\\rh-auth\\controllers\\change-my-password.js [44,73]\n..\\rh-auth\\controllers\\change-my-password.js [51,99]"
+        "ref": "..\\rh-auth\\controllers\\change-my-password.js [44,34]\n..\\rh-auth\\controllers\\change-my-password.js [51,60]"
     },
     {
         "source": "new password confirmation",
         "language": "es",
         "context": "changeMyPassword",
         "translation": "confirmación de la nueva contraseña",
-        "ref": "..\\rh-auth\\controllers\\change-my-password.js [45,98]\n..\\rh-auth\\controllers\\change-my-password.js [52,124]"
+        "ref": "..\\rh-auth\\controllers\\change-my-password.js [45,46]\n..\\rh-auth\\controllers\\change-my-password.js [52,72]"
     }
 ]

@@ -34,7 +34,7 @@ export class _HttpError extends Error {
 }
 
 export class UnauthorizedError extends Error {
-    static VisibleProperties = ['message'];
+    static VisibleProperties = ['message', 'title'];
 
     statusCode = 401;
 
@@ -52,7 +52,7 @@ export class UnauthorizedError extends Error {
 }
 
 export class _UnauthorizedError extends Error {
-    static VisibleProperties = ['message', 'redirectTo'];
+    static VisibleProperties = ['message', 'title', 'redirectTo'];
 
     statusCode = 401;
 
@@ -71,7 +71,7 @@ export class _UnauthorizedError extends Error {
 
 export class NoPermissionError extends Error {
     static NoObjectValues = ['permissions'];
-    static VisibleProperties = ['message', 'permissions', 'redirectTo'];
+    static VisibleProperties = ['message', 'title', 'permissions', 'redirectTo'];
     static _zeroMessage = loc._f('You do not have permission.');
     static _message = loc._nf(0, 'You do not have permission: "%s"', 'You do not have any of permissions: "%s".');
 
@@ -99,7 +99,7 @@ export class NoPermissionError extends Error {
 
 export class MethodNotAllowedError extends Error {
     static NoObjectValues = ['method'];
-    static VisibleProperties = ['message', 'method'];
+    static VisibleProperties = ['message', 'title', 'method'];
     static _message = loc._f('Method "%s" not allowed.');
     static param = ['<unknown>'];
 
@@ -124,7 +124,7 @@ export class MethodNotAllowedError extends Error {
 
 export class NoUUIDError extends Error {
     static NoObjectValues = ['paramName'];
-    static VisibleProperties = ['message', 'paramName'];
+    static VisibleProperties = ['message', 'title', 'paramName'];
     static _message = loc._f('The "%s" parameter is not a valid UUID.');
     static param = ['<unknown>'];
 
