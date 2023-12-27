@@ -169,6 +169,7 @@ export class TranslationService extends ServiceIdUuidEnabled {
         if (!contextsId.length || !contextsId.some(context => context === null)) {
             contextsId.push(null);
         }
+        contextsId.push(undefined);
 
         if (domains) {
             if (!Array.isArray(domains)) {
@@ -183,6 +184,7 @@ export class TranslationService extends ServiceIdUuidEnabled {
         if (!domainsId.length || !domainsId.some(domian => domian === null)) {
             domainsId.push(null);
         }
+        domainsId.push(undefined);
         
         let languageData = await LanguageService.singleton().createIfNotExists({name: language.trim(), title: language.trim()});
         while (languageData.id) {
@@ -195,9 +197,16 @@ export class TranslationService extends ServiceIdUuidEnabled {
             for (const domainId of domainsId) {
                 for (const contextId of contextsId) {
                     const options = {
-                        where: {...data,  domainId, contextId},
+                        where: {...data, contextId, domainId},
                         limit: 1
                     };
+                    if (options.where.contextId === undefined) {
+                        delete options.where.contextId;
+                    }
+                    if (options.where.domainId === undefined) {
+                        delete options.where.domainId;
+                    }
+
                     translation = await conf.global.models.Translation.findAll(options);
 
                     if (translation.length) {
