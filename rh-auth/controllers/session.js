@@ -77,7 +77,7 @@ export class SessionController {
 
                     result.error ??= 'Unauthorized';
                     result.clearBearerAuthorization = true;
-                    result.redirect = '#/form/login';
+                    result.redirectTo = '#login';
 
                     req.log.error(logLine, {...logOptions, error: err, result});
                     res.status(401).send(result);

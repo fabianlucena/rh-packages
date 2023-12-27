@@ -52,7 +52,7 @@ export class UnauthorizedError extends Error {
 }
 
 export class _UnauthorizedError extends Error {
-    static VisibleProperties = ['message'];
+    static VisibleProperties = ['message', 'redirectTo'];
 
     statusCode = 401;
 
@@ -62,7 +62,7 @@ export class _UnauthorizedError extends Error {
             this,
             {
                 _message,
-                options,
+                ...options,
                 params
             }
         );
@@ -71,7 +71,7 @@ export class _UnauthorizedError extends Error {
 
 export class NoPermissionError extends Error {
     static NoObjectValues = ['permissions'];
-    static VisibleProperties = ['message', 'permissions'];
+    static VisibleProperties = ['message', 'permissions', 'redirectTo'];
     static _zeroMessage = loc._f('You do not have permission.');
     static _message = loc._nf(0, 'You do not have permission: "%s"', 'You do not have any of permissions: "%s".');
 

@@ -254,7 +254,7 @@ export async function getErrorData(error, loc, options) {
             data.name = data.name.substring(1);
         }
 
-        const visibleProperties = options?.properties ?? error.constructor?.VisibleProperties ?? ['message', 'length', 'fileName', 'lineNumber', 'columnNumber', 'stack'];
+        const visibleProperties = options?.properties ?? error.constructor?.VisibleProperties ?? ['message', 'length', 'fileName', 'lineNumber', 'columnNumber', 'stack', 'redirectTo'];
         visibleProperties.forEach(n => data[n] = error[n]);
 
         if (error.statusCode) {
