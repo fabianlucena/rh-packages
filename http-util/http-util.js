@@ -359,19 +359,19 @@ export async function getOptionsFromOData(params, options) {
     if (params.$top) {
         const limit = parseInt(params.$top);
         if (isNaN(limit)) {
-            throw new _HttpError(loc._fp('Error to convert $top = "%s" parameter value to a integer number.', params.$top));
+            throw new _HttpError(loc._f('Error to convert $top = "%s" parameter value to a integer number.'), 400, params.$top);
         }
 
         if (limit > maxRowsInResult) {
-            throw new _HttpError(loc._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', maxRowsInResult));
+            throw new _HttpError(loc._f('Too many rows to return, please select a lower number (at most %s) for $top parameter.'), 400, maxRowsInResult);
         }
 
         if (limit > options.maxLimit) {
-            throw new _HttpError(loc._fp('Too many rows to return, please select a lower number (at most %s) for $top parameter.', options.maxLimit));
+            throw new _HttpError(loc._f('Too many rows to return, please select a lower number (at most %s) for $top parameter.'), 400, options.maxLimit);
         }
 
         if (limit < 0) {
-            throw new _HttpError(loc._fp('The $top parameter cannot be negative.'), 400);
+            throw new _HttpError(loc._f('The $top parameter cannot be negative.'), 400);
         }
 
         options.limit = limit;
@@ -384,7 +384,7 @@ export async function getOptionsFromOData(params, options) {
     if (params.$skip) {
         const offset = parseInt(params.$skip);
         if (isNaN(offset)) {
-            throw new _HttpError(loc._fp('Error to convert $skip = "%s" parameter value to a integer number.', params.$skip));
+            throw new _HttpError(loc._f('Error to convert $skip = "%s" parameter value to a integer number.'), 400, params.$skip);
         }
 
         if (offset < 0) {
@@ -404,11 +404,11 @@ export async function getOptionsFromOData(params, options) {
         for (const filter of filters) {
             const parts = filter.split(' ').map(t => t.trim()).filter(i => !!i);
             if (parts.length < 3) {
-                throw new _HttpError(loc._fp('Error to compile filter in part "%s".', filter));
+                throw new _HttpError(loc._f('Error to compile filter in part "%s".'), 400, filter);
             }
 
             if (parts[1] !== 'eq') {
-                throw new _HttpError(loc._fp('Error to compile filter in part "%s", only the "eq" operator is supported.', filter));
+                throw new _HttpError(loc._f('Error to compile filter in part "%s", only the "eq" operator is supported.'), 400, filter);
             }
 
             where[parts[0]] = stripQuotes(parts.slice(2).join(' '));
