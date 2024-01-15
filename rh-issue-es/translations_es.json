@@ -32,7 +32,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Motivo de cierre",
-        "ref": "..\\rh-issue\\controllers\\issue.js [314,38]\n..\\rh-issue\\controllers\\issue.js [455,34]\n..\\rh-issue\\controllers\\issue.js [456,40]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [316,38]\n..\\rh-issue\\controllers\\issue.js [457,34]\n..\\rh-issue\\controllers\\issue.js [458,40]"
     },
     {
         "source": "Closed",
@@ -67,7 +67,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Descripción ",
-        "ref": "..\\rh-issue\\controllers\\issue.js [308,38]\n..\\rh-issue\\controllers\\issue.js [420,34]\n..\\rh-issue\\controllers\\issue.js [421,40]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [310,38]\n..\\rh-issue\\controllers\\issue.js [422,34]\n..\\rh-issue\\controllers\\issue.js [423,40]"
     },
     {
         "source": "Desirable",
@@ -102,7 +102,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Habilitado ",
-        "ref": "..\\rh-issue\\controllers\\issue.js [413,34]\n..\\rh-issue\\controllers\\issue.js [414,40]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [415,34]\n..\\rh-issue\\controllers\\issue.js [416,40]"
     },
     {
         "source": "Exists another issue with that name in this project.",
@@ -151,7 +151,7 @@
         "language": "es",
         "context": "issue",
         "translation": "La incidencia con el UUID %s no existe.",
-        "ref": "..\\rh-issue\\controllers\\issue.js [523,42]\n..\\rh-issue\\controllers\\issue.js [573,42]\n..\\rh-issue\\controllers\\issue.js [623,42]\n..\\rh-issue\\controllers\\issue.js [674,42]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [525,42]\n..\\rh-issue\\controllers\\issue.js [575,42]\n..\\rh-issue\\controllers\\issue.js [625,42]\n..\\rh-issue\\controllers\\issue.js [676,42]"
     },
     {
         "source": "Issues",
@@ -164,7 +164,7 @@
         "source": "Issues",
         "language": "es",
         "translation": "Incidencias",
-        "ref": "..\\rh-issue\\controllers\\issue.js [297,30]\n..\\rh-issue\\controllers\\issue.js [468,30]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [299,30]\n..\\rh-issue\\controllers\\issue.js [470,30]"
     },
     {
         "source": "Minimalist",
@@ -178,7 +178,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Nombre ",
-        "ref": "..\\rh-issue\\controllers\\issue.js [153,46]\n..\\rh-issue\\controllers\\issue.js [268,34]\n..\\rh-issue\\controllers\\issue.js [360,34]\n..\\rh-issue\\controllers\\issue.js [361,40]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [153,46]\n..\\rh-issue\\controllers\\issue.js [270,34]\n..\\rh-issue\\controllers\\issue.js [362,34]\n..\\rh-issue\\controllers\\issue.js [363,40]"
     },
     {
         "source": "Open",
@@ -192,14 +192,14 @@
         "language": "es",
         "context": "issue",
         "translation": "Prioridad",
-        "ref": "..\\rh-issue\\controllers\\issue.js [286,34]\n..\\rh-issue\\controllers\\issue.js [400,34]\n..\\rh-issue\\controllers\\issue.js [401,40]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [288,34]\n..\\rh-issue\\controllers\\issue.js [402,34]\n..\\rh-issue\\controllers\\issue.js [403,40]"
     },
     {
         "source": "Project",
         "language": "es",
         "context": "issue",
         "translation": "Proyecto",
-        "ref": "..\\rh-issue\\controllers\\issue.js [274,34]\n..\\rh-issue\\controllers\\issue.js [372,34]\n..\\rh-issue\\controllers\\issue.js [373,40]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [276,34]\n..\\rh-issue\\controllers\\issue.js [374,34]\n..\\rh-issue\\controllers\\issue.js [375,40]"
     },
     {
         "source": "Project parameter is missing.",
@@ -232,7 +232,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Estado",
-        "ref": "..\\rh-issue\\controllers\\issue.js [292,34]\n..\\rh-issue\\controllers\\issue.js [427,34]\n..\\rh-issue\\controllers\\issue.js [428,40]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [294,34]\n..\\rh-issue\\controllers\\issue.js [429,34]\n..\\rh-issue\\controllers\\issue.js [430,40]"
     },
     {
         "source": "Task",
@@ -280,7 +280,6 @@
         "source": "The issue is not important but it would be nice if the task is done.",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "La incidencia no es importante pero sería bueno si la tarea se realiza.",
         "ref": "..\\rh-issue\\conf_data.js [28,106]"
     },
@@ -352,7 +351,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Título ",
-        "ref": "..\\rh-issue\\controllers\\issue.js [153,79]\n..\\rh-issue\\controllers\\issue.js [263,34]\n..\\rh-issue\\controllers\\issue.js [339,34]\n..\\rh-issue\\controllers\\issue.js [340,40]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [153,79]\n..\\rh-issue\\controllers\\issue.js [265,34]\n..\\rh-issue\\controllers\\issue.js [341,34]\n..\\rh-issue\\controllers\\issue.js [342,40]"
     },
     {
         "source": "To parameter is missing or to status does not exist.",
@@ -373,7 +372,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Tipo",
-        "ref": "..\\rh-issue\\controllers\\issue.js [280,34]\n..\\rh-issue\\controllers\\issue.js [386,34]\n..\\rh-issue\\controllers\\issue.js [387,40]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [282,34]\n..\\rh-issue\\controllers\\issue.js [388,34]\n..\\rh-issue\\controllers\\issue.js [389,40]"
     },
     {
         "source": "Urgent",
@@ -394,7 +393,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Flujo de trabajo",
-        "ref": "..\\rh-issue\\controllers\\issue.js [320,38]\n..\\rh-issue\\controllers\\issue.js [441,34]\n..\\rh-issue\\controllers\\issue.js [442,40]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [322,38]\n..\\rh-issue\\controllers\\issue.js [443,34]\n..\\rh-issue\\controllers\\issue.js [444,40]"
     },
     {
         "source": "Workflow parameter is missing or workflow does not exist.",
