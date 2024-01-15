@@ -3,7 +3,7 @@ import {loadJson} from 'rf-util';
 import url from 'url';
 import path from 'path';
 
-const name = 'rh-project-select-es';
+const name = 'rhProjectSelectEs';
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export const conf = {

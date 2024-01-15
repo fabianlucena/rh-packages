@@ -13,7 +13,16 @@ conf.updateData = async function() {
         return;
     }
 
+    const moduleService = ModuleService.singleton();
     for (const moduleName in conf?.global?.modules) {
-        await ModuleService.singleton().createIfNotExists(conf.global.modules[moduleName]);
+        const module = conf.global.modules[moduleName];
+        const moduleData = {
+            isEnabled: module.isEnabled,
+            name: module.name,
+            title: module.title,
+            isTranslateble: module.isTranslateble,
+            version: module.version,
+        };
+        await moduleService.createIfNotExists(moduleData);
     }
 };

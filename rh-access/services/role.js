@@ -7,6 +7,7 @@ export class RoleService extends ServiceIdUuidNameTitleEnabledModuleTranslatable
     sequelize = conf.global.sequelize;
     model = conf.global.models.Role;
     moduleModel = conf.global.models.Module;
+    moduleService = conf.global.services.Module.singleton();
     defaultTranslationContext = 'role';
 
     constructor() {

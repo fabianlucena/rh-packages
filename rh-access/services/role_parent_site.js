@@ -6,6 +6,7 @@ export class RoleParentSiteService extends ServiceModuleTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.RoleParentSite;
     moduleModel = conf.global.models.Module;
+    moduleService = conf.global.services.Module.singleton();
     references = {
         role: conf.global.services.Role.singleton(),
         parent: conf.global.services.Role.singleton(),

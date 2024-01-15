@@ -8,6 +8,7 @@ export class PermissionService extends ServiceIdUuidNameTitleDescriptionEnabledM
     sequelize = conf.global.sequelize;
     model = conf.global.models.Permission;
     moduleModel = conf.global.models.Module;
+    moduleService = conf.global.services.Module.singleton();
     defaultTranslationContext = 'user';
 
     /**
@@ -16,7 +17,7 @@ export class PermissionService extends ServiceIdUuidNameTitleDescriptionEnabledM
      * @returns {Promise{Permission}}
      */
     async createIfNotExists(data, options) {
-        const result = super.createIfNotExists(data, options);
+        const result = await super.createIfNotExists(data, options);
         if (data.roles) {
             const roles = Array.isArray(data.roles)?
                 data.roles:

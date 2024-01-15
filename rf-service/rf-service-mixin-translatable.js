@@ -1,3 +1,5 @@
+import {ucfirst} from 'rf-util/rf-util-string.js';
+
 export const ServiceMixinTranslatable = Service => class ServiceTranslatable extends Service {
     async getList(options) {
         let result = super.getList(options);
@@ -47,23 +49,26 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
         for (const referenceName in this.references) {
             let reference = this.references[referenceName];
             let service = reference;
-            if (!service.translateRow) {
+            if (!service?.translateRow) {
                 if (reference.service) {
                     service = reference.service;
                 }
 
-                if (!service.translateRow) {
+                if (!service?.prototype?.translateRow) {
                     continue;
                 }
             }
             
-            let name = service.constructor?.name;
-            if (name.endsWith('Service')) {
-                name = name.substring(0, name.length - 7);
-            }
-
+            let name = ucfirst(referenceName);
             if (!row[name]) {
-                continue;
+                name = service.constructor?.name;
+                if (name.endsWith('Service')) {
+                    name = name.substring(0, name.length - 7);
+                }
+
+                if (!row[name]) {
+                    continue;
+                }
             }
 
             row[name] = await service.translateRow(row[name], loc, options);

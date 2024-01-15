@@ -13,12 +13,14 @@ export const ServiceMixinIdName = Service => class ServiceIdName extends Service
      * function can be specified.
      */
     async getIdForName(name, options) {
-        if (Array.isArray(name))
+        if (Array.isArray(name)) {
             return (await this.getForName(name, {attributes: ['id'], ...options})).map(row => row.id);
+        }
         
         const row = await this.getForName(name, {attributes: ['id'], ...options});
-        if (!row)
+        if (!row) {
             return;
+        }
 
         return row.id;
     }
