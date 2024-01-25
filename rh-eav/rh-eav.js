@@ -173,12 +173,11 @@ async function interfaceGridGet(grid, options) {
         return;
     }
 
-
     conf.columnsCache[entity] ||= {};
     conf.detailsCache[entity] ||= {};
 
     const columnsCache = conf.columnsCache[entity];
-    const detailsCache = conf.columnsCache[entity];
+    const detailsCache = conf.detailsCache[entity];
 
     const language = options?.loc?.language;
     if (columnsCache[language] === undefined) {
@@ -437,7 +436,7 @@ async function deleting(entity, options, service) {
                 throw new Error('Unknown attribute type.');
             }
 
-            await valueService .deleteFor(optionData, queryOptions);
+            await valueService.deleteFor(optionData, queryOptions);
         }
     }
 }
