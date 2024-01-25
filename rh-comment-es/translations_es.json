@@ -1,0 +1,14 @@
+[
+    {
+        "source": "Spanish",
+        "language": "es",
+        "translation": "Español",
+        "ref": "rh-comment-es.js [18,28]"
+    },
+    {
+        "source": "Spanish language.",
+        "language": "es",
+        "translation": "Idioma español.",
+        "ref": "rh-comment-es.js [19,34]"
+    }
+]
