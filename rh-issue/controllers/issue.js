@@ -1,6 +1,6 @@
 import {IssueService} from '../services/issue.js';
 import {conf} from '../conf.js';
-import {getOptionsFromParamsAndOData, _HttpError, getUuidFromRequest} from 'http-util';
+import {getOptionsFromParamsAndOData, _HttpError, getUuidFromRequest, makeContext} from 'http-util';
 import {checkParameter, filterVisualItemsByAliasName} from 'rf-util';
 
 const issueService = IssueService.singleton();
@@ -241,9 +241,11 @@ export class IssueController {
 
         await conf.global.eventBus?.$emit('Issue.response.getting', options);
 
-        const result = await issueService.getListAndCount(options);
+        let result = await issueService.getListAndCount(options);
 
         await conf.global.eventBus?.$emit('Issue.response.getted', result, options);
+
+        result = await issueService.sanitize(result);
 
         res.status(200).send(result);
     }
@@ -295,6 +297,26 @@ export class IssueController {
             },
         ];
 
+        const details = [
+            {
+                name: 'description',
+                type: 'text',
+                label: await loc._cf('issue', 'Description'),
+            },
+            {
+                alias: 'closeReason',
+                name: 'CloseReason.title',
+                type: 'text',
+                label: await loc._cf('issue', 'Close reason'),
+            },
+            {
+                alias: 'workflow',
+                name: 'Workflow.title',
+                type: 'text',
+                label: await loc._cf('issue', 'Workflow'),
+            },
+        ];
+
         const grid = {
             title: await loc._('Issues'),
             load: {
@@ -303,25 +325,7 @@ export class IssueController {
             },
             actions,
             columns: await filterVisualItemsByAliasName(columns, conf?.issue, {loc, entity: 'Issue', translationContext: 'issue', interface: 'grid'}),
-            details: [
-                {
-                    name: 'description',
-                    type: 'text',
-                    label: await loc._cf('issue', 'Description'),
-                },
-                {
-                    alias: 'closeReason',
-                    name: 'CloseReason.title',
-                    type: 'text',
-                    label: await loc._cf('issue', 'Close reason'),
-                },
-                {
-                    alias: 'workflow',
-                    name: 'Workflow.title',
-                    type: 'text',
-                    label: await loc._cf('issue', 'Workflow'),
-                },
-            ]
+            details: await filterVisualItemsByAliasName(details, conf?.issue, {loc, entity: 'Issue', translationContext: 'issue', interface: 'grid'}),
         };
 
         await conf.global.eventBus?.$emit('Issue.interface.grid.get', grid, {loc});
@@ -671,7 +675,7 @@ export class IssueController {
         const data = {...req.body, uuid: undefined};
         const where = {uuid, projectId};
 
-        const rowsUpdated = await issueService.updateFor(data, where);
+        const rowsUpdated = await issueService.updateFor(data, where, {context: makeContext(req, res)});
         if (!rowsUpdated) {
             throw new _HttpError(req.loc._cf('issue', 'Issue with UUID %s does not exists.'), 403, uuid);
         }

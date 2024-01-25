@@ -18,6 +18,7 @@ export class IssueService extends ServiceIdUuidNameTitleDescriptionEnabledTransl
         closeReason: conf.global.services.IssueCloseReason.singleton(),
     };
     defaultTranslationContext = 'issue';
+    eventBus = conf.global.eventBus;
 
     async validateForCreation(data) {
         if (!data?.projectId) {
@@ -50,7 +51,7 @@ export class IssueService extends ServiceIdUuidNameTitleDescriptionEnabledTransl
 
         if (options.view) {
             if (!options.attributes) {
-                options.attributes = ['uuid', 'isEnabled', 'name', 'title', 'isTranslatable', 'description'];
+                options.attributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'isTranslatable', 'description'];
             }
         }
 
