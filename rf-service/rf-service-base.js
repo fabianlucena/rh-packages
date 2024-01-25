@@ -58,6 +58,13 @@ export class ServiceBase {
         return this.singletonInstance;
     }
 
+    constructor() {
+        if (!this.hiddenColumns) {
+            this.hiddenColumns ??= [];
+            this.hiddenColumns.push('id');
+        }
+    }
+
     init() {
         let name = this.constructor.name;
         if (name.endsWith('Service')) {
@@ -482,5 +489,79 @@ export class ServiceBase {
      */
     async deleteFor(where, options) {        
         return this.delete({...options, where: {...options?.where, ...where}});
+    }
+
+    async sanitize(result, options) {
+        if (result.rows) {
+            await this.emit('sanitizing', options?.emitEvent, result.rows, options, this);
+            result.rows = await Promise.all(result.rows.map(row => this.sanitizeRow(row, options)));
+            const eventResult = await this.emit('sanitized', options?.emitEvent, result.rows, options, this);
+            if (eventResult?.length) {
+                result.rows = eventResult[eventResult.length - 1];
+            }
+        } else {
+            await this.emit('sanitizing', options?.emitEvent, result, options, this);
+            result = await Promise.all(result.map(row => this.sanitizeRow(row, options)));
+            const eventResult = await this.emit('sanitized', options?.emitEvent, result, options, this);
+            if (eventResult?.length) {
+                result = eventResult[eventResult.length - 1];
+            }
+        }
+
+        return result;
+    }
+
+    async sanitizeRow(row, options) {
+        await this.emit('sanitizingRow', options?.emitEvent, row, options, this);
+        if (row.toJSON) {
+            row = row.toJSON();
+        }
+
+        if (this.hiddenColumns?.length) {
+            row = {...row};
+            for (const hideColumn of this.hiddenColumns) {
+                delete row[hideColumn];
+            }
+        }
+
+        for (const referenceName in this.references) {
+            let reference = this.references[referenceName];
+            let service = reference;
+            if (!service?.sanitizeRow) {
+                if (reference.service) {
+                    service = reference.service;
+                }
+
+                if (!service?.prototype?.sanitizeRow) {
+                    continue;
+                }
+            }
+            
+            let name = ucfirst(referenceName);
+            if (!row[name]) {
+                name = service.constructor?.name;
+                if (name.endsWith('Service')) {
+                    name = name.substring(0, name.length - 7);
+                }
+
+                if (!row[name]) {
+                    continue;
+                }
+            }
+
+            if (Array.isArray(row[name])) {
+                if (service.sanitize) {
+                    row[name] = await service.sanitize(row[name], options);
+                }
+            } else {
+                if (service.sanitizeRow) {
+                    row[name] = await service.sanitizeRow(row[name], options);
+                }
+            }
+        }
+
+        await this.emit('sanitizedRow', options?.emitEvent, row, options, this);
+
+        return row;
     }
 }

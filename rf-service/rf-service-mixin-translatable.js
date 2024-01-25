@@ -26,8 +26,8 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
         return result;
     }
 
-    async translateRows(rows, loc) {
-        return Promise.all(rows.map(row => this.translateRow(row, loc)));
+    async translateRows(rows, loc, options) {
+        return Promise.all(rows.map(row => this.translateRow(row, loc, options)));
     }
 
     async translateRow(row, loc, options) {
@@ -71,7 +71,9 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
                 }
             }
 
-            row[name] = await service.translateRow(row[name], loc, options);
+            if (service.translateRow) {
+                row[name] = await service.translateRow(row[name], loc, options);
+            }
         }
 
         return row;
