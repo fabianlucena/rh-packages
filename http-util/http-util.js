@@ -1010,3 +1010,12 @@ export async function getUuidFromRequest(req) {
 
     return checkParameterUuid(uuid, req.loc._f('UUID'));
 }
+
+export function makeContext(req, res) {
+    return {
+        req,
+        res,
+        loc: req.loc,
+        user: req.user,
+    };
+}
