@@ -144,6 +144,7 @@ async function interfaceGridGet(grid, options) {
     const columnsCache = conf.columnsCache[entity];
     const detailsCache = conf.detailsCache[entity];
 
+    const loc = options?.loc;
     const language = options?.loc?.language;
     if (columnsCache[language] === undefined) {
         columnsCache[language] = [];
@@ -160,7 +161,28 @@ async function interfaceGridGet(grid, options) {
             const field = {
                 name: commentType.name,
                 label: commentType.title,
-                type: 'object',
+                type: 'list',
+                className: 'hide-marker',
+                items: {
+                    className: 'framed',
+                },
+                properties: [
+                    {
+                        name: 'comment',
+                    },
+                    {
+                        name: 'createdAt',
+                        type: 'dateTime',
+                        label: await loc._c('comment', 'Date'),
+                        format: '%x %R',
+                        className: 'small',
+                    },
+                    {
+                        name: 'User.displayName',
+                        label: await loc._c('comment', 'User'),
+                        className: 'framed detail small',
+                    },
+                ],
             };
 
             if (commentType.isColumn) {

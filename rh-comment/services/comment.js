@@ -17,11 +17,13 @@ export class CommentService extends ServiceIdUuid {
 
         if (options.view) {
             if (!options.attributes) {
-                options.attributes = ['id', 'uuid', 'comment'];
+                options.attributes = ['id', 'uuid', 'comment', 'createdAt'];
             }
         }
 
-        if (options.includeUser || options.where?.userUuid !== undefined) {
+        if ((options.includeUser ?? options.view) || 
+            options.where?.userUuid !== undefined
+        ) {
             let where;
 
             if (options.isEnabled !== undefined) {
@@ -34,8 +36,9 @@ export class CommentService extends ServiceIdUuid {
                 delete options.where.userUuid;
             }
 
-            const attributes = options.includeUser?
-                ['uuid', 'name', 'title', 'isTranslatable']:
+            const attributes = options.includeUser?.attributes ??
+                (options.includeUser ?? options.view)?
+                ['uuid', 'username', 'displayName']:
                 [];
 
             completeIncludeOptions(
