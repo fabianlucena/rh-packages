@@ -109,6 +109,7 @@ async function interfaceFormGet(form, options) {
             return;
         }
 
+        const loc = options?.loc;
         const fields = [];
         for (const commentType of commentTypes) {
             if (!commentType.isField) {
@@ -117,13 +118,39 @@ async function interfaceFormGet(form, options) {
 
             const field = {
                 name: commentType.name,
-                type: 'object',
                 label: commentType.title,
-                options: commentType.options,
-                valueProperty: 'uuid',
+                type: 'list',
+                className: 'hide-marker',
+                readonly: true,
+                items: {
+                    className: 'framed',
+                },
+                properties: [
+                    {
+                        name: 'comment',
+                    },
+                    {
+                        name: 'createdAt',
+                        type: 'dateTime',
+                        label: await loc._c('comment', 'Date'),
+                        format: '%x %R',
+                        className: 'small',
+                    },
+                    {
+                        name: 'User.displayName',
+                        label: await loc._c('comment', 'User'),
+                        className: 'framed detail small',
+                    },
+                ],
             };
-
             fields.push(field);
+
+            const addField = {
+                name: commentType.addName,
+                label: commentType.addTitle,
+                type: 'textArea',
+            };
+            fields.push(addField);
         }
 
         fieldsCache[language].push(...fields);
@@ -315,12 +342,27 @@ async function updateValues(entity, entityIds, data, options) {
 
     const entityTypeId = await getEnityTypeId(entity, queryOptions);
 
+    let name,
+        value;
     for (const entityId of entityIds) {
         for (const commentType of commentTypes) {
-            const name = commentType.name;
-            const value = data[name];
-            if (value === undefined) {
-                continue;
+            name = commentType.name;
+            if (name) {
+                value = data[name];
+            } else {
+                value = false;
+            }
+
+            if (!value) {
+                name = commentType.addName;
+                if (!name) {
+                    continue;
+                }
+
+                value = data[name];
+                if (!value) {
+                    continue;
+                }
             }
 
             const optionData = {

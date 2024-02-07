@@ -14,6 +14,13 @@ export class CommentTypeService extends ServiceIdUuidNameTitleDescriptionEnabled
         }
     };
 
+    constructor() {
+        super();
+
+        this.translatableColumns ??= [];
+        this.translatableColumns.push('addTitle');
+    }
+
     async createOrUpdate(data) {
         const attribute = await this.createIfNotExists(data);
         const attributeId = attribute.id;
