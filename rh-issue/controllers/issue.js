@@ -155,7 +155,7 @@ export class IssueController {
         const data = {...req.body};
         await IssueController.checkDataForProjectId(req, data);
 
-        await issueService.create(data);
+        await issueService.create(data, {context: makeContext(req, res)});
 
         res.status(204).send();
     }
@@ -460,7 +460,7 @@ export class IssueController {
                 type: 'select',
                 label: await loc._cf('issue', 'Close reason'),
                 placeholder: await loc._cf('issue', 'Close reason'),
-                required: true,
+                required: false,
                 loadOptionsFrom: {
                     service: 'issue/close-reason',
                     value: 'uuid',
