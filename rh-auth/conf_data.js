@@ -33,8 +33,8 @@ export const data = {
     ],
 
     permissions: [
-        {name: 'login-menu',          title: loc._cf('premission', 'Login menu'),            isTranslatable: true, roles: 'anonymous',   ownerModule: name, menuItem: {alias: 'session-menu',   icon: 'login',                                                       action: 'form',    service: 'login'}},
-        {name: 'session-menu',        title: loc._cf('premission', 'Session menu'),          isTranslatable: true, roles: 'user',        ownerModule: name, menuItem: {alias: 'session-menu',   icon: 'session'}},
+        {name: 'login-menu',          title: loc._cf('premission', 'Login menu'),            isTranslatable: true, roles: 'anonymous',   ownerModule: name, menuItem: {alias: 'session-menu', icon: 'login',                                                       action: 'form',    service: 'login'}},
+        {name: 'session-menu',        title: loc._cf('premission', 'Session menu'),          isTranslatable: true, roles: 'user',        ownerModule: name, menuItem: {alias: 'session-menu', icon: 'user'}},
 
         {name: 'own-session.get',     title: loc._cf('premission', 'Get own sessions only'), isTranslatable: true, roles: 'user',        ownerModule: name, menuItem: {label: loc._cf('menu', 'My sessions'),        isTranslatable: true, parent: 'session-menu',   action: 'grid',    service: 'session'}},
         {name: 'own-password.change', title: loc._cf('premission', 'Change own password'),   isTranslatable: true, roles: 'user',        ownerModule: name, menuItem: {label: loc._cf('menu', 'Change my password'), isTranslatable: true, parent: 'session-menu',   action: 'form',    service: 'change-my-password'}},
