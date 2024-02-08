@@ -4,11 +4,11 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
     async getList(options) {
         let result = super.getList(options);
 
-        let loc;
-        if (options.translate !== false) {
-            loc = options.loc;
+        if (options.translate === false) {
+            return result;
         }
 
+        const loc = options.loc;
         if (loc) {
             if (result.then) {
                 result = await result;
