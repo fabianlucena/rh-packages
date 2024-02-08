@@ -123,4 +123,45 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
 
         return menuItems;
     }
+
+    async override(data, options) {
+        if (!options?.where) {
+            options ??= {};
+
+            if (data.id) {
+                options.where = {id: data.id};
+                data = {...data, id: undefined};
+            } else if (data.uuid) {
+                options.where = {uuid: data.uuid};
+                data = {...data, uuid: undefined};
+            } else if (data.name) {
+                options.where = {name: data.name};
+                data = {...data, name: undefined};
+            }
+        }
+
+        const miList = await this.getList({...options, withCount: false, translate: false});
+
+        delete options.where;
+        let result = 0;
+        for (let mi of miList) {
+            if (mi.toJSON) {
+                mi = mi.toJSON();
+            }
+
+            const id = mi.id;
+            mi = {
+                ...mi,
+                jsonData: undefined,
+                ...data,
+                data: {...mi.data, ...data.data},
+                id: undefined,
+                uuid: undefined,
+                name: undefined,
+            };
+            result += await this.updateForId(mi, id, options);
+        }
+
+        return result;
+    }
 }
