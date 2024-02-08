@@ -54,6 +54,16 @@ export const ServiceMixinId = Service => class ServiceId extends Service {
         return (await this.getFor(where, {attributes: ['id'], ...options})).map(row => row.id);
     }
 
+    async update(data, options) {
+        if (!options?.where && data.id) {
+            options ??= {};
+            options.where = {id: data.id};
+            data = {...data, id: undefined};
+        }
+
+        return super.update(data, options);
+    }
+
     /**
      * Updates a row for a given ID.
      * @param {object} data - Data to update.

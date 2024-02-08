@@ -48,6 +48,16 @@ export const ServiceMixinUuid = Service => class ServiceUuid extends Service {
         return this.getSingleFor({uuid}, options);
     }
 
+    async update(data, options) {
+        if (!options?.where && data.uuid) {
+            options ??= {};
+            options.where = {uuid: data.uuid};
+            data = {...data, uuid: undefined};
+        }
+
+        return super.update(data, options);
+    }
+
     /**
      * Updates a row for a given UUID.
      * @param {object} data - Data to update.

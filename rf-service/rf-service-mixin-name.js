@@ -70,4 +70,14 @@ export const ServiceMixinName = Service => class extends Service {
             
         return this.create(data, {transacion: options?.transacion});
     }
+
+    async update(data, options) {
+        if (!options?.where && data.name) {
+            options ??= {};
+            options.where = {name: data.name};
+            data = {...data, name: undefined};
+        }
+
+        return super.update(data, options);
+    }
 };
