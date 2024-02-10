@@ -6,6 +6,7 @@ import {_ConflictError} from 'http-util';
 import {loc} from 'rf-locale';
 
 export class IssueService extends ServiceIdUuidNameTitleDescriptionEnabledTranslatable {
+    Sequelize = conf.global.Sequelize;
     sequelize = conf.global.sequelize;
     model = conf.global.models.Issue;
     references = {
