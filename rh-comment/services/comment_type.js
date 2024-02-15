@@ -21,6 +21,8 @@ export class CommentTypeService extends ServiceIdUuidNameTitleDescriptionEnabled
         this.translatableColumns.push('addTitle');
     }
 
+    async checkTitleForConflict() {}
+
     async createOrUpdate(data) {
         const attribute = await this.createIfNotExists(data);
         const attributeId = attribute.id;
