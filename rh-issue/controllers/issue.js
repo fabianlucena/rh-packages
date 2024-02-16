@@ -405,7 +405,7 @@ export class IssueController {
                 type: 'select',
                 label: await loc._cf('issue', 'Priority'),
                 placeholder: await loc._cf('issue', 'Priority'),
-                required: true,
+                options: [{value: null, text: ''}],
                 loadOptionsFrom: {
                     service: 'issue/priority',
                     value: 'uuid',
@@ -432,7 +432,7 @@ export class IssueController {
                 type: 'select',
                 label: await loc._cf('issue', 'Status'),
                 placeholder: await loc._cf('issue', 'Status'),
-                required: true,
+                options: [{value: null, text: ''}],
                 loadOptionsFrom: {
                     service: 'issue/status',
                     value: 'uuid',
@@ -446,7 +446,7 @@ export class IssueController {
                 type: 'select',
                 label: await loc._cf('issue', 'Workflow'),
                 placeholder: await loc._cf('issue', 'Workflow'),
-                required: true,
+                options: [{value: null, text: ''}],
                 loadOptionsFrom: {
                     service: 'issue/workflow',
                     value: 'uuid',
@@ -460,7 +460,7 @@ export class IssueController {
                 type: 'select',
                 label: await loc._cf('issue', 'Close reason'),
                 placeholder: await loc._cf('issue', 'Close reason'),
-                required: false,
+                options: [{value: null, text: ''}],
                 loadOptionsFrom: {
                     service: 'issue/close-reason',
                     value: 'uuid',
