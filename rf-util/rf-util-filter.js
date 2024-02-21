@@ -1,5 +1,7 @@
+import {loc as defaultLoc} from './rf-util-loc.js';
+
 export async function filterVisualItemsByAliasName(items, filter, options) {
-    const loc = options?.loc;
+    const loc = options?.loc ?? defaultLoc;
     const translationContext = options?.translationContext;
 
     const filtered = [];

@@ -1,5 +1,3 @@
-'use-strict';
-
 import fs from 'fs';
 
 export async function loadJson(fileName, options) {

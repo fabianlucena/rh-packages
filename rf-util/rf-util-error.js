@@ -1,4 +1,4 @@
-import {loc} from 'rf-locale';
+import {loc} from './rf-util-loc.js';
 import {format} from './rf-util-string.js';
 
 export function setUpError(error, options) {
