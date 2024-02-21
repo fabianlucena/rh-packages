@@ -1,6 +1,4 @@
-import {setUpError, errorHandler, deepComplete} from 'rf-util';
-import {loc} from 'rf-locale';
-import {runSequentially, stripQuotes, checkParameterUuid} from 'rf-util';
+import {setUpError, errorHandler, deepComplete, runSequentially, stripQuotes, checkParameterUuid, loc} from 'rf-util';
 import * as uuid from 'uuid';
 import fs from 'fs';
 import path from 'path';
@@ -205,7 +203,8 @@ export async function httpUtilConfigure(global, ...modules) {
         };
     }
 
-    global.sequelize.Sequelize ||= global.Sequelize;
+    global.sequelize ??= global.db?.sequelize ?? global.config?.db?.sequelize;
+    global.sequelize.Sequelize ??= global.Sequelize ?? global.db?.Sequelize ?? global.config?.db?.Sequelize;
     global.models ||= global.sequelize.models || {};
 
     await beforeConfig(global);
@@ -230,7 +229,7 @@ export function methodNotAllowed(req) {
     throw new MethodNotAllowedError(req.method);
 }
 
-export function configureRouter(routesPath, router, checkPermission, options) {
+export async function configureRouter(routesPath, router, checkPermission, options) {
     if (!router) {
         return;
     }
@@ -243,14 +242,15 @@ export function configureRouter(routesPath, router, checkPermission, options) {
         throw new Error(`The routes path does not exists: ${routesPath}`);
     }
         
-    fs
+    const files = fs
         .readdirSync(routesPath)
-        .filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js' && (!options?.exclude || !options.exclude.test(file)))
-        .forEach(async file => {
-            const fullFile = 'file://' + path.join(routesPath, file);
-            const modulusRouter = (await import(fullFile)).default;
-            modulusRouter(router, checkPermission);
-        });
+        .filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js' && (!options?.exclude || !options.exclude.test(file)));
+
+    for (const file of files) {
+        const fullFile = 'file://' + path.join(routesPath, file);
+        const modulusRouter = (await import(fullFile)).default;
+        modulusRouter(router, checkPermission);
+    }
 }
 
 export function configureServices(services, servicesPath, options) {
@@ -276,27 +276,28 @@ export function configureServices(services, servicesPath, options) {
         });
 }
 
-export function configureControllers(controllers, controllersPath, options) {
+export async function configureControllers(controllers, controllersPath, options) {
     if (!controllersPath) {
         return;
     }
         
-    fs
+    const files = fs
         .readdirSync(controllersPath)
-        .filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js' && (!options?.exclude || !options.exclude.test(file)))
-        .forEach(async file => {
-            const modules = await import('file://' + path.join(controllersPath, file));
-            for (let k in modules) {
-                let module = modules[k];
-                let name = k;
-                let l = name.length;
-                if (l > 7 && name.endsWith('Controller')) {
-                    name = name.substring(0, l - 10);
-                }
+        .filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js' && (!options?.exclude || !options.exclude.test(file)));
 
-                controllers[name] = module;
+    for(const file of files) {
+        const modules = await import('file://' + path.join(controllersPath, file));
+        for (const k in modules) {
+            const module = modules[k];
+            let name = k;
+            const l = name.length;
+            if (l > 10 && name.endsWith('Controller')) {
+                name = name.substring(0, l - 10);
             }
-        });
+
+            controllers[name] = module;
+        }
+    }
 }
 
 export async function sendError(req, res, error) {
@@ -642,6 +643,7 @@ export async function configureModules(global, modules) {
     global.services ||= {};
     global.controllers ||= {};
     global.data ||= {};
+    global.router ||= global.config?.router;
 
     for (const i in modules) {
         modules[i] = await configureModule(global, modules[i]);
@@ -653,6 +655,15 @@ export async function configureModules(global, modules) {
     
     for (const module of modules) {
         await installModule(global, module);
+    }
+
+    if (global.router && global.controllers) {
+        for (const controllerName in global.controllers) {
+            const controller = global.controllers[controllerName];
+            if (controller.routes) {
+                controller.routes(global.router, global.checkPermission, global.config);
+            }
+        }
     }
 
     filterData(global);
