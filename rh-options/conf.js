@@ -9,7 +9,6 @@ export const conf = {
     title: 'RH Options',
     version: '0.1',
     path: dirname,
-    modelsPath: dirname + '/models',
     controllersPath: dirname + '/controllers',
     apis: [dirname + '/controllers/*.js'],
 };
