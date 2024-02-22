@@ -1,5 +1,5 @@
 import {PrivilegesService} from '../services/privileges.js';
-import {errorHandler, loc} from 'rf-util';
+import {errorHandler, defaultLoc} from 'rf-util';
 
 /**
  * @swagger
@@ -24,6 +24,7 @@ const privilegesService = PrivilegesService.singleton();
 export class PrivilegesController {
     static middleware() {
         return (req, res, next) => {
+            const loc = req.loc ?? defaultLoc;
             privilegesService.getJSONForUsernameAndSessionIdCached(req?.user?.username, req?.session?.id)
                 .then(privileges => {
                     if (privileges) {
@@ -37,7 +38,7 @@ export class PrivilegesController {
                     next();
                 })
                 .catch(err => {
-                    errorHandler(err, req.loc);
+                    errorHandler(err, loc);
                     next();
                 });
         };
@@ -77,8 +78,10 @@ export class PrivilegesController {
                 permissions: req.permissions,
             };
 
-            if (!req.site?.name)
-                result.warning = await (req.loc ?? loc)._('No current site selected');
+            if (!req.site?.name) {
+                const loc = req.loc ?? defaultLoc;
+                result.warning = await (loc ?? loc)._('No current site selected');
+            }
         } else {
             result = {};
         }
