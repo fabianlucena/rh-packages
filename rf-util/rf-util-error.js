@@ -33,6 +33,10 @@ export class _Error extends Error {
             }
         );
     }
+
+    get message() {
+        return format(...this._message);
+    }
 }
 
 export class CheckError extends Error {

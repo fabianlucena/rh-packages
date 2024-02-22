@@ -1,6 +1,5 @@
 export * from './rf-util-check.js';
 export * from './rf-util-error.js';
-export * from './rf-util-format.js';
 export * from './rf-util-filter.js';
 export * from './rf-util-function.js';
 export * from './rf-util-json.js';

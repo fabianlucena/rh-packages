@@ -38,11 +38,13 @@ export function stripQuotes(text, quotes) {
 }
 
 export function format(text, ...params) {
-    let i = 0;
-    let end = params?.length ?? 0;
-    while (text.match('%s') && i < end) {
-        text = text.replace('%s', params[i]);
-        i++;
+    if (!text) {
+        return text;
+    }
+
+    text = text.replace(/%%/g, '%');
+    for (const replacement of params) {
+        text = text.replace('%s', replacement);
     }
 
     return text;
