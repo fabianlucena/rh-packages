@@ -1,7 +1,7 @@
 import {IssueService} from '../services/issue.js';
 import {conf} from '../conf.js';
 import {getOptionsFromParamsAndOData, _HttpError, getUuidFromRequest, makeContext} from 'http-util';
-import {checkParameter, filterVisualItemsByAliasName} from 'rf-util';
+import {checkParameter, filterVisualItemsByAliasName, loc, defaultLoc} from 'rf-util';
 
 const issueService = IssueService.singleton();
 
@@ -89,23 +89,24 @@ export class IssueController {
             }
         
             if (!data.projectId) {
-                throw new _HttpError(req.loc._cf('issue', 'The project does not exist or you do not have permission to access it.'), 404);
+                throw new _HttpError(loc._cf('issue', 'The project does not exist or you do not have permission to access it.'), 404);
             }
         }
 
         const projectId = await conf.filters.getCurrentProjectId(req) ?? null;
         if (data.projectId != projectId) {
-            throw new _HttpError(req.loc._cf('issue', 'The project does not exist or you do not have permission to access it.'), 403);
+            throw new _HttpError(loc._cf('issue', 'The project does not exist or you do not have permission to access it.'), 403);
         }
 
         return data.projectId;
     }
 
     static async checkUuid(req) {
+        const loc = req.loc ?? defaultLoc;
         const uuid = await getUuidFromRequest(req);
-        const issue = await issueService.getForUuid(uuid, {skipNoRowsError: true, loc: req.loc});
+        const issue = await issueService.getForUuid(uuid, {skipNoRowsError: true, loc});
         if (!issue) {
-            throw new _HttpError(req.loc._cf('issue', 'The issue with UUID %s does not exists.'), 404, uuid);
+            throw new _HttpError(loc._cf('issue', 'The issue with UUID %s does not exists.'), 404, uuid);
         }
 
         const projectId = await IssueController.checkDataForProjectId(req, {projectId: issue.projectId});
@@ -149,7 +150,7 @@ export class IssueController {
      *                  $ref: '#/definitions/Error'
      */
     static async post(req, res) {
-        const loc = req.loc;
+        const loc = req.loc ?? defaultLoc;
         checkParameter(req?.body, {name: loc._cf('issue', 'Name'), title: loc._cf('issue', 'Title')});
         
         const data = {...req.body};
@@ -219,6 +220,7 @@ export class IssueController {
             return IssueController.getForm(req, res);
         }
 
+        const loc = req.loc ?? defaultLoc;
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {
             view: true,
@@ -230,7 +232,7 @@ export class IssueController {
             includeStatus: true,
             includeWorkflow: true,
             includeCloseReason: true,
-            loc: req.loc,
+            loc,
         };
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
@@ -259,7 +261,7 @@ export class IssueController {
         if (req.permissions.includes('issue.delete')) actions.push('delete');
         actions.push('search', 'paginate');
         
-        const loc = req.loc;
+        const loc = req.loc ?? defaultLoc;
         const columns = [
             {
                 name: 'title',
@@ -337,7 +339,7 @@ export class IssueController {
     static async getForm(req, res) {
         checkParameter(req.query, '$form');
 
-        const loc = req.loc;
+        const loc = req.loc ?? defaultLoc;
         const fields = [
             {
                 name: 'title',
@@ -526,7 +528,8 @@ export class IssueController {
 
         const rowsDeleted = await issueService.deleteForUuid(uuid);
         if (!rowsDeleted) {
-            throw new _HttpError(req.loc._cf('issue', 'Issue with UUID %s does not exists.'), 403, uuid);
+            const loc = req.loc ?? defaultLoc;
+            throw new _HttpError(loc._cf('issue', 'Issue with UUID %s does not exists.'), 403, uuid);
         }
 
         res.sendStatus(204);
@@ -576,7 +579,8 @@ export class IssueController {
 
         const rowsUpdated = await issueService.enableForUuid(uuid);
         if (!rowsUpdated) {
-            throw new _HttpError(req.loc._cf('issue', 'Issue with UUID %s does not exists.'), 403, uuid);
+            const loc = req.loc ?? defaultLoc;
+            throw new _HttpError(loc._cf('issue', 'Issue with UUID %s does not exists.'), 403, uuid);
         }
 
         res.sendStatus(204);
@@ -626,7 +630,8 @@ export class IssueController {
 
         const rowsUpdated = await issueService.disableForUuid(uuid);
         if (!rowsUpdated) {
-            throw new _HttpError(req.loc._cf('issue', 'Issue with UUID %s does not exists.'), 403, uuid);
+            const loc = req.loc ?? defaultLoc;
+            throw new _HttpError(loc._cf('issue', 'Issue with UUID %s does not exists.'), 403, uuid);
         }
 
         res.sendStatus(204);
@@ -672,12 +677,13 @@ export class IssueController {
     static async patch(req, res) {
         const {uuid, projectId} = await this.checkUuid(req);
 
+        const loc = req.loc ?? defaultLoc;
         const data = {...req.body, uuid: undefined};
         const where = {uuid, projectId};
 
         const rowsUpdated = await issueService.updateFor(data, where, {context: makeContext(req, res)});
         if (!rowsUpdated) {
-            throw new _HttpError(req.loc._cf('issue', 'Issue with UUID %s does not exists.'), 403, uuid);
+            throw new _HttpError(loc._cf('issue', 'Issue with UUID %s does not exists.'), 403, uuid);
         }
 
         res.sendStatus(204);
@@ -736,8 +742,9 @@ export class IssueController {
      *                  $ref: '#/definitions/Error'
      */
     static async getProject(req, res) {
+        const loc = req.loc ?? defaultLoc;
         const definitions = {uuid: 'uuid', name: 'string'};
-        let options = {view: true, limit: 10, offset: 0, loc: req.loc};
+        let options = {view: true, limit: 10, offset: 0, loc};
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
         if (conf.filters?.getCurrentProjectId) {
@@ -803,8 +810,9 @@ export class IssueController {
      *                  $ref: '#/definitions/Error'
      */
     static async getType(req, res) {
+        const loc = req.loc ?? defaultLoc;
         const definitions = {uuid: 'uuid', name: 'string'};
-        let options = {view: true, limit: 10, offset: 0, loc: req.loc};
+        let options = {view: true, limit: 10, offset: 0, loc};
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
         const result = await conf.global.services.IssueType.singleton().getListAndCount(options);
@@ -865,8 +873,9 @@ export class IssueController {
      *                  $ref: '#/definitions/Error'
      */
     static async getPriority(req, res) {
+        const loc = req.loc ?? defaultLoc;
         const definitions = {uuid: 'uuid', name: 'string'};
-        let options = {view: true, limit: 10, offset: 0, loc: req.loc};
+        let options = {view: true, limit: 10, offset: 0, loc};
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
         const result = await conf.global.services.IssuePriority.singleton().getListAndCount(options);
@@ -927,8 +936,9 @@ export class IssueController {
      *                  $ref: '#/definitions/Error'
      */
     static async getStatus(req, res) {
+        const loc = req.loc ?? defaultLoc;
         const definitions = {uuid: 'uuid', name: 'string'};
-        let options = {view: true, limit: 10, offset: 0, loc: req.loc};
+        let options = {view: true, limit: 10, offset: 0, loc};
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
         const result = await conf.global.services.IssueStatus.singleton().getListAndCount(options);
@@ -989,8 +999,9 @@ export class IssueController {
      *                  $ref: '#/definitions/Error'
      */
     static async getWorkflow(req, res) {
+        const loc = req.loc ?? defaultLoc;
         const definitions = {uuid: 'uuid', name: 'string'};
-        let options = {view: true, limit: 10, offset: 0, loc: req.loc};
+        let options = {view: true, limit: 10, offset: 0, loc};
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
         const result = await conf.global.services.IssueWorkflow.singleton().getListAndCount(options);
@@ -1051,8 +1062,9 @@ export class IssueController {
      *                  $ref: '#/definitions/Error'
      */
     static async getCloseReason(req, res) {
+        const loc = req.loc ?? defaultLoc;
         const definitions = {uuid: 'uuid', name: 'string'};
-        let options = {view: true, limit: 10, offset: 0, loc: req.loc};
+        let options = {view: true, limit: 10, offset: 0, loc};
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
         const result = await conf.global.services.IssueCloseReason.singleton().getListAndCount(options);
