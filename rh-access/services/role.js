@@ -88,6 +88,7 @@ export class RoleService extends ServiceIdUuidNameTitleEnabledModuleTranslatable
                         {
                             model: conf.global.models.Module,
                             as: 'OwnerModule',
+                            required: false,
                             attributes: [],
                             where: {
                                 [Op.or]: [
@@ -107,6 +108,7 @@ export class RoleService extends ServiceIdUuidNameTitleEnabledModuleTranslatable
                         {
                             model: conf.global.models.Module,
                             as: 'OwnerModule',
+                            required: false,
                             attributes: [],
                             where: {
                                 [Op.or]: [
