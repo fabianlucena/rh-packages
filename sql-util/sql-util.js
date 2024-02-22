@@ -1,5 +1,4 @@
-import {setUpError, deepComplete, replace} from 'rf-util';
-import {loc} from 'rf-locale';
+import {setUpError, deepComplete, replace, loc, defaultLoc, format} from 'rf-util';
 import fs from 'fs';
 import path from 'path';
 import {Op, Utils} from 'sequelize';
@@ -56,10 +55,20 @@ export class MissingPropertyError extends Error {
         );
     }
 
-    _n() {return this.properties.length;}
+    _n() { return this.properties.length; }
 
     async getMessageParams(loc) {
-        return [await loc._and(...this.properties), this.objectName];
+        return [await (loc ?? defaultLoc)._and(...this.properties), this.objectName];
+    }
+
+    async toString() {
+        if (!this.properties.length) {
+            return format(MissingPropertyError._zeroMessage, ...await this.getMessageParams());
+        } else if (this.properties.length === 1) {
+            return format(MissingPropertyError._message[0], ...await this.getMessageParams());
+        } else {
+            return format(MissingPropertyError._message[1], ...await this.getMessageParams());
+        }
     }
 }
 
