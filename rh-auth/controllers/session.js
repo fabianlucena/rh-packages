@@ -1,6 +1,6 @@
 import {SessionService, SessionClosedError, NoSessionForAuthTokenError} from '../services/session.js';
 import {getOptionsFromParamsAndOData, deleteHandler} from 'http-util';
-import {getErrorMessage, checkParameter, checkParameterUuid} from 'rf-util';
+import {getErrorMessage, checkParameter, checkParameterUuid, defaultLoc} from 'rf-util';
 
 function hidePrivateData(data) {
     if (typeof data !== 'object') {
@@ -47,6 +47,7 @@ export class SessionController {
                 return;
             }
 
+            const loc = req.loc ?? defaultLoc;
             SessionService.singleton().getJSONForAuthTokenCached(req.authToken)
                 .then(session => {
                     req.session = session;
@@ -57,26 +58,26 @@ export class SessionController {
                 .catch(async err => {
                     let result;
                     if (err instanceof SessionClosedError) {
-                        result = {message: await req.loc._c('session', 'HTTP error 401 unauthorized, session is closed.')};
+                        result = {message: await loc._c('session', 'HTTP error 401 unauthorized, session is closed.')};
                     } else if (err instanceof NoSessionForAuthTokenError) {
-                        result = {message: await req.loc._c('session', 'HTTP error 401 unauthorized, authorization token error.')};
+                        result = {message: await loc._c('session', 'HTTP error 401 unauthorized, authorization token error.')};
                     } else {
                         let msg;
                         if (err instanceof Error) {
-                            msg = await getErrorMessage(err, req.loc);
+                            msg = await getErrorMessage(err, loc);
                         } else {
                             msg = err;
                         }
 
                         if (msg) {
-                            result = {message: await req.loc._c('session', 'HTTP error 401 unauthorized: %s', msg)};
+                            result = {message: await loc._c('session', 'HTTP error 401 unauthorized: %s', msg)};
                         } else {
-                            result = {message: await req.loc._c('session', 'HTTP error 401 unauthorized')};
+                            result = {message: await loc._c('session', 'HTTP error 401 unauthorized')};
                         }
                     }
 
                     result.error ??= 'Unauthorized';
-                    result.title ??= await req.loc._c('Unauthorized');
+                    result.title ??= await loc._c('Unauthorized');
                     result.clearBearerAuthorization = true;
                     result.redirectTo = '#login';
 
@@ -175,15 +176,16 @@ export class SessionController {
             options.where = {...options?.where, id: req.session.id};
         }
 
+        const loc = req.loc ?? defaultLoc;
         const data = await SessionService.singleton().getListAndCount(options);
         data.rows = await Promise.all(data.rows.map(async row => {
             if (row.toJSON) {
                 row = row.toJSON();
             }
                 
-            row.open = await req.loc.strftime('%x %X', row.open);
+            row.open = await loc.strftime('%x %X', row.open);
             if (row.close) {
-                row.close = await req.loc.strftime('%x %X', row.close);
+                row.close = await loc.strftime('%x %X', row.close);
             }
 
             return row;
@@ -200,7 +202,7 @@ export class SessionController {
 
         actions.push('search', 'paginate');
         
-        let loc = req.loc;
+        const loc = req.loc ?? defaultLoc;
 
         res.status(200).send({
             title: await loc._c('session', 'Sessions'),
@@ -264,7 +266,8 @@ export class SessionController {
      *                  $ref: '#/definitions/Error'
      */
     static async delete(req, res) {
-        const uuid = checkParameterUuid(req?.query?.uuid, req.loc._cf('session', 'UUID'));
+        const loc = req.loc ?? defaultLoc;
+        const uuid = checkParameterUuid(req?.query?.uuid, loc._cf('session', 'UUID'));
         const rowCount = await SessionService.singleton().deleteForUuid(uuid);
         await deleteHandler(req, res, rowCount);
     }
