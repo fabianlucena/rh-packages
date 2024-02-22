@@ -3,8 +3,9 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class UserType extends sequelize.Sequelize.Model {
         static associate(models) {
-            if (models.Module)
+            if (models.Module) {
                 this.belongsTo(models.Module, {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
+            }
         }
     }
     UserType.init({

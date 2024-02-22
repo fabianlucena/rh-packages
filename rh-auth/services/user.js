@@ -3,13 +3,13 @@ import {conf} from '../conf.js';
 import {ServiceIdUuidEnabledModule} from 'rf-service';
 import {getSingle} from 'sql-util';
 import {_ConflictError} from 'http-util';
-import {checkParameter} from 'rf-util';
-import {_Error} from 'rf-util';
-import {loc} from 'rf-locale';
+import {checkParameter, _Error, loc} from 'rf-util';
 
 export class UserService extends ServiceIdUuidEnabledModule {
     sequelize = conf.global.sequelize;
     model = conf.global.models.User;
+    moduleModel = conf.global.models.Module;
+    moduleService = conf.global.services.Module.singleton();
     references = {
         type: conf.global.services.UserType.singleton(),
     };
@@ -133,7 +133,7 @@ export class UserService extends ServiceIdUuidEnabledModule {
             return result.map(row => row.id);
         }
         
-        return result.id;
+        return result?.id;
     }
 
     /**

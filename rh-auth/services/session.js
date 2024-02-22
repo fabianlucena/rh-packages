@@ -1,8 +1,7 @@
 import {conf} from '../conf.js';
 import {ServiceIdUuid} from 'rf-service';
 import {checkViewOptions, getSingle} from 'sql-util';
-import {check} from 'rf-util';
-import {loc} from 'rf-locale';
+import {check, loc} from 'rf-util';
 import crypto from 'crypto';
 
 export class SessionClosedError extends Error {

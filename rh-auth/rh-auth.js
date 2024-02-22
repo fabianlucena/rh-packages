@@ -6,9 +6,8 @@ import {conf as localConf} from './conf.js';
 import './services/device.js';
 import {SessionService} from './services/session.js';
 import {SessionController} from './controllers/session.js';
-import {loc} from 'rf-locale';
 import {_UnauthorizedError, NoPermissionError} from 'http-util';
-import {runSequentially} from 'rf-util';
+import {runSequentially, loc} from 'rf-util';
 
 export const conf = localConf;
 
@@ -64,10 +63,11 @@ async function updateData(global) {
         return;
     }
 
-    const userTypeService = UserTypeService.singleton();
-    const identityTypeService = IdentityTypeService.singleton();
-    const userService = UserService.singleton();
-    const identityService = IdentityService.singleton();
+    const
+        userTypeService =     UserTypeService.    singleton(),
+        identityTypeService = IdentityTypeService.singleton(),
+        userService =         UserService.        singleton(),
+        identityService =     IdentityService.    singleton();
 
     await runSequentially(data?.userTypes,     async data => await userTypeService.    createIfNotExists(data));
     await runSequentially(data?.identityTypes, async data => await identityTypeService.createIfNotExists(data));

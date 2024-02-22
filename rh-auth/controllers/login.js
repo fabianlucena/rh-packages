@@ -1,7 +1,7 @@
 import {LoginService} from '../services/login.js';
 import {conf} from '../conf.js';
 import {_HttpError} from 'http-util';
-import {checkParameter} from 'rf-util';
+import {checkParameter, defaultLoc} from 'rf-util';
 
 export class LoginController {
     /**
@@ -50,7 +50,7 @@ export class LoginController {
     static async getForm(req, res) {
         checkParameter(req.query, '$form');
 
-        let loc = req.loc;
+        let loc = req.loc ?? defaultLoc;
 
         res.status(200).send({
             title: await loc._c('login', 'Login'),
@@ -111,7 +111,7 @@ export class LoginController {
      *                  $ref: '#/definitions/Error'
      */
     static async post(req, res) {
-        const loc = req.loc;
+        const loc = req.loc ?? defaultLoc;
         if (req?.body?.autoLoginToken) {
             checkParameter(req?.body, 'autoLoginToken', 'deviceToken');
         } else {
@@ -122,10 +122,10 @@ export class LoginController {
             const loginService = LoginService.singleton();
             let session;
             if (req.body.autoLoginToken) {
-                session = await loginService.forAutoLoginTokenAndSessionIndex(req.body.autoLoginToken, req.body.deviceToken, req.body?.sessionIndex ?? req.body.index, req.loc);
+                session = await loginService.forAutoLoginTokenAndSessionIndex(req.body.autoLoginToken, req.body.deviceToken, req.body?.sessionIndex ?? req.body.index, loc);
                 req.log?.info('Auto logged by autoLoginToken.', {autoLoginToken: req.body.autoLoginToken, session});
             } else {
-                session = await loginService.forUsernamePasswordDeviceTokenAndSessionIndex(req.body.username, req.body.password, req.body.deviceToken, req.body.sessionIndex ?? req.body.index, req.loc);
+                session = await loginService.forUsernamePasswordDeviceTokenAndSessionIndex(req.body.username, req.body.password, req.body.deviceToken, req.body.sessionIndex ?? req.body.index, loc);
                 req.log?.info(`User ${req.body.username} successfully logged with username and password.`, {session});
             }
 
@@ -175,7 +175,7 @@ export class LoginController {
                 req.log?.info(`Error in login: ${error}.`, {username: req.body.username, error});
             }
 
-            throw new _HttpError(req.loc._cf('login', 'Invalid login'), 403);
+            throw new _HttpError(loc._cf('login', 'Invalid login'), 403);
         }
     }
 }
