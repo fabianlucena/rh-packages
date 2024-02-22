@@ -6,6 +6,7 @@ export class SiteService extends ServiceIdUuidNameEnabledModuleTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Site;
     moduleModel = conf.global.models.Module;
+    moduleService = conf.global.services.Module.singleton();
     defaultTranslationContext = 'site';
 
     async getListOptions(options) {
