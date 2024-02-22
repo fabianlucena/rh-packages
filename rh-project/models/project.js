@@ -3,7 +3,9 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class Project extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.Company, {foreignKey: 'companyId'});
+            if (models.Company) {
+                this.belongsTo(models.Company, {foreignKey: 'companyId'});
+            }
         }
 
         static postAssociate(models) {
@@ -44,10 +46,6 @@ export default (sequelize, DataTypes) => {
         description: {
             type: DataTypes.TEXT,
             allowNull: true,
-        },
-        companyId: {
-            type: DataTypes.BIGINT,
-            allowNull: false,
         },
     }, {
         sequelize,
