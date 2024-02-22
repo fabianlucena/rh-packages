@@ -1,6 +1,5 @@
-import {CheckError, checkParameterStringNotNullOrEmpty, trim} from 'rf-util';
+import {CheckError, checkParameterStringNotNullOrEmpty, loc, trim} from 'rf-util';
 import {_ConflictError} from 'http-util';
-import {loc} from 'rf-locale';
 
 export const ServiceMixinName = Service => class extends Service {
     constructor() {

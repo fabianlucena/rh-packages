@@ -1,6 +1,5 @@
-import {CheckError, checkValidUuidOrNull} from 'rf-util';
+import {CheckError, checkValidUuidOrNull, loc} from 'rf-util';
 import {_ConflictError} from 'http-util';
-import {loc} from 'rf-locale';
 
 export const ServiceMixinUuid = Service => class ServiceUuid extends Service {
     async validateForCreation(data) {

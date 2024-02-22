@@ -1,6 +1,5 @@
 import {includeCollaborators} from 'sql-util';
-import {_Error, CheckError} from 'rf-util';
-import {loc} from 'rf-locale';
+import {_Error, CheckError, loc} from 'rf-util';
 
 export const ServiceMixinShared = Service => class ServiceShared extends Service {
     async validateForCreation(data) {

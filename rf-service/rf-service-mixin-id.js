@@ -1,5 +1,4 @@
-import {CheckError} from 'rf-util';
-import {loc} from 'rf-locale';
+import {CheckError, loc} from 'rf-util';
 
 export const ServiceMixinId = Service => class ServiceId extends Service {
     async validateForCreation(data) {

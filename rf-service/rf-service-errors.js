@@ -1,4 +1,4 @@
-import {loc} from 'rf-locale';
+import {loc} from 'rf-util';
 import {setUpError} from 'rf-util/rf-util-error.js';
 
 export class NoRowsError extends Error {

@@ -1,6 +1,5 @@
-import {_Error} from 'rf-util';
+import {_Error, loc} from 'rf-util';
 import {addEnabledOwnerModuleFilter} from 'sql-util';
-import {loc} from 'rf-locale';
 
 export const ServiceMixinModule = Service => class ServiceModule extends Service {
     /**
@@ -14,7 +13,7 @@ export const ServiceMixinModule = Service => class ServiceModule extends Service
                 throw new _Error(loc._f('No moduleService defined on %s. Try adding "moduleService = conf.global.services.Module.singleton()" to the class.', this.constructor.name));
             }
 
-            data.ownerModuleId = await this.moduleService.getIdForName(data.ownerModule);
+            data.ownerModuleId = await this.moduleService.getIdForName(data.ownerModule, {skipNoRowsError: true});
         }
 
         return data;
