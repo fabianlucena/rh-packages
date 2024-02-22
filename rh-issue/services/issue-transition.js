@@ -1,8 +1,7 @@
 import {conf} from '../conf.js';
 import {ServiceIdUuidNameTitleDescriptionEnabledTranslatable} from 'rf-service';
 import {completeIncludeOptions} from 'sql-util';
-import {CheckError} from 'rf-util';
-import {loc} from 'rf-locale';
+import {CheckError, loc} from 'rf-util';
 
 export class IssueTransitionService extends ServiceIdUuidNameTitleDescriptionEnabledTranslatable {
     sequelize = conf.global.sequelize;

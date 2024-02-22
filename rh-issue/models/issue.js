@@ -3,6 +3,10 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class Issue extends sequelize.Sequelize.Model {
         static associate(models) {
+            if (!models.Project) {
+                throw new Error('There is no Project model. Try adding RH Project module to the project.');
+            }
+        
             this.belongsTo(models.Project,          {foreignKey: 'projectId'  });
             this.belongsTo(models.IssueType,        {as: 'Type',        foreignKey: 'typeId'});
             this.belongsTo(models.IssuePriority,    {as: 'Priority',    foreignKey: 'priorityId'});
