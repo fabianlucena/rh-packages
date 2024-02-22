@@ -16,6 +16,14 @@ export class UserSiteRoleService extends ServiceModuleTranslatable {
     };
     defaultTranslationContext = 'userSiteRole';
 
+    constructor() {
+        if (!conf?.global?.services?.Site?.singleton) {
+            throw new Error('There is no Site service. Try adding RH Site module to the project.');
+        }
+
+        super();
+    }
+
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'UserSiteRole', 'userId', 'siteId', 'roleId');
         return super.validateForCreation(data);

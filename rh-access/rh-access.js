@@ -68,14 +68,28 @@ async function checkPermissionForUsernameAndSiteName(privileges, ...requiredPerm
 
 async function updateData(global) {
     const data = global?.data;
-    await runSequentially(data?.roles,                   async data => await RoleService.                 singleton().createIfNotExists(data));
-    await runSequentially(data?.permissions,             async data => await PermissionService.           singleton().createIfNotExists(data));
-    await runSequentially(data?.rolesPermissions,        async data => await RolePermissionService.       singleton().createIfNotExists(data));
-    await runSequentially(data?.usersSitesRoles,         async data => await UserSiteRoleService.         singleton().createIfNotExists(data));
-    await runSequentially(data?.rolesParentsSites,       async data => await RoleParentSiteService.       singleton().createIfNotExists(data));
-    await runSequentially(data?.userGroups,              async data => await UserGroupService.            singleton().createIfNotExists(data));
-    await runSequentially(data?.shareTypes,              async data => await ShareTypeService.            singleton().createIfNotExists(data));
-    await runSequentially(data?.assignableRolesPerRoles, async data => await AssignableRolePerRoleService.singleton().createIfNotExists(data));
+    if (!data) {
+        return;
+    }
+
+    const
+        roleService =                  RoleService.                 singleton(),
+        permissionService =            PermissionService.           singleton(),
+        rolePermissionService =        RolePermissionService.       singleton(),
+        userSiteRoleService =          UserSiteRoleService.         singleton(),
+        roleParentSiteService =        RoleParentSiteService.       singleton(),
+        userGroupService =             UserGroupService.            singleton(),
+        shareTypeService =             ShareTypeService.            singleton(),
+        assignableRolePerRoleService = AssignableRolePerRoleService.singleton();
+
+    await runSequentially(data?.roles,                   async data => await roleService.                 createIfNotExists(data));
+    await runSequentially(data?.permissions,             async data => await permissionService.           createIfNotExists(data));
+    await runSequentially(data?.rolesPermissions,        async data => await rolePermissionService.       createIfNotExists(data));
+    await runSequentially(data?.usersSitesRoles,         async data => await userSiteRoleService.         createIfNotExists(data));
+    await runSequentially(data?.rolesParentsSites,       async data => await roleParentSiteService.       createIfNotExists(data));
+    await runSequentially(data?.userGroups,              async data => await userGroupService.            createIfNotExists(data));
+    await runSequentially(data?.shareTypes,              async data => await shareTypeService.            createIfNotExists(data));
+    await runSequentially(data?.assignableRolesPerRoles, async data => await assignableRolePerRoleService.createIfNotExists(data));
 }
 
 async function login(data, options) {

@@ -1,7 +1,7 @@
 import {conf} from '../conf.js';
 import {ServiceBase} from 'rf-service';
 import {completeIncludeOptions, addEnabledOwnerModuleFilter, checkDataForMissingProperties, getSingle} from 'sql-util';
-import {loc} from 'rf-locale';
+import {loc} from 'rf-util';
 
 export class AssignableRolePerRoleService extends ServiceBase {
     sequelize = conf.global.sequelize;
@@ -12,6 +12,14 @@ export class AssignableRolePerRoleService extends ServiceBase {
         ownerModule: conf.global.services.Module.singleton(),
     };
     defaultTranslationContext = 'assignableRolePerRole';
+
+    constructor() {
+        if (!conf?.global?.services?.Module?.singleton) {
+            throw new Error('There is no Module service. Try adding RH Module module to the project.');
+        }
+
+        super();
+    }
 
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'AssignableRolePerRole', 'roleId', 'assignableRoleId');

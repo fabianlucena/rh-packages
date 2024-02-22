@@ -11,7 +11,12 @@ export class RoleService extends ServiceIdUuidNameTitleEnabledModuleTranslatable
     defaultTranslationContext = 'role';
 
     constructor() {
+        if (!conf?.global?.services?.Module?.singleton) {
+            throw new Error('There is no Module service. Try adding RH Module module to the project.');
+        }
+
         super();
+
         this.siteService = conf.global.services.Site.singleton();
     }
 

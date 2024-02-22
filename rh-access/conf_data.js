@@ -1,4 +1,4 @@
-import {loc} from 'rf-locale';
+import {loc} from 'rf-util';
 
 const name = 'rhAccess';
 

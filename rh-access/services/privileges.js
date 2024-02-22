@@ -3,9 +3,7 @@ import {RoleService} from './role.js';
 import {PermissionService} from './permission.js';
 import {conf} from '../conf.js';
 import {ServiceBase} from 'rf-service';
-import {complete, _Error} from 'rf-util';
-import {loc} from 'rf-locale';
-
+import {complete, _Error, loc} from 'rf-util';
 
 complete(
     conf,

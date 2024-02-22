@@ -1,8 +1,7 @@
 import {UserGroupService} from './user_group.js';
 import {conf} from '../conf.js';
 import {ServiceIdUuidEnabledModule} from 'rf-service';
-import {getSingle} from 'sql-util';
-import {checkDataForMissingProperties, completeAssociationOptions} from 'sql-util';
+import {checkDataForMissingProperties, completeAssociationOptions, getSingle} from 'sql-util';
 
 export class GroupService extends ServiceIdUuidEnabledModule {
     sequelize = conf.global.sequelize;
