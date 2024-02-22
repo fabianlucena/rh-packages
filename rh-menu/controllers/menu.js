@@ -1,6 +1,6 @@
 import {MenuItemService} from '../services/menu_item.js';
 import {conf} from '../conf.js';
-import {runSequentially} from 'rf-util';
+import {runSequentially, defaultLoc} from 'rf-util';
 
 /**
  * @swagger
@@ -53,7 +53,7 @@ export class MenuController {
         };
 
         const rows = await MenuItemService.singleton().getList(options);
-        const loc = req.loc;
+        const loc = req.loc ?? defaultLoc;
         let menu = await runSequentially(rows, async mi => {
             if (mi.toJSON) {
                 mi = mi.toJSON();
