@@ -16,6 +16,6 @@ export const data = {
     ],
 
     permissions: [
-        {name: 'site.get', title: loc._cf('permission', 'Get sites'), isTranslatable: true, roles: 'sitesManager', ownerModule: name, menuItem: {label: loc._cf('menu', 'Sites'), parent: 'administration', action: 'grid', service: 'site'}},
+        {name: 'site.get', title: loc._cf('permission', 'Get sites'), isTranslatable: true, roles: 'sitesManager', ownerModule: name, menuItem: {label: loc._cf('menu', 'Sites'), icon: 'site', parent: 'administration', action: 'grid', service: 'site'}},
     ],
 };
