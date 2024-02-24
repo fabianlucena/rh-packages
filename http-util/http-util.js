@@ -2,6 +2,7 @@ import {setUpError, errorHandler, deepComplete, runSequentially, stripQuotes, ch
 import * as uuid from 'uuid';
 import fs from 'fs';
 import path from 'path';
+import url from 'url';
 
 export class HttpError extends Error {
     constructor(message, statusCode, ...params) {
@@ -529,6 +530,11 @@ export async function configureModule(global, module) {
     }
 
     if (typeof module === 'string') {
+        const tryModulePath = path.join(process.cwd(), module);
+        if (fs.existsSync(tryModulePath)) {
+            module = url.pathToFileURL(tryModulePath).href;
+        }
+
         module = (await import(module)).conf;
     }
 
