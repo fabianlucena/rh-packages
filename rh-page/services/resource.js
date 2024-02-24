@@ -2,8 +2,7 @@ import {ResourceTypeService} from './resource_type.js';
 import {conf} from '../conf.js';
 import {ServiceIdUuidNameEnabledTranslatable} from 'rf-service';
 import {completeIncludeOptions, checkViewOptions} from 'sql-util';
-import {checkNotNullNotEmptyAndNotUndefined} from 'rf-util';
-import {loc} from 'rf-locale';
+import {checkNotNullNotEmptyAndNotUndefined, loc} from 'rf-util';
 
 export class ResourceService extends ServiceIdUuidNameEnabledTranslatable {
     sequelize = conf.global.sequelize;

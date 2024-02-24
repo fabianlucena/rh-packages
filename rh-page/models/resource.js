@@ -3,8 +3,10 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class Resource extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.Language,   {foreignKey: 'languageId', allowNull: true});
             this.belongsTo(models.ResourceType, {as: 'Type', foreignKey: 'typeId',   allowNull: false});
+            if (models.Language) {
+                this.belongsTo(models.Language,   {foreignKey: 'languageId', allowNull: true});
+            }
         }
 
         static postAssociate(models) {

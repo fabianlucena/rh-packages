@@ -2,8 +2,7 @@ import {PageFormatService} from './page_format.js';
 import {conf} from '../conf.js';
 import {ServiceIdUuidNameTitleEnabledModuleSharedTranslatable} from 'rf-service';
 import {completeIncludeOptions, checkViewOptions} from 'sql-util';
-import {checkParameterStringNotNullOrEmpty} from 'rf-util';
-import {loc} from 'rf-locale';
+import {checkParameterStringNotNullOrEmpty, loc} from 'rf-util';
 
 export class PageService extends ServiceIdUuidNameTitleEnabledModuleSharedTranslatable {
     sequelize = conf.global.sequelize;

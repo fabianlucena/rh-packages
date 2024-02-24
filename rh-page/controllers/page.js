@@ -1,3 +1,4 @@
+import {defaultLoc} from 'rf-util';
 import {PageService} from '../services/page.js';
 import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
 
@@ -54,6 +55,7 @@ export class PageController {
      *                  $ref: '#/definitions/Error'
      */
     static async get(req, res) {
+        const loc = req.loc ?? defaultLoc;
         const definitions = {uuid: 'uuid', name: 'string'};
         const options = await getOptionsFromParamsAndOData(
             {...req.query, ...req.params},
@@ -68,7 +70,7 @@ export class PageController {
 
         const result = await page.getListAndCount(options);
         if (!result?.count) {
-            throw new _HttpError(req.loc._cf('page', 'Page not found.'), 404);
+            throw new _HttpError(loc._cf('page', 'Page not found.'), 404);
         }
 
         result.rows = result.rows.map(row => {
