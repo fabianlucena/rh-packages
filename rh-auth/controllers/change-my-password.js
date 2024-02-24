@@ -1,12 +1,12 @@
 import {IdentityService} from '../services/identity.js';
 import {_HttpError} from 'http-util';
-import {checkParameter, checkParameterNotNullOrEmpty} from 'rf-util';
+import {checkParameter, checkParameterNotNullOrEmpty, defaultLoc} from 'rf-util';
 
 export class ChangeMyPasswordController {
     static async getForm(req, res) {
         checkParameter(req.query, '$form');
 
-        let loc = req.loc;
+        const loc = req.loc ?? defaultLoc;
 
         res.status(200).send({
             title: await loc._c('changeMyPassword', 'Change password'),
@@ -36,7 +36,7 @@ export class ChangeMyPasswordController {
     }
 
     static async post(req, res) {
-        const loc = req.loc;
+        const loc = req.loc ?? defaultLoc;
         checkParameter(
             req?.body,
             {

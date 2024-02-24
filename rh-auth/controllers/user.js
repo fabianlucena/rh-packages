@@ -1,6 +1,6 @@
 import {UserService} from '../services/user.js';
 import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
-import {checkParameter, checkParameterUuid} from 'rf-util';
+import {checkParameter, checkParameterUuid, loc, defaultLoc} from 'rf-util';
 
 /**
  * @swagger
@@ -140,7 +140,7 @@ export class UserController {
         if (req.permissions.includes('user.delete')) actions.push('delete');
         actions.push('search', 'paginate');
                 
-        let loc = req.loc;
+        const loc = req.loc ?? defaultLoc;
 
         res.status(200).send({
             title: await loc._c('user', 'User'),
@@ -167,7 +167,7 @@ export class UserController {
     static async getForm(req, res) {
         checkParameter(req.query, '$form');
 
-        let loc = req.loc;
+        const loc = req.loc ?? defaultLoc;
         res.status(200).send({
             title: await loc._c('user', 'Users'),
             action: 'user',
@@ -248,10 +248,10 @@ export class UserController {
      *                  $ref: '#/definitions/Error'
      */
     static async delete(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('user', 'UUID'));
+        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, loc._cf('user', 'UUID'));
         const rowsDeleted = await UserService.singleton().deleteForUuid(uuid);
         if (!rowsDeleted) {
-            throw new _HttpError(req.loc._cf('user', 'User with UUID %s does not exists.'), 403, uuid);
+            throw new _HttpError(loc._cf('user', 'User with UUID %s does not exists.'), 403, uuid);
         }
 
         res.sendStatus(204);
@@ -297,10 +297,10 @@ export class UserController {
      *                  $ref: '#/definitions/Error'
      */
     static async enablePost(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('user', 'UUID'));
+        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, loc._cf('user', 'UUID'));
         const rowsUpdated = await UserService.singleton().enableForUuid(uuid);
         if (!rowsUpdated) {
-            throw new _HttpError(req.loc._cf('user', 'User with UUID %s does not exists.'), 403, uuid);
+            throw new _HttpError(loc._cf('user', 'User with UUID %s does not exists.'), 403, uuid);
         }
 
         res.sendStatus(204);
@@ -346,10 +346,10 @@ export class UserController {
      *                  $ref: '#/definitions/Error'
      */
     static async disablePost(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('user', 'UUID'));
+        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, loc._cf('user', 'UUID'));
         const rowsUpdated = await UserService.singleton().disableForUuid(uuid);
         if (!rowsUpdated) {
-            throw new _HttpError(req.loc._cf('user', 'User with UUID %s does not exists.'), 403, uuid);
+            throw new _HttpError(loc._cf('user', 'User with UUID %s does not exists.'), 403, uuid);
         }
 
         res.sendStatus(204);
@@ -393,10 +393,10 @@ export class UserController {
      *                  $ref: '#/definitions/Error'
      */
     static async patch(req, res) {
-        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('user', 'UUID'));
+        const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, loc._cf('user', 'UUID'));
         const rowsUpdated = await UserService.singleton().updateForUuid(req.body, uuid);
         if (!rowsUpdated) {
-            throw new _HttpError(req.loc._cf('user', 'User with UUID %s does not exists.'), 403, uuid);
+            throw new _HttpError(loc._cf('user', 'User with UUID %s does not exists.'), 403, uuid);
         }
 
         res.sendStatus(204);

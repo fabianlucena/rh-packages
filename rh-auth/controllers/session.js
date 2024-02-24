@@ -177,15 +177,16 @@ export class SessionController {
         }
 
         const loc = req.loc ?? defaultLoc;
+        const strftime = loc.strftime ?? ((f, v) => v);
         const data = await SessionService.singleton().getListAndCount(options);
         data.rows = await Promise.all(data.rows.map(async row => {
             if (row.toJSON) {
                 row = row.toJSON();
             }
                 
-            row.open = await loc.strftime('%x %X', row.open);
+            row.open = await strftime('%x %X', row.open);
             if (row.close) {
-                row.close = await loc.strftime('%x %X', row.close);
+                row.close = await strftime('%x %X', row.close);
             }
 
             return row;
