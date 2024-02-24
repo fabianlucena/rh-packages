@@ -111,6 +111,10 @@ export class ServiceBase {
     async completeReferences(data, clean) {
         for (const name in this.references) {
             let reference = this.references[name];
+            if (!reference) {
+                continue;
+            }
+
             if (reference.function) {
                 await reference.function(data);
                 continue;
