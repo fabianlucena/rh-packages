@@ -64,7 +64,7 @@ export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslata
 
         if (options.view) {
             if (!options.attributes) {
-                options.attributes = ['uuid', 'isEnabled', 'name', 'title', 'description'];
+                options.attributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'description'];
             }
         }
 

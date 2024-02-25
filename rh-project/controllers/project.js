@@ -252,12 +252,20 @@ export class ProjectController {
             });
         }
 
-        columns.push({
-            alias: 'owner',
-            name: 'Collaborators[0].User.displayName',
-            type: 'text',
-            label: await loc._cf('project', 'Owner'),
-        });
+        columns.push(
+            {
+                alias: 'owner',
+                name: 'Collaborators[0].User.displayName',
+                type: 'text',
+                label: await loc._cf('project', 'Owner'),
+            },
+            {
+                name: 'description',
+                type: 'textArea',
+                label: await loc._cf('project', 'Description'),
+                placeholder: await loc._cf('project', 'Description'),
+            }
+        );
 
         const grid = {
             title: await loc._('Projects'),
@@ -549,7 +557,11 @@ export class ProjectController {
         const {uuid, companyId} = await this.checkUuid(req);
 
         const data = {...req.body, uuid: undefined};
-        const where = {uuid, companyId};
+        const where = {uuid};
+
+        if (companyId) {
+            where.companyId = companyId;
+        }
 
         const rowsUpdated = await projectService.updateFor(data, where);
         if (!rowsUpdated) {
