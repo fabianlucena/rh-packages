@@ -51,7 +51,7 @@ export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslata
             }
         }
 
-        if (options.includeCompany || options.where?.companyUuid !== undefined) {
+        if (conf.global.models.Company && (options.includeCompany || options.where?.companyUuid !== undefined)) {
             let where;
 
             if (options.isEnabled !== undefined) {
