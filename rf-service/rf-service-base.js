@@ -528,7 +528,11 @@ export class ServiceBase {
         }
 
         for (const referenceName in this.references) {
-            let reference = this.references[referenceName];
+            const reference = this.references[referenceName];
+            if (!reference) {
+                continue;
+            }
+
             let service = reference;
             if (!service?.sanitizeRow) {
                 if (reference.service) {

@@ -47,7 +47,11 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
         }
 
         for (const referenceName in this.references) {
-            let reference = this.references[referenceName];
+            const reference = this.references[referenceName];
+            if (!reference) {
+                continue;
+            }
+
             let service = reference;
             if (!service?.translateRow) {
                 if (reference.service) {
