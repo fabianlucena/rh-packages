@@ -17,15 +17,22 @@ export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslata
     eventBus = conf.global.eventBus;
 
     async validateForCreation(data) {
-        if (!data?.companyId) {
-            throw new CheckError(loc._cf('project', 'Company parameter is missing.'));
+        if (conf.global.models.Company) {
+            if (!data?.companyId) {
+                throw new CheckError(loc._cf('project', 'Company parameter is missing.'));
+            }
         }
 
         return super.validateForCreation(data);
     }
 
     async checkNameForConflict(name, data) {
-        const rows = await this.getFor({name, companyId: data.companyId}, {skipNoRowsError: true});
+        const where = {name};
+        if (conf.global.models.Company) {
+            where.companyId = data.companyId;
+        }
+
+        const rows = await this.getFor(where, {skipNoRowsError: true});
         if (rows?.length) {
             throw new _ConflictError(loc._cf('project', 'Exists another project with that name in this company.'));
         }
@@ -33,9 +40,18 @@ export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslata
 
     async checkTitleForConflict(title, data, where) {
         const whereOptions = {title};
-        const companyId = where?.companyId ?? data?.companyId;
-        if (companyId) {whereOptions.companyId = companyId;}
-        if (where?.uuid) {whereOptions.uuid = {[conf.global.Sequelize.Op.ne]: where.uuid};}
+
+        if (conf.global.models.Company) {
+            const companyId = where?.companyId ?? data?.companyId;
+            if (companyId) {
+                whereOptions.companyId = companyId;
+            }
+        }
+
+        if (where?.uuid) {
+            whereOptions.uuid = {[conf.global.Sequelize.Op.ne]: where.uuid};
+        }
+
         const rows = await this.getFor(whereOptions, {limit: 1});
         if (rows?.length) {
             throw new _ConflictError(loc._cf('project', 'Exists another project with that title in this company.'));

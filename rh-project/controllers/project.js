@@ -185,9 +185,12 @@ export class ProjectController {
             view: true,
             limit: 10,
             offset: 0,
-            includeCompany: true,
             loc: req.loc,
         };
+
+        if (conf.global.models.Company) {
+            options.includeCompany = true;
+        }
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
         if (conf.filters?.getCurrentCompanyId) {
@@ -234,19 +237,23 @@ export class ProjectController {
                 type: 'text',
                 label: await loc._cf('project', 'Name'),
             },
-            {
+        ];
+
+        if (conf.global.models.Company) {
+            columns.push({
                 alias: 'company',
                 name: 'Company.title',
                 type: 'text',
                 label: await loc._cf('project', 'Company'),
-            },
-            {
-                alias: 'owner',
-                name: 'Collaborators[0].User.displayName',
-                type: 'text',
-                label: await loc._cf('project', 'Owner'),
-            },
-        ];
+            });
+        }
+
+        columns.push({
+            alias: 'owner',
+            name: 'Collaborators[0].User.displayName',
+            type: 'text',
+            label: await loc._cf('project', 'Owner'),
+        });
 
         const grid = {
             title: await loc._('Projects'),
@@ -301,7 +308,11 @@ export class ProjectController {
                     defaultValue: true,
                 },
             },
-            {
+        ];
+
+        
+        if (conf.global.models.Company) {
+            fields.push({
                 alias: 'company',
                 name: 'companyUuid',
                 type: 'select',
@@ -314,21 +325,22 @@ export class ProjectController {
                     text: 'title',
                     title: 'description',
                 },
-            },
-            {
-                name: 'isEnabled',
-                type: 'checkbox',
-                label: await loc._cf('project', 'Enabled'),
-                placeholder: await loc._cf('project', 'Enabled'),
-                value: true,
-            },
-            {
-                name: 'description',
-                type: 'textArea',
-                label: await loc._cf('project', 'Description'),
-                placeholder: await loc._cf('project', 'Description'),
-            },
-        ];
+            });
+        }
+
+        fields.push({
+            name: 'isEnabled',
+            type: 'checkbox',
+            label: await loc._cf('project', 'Enabled'),
+            placeholder: await loc._cf('project', 'Enabled'),
+            value: true,
+        },
+        {
+            name: 'description',
+            type: 'textArea',
+            label: await loc._cf('project', 'Description'),
+            placeholder: await loc._cf('project', 'Description'),
+        });
 
         const form = {
             title: await loc._('Projects'),
