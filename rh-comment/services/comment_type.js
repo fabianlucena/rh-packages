@@ -1,4 +1,3 @@
-import {CommentEntityTypeService} from './entity_type.js';
 import {conf} from '../conf.js';
 import {runSequentially} from 'rf-util';
 import {ServiceIdUuidNameTitleDescriptionEnabledTranslatable} from 'rf-service';
@@ -8,13 +7,17 @@ export class CommentTypeService extends ServiceIdUuidNameTitleDescriptionEnabled
     sequelize = conf.global.sequelize;
     model = conf.global.models.CommentType;
     references = {
-        entityType: {
-            service: CommentEntityTypeService.singleton(),
+        modelEntityName: {
+            service: conf?.global?.services?.ModelEntityName?.singleton(),
             createIfNotExists: true,
         }
     };
 
     constructor() {
+        if (!conf?.global?.services?.ModelEntityName?.singleton) {
+            throw new Error('There is no ModelEntityName service. Try adding RH Model Entity Name module to the project.');
+        }
+
         super();
 
         this.translatableColumns ??= [];
@@ -37,8 +40,8 @@ export class CommentTypeService extends ServiceIdUuidNameTitleDescriptionEnabled
     async getListOptions(options) {
         options ||= {};
 
-        if (options.includeEntityType || options.where?.entityType) {
-            let attributes = options.includeEntityType || [];
+        if (options.includeModelEntityName || options.where?.modelEntityName) {
+            let attributes = options.includeModelEntityName || [];
             if (attributes === true) {
                 attributes = ['uuid', 'name'];
             }
@@ -48,16 +51,16 @@ export class CommentTypeService extends ServiceIdUuidNameTitleDescriptionEnabled
                 where = {isEnabled: options.isEnabled};
             }
 
-            if (options.where?.entityType) {
-                where = {...where, ...options.where.entityType};
-                delete options.where?.entityType;
+            if (options.where?.modelEntityName) {
+                where = {...where, ...options.where.modelEntityName};
+                delete options.where?.modelEntityName;
             }
 
             completeIncludeOptions(
                 options,
-                'CommentEntityType',
+                'ModelEntityName',
                 {
-                    model: conf.global.models.CommentEntityType,
+                    model: conf.global.models.ModelEntityName,
                     attributes,
                     where,
                 }
@@ -68,6 +71,6 @@ export class CommentTypeService extends ServiceIdUuidNameTitleDescriptionEnabled
     }
 
     async getForEntityName(entityName, options) {
-        return this.getFor({entityType: {name: entityName}}, options);
+        return this.getFor({modelEntityName: {name: entityName}}, options);
     }
 }

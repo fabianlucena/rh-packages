@@ -1,5 +1,4 @@
 import {CommentTypeService} from './services/comment_type.js';
-import {CommentEntityTypeService} from './services/entity_type.js';
 import {CommentService} from './services/comment.js';
 import {conf as localConf} from './conf.js';
 import {runSequentially} from 'rf-util';
@@ -9,7 +8,7 @@ export const conf = localConf;
 conf.configure = configure;
 conf.init = [init];
 conf.updateData = updateData;
-conf.entityTypeCache = {};
+conf.modelEntityNameCache = {};
 conf.commentTypesCache = {};
 conf.fieldsCache = {};
 conf.columnsCache = {};
@@ -31,9 +30,13 @@ async function configure(global, options) {
 }
 
 async function init() {
-    conf.commentTypeService = CommentTypeService.singleton();
-    conf.entityTypeService =  CommentEntityTypeService.singleton();
-    conf.commentService =     CommentService.singleton();
+    if (!conf?.global?.services?.ModelEntityName?.singleton) {
+        throw new Error('There is no ModelEntityName service. Try adding RH Model Entity Name module to the project.');
+    }
+
+    conf.commentTypeService =     CommentTypeService.singleton();
+    conf.modelEntityNameService = conf.global.services.ModelEntityName.singleton();
+    conf.commentService =         CommentService.singleton();
 }
 
 async function updateData(global) {
@@ -43,7 +46,7 @@ async function updateData(global) {
 }
 
 async function clearCache() {
-    conf.entityTypeCache = {};
+    conf.modelEntityNameCache = {};
     conf.fieldsCache = {};
     conf.columnsCache = {};
     conf.detailsCache = {};    
@@ -52,7 +55,7 @@ async function clearCache() {
 async function checkClearCache(entity) {
     if (entity === 'Type'
         || entity === 'Comment'
-        || entity === 'EntityType'
+        || entity === 'ModelEntityName'
     ) {
         await clearCache();
     }
@@ -61,11 +64,11 @@ async function checkClearCache(entity) {
 }
 
 async function getEnityTypeId(entity, options) {
-    if (conf.entityTypeCache[entity] === undefined) {
-        conf.entityTypeCache[entity] = await conf.entityTypeService.getIdForName(entity, options);
+    if (conf.modelEntityNameCache[entity] === undefined) {
+        conf.modelEntityNameCache[entity] = await conf.modelEntityNameService.getIdForName(entity, options);
     }
 
-    return conf.entityTypeCache[entity];
+    return conf.modelEntityNameCache[entity];
 }
 
 async function getCommentTypesForEntity(entity, options) {
@@ -246,7 +249,7 @@ async function getted(entity, result, options) {
         result = await result;
     }
 
-    const entityTypeId = await getEnityTypeId(entity, {loc: options?.loc});
+    const modelEntityNameId = await getEnityTypeId(entity, {loc: options?.loc});
 
     const rows = result.rows || result;
     for (const i in rows) {
@@ -265,7 +268,7 @@ async function getted(entity, result, options) {
             const commentTypeId = commentType.id;
             const name = commentType.name;
             const where = {
-                entityTypeId,
+                modelEntityNameId,
                 entityId,
                 commentTypeId,
             };
@@ -340,7 +343,7 @@ async function updateValues(entity, entityIds, data, options) {
         return;
     }
 
-    const entityTypeId = await getEnityTypeId(entity, queryOptions);
+    const modelEntityNameId = await getEnityTypeId(entity, queryOptions);
 
     let name,
         value;
@@ -366,7 +369,7 @@ async function updateValues(entity, entityIds, data, options) {
             }
 
             const optionData = {
-                entityTypeId,
+                modelEntityNameId,
                 entityId,
                 commentTypeId: commentType.id,
             };
@@ -383,7 +386,7 @@ async function deleting(entity, options, service) {
         return;
     }
 
-    const entityTypeId = await getEnityTypeId(entity, queryOptions);
+    const modelEntityNameId = await getEnityTypeId(entity, queryOptions);
 
     const rows = await service.getList({
         ...options,
@@ -400,7 +403,7 @@ async function deleting(entity, options, service) {
 
         for (const commentType of commentTypes) {
             const optionData = {
-                entityTypeId,
+                modelEntityNameId,
                 entityId,
                 commentTypeId: commentType.id,
             };

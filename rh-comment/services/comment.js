@@ -1,4 +1,3 @@
-import {CommentEntityTypeService} from './entity_type.js';
 import {CommentTypeService} from './comment_type.js';
 import {conf} from '../conf.js';
 import {ServiceIdUuid} from 'rf-service';
@@ -8,9 +7,17 @@ export class CommentService extends ServiceIdUuid {
     sequelize = conf.global.sequelize;
     model = conf.global.models.Comment;
     references = {
-        entityType: CommentEntityTypeService.singleton(),
+        modelEntityName: conf?.global?.services?.ModelEntityName?.singleton(),
         commentType: CommentTypeService.singleton(),
     };
+
+    constructor() {
+        if (!conf?.global?.services?.ModelEntityName?.singleton) {
+            throw new Error('There is no ModelEntityName service. Try adding RH Model Entity Name module to the project.');
+        }
+
+        super();
+    }
 
     async getListOptions(options) {
         options ??= {};

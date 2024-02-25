@@ -3,8 +3,12 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class CommentType extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.Module,            {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
-            this.belongsTo(models.CommentEntityType, {foreignKey: 'entityTypeId'});
+            if (!models?.ModelEntityName) {
+                throw new Error('There is no ModelEntityName model. Try adding RH Model Entity Name module to the project.');
+            }
+
+            this.belongsTo(models.Module,          {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
+            this.belongsTo(models.ModelEntityName, {foreignKey: 'modelEntityNameId'});
         }
     }
     CommentType.init({
@@ -54,7 +58,7 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
             allowNull: true,
         },
-        entityTypeId: {
+        modelEntityNameId: {
             type: DataTypes.BIGINT,
             allowNull: false,
         },
