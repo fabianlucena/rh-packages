@@ -8,13 +8,21 @@ export class ShareService extends ServiceEnabledModuleTranslatable {
     moduleModel = conf.global.models.Module;
     references = {
         objectName: {
-            service: conf.global.services.ObjectName.singleton(),
+            service: conf.global.services.ModelEntityName?.singleton(),
             createIfNotExists: true,
         },
         user: conf.global.services.User.singleton(),
         type: conf.global.services.ShareType.singleton(),
     };
     defaultTranslationContext = 'share';
+
+    constructor() {
+        if (!conf.global.services.ModelEntityName) {
+            throw new Error('There is no ModelEntityName service. Try adding RH Model Entity Name module to the project.');
+        }
+
+        super();
+    }
     
     async validateForCreation(data) {
         await checkDataForMissingProperties(data, 'Share', 'objectNameId', 'objectId', 'userId', 'typeId');

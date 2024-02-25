@@ -3,10 +3,14 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class Share extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.ObjectName, {foreignKey: 'objectNameId',  allowNull: false, onDelete: 'cascade'});
-            this.belongsTo(models.User,       {foreignKey: 'userId',        allowNull: false, onDelete: 'cascade'});
-            this.belongsTo(models.ShareType,  {foreignKey: 'typeId',        allowNull: false});
-            this.belongsTo(models.Module,     {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
+            if (!models?.ModelEntityName) {
+                throw new Error('There is no ModelEntityName model. Try adding RH Model Entity Name module to the project.');
+            }
+
+            this.belongsTo(models.ModelEntityName, {foreignKey: 'objectNameId',  allowNull: false, onDelete: 'cascade'});
+            this.belongsTo(models.User,            {foreignKey: 'userId',        allowNull: false, onDelete: 'cascade'});
+            this.belongsTo(models.ShareType,       {foreignKey: 'typeId',        allowNull: false});
+            this.belongsTo(models.Module,          {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
         }
     }
     Share.init({

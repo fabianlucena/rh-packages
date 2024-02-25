@@ -88,7 +88,7 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
      */
     async getListOptions(options) {
         if (options?.includeOwner) {
-            includeCollaborators(options, 'Scenario', this.models, {filterType: 'owner'});
+            includeCollaborators(options, this.shareObject ?? this.name, this.models, {filterType: 'owner'});
             delete options.includeOwner;
         }
 

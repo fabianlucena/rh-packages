@@ -186,6 +186,7 @@ export class ProjectController {
             limit: 10,
             offset: 0,
             loc: req.loc,
+            includeOwner: true,
         };
 
         if (conf.global.models.Company) {
@@ -202,14 +203,17 @@ export class ProjectController {
 
         const result = await projectService.getListAndCount(options);
 
-        result.rows = result.rows.map(row => {
-            if (row.toJSON) {
-                row = row.toJSON();
-            }
+        if (conf.global.models.Company) {
+            result.rows = result.rows.map(row => {
+                if (row.toJSON) {
+                    row = row.toJSON();
+                }
 
-            row.companyUuid = row.Company.uuid;
-            return row;
-        });
+                row.companyUuid = row.Company.uuid;
+
+                return row;
+            });
+        }
 
         await conf.global.eventBus?.$emit('Project.response.getted', result, options);
 

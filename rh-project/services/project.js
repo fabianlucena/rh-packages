@@ -6,6 +6,7 @@ import {_ConflictError} from 'http-util';
 
 export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslatable {
     sequelize = conf.global.sequelize;
+    models = conf.global.models;
     model = conf.global.models.Project;
     shareObject = 'Project';
     shareService = conf.global.services.Share.singleton();

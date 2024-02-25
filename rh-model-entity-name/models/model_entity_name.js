@@ -1,10 +1,10 @@
 import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-    class ObjectName extends sequelize.Sequelize.Model {
+    class ModelEntityName extends sequelize.Sequelize.Model {
     }
 
-    ObjectName.init({
+    ModelEntityName.init({
         id: {
             type: DataTypes.BIGINT,
             autoIncrement: true,
@@ -28,5 +28,5 @@ export default (sequelize, DataTypes) => {
         freezeTableName: true,
         schema: conf.schema
     });
-    return ObjectName;
+    return ModelEntityName;
 };

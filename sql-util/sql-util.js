@@ -1,4 +1,4 @@
-import {setUpError, deepComplete, replace, loc, defaultLoc, format} from 'rf-util';
+import {setUpError, deepComplete, replace, _Error, loc, defaultLoc, format} from 'rf-util';
 import fs from 'fs';
 import path from 'path';
 import {Op, Utils} from 'sequelize';
@@ -348,8 +348,15 @@ export function addEnabledWithOnerModuleFilter(options, ownerModule) {
 export function includeCollaborators(options, object, models, collaboratorOptions) {
     collaboratorOptions ??= {};
 
+    if (!models?.ModelEntityName) {
+        if (!models) {
+            throw new _Error(loc._f('No models defined on %s. Try adding "models = conf.global.models;" to the class.', this.constructor.name));
+        }
+        throw new _Error(loc._f('No models.ModelEntityName defined on %s. Try adding the RH Model Entity Name to the project.', this.constructor.name));
+    }
+
     const objectName = {
-        model: models.ObjectName,
+        model: models.ModelEntityName,
         required: false,
         attributes: [],
         where: {name: object},
