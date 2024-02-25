@@ -1,4 +1,4 @@
-import {setUpError, errorHandler, deepComplete, runSequentially, stripQuotes, checkParameterUuid, loc} from 'rf-util';
+import {setUpError, errorHandler, deepComplete, runSequentially, stripQuotes, checkParameterUuid, loc, defaultLoc} from 'rf-util';
 import * as uuid from 'uuid';
 import fs from 'fs';
 import path from 'path';
@@ -457,10 +457,11 @@ export async function getOptionsFromParamsAndOData(params, definitions, options)
 }
 
 export async function deleteHandler(req, res, rowCount) {
+    const loc = req.loc ?? defaultLoc;
     if (!rowCount) {
-        res.status(200).send({msg: await req.loc._('Nothing to delete.')});
+        res.status(200).send({msg: await loc._('Nothing to delete.')});
     } else if (rowCount != 1) {
-        res.status(200).send({msg: await req.loc._('%s rows deleted.', rowCount)});
+        res.status(200).send({msg: await loc._('%s rows deleted.', rowCount)});
     } else {
         res.sendStatus(204);
     }
@@ -1025,7 +1026,7 @@ export async function getUuidFromRequest(req) {
         }
     }
 
-    return checkParameterUuid(uuid, req.loc._f('UUID'));
+    return checkParameterUuid(uuid, loc._f('UUID'));
 }
 
 export function makeContext(req, res) {
