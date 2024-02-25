@@ -1,7 +1,6 @@
 import {EavAttributeService} from './services/attribute.js';
 import {EavAttributeTypeService} from './services/attribute_type.js';
 import {EavAttributeOptionService} from './services/attribute_option.js';
-import {EavEntityTypeService} from './services/entity_type.js';
 import {EavValueTextService} from './services/value_text.js';
 import {EavValueOptionService} from './services/value_option.js';
 import {conf as localConf} from './conf.js';
@@ -13,7 +12,7 @@ export const conf = localConf;
 conf.configure = configure;
 conf.init = [init];
 conf.updateData = updateData;
-conf.entityTypeCache = {};
+conf.modelEntityNameCache = {};
 conf.attributesCache = {};
 conf.fieldsCache = {};
 conf.columnsCache = {};
@@ -34,10 +33,14 @@ async function configure(global, options) {
 }
 
 async function init() {
+    if (!conf?.global?.services?.ModelEntityName?.singleton) {
+        throw new Error('There is no ModelEntityName service. Try adding RH Model Entity Name module to the project.');
+    }
+    
     conf.eavAttributeService =       EavAttributeService.singleton();
     conf.eavAttributeTypeService =   EavAttributeTypeService.singleton();
     conf.eavAttributeOptionService = EavAttributeOptionService.singleton();
-    conf.eavEntityTypeService =      EavEntityTypeService.singleton();
+    conf.modelEntityNameService =    conf?.global?.services?.ModelEntityName?.singleton();
     conf.eavValueTextService =       EavValueTextService.singleton();
     conf.eavValueOptionService =     EavValueOptionService.singleton();
 }
@@ -50,7 +53,7 @@ async function updateData(global) {
 }
 
 async function clearCache() {
-    conf.entityTypeCache = {};
+    conf.modelEntityNameCache = {};
     conf.attributesCache = {};
     conf.fieldsCache = {};
     conf.columnsCache = {};
@@ -61,7 +64,7 @@ async function checkClearCache(entity) {
     if (entity === 'EavAttribute'
         || entity === 'EavAttributeType'
         || entity === 'EavAttributeOption'
-        || entity === 'EavEntityType'
+        || entity === 'ModelEntityName'
     ) {
         await clearCache();
     }
@@ -70,11 +73,11 @@ async function checkClearCache(entity) {
 }
 
 async function getEnityTypeId(entity, options) {
-    if (conf.entityTypeCache[entity] === undefined) {
-        conf.entityTypeCache[entity] = await conf.eavEntityTypeService.getIdForName(entity, options);
+    if (conf.modelEntityNameCache[entity] === undefined) {
+        conf.modelEntityNameCache[entity] = await conf.ModelEntityNameService.getIdForName(entity, options);
     }
 
-    return conf.entityTypeCache[entity];
+    return conf.modelEntityNameCache[entity];
 }
 
 async function getAttributes(entity, options) {
@@ -236,7 +239,7 @@ async function getted(entity, result, options) {
         result = await result;
     }
 
-    const entityTypeId = await getEnityTypeId(entity, {loc: options?.loc});
+    const modelEntityNameId = await getEnityTypeId(entity, {loc: options?.loc});
 
     const rows = result.rows || result;
     for (const row of rows) {
@@ -250,7 +253,7 @@ async function getted(entity, result, options) {
             const name = attribute.name;
             const typeName = attribute.EavAttributeType.name;
             const where = {
-                entityTypeId,
+                modelEntityNameId,
                 entityId,
                 attributeId,
             };
@@ -345,7 +348,7 @@ async function updateValues(entity, entityIds, data, options) {
         return;
     }
 
-    const entityTypeId = await getEnityTypeId(entity, queryOptions);
+    const modelEntityNameId = await getEnityTypeId(entity, queryOptions);
 
     for (const entityId of entityIds) {
         for (const attribute of attributes) {
@@ -356,7 +359,7 @@ async function updateValues(entity, entityIds, data, options) {
             }
 
             const optionData = {
-                entityTypeId,
+                modelEntityNameId,
                 entityId,
                 attributeId: attribute.id,
             };
@@ -378,7 +381,7 @@ async function updateValues(entity, entityIds, data, options) {
                 }
 
                 await conf.eavValueOptionService.deleteFor({
-                    entityTypeId,
+                    modelEntityNameId,
                     entityId,
                     attributeId: attribute.id,
                     notId: valueId,
@@ -405,7 +408,7 @@ async function deleting(entity, options, service) {
         return;
     }
 
-    const entityTypeId = await getEnityTypeId(entity, queryOptions);
+    const modelEntityNameId = await getEnityTypeId(entity, queryOptions);
 
     const rows = await service.getList({
         ...options,
@@ -422,7 +425,7 @@ async function deleting(entity, options, service) {
 
         for (const attribute of attributes) {
             const optionData = {
-                entityTypeId,
+                modelEntityNameId,
                 entityId,
                 attributeId: attribute.id,
             };

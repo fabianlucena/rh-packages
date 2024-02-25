@@ -3,9 +3,13 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class EavAttribute extends sequelize.Sequelize.Model {
         static associate(models) {
+            if (!models?.ModelEntityName) {
+                throw new Error('There is no ModelEntityName model. Try adding RH Model Entity Name module to the project.');
+            }
+
             this.belongsTo(models.Module,           {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
             this.belongsTo(models.EavAttributeType, {foreignKey: 'attributeTypeId'});
-            this.belongsTo(models.EavEntityType,    {foreignKey: 'entityTypeId'});
+            this.belongsTo(models.ModelEntityName,  {foreignKey: 'modelEntityNameId'});
         }
     }
     EavAttribute.init({
@@ -47,7 +51,7 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
             allowNull: true,
         },
-        entityTypeId: {
+        modelEntityNameId: {
             type: DataTypes.BIGINT,
             allowNull: false,
         },

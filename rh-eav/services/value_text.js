@@ -1,4 +1,3 @@
-import {EavEntityTypeService} from './entity_type.js';
 import {EavAttributeService} from './attribute.js';
 import {conf} from '../conf.js';
 import {ServiceIdUuidName} from 'rf-service';
@@ -7,7 +6,15 @@ export class EavValueTextService extends ServiceIdUuidName {
     sequelize = conf.global.sequelize;
     model = conf.global.models.EavValueText;
     references = {
-        entityType: EavEntityTypeService.singleton(),
+        modelEntityName: conf.global?.services?.ModelEntityNameService?.singleton(),
         attributeType: EavAttributeService.singleton(),
     };
+
+    constructor() {
+        if (!conf?.global?.services?.ModelEntityName?.singleton) {
+            throw new Error('There is no ModelEntityName service. Try adding RH Model Entity Name module to the project.');
+        }
+
+        super();
+    }
 }

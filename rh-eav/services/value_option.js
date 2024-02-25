@@ -1,4 +1,3 @@
-import {EavEntityTypeService} from './entity_type.js';
 import {EavAttributeService} from './attribute.js';
 import {EavAttributeOptionService} from './attribute_option.js';
 import {conf} from '../conf.js';
@@ -12,10 +11,18 @@ export class EavValueOptionService extends ServiceIdUuidTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.EavValueOption;
     references = {
-        entityType: EavEntityTypeService.singleton(),
+        modelEntityName: conf?.global?.services?.ModelEntityName?.singleton(),
         attributeType: EavAttributeService.singleton(),
         attributeOption: EavAttributeOptionService.singleton(),
     };
+
+    constructor() {
+        if (!conf?.global?.services?.ModelEntityName?.singleton) {
+            throw new Error('There is no ModelEntityName service. Try adding RH Model Entity Name module to the project.');
+        }
+
+        super();
+    }
 
     async getListOptions(options) {
         options ||= {};

@@ -3,8 +3,12 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class EavValue extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.EavEntityType, {foreignKey: 'entityTypeId'});
-            this.belongsTo(models.EavAttribute,  {foreignKey: 'attributeId'});
+            if (!models?.ModelEntityName) {
+                throw new Error('There is no ModelEntityName model. Try adding RH Model Entity Name module to the project.');
+            }
+
+            this.belongsTo(models.ModelEntityName, {foreignKey: 'modelEntityNameId'});
+            this.belongsTo(models.EavAttribute,    {foreignKey: 'attributeId'});
         }
     }
     EavValue.init({
@@ -20,7 +24,7 @@ export default (sequelize, DataTypes) => {
             defaultValue: DataTypes.UUIDV4,
             unique: true,
         },
-        entityTypeId: {
+        modelEntityNameId: {
             type: DataTypes.BIGINT,
             allowNull: false,
         },

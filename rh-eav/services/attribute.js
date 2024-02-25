@@ -1,5 +1,4 @@
 import {EavAttributeTypeService} from './attribute_type.js';
-import {EavEntityTypeService} from './entity_type.js';
 import {EavAttributeOptionService} from './attribute_option.js';
 import {conf} from '../conf.js';
 import {runSequentially} from 'rf-util';
@@ -14,11 +13,19 @@ export class EavAttributeService extends ServiceIdUuidNameTitleDescriptionEnable
             service: EavAttributeTypeService.singleton(),
             otherName: 'type',
         },
-        entityType: {
-            service: EavEntityTypeService.singleton(),
+        modelEntityName: {
+            service: conf?.global?.services?.ModelEntityName?.singleton(),
             createIfNotExists: true,
         }
     };
+    
+    constructor() {
+        if (!conf?.global?.services?.ModelEntityName?.singleton) {
+            throw new Error('There is no ModelEntityName service. Try adding RH Model Entity Name module to the project.');
+        }
+
+        super();
+    }
 
     init() {
         this.eavAttributeOptionService = EavAttributeOptionService.singleton();
@@ -65,8 +72,8 @@ export class EavAttributeService extends ServiceIdUuidNameTitleDescriptionEnable
             );
         }
 
-        if (options.includeEntityType || options.where?.entityType) {
-            let attributes = options.includeEntityType || [];
+        if (options.includeModelEntityName || options.where?.modelEntityName) {
+            let attributes = options.includeModelEntityName || [];
             if (attributes === true) {
                 attributes = ['uuid', 'name'];
             }
@@ -76,16 +83,16 @@ export class EavAttributeService extends ServiceIdUuidNameTitleDescriptionEnable
                 where = {isEnabled: options.isEnabled};
             }
 
-            if (options.where?.entityType) {
-                where = {...where, ...options.where.entityType};
-                delete options.where?.entityType;
+            if (options.where?.modelEntityName) {
+                where = {...where, ...options.where.modelEntityName};
+                delete options.where?.modelEntityName;
             }
 
             completeIncludeOptions(
                 options,
-                'EavEntityType',
+                'ModelEntityName',
                 {
-                    model: conf.global.models.EavEntityType,
+                    model: conf.global.models.ModelEntityName,
                     attributes,
                     where,
                 }
@@ -96,6 +103,6 @@ export class EavAttributeService extends ServiceIdUuidNameTitleDescriptionEnable
     }
 
     async getForEntityName(entityName, options) {
-        return this.getFor({entityType: {name: entityName}}, options);
+        return this.getFor({includeModelEntityName: {name: entityName}}, options);
     }
 }
