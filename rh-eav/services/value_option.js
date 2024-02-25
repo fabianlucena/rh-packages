@@ -3,8 +3,7 @@ import {EavAttributeOptionService} from './attribute_option.js';
 import {conf} from '../conf.js';
 import {ServiceIdUuidTranslatable} from 'rf-service';
 import {completeIncludeOptions} from 'sql-util';
-import {_Error} from 'rf-util';
-import {loc} from 'rf-locale';
+import {_Error, loc} from 'rf-util';
 
 export class EavValueOptionService extends ServiceIdUuidTranslatable {
     Sequelize = conf.global.Sequelize;

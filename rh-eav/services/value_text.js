@@ -1,8 +1,8 @@
 import {EavAttributeService} from './attribute.js';
 import {conf} from '../conf.js';
-import {ServiceIdUuidName} from 'rf-service';
+import {ServiceIdUuid} from 'rf-service';
 
-export class EavValueTextService extends ServiceIdUuidName {
+export class EavValueTextService extends ServiceIdUuid {
     sequelize = conf.global.sequelize;
     model = conf.global.models.EavValueText;
     references = {

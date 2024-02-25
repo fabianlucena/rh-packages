@@ -4,8 +4,7 @@ import {EavAttributeOptionService} from './services/attribute_option.js';
 import {EavValueTextService} from './services/value_text.js';
 import {EavValueOptionService} from './services/value_option.js';
 import {conf as localConf} from './conf.js';
-import {runSequentially} from 'rf-util';
-import {loc} from 'rf-locale';
+import {runSequentially, loc} from 'rf-util';
 
 export const conf = localConf;
 
@@ -74,7 +73,7 @@ async function checkClearCache(entity) {
 
 async function getEnityTypeId(entity, options) {
     if (conf.modelEntityNameCache[entity] === undefined) {
-        conf.modelEntityNameCache[entity] = await conf.ModelEntityNameService.getIdForName(entity, options);
+        conf.modelEntityNameCache[entity] = await conf.modelEntityNameService.getIdForName(entity, options);
     }
 
     return conf.modelEntityNameCache[entity];
@@ -242,10 +241,16 @@ async function getted(entity, result, options) {
     const modelEntityNameId = await getEnityTypeId(entity, {loc: options?.loc});
 
     const rows = result.rows || result;
-    for (const row of rows) {
+    for (const iRow in rows) {
+        let row = rows[iRow];
         const entityId = row.id;
         if (entityId === undefined) {
             continue;
+        }
+
+        if (row.toJSON) {
+            row = row.toJSON();
+            rows[iRow] = row;
         }
 
         for (const attribute of attributes) {
@@ -260,7 +265,7 @@ async function getted(entity, result, options) {
 
             switch (typeName) {
             case 'text': {
-                const valueRow = await conf.eavValueTextService.getSingleFor(where, {raw: true, nest: true, loc: options?.loc});
+                const valueRow = await conf.eavValueTextService.getSingleFor(where, {raw: true, nest: true, loc: options?.loc, skipNoRowsError: true});
                 row[name] = valueRow?.value;
             } break;
             case 'select': {

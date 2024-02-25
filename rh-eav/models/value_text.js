@@ -1,7 +1,7 @@
 import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-    class EavValue extends sequelize.Sequelize.Model {
+    class EavValueText extends sequelize.Sequelize.Model {
         static associate(models) {
             if (!models?.ModelEntityName) {
                 throw new Error('There is no ModelEntityName model. Try adding RH Model Entity Name module to the project.');
@@ -11,7 +11,7 @@ export default (sequelize, DataTypes) => {
             this.belongsTo(models.EavAttribute,    {foreignKey: 'attributeId'});
         }
     }
-    EavValue.init({
+    EavValueText.init({
         id: {
             type: DataTypes.BIGINT,
             autoIncrement: true,
@@ -46,5 +46,5 @@ export default (sequelize, DataTypes) => {
         tableName: 'ValueText',
         schema: conf.schema,
     });
-    return EavValue;
+    return EavValueText;
 };

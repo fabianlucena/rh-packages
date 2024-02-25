@@ -103,6 +103,6 @@ export class EavAttributeService extends ServiceIdUuidNameTitleDescriptionEnable
     }
 
     async getForEntityName(entityName, options) {
-        return this.getFor({includeModelEntityName: {name: entityName}}, options);
+        return this.getFor({modelEntityName: {name: entityName}}, options);
     }
 }
