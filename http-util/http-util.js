@@ -532,7 +532,7 @@ export async function configureModule(global, module) {
 
     if (typeof module === 'string') {
         const tryModulePath = path.join(process.cwd(), module);
-        if (fs.existsSync(tryModulePath)) {
+        if (tryModulePath.endsWith('.js') && fs.existsSync(tryModulePath)) {
             module = url.pathToFileURL(tryModulePath).href;
         }
 
