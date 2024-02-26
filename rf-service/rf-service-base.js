@@ -336,6 +336,15 @@ export class ServiceBase {
         return result;
     }
 
+    async getOrCreate(data, options) {
+        const result = await this.getSingleFor(data, {skipNoRowsError: true, ...options});
+        if (result) {
+            return result;            
+        }
+
+        return this.create(data, options);
+    }
+
     /**
      * Gets a list of rows and the total rows count.
      * @param {Options} options - options for the @see sequelize.findAndCountAll and @see getListOptions methods.
