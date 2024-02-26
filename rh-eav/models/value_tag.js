@@ -1,13 +1,13 @@
 import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-    class EavValueOption extends sequelize.Sequelize.Model {
+    class EavValueTag extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.EavAttribute,       {foreignKey: 'attributeId'});
-            this.belongsTo(models.EavAttributeOption, {foreignKey: 'attributeOptionId'});
+            this.belongsTo(models.EavAttribute,    {foreignKey: 'attributeId'});
+            this.belongsTo(models.EavAttributeTag, {foreignKey: 'attributeTagId'});
         }
     }
-    EavValueOption.init({
+    EavValueTag.init({
         id: {
             type: DataTypes.BIGINT,
             autoIncrement: true,
@@ -20,23 +20,23 @@ export default (sequelize, DataTypes) => {
             defaultValue: DataTypes.UUIDV4,
             unique: true,
         },
-        attributeId: {
-            type: DataTypes.BIGINT,
-            allowNull: false,
-        },
         entityId: {
             type: DataTypes.BIGINT,
             allowNull: false,
         },
-        attributeOptionId: {
+        attributeId: {
+            type: DataTypes.BIGINT,
+            allowNull: false,
+        },
+        attributeTagId: {
             type: DataTypes.BIGINT,
             allowNull: false,
         },
     }, {
         sequelize,
         timestamps: true,
-        tableName: 'ValueOption',
+        tableName: 'ValueTag',
         schema: conf.schema,
     });
-    return EavValueOption;
+    return EavValueTag;
 };

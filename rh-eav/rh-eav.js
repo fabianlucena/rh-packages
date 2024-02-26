@@ -1,8 +1,10 @@
 import {EavAttributeService} from './services/attribute.js';
 import {EavAttributeTypeService} from './services/attribute_type.js';
 import {EavAttributeOptionService} from './services/attribute_option.js';
+import {EavAttributeTagService} from './services/attribute_tag.js';
 import {EavValueTextService} from './services/value_text.js';
 import {EavValueOptionService} from './services/value_option.js';
+import {EavValueTagService} from './services/value_tag.js';
 import {conf as localConf} from './conf.js';
 import {runSequentially, loc} from 'rf-util';
 
@@ -39,9 +41,11 @@ async function init() {
     conf.eavAttributeService =       EavAttributeService.singleton();
     conf.eavAttributeTypeService =   EavAttributeTypeService.singleton();
     conf.eavAttributeOptionService = EavAttributeOptionService.singleton();
+    conf.eavAttributeTagService =    EavAttributeTagService.singleton();
     conf.modelEntityNameService =    conf?.global?.services?.ModelEntityName?.singleton();
     conf.eavValueTextService =       EavValueTextService.singleton();
     conf.eavValueOptionService =     EavValueOptionService.singleton();
+    conf.eavValueTagService =        EavValueTagService.singleton();
 }
 
 async function updateData(global) {
@@ -69,14 +73,6 @@ async function checkClearCache(entity) {
     }
 
     return;
-}
-
-async function getEnityTypeId(entity, options) {
-    if (conf.modelEntityNameCache[entity] === undefined) {
-        conf.modelEntityNameCache[entity] = await conf.modelEntityNameService.getIdForName(entity, options);
-    }
-
-    return conf.modelEntityNameCache[entity];
 }
 
 async function getAttributes(entity, options) {
@@ -156,9 +152,19 @@ async function interfaceFormGet(form, options) {
                 name: attribute.name,
                 label: attribute.title,
                 type: attribute.htmlType,
-                options: attribute.options,
-                valueProperty: 'uuid',
             };
+
+            if (attribute.type === 'select') {
+                field.options = attribute.options,
+                field.valueProperty = 'uuid';
+            } else if (attribute.type === 'tags') {
+                field.loadOptionsFrom = {
+                    service: 'eav/tags',
+                    query: {
+                        attributeUuid: attribute.uuid,
+                    },
+                };
+            }   
 
             fields.push(field);
         }
@@ -238,8 +244,6 @@ async function getted(entity, result, options) {
         result = await result;
     }
 
-    const modelEntityNameId = await getEnityTypeId(entity, {loc: options?.loc});
-
     const rows = result.rows || result;
     for (const iRow in rows) {
         let row = rows[iRow];
@@ -258,20 +262,28 @@ async function getted(entity, result, options) {
             const name = attribute.name;
             const typeName = attribute.EavAttributeType.name;
             const where = {
-                modelEntityNameId,
-                entityId,
                 attributeId,
+                entityId,
             };
 
             switch (typeName) {
             case 'text': {
-                const valueRow = await conf.eavValueTextService.getSingleFor(where, {raw: true, nest: true, loc: options?.loc, skipNoRowsError: true});
+                const valueRow = await conf.eavValueTextService.getSingleFor(
+                    where,
+                    {
+                        raw: true,
+                        nest: true,
+                        loc: options?.loc,
+                        skipNoRowsError: true,
+                    }
+                );
                 row[name] = valueRow?.value;
             } break;
             case 'select': {
-                const valueRows = await conf.eavValueOptionService.getFor(where,
+                const valueRows = await conf.eavValueOptionService.getFor(
+                    where,
                     {
-                        includeAtributeOption: true,
+                        includeAttributeOption: true,
                         raw: true,
                         nest: true,
                         loc: options?.loc,
@@ -280,6 +292,21 @@ async function getted(entity, result, options) {
 
                 if (valueRows?.length) {
                     row[name] = valueRows[0]?.EavAttributeOption;
+                }
+            } break;
+            case 'tags': {
+                const valueRows = await conf.eavValueTagService.getFor(
+                    where,
+                    {
+                        includeAttributeTag: true,
+                        raw: true,
+                        nest: true,
+                        loc: options?.loc,
+                    },
+                );
+
+                if (valueRows?.length) {
+                    row[name] = valueRows.map(r => r.EavAttributeTag.name);
                 }
             } break;
             default: row[name] = (options?.loc ?? loc)._c('eav', 'Error unknown attribute type: %s', typeName);
@@ -353,8 +380,6 @@ async function updateValues(entity, entityIds, data, options) {
         return;
     }
 
-    const modelEntityNameId = await getEnityTypeId(entity, queryOptions);
-
     for (const entityId of entityIds) {
         for (const attribute of attributes) {
             const name = attribute.name;
@@ -364,41 +389,17 @@ async function updateValues(entity, entityIds, data, options) {
             }
 
             const optionData = {
-                modelEntityNameId,
-                entityId,
                 attributeId: attribute.id,
+                entityId,
+                value,
             };
 
             if (attribute.type === 'select') {
-                let valueId;
-                if (value) {
-                    optionData.attributeOptionUuid = value;
-
-                    const result = await conf.eavValueOptionService.getFor(optionData, queryOptions);
-                    if (!result?.length) {
-                        const inserted = await conf.eavValueOptionService.create(optionData, queryOptions);
-                        valueId = inserted.id;
-                    } else {
-                        valueId = result[0].id;
-                    }
-                } else {
-                    valueId = [];
-                }
-
-                await conf.eavValueOptionService.deleteFor({
-                    modelEntityNameId,
-                    entityId,
-                    attributeId: attribute.id,
-                    notId: valueId,
-                });
+                await conf.eavValueOptionService.updateValue(optionData, queryOptions);
             } else if (attribute.type === 'text') {
-                const result = await conf.eavValueTextService.getFor(optionData, queryOptions);
-                if (!result?.length) {
-                    await conf.eavValueTextService.create({...optionData, value}, queryOptions);
-                } else {
-                    const valueId = result[0].id;
-                    await conf.eavValueTextService.updateForId({value}, valueId, queryOptions);
-                }
+                await conf.eavValueTextService.updateValue(optionData, queryOptions);
+            } else if (attribute.type === 'tags') {
+                await conf.eavValueTagService.updateValue(optionData, queryOptions);
             } else {
                 throw new Error('Unknown attribute type.');
             }
@@ -412,8 +413,6 @@ async function deleting(entity, options, service) {
     if (!attributes?.length) {
         return;
     }
-
-    const modelEntityNameId = await getEnityTypeId(entity, queryOptions);
 
     const rows = await service.getList({
         ...options,
@@ -430,9 +429,8 @@ async function deleting(entity, options, service) {
 
         for (const attribute of attributes) {
             const optionData = {
-                modelEntityNameId,
-                entityId,
                 attributeId: attribute.id,
+                entityId,
             };
 
             let valueService;
@@ -440,6 +438,8 @@ async function deleting(entity, options, service) {
                 valueService = conf.eavValueOptionService;
             } else if (attribute.type === 'text') {
                 valueService = conf.eavValueTextService;
+            } else if (attribute.type === 'tags') {
+                valueService = conf.eavValueTagService;
             } else {
                 throw new Error('Unknown attribute type.');
             }

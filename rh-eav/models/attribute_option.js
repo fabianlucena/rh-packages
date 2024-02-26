@@ -3,8 +3,11 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class EavAttributeOption extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.Module,       {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
             this.belongsTo(models.EavAttribute, {foreignKey: 'attributeId'});
+
+            if (models.Module) {
+                this.belongsTo(models.Module, {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
+            }
         }
     }
     EavAttributeOption.init({

@@ -3,12 +3,7 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class EavValueText extends sequelize.Sequelize.Model {
         static associate(models) {
-            if (!models?.ModelEntityName) {
-                throw new Error('There is no ModelEntityName model. Try adding RH Model Entity Name module to the project.');
-            }
-
-            this.belongsTo(models.ModelEntityName, {foreignKey: 'modelEntityNameId'});
-            this.belongsTo(models.EavAttribute,    {foreignKey: 'attributeId'});
+            this.belongsTo(models.EavAttribute, {foreignKey: 'attributeId'});
         }
     }
     EavValueText.init({
@@ -24,15 +19,11 @@ export default (sequelize, DataTypes) => {
             defaultValue: DataTypes.UUIDV4,
             unique: true,
         },
-        modelEntityNameId: {
+        attributeId: {
             type: DataTypes.BIGINT,
             allowNull: false,
         },
         entityId: {
-            type: DataTypes.BIGINT,
-            allowNull: false,
-        },
-        attributeId: {
             type: DataTypes.BIGINT,
             allowNull: false,
         },
