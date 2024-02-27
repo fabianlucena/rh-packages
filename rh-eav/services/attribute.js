@@ -1,9 +1,10 @@
 import {EavAttributeTypeService} from './attribute_type.js';
 import {EavAttributeOptionService} from './attribute_option.js';
 import {conf} from '../conf.js';
-import {runSequentially} from 'rf-util';
+import {runSequentially, loc} from 'rf-util';
 import {ServiceIdUuidNameTitleDescriptionEnabledTranslatable} from 'rf-service';
 import {completeIncludeOptions} from 'sql-util';
+import { ConflictError } from 'http-util';
 
 export class EavAttributeService extends ServiceIdUuidNameTitleDescriptionEnabledTranslatable {
     sequelize = conf.global.sequelize;
@@ -25,6 +26,21 @@ export class EavAttributeService extends ServiceIdUuidNameTitleDescriptionEnable
         }
 
         super();
+    }
+
+    async checkTitleForConflict(title, data) {
+        const rows = await this.getFor(
+            {
+                title,
+                modelEntityNameId: data.modelEntityNameId,
+            },
+            {
+                limit: 1,
+            }
+        );
+        if (rows?.length) {
+            throw new ConflictError(loc._f('Exists another attribute with that title for this entity.'));
+        }
     }
 
     init() {
