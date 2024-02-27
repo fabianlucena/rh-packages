@@ -105,7 +105,7 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
 
         if (this.shareService && this.shareObject) {
             const id = await this.getIdFor(options.where);
-            await this.shareService.deleteForObjectNameAndId(this.shareObject, id);
+            await this.shareService.deleteForModelEntityNameAndId(this.shareObject, id);
         }
 
         return super.delete(options);

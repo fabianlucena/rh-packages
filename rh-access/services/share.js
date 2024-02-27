@@ -60,8 +60,8 @@ export class ShareService extends ServiceEnabledModuleTranslatable {
         return ShareService.create(data);
     }
 
-    async deleteForObjectNameAndId(objectName, objectId) {
-        const objectNameId = await conf.global.services.ObjectName.singleton().getIdForName(objectName);
+    async deleteForModelEntityNameAndId(modelEntityName, objectId) {
+        const objectNameId = await conf.global.services.ModelEntityName.singleton().getIdForName(modelEntityName);
         return this.deleteFor({objectNameId, objectId});
     }
 }

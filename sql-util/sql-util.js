@@ -341,7 +341,7 @@ export function addEnabledWithOnerModuleFilter(options, ownerModule) {
  * Completes the include (JOIN) of a sequelize query with the references of collaborators using the share table.
  * @param {object} options - Original options
  * @param {string} object - [mandatory] name of the object for filter in the share table
- * @param {object} models - [mandatory] models to take the ObjectName, ShareType and User sequelize models
+ * @param {object} models - [mandatory] models to take the ModelEntityName, ShareType and User sequelize models
  * @param {string|array} type - type of collabortion can be one or a list of: owner, editor, viewer, or others.
  * @return {Options}
  */
@@ -352,6 +352,7 @@ export function includeCollaborators(options, object, models, collaboratorOption
         if (!models) {
             throw new _Error(loc._f('No models defined on %s. Try adding "models = conf.global.models;" to the class.', this.constructor.name));
         }
+        
         throw new _Error(loc._f('No models.ModelEntityName defined on %s. Try adding the RH Model Entity Name to the project.', this.constructor.name));
     }
 
