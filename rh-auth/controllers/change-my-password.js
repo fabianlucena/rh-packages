@@ -10,6 +10,7 @@ export class ChangeMyPasswordController {
 
         res.status(200).send({
             title: await loc._c('changeMyPassword', 'Change password'),
+            className: 'small one-per-line',
             action: 'change-my-password',
             method: 'post',
             fields: [

@@ -54,6 +54,7 @@ export class LoginController {
 
         res.status(200).send({
             title: await loc._c('login', 'Login'),
+            className: 'small one-per-line',
             action: 'login',
             method: 'post',
             onSuccess: {
