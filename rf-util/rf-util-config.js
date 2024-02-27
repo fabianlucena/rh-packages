@@ -28,8 +28,9 @@ export async function loadConfig(options) {
         ...options.defaults,
     };
 
+    await mergeJsonFileName(config, config.path + 'global.json', {debug: options.debug});
+    
     const path = config.path + config.env;
-    await mergeJsonFileName(config, path + '.global.json', {debug: options.debug});
     await mergeJsonFileName(config, path + '.json',        {debug: options.debug});
     await mergeJsonFileName(config, path + '.local.json',  {debug: options.debug});
 
