@@ -1,5 +1,10 @@
 export function tokens(text) {
-    return text.split(/[ _-]/);
+    return text
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .split(/([^a-zA-Z0-9]|(?<=[a-z])(?=[A-Z0-9])|(?<=[A-Z])(?=[0-9])|(?<=[0-9])(?=[a-zA-Z]))/)
+        .map(t => t.trim().toLowerCase())
+        .filter(t => t && t.match(/[a-zA-Z0-9]/));
 }
 
 export function camelize(text) {
@@ -7,8 +12,13 @@ export function camelize(text) {
     return tokenList[0] + tokenList.slice(1).map(token => token.substring(0, 1).toUpperCase() + token.substring(1)).join('');
 }
 
-export function spacialize(text) {
-    return tokens(text).join(' ');
+export function underscorize(text) {
+    return spacialize(text, '_');
+}
+
+export function spacialize(text, space) {
+    space ??= ' ';
+    return tokens(text).join(space);
 }
 
 export function ucfirst(text) {
