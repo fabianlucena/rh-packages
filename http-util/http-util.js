@@ -634,7 +634,11 @@ export async function installModule(global, module) {
     }
 
     if (module.init) {
-        await runSequentially(module.init, async method => await method());
+        if (typeof module.init === 'function') {
+            await module.init();
+        } else {
+            await runSequentially(module.init, async method => await method());
+        }
     }
 
     if (module.afterConfig) {
