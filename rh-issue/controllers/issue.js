@@ -1,7 +1,8 @@
 import {IssueService} from '../services/issue.js';
 import {conf} from '../conf.js';
 import {getOptionsFromParamsAndOData, _HttpError, getUuidFromRequest, makeContext} from 'http-util';
-import {checkParameter, filterVisualItemsByAliasName, loc, defaultLoc} from 'rf-util';
+import {checkParameter, filterVisualItemsByAliasName} from 'rf-util';
+import {loc, defaultLoc} from 'rf-locale';
 
 const issueService = IssueService.singleton();
 
@@ -291,12 +292,6 @@ export class IssueController {
                 type: 'text',
                 label: await loc._cf('issue', 'Priority'),
             },
-            {
-                alias: 'status',
-                name: 'Status.title',
-                type: 'text',
-                label: await loc._cf('issue', 'Status'),
-            },
         ];
 
         const details = [
@@ -310,12 +305,6 @@ export class IssueController {
                 name: 'CloseReason.title',
                 type: 'text',
                 label: await loc._cf('issue', 'Close reason'),
-            },
-            {
-                alias: 'workflow',
-                name: 'Workflow.title',
-                type: 'text',
-                label: await loc._cf('issue', 'Workflow'),
             },
         ];
 
@@ -427,34 +416,6 @@ export class IssueController {
                 type: 'textArea',
                 label: await loc._cf('issue', 'Description'),
                 placeholder: await loc._cf('issue', 'Description'),
-            },
-            {
-                alias: 'status',
-                name: 'Status.uuid',
-                type: 'select',
-                label: await loc._cf('issue', 'Status'),
-                placeholder: await loc._cf('issue', 'Status'),
-                options: [{value: null, text: ''}],
-                loadOptionsFrom: {
-                    service: 'issue/status',
-                    value: 'uuid',
-                    text: 'title',
-                    title: 'description',
-                },
-            },
-            {
-                alias: 'workflow',
-                name: 'Workflow.uuid',
-                type: 'select',
-                label: await loc._cf('issue', 'Workflow'),
-                placeholder: await loc._cf('issue', 'Workflow'),
-                options: [{value: null, text: ''}],
-                loadOptionsFrom: {
-                    service: 'issue/workflow',
-                    value: 'uuid',
-                    text: 'title',
-                    title: 'description',
-                },
             },
             {
                 alias: 'closeReason',
@@ -879,132 +840,6 @@ export class IssueController {
 
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
         const result = await conf.global.services.IssuePriority.singleton().getListAndCount(options);
-
-        res.status(200).send(result);
-    }
-
-    /**
-     * @swagger
-     * /api/issue/status:
-     *  get:
-     *      tags:
-     *          - Issue
-     *      summary: Get list of statuses available to select in a issue
-     *      description: If the UUID or name params is provided this endpoint returns a single status otherwise returns a list of statuses
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *          -   name: name
-     *              in: query
-     *              type: string
-     *              example: admin
-     *          -   name: limit
-     *              in: query
-     *              type: int
-     *          -   name: offset
-     *              in: query
-     *              type: int
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Status'
-     *          '204':
-     *              description: Success no status
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
-    static async getStatus(req, res) {
-        const loc = req.loc ?? defaultLoc;
-        const definitions = {uuid: 'uuid', name: 'string'};
-        let options = {view: true, limit: 10, offset: 0, loc};
-
-        options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
-        const result = await conf.global.services.IssueStatus.singleton().getListAndCount(options);
-
-        res.status(200).send(result);
-    }
-    
-    /**
-     * @swagger
-     * /api/issue/workflow:
-     *  get:
-     *      tags:
-     *          - Issue
-     *      summary: Get list of workflows available to select in a issue
-     *      description: If the UUID or name params is provided this endpoint returns a single workflow otherwise returns a list of workflows
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *          -   name: name
-     *              in: query
-     *              type: string
-     *              example: admin
-     *          -   name: limit
-     *              in: query
-     *              type: int
-     *          -   name: offset
-     *              in: query
-     *              type: int
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Workflow'
-     *          '204':
-     *              description: Success no workflow
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
-    static async getWorkflow(req, res) {
-        const loc = req.loc ?? defaultLoc;
-        const definitions = {uuid: 'uuid', name: 'string'};
-        let options = {view: true, limit: 10, offset: 0, loc};
-
-        options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
-        const result = await conf.global.services.IssueWorkflow.singleton().getListAndCount(options);
 
         res.status(200).send(result);
     }

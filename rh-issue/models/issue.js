@@ -11,8 +11,6 @@ export default (sequelize, DataTypes) => {
             this.belongsTo(models.IssueType,        {as: 'Type',        foreignKey: 'typeId'});
             this.belongsTo(models.IssuePriority,    {as: 'Priority',    foreignKey: 'priorityId'});
             this.belongsTo(models.User,             {as: 'Assignee',    foreignKey: 'assigneesId'});
-            this.belongsTo(models.IssueStatus,      {as: 'Status',      foreignKey: 'statusId'});
-            this.belongsTo(models.IssueWorkflow,    {as: 'Workflow',    foreignKey: 'workflowId'});
             this.belongsTo(models.IssueCloseReason, {as: 'CloseReason', foreignKey: 'closeReasonId'});
         }
     }
@@ -66,14 +64,6 @@ export default (sequelize, DataTypes) => {
         description: {
             type: DataTypes.TEXT,
             allowNull: true,
-        },
-        statusId: {
-            type: DataTypes.BIGINT,
-            allowNull: false,
-        },
-        workflowId: {
-            type: DataTypes.BIGINT,
-            allowNull: false,
         },
         closeReasonId: {
             type: DataTypes.BIGINT,
