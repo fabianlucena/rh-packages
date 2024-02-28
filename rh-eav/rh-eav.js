@@ -6,7 +6,8 @@ import {EavValueTextService} from './services/value_text.js';
 import {EavValueOptionService} from './services/value_option.js';
 import {EavValueTagService} from './services/value_tag.js';
 import {conf as localConf} from './conf.js';
-import {runSequentially, loc} from 'rf-util';
+import {runSequentially} from 'rf-util';
+import {loc} from 'rf-locale';
 
 export const conf = localConf;
 

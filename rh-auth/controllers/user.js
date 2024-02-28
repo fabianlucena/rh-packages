@@ -1,6 +1,7 @@
 import {UserService} from '../services/user.js';
 import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
-import {checkParameter, checkParameterUuid, loc, defaultLoc} from 'rf-util';
+import {checkParameter, checkParameterUuid} from 'rf-util';
+import {loc, defaultLoc} from 'rf-locale';
 
 /**
  * @swagger

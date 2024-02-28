@@ -1,4 +1,5 @@
-import {loadJson, loc} from 'rf-util';
+import {loadJson} from 'rf-util';
+import {loc} from 'rf-locale';
 import url from 'url';
 import path from 'path';
 

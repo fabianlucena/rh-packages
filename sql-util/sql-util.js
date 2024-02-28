@@ -1,4 +1,5 @@
-import {setUpError, deepComplete, replace, _Error, loc, defaultLoc, format} from 'rf-util';
+import {setUpError, deepComplete, replace, _Error, format} from 'rf-util';
+import {loc, defaultLoc} from 'rf-locale';
 import fs from 'fs';
 import path from 'path';
 import {Op, Utils} from 'sequelize';

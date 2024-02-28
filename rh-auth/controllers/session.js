@@ -1,6 +1,7 @@
 import {SessionService, SessionClosedError, NoSessionForAuthTokenError} from '../services/session.js';
 import {getOptionsFromParamsAndOData, deleteHandler} from 'http-util';
-import {getErrorMessage, checkParameter, checkParameterUuid, defaultLoc} from 'rf-util';
+import {getErrorMessage, checkParameter, checkParameterUuid} from 'rf-util';
+import {defaultLoc} from 'rf-locale';
 
 function hidePrivateData(data) {
     if (typeof data !== 'object') {

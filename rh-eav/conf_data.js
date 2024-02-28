@@ -1,4 +1,4 @@
-import {loc} from 'rf-util';
+import {loc} from 'rf-locale';
 
 export const data = {
     eavAttributesTypes: [

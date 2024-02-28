@@ -1,6 +1,7 @@
 import {IdentityService} from '../services/identity.js';
 import {_HttpError} from 'http-util';
-import {checkParameter, checkParameterNotNullOrEmpty, defaultLoc} from 'rf-util';
+import {checkParameter, checkParameterNotNullOrEmpty} from 'rf-util';
+import {defaultLoc} from 'rf-locale';
 
 export class ChangeMyPasswordController {
     static async getForm(req, res) {

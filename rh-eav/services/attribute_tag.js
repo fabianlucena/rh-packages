@@ -1,7 +1,8 @@
 import {EavAttributeService} from './attribute.js';
 import {conf} from '../conf.js';
 import {ServiceIdUuidNameEnabledModuleTranslatable} from 'rf-service';
-import {checkParameterNotNullOrEmpty, loc} from 'rf-util';
+import {checkParameterNotNullOrEmpty} from 'rf-util';
+import {loc} from 'rf-locale';
 import {_ConflictError} from 'http-util';
 import {completeIncludeOptions} from 'sql-util';
 

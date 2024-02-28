@@ -3,7 +3,8 @@ import {UserAccessService} from '../services/user_access.js';
 import {AssignableRolePerRoleService} from '../services/assignable_role_per_role.js';
 import {conf} from '../conf.js';
 import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
-import {checkParameter, checkParameterUuid, checkParameterUuidList, checkNotNullNotEmptyAndNotUndefined, defaultLoc} from 'rf-util';
+import {checkParameter, checkParameterUuid, checkParameterUuidList, checkNotNullNotEmptyAndNotUndefined} from 'rf-util';
+import {defaultLoc} from 'rf-locale';
 
 /**
  * @swagger

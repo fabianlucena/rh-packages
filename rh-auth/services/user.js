@@ -3,7 +3,8 @@ import {conf} from '../conf.js';
 import {ServiceIdUuidEnabledModule} from 'rf-service';
 import {getSingle} from 'sql-util';
 import {_ConflictError} from 'http-util';
-import {checkParameter, _Error, loc} from 'rf-util';
+import {checkParameter, _Error} from 'rf-util';
+import {loc} from 'rf-locale';
 
 export class UserService extends ServiceIdUuidEnabledModule {
     sequelize = conf.global.sequelize;

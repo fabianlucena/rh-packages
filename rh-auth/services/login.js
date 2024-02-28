@@ -2,7 +2,8 @@ import {UserService} from '../services/user.js';
 import {DeviceService} from '../services/device.js';
 import {IdentityService} from '../services/identity.js';
 import {SessionService} from '../services/session.js';
-import {_Error, loc} from 'rf-util';
+import {_Error} from 'rf-util';
+import {loc} from 'rf-locale';
 import {HttpError} from 'http-util';
 
 export class LoginService {

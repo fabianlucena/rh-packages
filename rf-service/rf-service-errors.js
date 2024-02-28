@@ -1,5 +1,5 @@
-import {loc} from 'rf-util';
 import {setUpError} from 'rf-util/rf-util-error.js';
+import {loc} from 'rf-locale';
 
 export class NoRowsError extends Error {
     static _message = loc._f('There are no rows.');

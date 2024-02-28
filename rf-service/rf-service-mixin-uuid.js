@@ -1,4 +1,5 @@
-import {CheckError, checkValidUuidOrNull, loc} from 'rf-util';
+import {CheckError, checkValidUuidOrNull} from 'rf-util';
+import {loc} from 'rf-locale';
 import {_ConflictError} from 'http-util';
 
 export const ServiceMixinUuid = Service => class ServiceUuid extends Service {

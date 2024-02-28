@@ -1,4 +1,4 @@
-import {loc} from 'rf-util';
+import {loc} from 'rf-locale';
 
 const name = 'rhAuth';
 

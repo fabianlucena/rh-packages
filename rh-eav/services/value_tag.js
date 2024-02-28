@@ -3,7 +3,8 @@ import {EavAttributeTagService} from './attribute_tag.js';
 import {conf} from '../conf.js';
 import {ServiceIdUuidTranslatable} from 'rf-service';
 import {completeIncludeOptions} from 'sql-util';
-import {checkParameterNotNullOrEmpty, _Error, loc} from 'rf-util';
+import {checkParameterNotNullOrEmpty, _Error} from 'rf-util';
+import {loc} from 'rf-locale';
 import {_ConflictError} from 'http-util';
 
 export class EavValueTagService extends ServiceIdUuidTranslatable {

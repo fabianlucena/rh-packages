@@ -1,5 +1,6 @@
 import {PrivilegesService} from '../services/privileges.js';
-import {errorHandler, defaultLoc} from 'rf-util';
+import {errorHandler} from 'rf-util';
+import {defaultLoc} from 'rf-locale';
 
 /**
  * @swagger

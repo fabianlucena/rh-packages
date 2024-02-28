@@ -1,7 +1,8 @@
 import {NoRowsError, ManyRowsError} from './rf-service-errors.js';
 import {ucfirst, lcfirst} from 'rf-util/rf-util-string.js';
 import {arrangeOptions} from 'sql-util';
-import {trim, _Error, loc} from 'rf-util';
+import {trim, _Error} from 'rf-util';
+import {loc} from 'rf-locale';
 
 export class ServiceBase {
     /**

@@ -1,7 +1,8 @@
 import {LoginService} from '../services/login.js';
 import {conf} from '../conf.js';
 import {_HttpError} from 'http-util';
-import {checkParameter, defaultLoc} from 'rf-util';
+import {checkParameter} from 'rf-util';
+import {defaultLoc} from 'rf-locale';
 
 export class LoginController {
     /**

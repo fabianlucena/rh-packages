@@ -12,6 +12,8 @@ import {ServiceMixinModule} from './rf-service-mixin-module.js';
 import {ServiceMixinTitle} from './rf-service-mixin-title.js';
 import {ServiceMixinDescription} from './rf-service-mixin-description.js';
 
+export * from './rf-service-id-uuid-name-title-description-enabled-translatable.js';
+
 export {
     ServiceBase,
     ServiceMixinId,
@@ -36,7 +38,6 @@ export class ServiceIdUuidNameEnabledTranslatable extends ServiceMixinTranslatab
 export class ServiceIdUuidNameTitleTranslatable extends ServiceMixinTranslatable(ServiceMixinTitle(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))) {}
 export class ServiceIdUuidNameTitleEnabledTranslatable extends ServiceMixinTranslatable(ServiceMixinTitle(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))))) {}
 export class ServiceIdUuidNameTitleDescriptionTranslatable extends ServiceMixinTranslatable(ServiceMixinDescription(ServiceMixinTitle(ServiceMixinEnabled(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase))))))))) {}
-export class ServiceIdUuidNameTitleDescriptionEnabledTranslatable extends ServiceMixinTranslatable(ServiceMixinDescription(ServiceMixinTitle(ServiceMixinUuidEnable(ServiceMixinEnabled(ServiceMixinIdName(ServiceMixinName(ServiceMixinIdUuid(ServiceMixinUuid(ServiceMixinId(ServiceBase)))))))))) {}
 
 export class ServiceModule extends ServiceMixinModule(ServiceBase) {}
 export class ServiceModuleTranslatable extends ServiceMixinTranslatable(ServiceMixinModule(ServiceBase)) {}

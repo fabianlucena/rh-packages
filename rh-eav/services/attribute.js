@@ -1,7 +1,8 @@
 import {EavAttributeTypeService} from './attribute_type.js';
 import {EavAttributeOptionService} from './attribute_option.js';
 import {conf} from '../conf.js';
-import {runSequentially, loc} from 'rf-util';
+import {runSequentially} from 'rf-util';
+import {loc} from 'rf-locale';
 import {ServiceIdUuidNameTitleDescriptionEnabledTranslatable} from 'rf-service';
 import {completeIncludeOptions} from 'sql-util';
 import { ConflictError } from 'http-util';

@@ -1,7 +1,8 @@
 import {EavAttributeService} from './attribute.js';
 import {conf} from '../conf.js';
 import {ServiceIdUuid} from 'rf-service';
-import {_Error, loc} from 'rf-util';
+import {_Error} from 'rf-util';
+import {loc} from 'rf-locale';
 
 export class EavValueTextService extends ServiceIdUuid {
     sequelize = conf.global.sequelize;

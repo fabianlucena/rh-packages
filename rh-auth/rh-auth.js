@@ -7,7 +7,8 @@ import './services/device.js';
 import {SessionService} from './services/session.js';
 import {SessionController} from './controllers/session.js';
 import {_UnauthorizedError, NoPermissionError} from 'http-util';
-import {runSequentially, loc} from 'rf-util';
+import {runSequentially} from 'rf-util';
+import {loc} from 'rf-locale';
 
 export const conf = localConf;
 

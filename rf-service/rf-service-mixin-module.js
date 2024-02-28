@@ -1,4 +1,5 @@
-import {_Error, loc} from 'rf-util';
+import {_Error} from 'rf-util';
+import {loc} from 'rf-locale';
 import {addEnabledOwnerModuleFilter} from 'sql-util';
 
 export const ServiceMixinModule = Service => class ServiceModule extends Service {

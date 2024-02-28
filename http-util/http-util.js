@@ -1,4 +1,5 @@
-import {setUpError, errorHandler, deepComplete, runSequentially, stripQuotes, checkParameterUuid, loc, defaultLoc} from 'rf-util';
+import {setUpError, errorHandler, deepComplete, runSequentially, stripQuotes, checkParameterUuid} from 'rf-util';
+import {loc, defaultLoc} from 'rf-locale';
 import * as uuid from 'uuid';
 import fs from 'fs';
 import path from 'path';

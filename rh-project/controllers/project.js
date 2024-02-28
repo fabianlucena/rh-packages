@@ -1,7 +1,8 @@
 import {ProjectService} from '../services/project.js';
 import {conf} from '../conf.js';
 import {getOptionsFromParamsAndOData, _HttpError, getUuidFromRequest} from 'http-util';
-import {checkParameter, filterVisualItemsByAliasName, loc, defaultLoc} from 'rf-util';
+import {checkParameter, filterVisualItemsByAliasName} from 'rf-util';
+import {loc, defaultLoc} from 'rf-locale';
 
 const projectService = ProjectService.singleton();
 

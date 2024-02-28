@@ -1,6 +1,6 @@
-import {defaultLoc} from 'rf-util';
 import {PageService} from '../services/page.js';
 import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
+import {defaultLoc} from 'rf-locale';
 
 /**
  * @swagger

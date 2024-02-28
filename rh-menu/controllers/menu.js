@@ -1,6 +1,7 @@
 import {MenuItemService} from '../services/menu_item.js';
 import {conf} from '../conf.js';
-import {runSequentially, defaultLoc} from 'rf-util';
+import {runSequentially} from 'rf-util';
+import {defaultLoc} from 'rf-locale';
 
 /**
  * @swagger

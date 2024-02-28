@@ -1,5 +1,5 @@
 import {MissingParameterError, CheckError,} from './rf-util-error.js';
-import {loc} from './rf-util-loc.js';
+import {loc} from 'rf-locale';
 import * as uuid from 'uuid';
 
 export function checkParameter(value, params, ...freeParams) {
