@@ -4,8 +4,9 @@ export default (sequelize, DataTypes) => {
     class WfCaseTransition extends sequelize.Sequelize.Model {
         static associate(models) {
             this.belongsTo(models.WfCase,   {foreignKey: 'caseId'});
-            this.belongsTo(models.WfStatus, {as: 'From', foreignKey: 'fromId'});
-            this.belongsTo(models.WfStatus, {as: 'To',   foreignKey: 'toId'});
+            this.belongsTo(models.WfStatus, {as: 'From',     foreignKey: 'fromId'});
+            this.belongsTo(models.WfStatus, {as: 'To',       foreignKey: 'toId'});
+            this.belongsTo(models.User,     {as: 'Operator', foreignKey: 'userId'});
         }
     }
     WfCaseTransition.init({
@@ -33,10 +34,14 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.BIGINT,
             allowNull: true,
         },
+        operatorId: {
+            type: DataTypes.BIGINT,
+            allowNull: true,
+        },
     }, {
         sequelize,
         timestamps: true,
-        tableName: 'Case',
+        tableName: 'CaseTransition',
         schema: conf.schema,
     });
     return WfCaseTransition;

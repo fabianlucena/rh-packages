@@ -12,6 +12,13 @@ export class WfWorkflowService extends ServiceIdUuidNameTitleDescriptionEnabledM
         workflowType: WfWorkflowTypeService.singleton(),
     };
     defaultTranslationContext = 'workflow';
+    translatableColumns = [
+        'title',
+        'description',
+        'currentStatusTitle',
+        'asigneeTitle',
+        'workflowTitle',
+    ];
 
     constructor() {
         if (!conf.global.services.ModelEntityName?.singleton) {

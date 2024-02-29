@@ -2,6 +2,7 @@ import {WfWorkflowService} from './services/wf-workflow.js';
 import {WfWorkflowTypeService} from './services/wf-workflow-type.js';
 import {WfStatusService} from './services/wf-status.js';
 import {WfTransitionService} from './services/wf-transition.js';
+import {WfCaseService} from './services/wf-case.js';
 import {conf as localConf} from './conf.js';
 import {runSequentially} from 'rf-util';
 
@@ -22,9 +23,9 @@ async function configure(global, options) {
     }
 
     global.eventBus?.$on('interface.grid.get', interfaceGridGet);
-    /*global.eventBus?.$on('interface.form.get', interfaceFormGet);
+    //global.eventBus?.$on('interface.form.get', interfaceFormGet);
     global.eventBus?.$on('getted', getted);
-    global.eventBus?.$on('created', created);
+    /*global.eventBus?.$on('created', created);
     global.eventBus?.$on('updated', updated);
     global.eventBus?.$on('deleting', deleting);
     global.eventBus?.$on('deleted', deleted);
@@ -32,10 +33,12 @@ async function configure(global, options) {
 }
 
 async function init() {
-    conf.wfWorkflowService =     WfWorkflowService.    singleton();
-    conf.wfWorkflowTypeService = WfWorkflowTypeService.singleton();
-    conf.wfStatusService =       WfStatusService.      singleton();
-    conf.wfTransitionService =   WfTransitionService.  singleton();
+    conf.modelEntityNameService = conf.global.services.ModelEntityName.singleton();
+    conf.wfWorkflowService =      WfWorkflowService.    singleton();
+    conf.wfWorkflowTypeService =  WfWorkflowTypeService.singleton();
+    conf.wfStatusService =        WfStatusService.      singleton();
+    conf.wfTransitionService =    WfTransitionService.  singleton();
+    conf.wfCaseService =          WfCaseService.        singleton();
 }
 
 async function updateData(global) {
@@ -129,16 +132,17 @@ async function getWorkflowsForEntity(entity, options) {
     if (workflowsCache[language] === undefined) {
         workflowsCache[language] = {};
         
-        const workflowTypes = await conf.wfWorkflowService.getForEntityName(
+        const workflows = await conf.wfWorkflowService.getForEntityName(
             entity,
             {
+                includeWorkflowType: true,
                 raw: true,
                 nest: true,
-                loc: options?.loc,
+                loc: options.loc,
             }
         );
 
-        workflowsCache[language] = workflowTypes;
+        workflowsCache[language] = workflows;
     }
 
     return workflowsCache[language];
@@ -156,54 +160,42 @@ async function interfaceGridGet(grid, options) {
     const columnsCache = conf.columnsCache[entity];
     const detailsCache = conf.detailsCache[entity];
 
-    const loc = options?.loc;
     const language = options?.loc?.language;
     if (columnsCache[language] === undefined) {
         columnsCache[language] = [];
         detailsCache[language] = [];
 
-        const workflows = await getWorkflowsForEntity(entity, options);
+        const workflows = await getWorkflowsForEntity(entity, {loc: options.loc});
         const columns = [];
         const details = [];
         for (const workflow of workflows) {
-            if (!workflow.isColumn && !workflow.isDetail) {
-                continue;
-            }
-
-            const field = {
-                name: workflow.name,
-                label: workflow.title,
-                type: 'list',
-                className: 'hide-marker',
-                items: {
+            const fields = [
+                {
+                    isColumn: workflow.showCurrentStatusInColumn,
+                    isDetail: workflow.showCurrentStatusInDetail,
+                    name: workflow.currentStatusName,
+                    label: workflow.currentStatusTitle,
+                    type: 'text',
                     className: 'framed',
                 },
-                properties: [
-                    {
-                        name: 'workflow',
-                    },
-                    {
-                        name: 'createdAt',
-                        type: 'dateTime',
-                        label: await loc._c('workflow', 'Date'),
-                        format: '%x %R',
-                        className: 'small',
-                    },
-                    {
-                        name: 'User.displayName',
-                        label: await loc._c('workflow', 'User'),
-                        className: 'framed detail small',
-                    },
-                ],
-            };
+                {
+                    isColumn: workflow.showAsigneeInColumn,
+                    isDetail: workflow.showAsigneeInDetail,
+                    name: workflow.asigneeName,
+                    label: workflow.asigneeTitle,
+                    type: 'text',
+                },
+                {
+                    isColumn: workflow.showWorkflowInColumn,
+                    isDetail: workflow.showWorkflowInDetail,
+                    name: workflow.workflowName,
+                    label: workflow.workflowTitle,
+                    type: 'text',
+                },
+            ];
 
-            if (workflow.isColumn) {
-                columns.push(field);
-            }
-            
-            if (workflow.isDetail) {
-                details.push(field);
-            }
+            columns.push(...fields.filter(f => f.isColumn));
+            details.push(...fields.filter(f => f.isDetail));
         }
 
         columnsCache[language].push(...columns);
@@ -215,4 +207,64 @@ async function interfaceGridGet(grid, options) {
 
     grid.columns.push(...columnsCache[language]);
     grid.details.push(...detailsCache[language]);
+}
+
+async function getted(entity, result, options) {
+    if (!entity) {
+        return result;
+    }
+
+    const workflows = await getWorkflowsForEntity(entity, options);
+    if (!workflows.length) {
+        return result;
+    }
+
+    result = await result;
+
+    const rows = result.rows || result;
+    for (const iRow in rows) {
+        let row = rows[iRow];
+        const entityId = row.id;
+        if (entityId === undefined) {
+            continue;
+        }
+
+        if (row.toJSON) {
+            row = row.toJSON();
+            rows[iRow] = row;
+        }
+
+        for (const workflow of workflows) {
+            const wfCase = await conf.wfCaseService.getSingleFor(
+                {
+                    workflowId: workflow.id,
+                    entityId: row.id
+                },
+                {
+                    includeStatus: true,
+                    includeAssignee: true,
+                    skipNoRowsError: true,
+                    raw: true,
+                    nest: true,
+                    loc: options.loc,
+                },
+            );
+
+            if (wfCase) {
+                if (workflow.currentStatusName) {
+                    row[workflow.currentStatusName] = wfCase?.CurrentStatus?.Status?.title;
+                }
+
+                if (workflow.asigneeName) {
+                    row[workflow.asigneeName] = wfCase?.CurrentStatus?.Assignee?.displayName;
+                }
+            }
+
+            if (workflow.workflowName) {
+                row[workflow.workflowName] = workflow.title;
+            }
+        }
+    }
+
+    return result;
 }

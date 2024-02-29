@@ -14,7 +14,7 @@ export default (sequelize, DataTypes) => {
     }, {
         sequelize,
         timestamps: true,
-        tableName: 'StatusIsInitial',
+        tableName: 'StatusIsFinal',
         schema: conf.schema,
     });
     return WfStatusIsFinal;

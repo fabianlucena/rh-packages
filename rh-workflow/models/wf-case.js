@@ -5,6 +5,10 @@ export default (sequelize, DataTypes) => {
         static associate(models) {
             this.belongsTo(models.WfWorkflow,  {foreignKey: 'workflowId'});
         }
+
+        static postAssociate(models) {
+            this.hasOne(models.WfCurrentStatus, {as: 'CurrentStatus', foreignKey: 'caseId'});
+        }
     }
     WfCase.init({
         id: {

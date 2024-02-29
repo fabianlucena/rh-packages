@@ -59,6 +59,66 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.BIGINT,
             allowNull: false,
         },
+        showCurrentStatusInColumn: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true,
+        },
+        showCurrentStatusInDetail: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
+        currentStatusName: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            defaultValue: 'currentStatus',
+        },
+        currentStatusTitle: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            defaultValue: 'Status',
+        },
+        showAsigneeInColumn: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true,
+        },
+        showAsigneeInDetail: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
+        asigneeName: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            defaultValue: 'asignee',
+        },
+        asigneeTitle: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            defaultValue: 'Asignee',
+        },
+        showWorkflowInColumn: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
+        showWorkflowInDetail: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true,
+        },
+        workflowName: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            defaultValue: 'workflow',
+        },
+        workflowTitle: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            defaultValue: 'Workflow',
+        },
     }, {
         sequelize,
         timestamps: true,
