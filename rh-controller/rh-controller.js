@@ -34,7 +34,7 @@ export class RHController {
         if (!path) {
             path = this.name;
             if (path.endsWith('controller') || path.endsWith('Controller')) {
-                path = path.substring(0, path.length - 10);
+                path = dasherize(path.substring(0, path.length - 10));
             }
 
             path = '/' + dasherize(path);
