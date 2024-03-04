@@ -22,7 +22,7 @@ export const ServiceMixinTitle = Service => class extends Service {
     async checkTitleForConflict(title) {
         const rows = await this.getFor({title}, {limit: 1});
         if (rows?.length) {
-            throw new ConflictError(loc._f('Exists another row with that title.'));
+            throw new ConflictError(loc._f(`Exists another row with title %s in ${this.constructor.name}.`, title));
         }
     }
 
