@@ -120,7 +120,7 @@ export class RHController {
         let getMethod;
         if (this.get) {
             getMethod = 'get';
-        } else if (this.getData) {
+        } else if (this.getData || this.getGrid || this.getForm) {
             getMethod = 'defaultGet';
         }
 
@@ -133,7 +133,8 @@ export class RHController {
 
         if (config?.server?.cors && !this.options && this.allPathsMethods) {
             for (const thePath in this.allPathsMethods) {
-                ownRouter.options(thePath, corsSimplePreflight(this.allPathsMethods[thePath].join(',')));
+                const allowedMethods = this.allPathsMethods[thePath].join(',');
+                ownRouter.options(thePath, corsSimplePreflight(allowedMethods));
             }
         }
 
@@ -144,9 +145,21 @@ export class RHController {
         res.status(405).send({error: 'HTTP method not allowed.'});
     }
 
-    static defaultGet(req, res, next) {
+    static async defaultGet(req, res, next) {
+        if ('$grid' in req.query && this.getGrid) {
+            const result = await this.getGrid(req, res, next);
+            res.status(200).json(result);
+            return;
+        }
+        
+        if ('$form' in req.query && this.getForm) {
+            res.status(200).json(await this.getForm(req, res, next));
+            return;
+        }
+
         if (this.getData) {
-            res.status(200).json(this.getData(req, res, next));    
+            res.status(200).json(await this.getData(req, res, next));
+            return;    
         }
     }
 }
