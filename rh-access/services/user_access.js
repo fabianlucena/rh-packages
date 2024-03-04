@@ -46,10 +46,6 @@ export class UserAccessService extends UserSiteRoleService {
             } else {
                 user = await this.userService.create(data.User, {transaction});
             }
-
-            if (user.toJSON) {
-                user = user.toJSON();
-            }
             
             if (!data.rolesId?.length && data.rolesUuid?.length) {
                 data.rolesId = await this.roleService.getIdForUuid(data.rolesUuid);

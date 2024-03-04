@@ -328,8 +328,30 @@ export class ServiceBase {
         let result;
         if (options.withCount) {
             result = this.model.findAndCountAll(options);
+            if (!options.raw) {
+                result = await result;
+                if (this.dto) {
+                    result.rows = result.rows.map(r => new this.dto(r.toJSON()));
+                } else {
+                    result.rows = result.rows.map(r => r.toJSON());
+                }
+            } else if (this.dto) {
+                result = await result;
+                result.rows = result.rows.map(r => new this.dto(r));
+            }
         } else {
             result = this.model.findAll(options);
+            if (!options.raw) {
+                result = await result;
+                if (this.dto) {
+                    result = result.map(r => new this.dto(r.toJSON()));
+                } else {
+                    result = result.map(r => r.toJSON());
+                }
+            } else if (this.dto) {
+                result = await result;
+                result = result.map(r => new this.dto(r));
+            }
         }
 
         await this.emit('getted', options?.emitEvent, result, options, this);
@@ -369,8 +391,9 @@ export class ServiceBase {
      * This behavior can be skipped with option skipManyRowsError.
      * 
      * Options: 
-     * - skipNoRowsError: if is true the exception NoRowsError will be omitted.
-     * - skipManyRowsError: if is true the exception ManyRowsError will be omitted.
+     * - skipNoRowsError: if is true the exception NoRowsError will be omitted and return undefined.
+     * - nullOnManyRowsError: : if is true the exception ManyRowsError will be omitted and returns undefined.
+     * - skipManyRowsError: if is true the exception ManyRowsError will be omitted and returns the first row.
      */
     async getSingleFromRows(rows, options) {
         if (rows.then) {
@@ -388,12 +411,16 @@ export class ServiceBase {
             
             throw new NoRowsError();
         }
+
+        if (options?.nullOnManyRowsError) {
+            return;
+        }
         
         if (options?.skipManyRowsError) {
             return rows[0];
         }
 
-        return new ManyRowsError({length: rows.length});
+        throw new ManyRowsError({length: rows.length});
     }
 
     /**
@@ -424,6 +451,16 @@ export class ServiceBase {
      */
     async getSingleFor(where, options) {
         return this.getSingle({...options, where: {...options?.where, ...where}});
+    }
+
+    /**
+     * Gets a single row for a given criteria or null if not exists.
+     * @param {object} where - criteria to get the row list (where object).
+     * @param {object} options - Options for the @ref getList function.
+     * @returns {Promise[row]}
+     */
+    async getSingleOrNullFor(where, options) {
+        return this.getSingle({...options, where: {...options?.where, ...where}, skipNoRowsError: true, nullOnManyRowsError: true});
     }
 
     async count(options) {
@@ -526,9 +563,6 @@ export class ServiceBase {
 
     async sanitizeRow(row, options) {
         await this.emit('sanitizingRow', options?.emitEvent, row, options, this);
-        if (row.toJSON) {
-            row = row.toJSON();
-        }
 
         if (this.hiddenColumns?.length) {
             row = {...row};
@@ -580,5 +614,36 @@ export class ServiceBase {
         await this.emit('sanitizedRow', options?.emitEvent, row, options, this);
 
         return row;
+    }
+
+    async findOrCreate(data, options) {
+        options = {...options};
+        if (!options.where) {
+            if (data.id) {
+                options.where.id = {id: data.id};
+            } else {
+                options.where = {...data};
+            }
+        }
+
+        let [row, created] = await this.model.findOrCreate({
+            ...options,
+            defaults: data,
+            raw: true,
+        });
+        if (created) {
+            row = row.toJSON();
+        }
+
+        if (this.dto) {
+            row = new this.dto(row);
+        }
+
+        return [row, created];
+    }
+
+    async createIfNotExists(data, where) {
+        const [, created] = this.findOrCreate(data, where);
+        return created;
     }
 }

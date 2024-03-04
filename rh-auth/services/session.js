@@ -123,8 +123,6 @@ export class SessionService extends ServiceIdUuid {
             throw new SessionClosedError();
         }
 
-        session = session.toJSON();
-
         conf.sessionCache[authToken] = {
             session: session,
             lastUse: Date.now(),

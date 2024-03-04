@@ -23,10 +23,6 @@ export class BranchSelectController {
             throw new _HttpError(loc._cf('branchSelect', 'The selected branch is disabled.'), 403);
         }
 
-        if (branch.toJSON) {
-            branch = branch.toJSON();
-        }
-
         const sessionDataService = conf.global.services.SessionData.singleton();
         if (!sessionDataService) {
             throw new _HttpError(loc._cf('branchSelect', 'You do not have permission to select this branch.'), 400);

@@ -27,8 +27,6 @@ export class MainCompanyService {
         const result = await this.companySiteService.getListAndCount(options);
         
         result.rows = result.rows.map(row => {
-            row = row.toJSON();
-
             const result = row.Company;
             if (row.Collaborators?.length) {
                 result.ownerDisplayName = row.Collaborators[0]?.User?.displayName;

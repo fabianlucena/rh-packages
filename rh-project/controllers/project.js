@@ -206,10 +206,6 @@ export class ProjectController {
 
         if (conf.global.models.Company) {
             result.rows = result.rows.map(row => {
-                if (row.toJSON) {
-                    row = row.toJSON();
-                }
-
                 row.companyUuid = row.Company.uuid;
 
                 return row;
@@ -638,8 +634,6 @@ export class ProjectController {
 
         const loc = req.loc ?? defaultLoc;
         result.rows = result.rows.map(row => {
-            row = row.toJSON();
-
             if (row.isTranslatable) {
                 row.title = loc._(row.title);
                 row.description = loc._(row.description);

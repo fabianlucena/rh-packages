@@ -61,11 +61,9 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
         }
         
         const result = await super.getList(options);
-        const rawRows = options?.withCount?
+        const menuItems = options?.withCount?
             result.rows:
             result;
-
-        const menuItems = rawRows.map(menuItem => menuItem.toJSON());
 
         const menuItemsName = menuItems.map(menuItem => menuItem.name).filter(menuItemName => menuItemName);
         let parentsNameToLoad = [];
@@ -96,12 +94,10 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
 
         while (parentsNameToLoad.length) {
             parentOptions.where.name = parentsNameToLoad;
-            const parentMenuItemsRaw = await super.getList(parentOptions);
-            if (!parentMenuItemsRaw.length) {
+            const parentMenuItems = await super.getList(parentOptions);
+            if (!parentMenuItems.length) {
                 break;
             }
-
-            const parentMenuItems = parentMenuItemsRaw.map(menuItem => menuItem.toJSON());
 
             menuItems.splice(0, 0, ...parentMenuItems);
             menuItemsName.splice(0, 0, ...parentMenuItems.map(menuItem => menuItem.name).filter(menuItemName => menuItemName));
@@ -145,10 +141,6 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
         delete options.where;
         let result = 0;
         for (let mi of miList) {
-            if (mi.toJSON) {
-                mi = mi.toJSON();
-            }
-
             const id = mi.id;
             mi = {
                 ...mi,

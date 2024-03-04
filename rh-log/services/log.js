@@ -50,7 +50,7 @@ export class LogService extends ServiceId {
         }
 
         const row = result[0];
-        const maxRef = row.toJSON().maxRef;
+        const maxRef = row.maxRef;
 
         return maxRef;
     }

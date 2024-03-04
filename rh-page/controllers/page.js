@@ -74,10 +74,6 @@ export class PageController {
         }
 
         result.rows = result.rows.map(row => {
-            if (row.toJSON) {
-                row = row.toJSON();
-            }
-
             if (row.Format?.name) {
                 row.format = row.Format?.name;
             }

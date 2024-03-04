@@ -34,7 +34,7 @@ export class CompanySiteController {
             throw new _HttpError(loc._cf('companySite', 'The selected object does not exist or you do not have permission.'), 400);
         }
 
-        const companySite = companySites[0].toJSON();
+        const companySite = companySites[0];
         if (!companySite.Company.isEnabled || !companySite.Site.isEnabled) {
             throw new _HttpError(loc._cf('companySite', 'The selected company is disabled.'), 403);
         }

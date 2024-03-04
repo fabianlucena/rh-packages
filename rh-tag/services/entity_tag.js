@@ -241,11 +241,7 @@ export class EntityTagService extends ServiceBase {
         let rows = options.withCount? result.rows: result;
 
         for (const i in rows) {
-            let row = rows[i];
-            if (row.toJSON) {
-                row = row.toJSON();
-            }
-
+            const row = rows[i];
             const tags = await this.getForEntityId(row.id);
             row.tags = tags.map(tag => tag.Tag.name);
 

@@ -200,14 +200,10 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
 
             const tagsId = [];
             for (const tag of tags) {
-                let tagRow = await conf.eavAttributeTagService.getOrCreate({
+                const tagRow = await conf.eavAttributeTagService.getOrCreate({
                     attributeId: data.attributeId,
                     name: tag,
                 });
-
-                if (tagRow.toJSON) {
-                    tagRow = tagRow.toJSON();
-                }
 
                 const tagId = tagRow.id;
                 tagsId.push(tagId);
@@ -312,11 +308,7 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
             entitiesResult;
 
         for (const i in entities) {
-            let entity = entities[i];
-            if (entity.toJSON) {
-                entity = entity.toJSON();
-            }
-
+            const entity = entities[i];
             const tags = await this.getForEntityId(entity.id);
             entity.tags = tags.map(tag => tag.Tag.name);
 

@@ -46,11 +46,7 @@ export class ResourceController {
             throw new _HttpError(req.loc._cf('resource', 'There are many resources for that criteria.'), 400);
         }
 
-        let row = result.rows[0];
-        if (row.toJSON) {
-            row = row.toJSON();
-        }
-
+        const row = result.rows[0];
         const headers = {};
         const data = row.content;
 

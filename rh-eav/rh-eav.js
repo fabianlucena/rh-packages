@@ -247,17 +247,12 @@ async function getted(entity, result, options) {
 
     const rows = result.rows || result;
     for (const iRow in rows) {
-        let row = rows[iRow];
+        const row = rows[iRow];
         const entityId = row.id;
         if (entityId === undefined) {
             continue;
         }
-
-        if (row.toJSON) {
-            row = row.toJSON();
-            rows[iRow] = row;
-        }
-
+        
         for (const attribute of attributes) {
             const attributeId = attribute.id;
             const name = attribute.name;

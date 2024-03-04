@@ -23,10 +23,6 @@ export class ProjectSelectController {
             throw new _HttpError(loc._cf('projectSelect', 'The selected project is disabled.'), 403);
         }
 
-        if (project.toJSON) {
-            project = project.toJSON();
-        }
-
         const sessionDataService = conf.global.services.SessionData.singleton();
         if (!sessionDataService) {
             throw new _HttpError(loc._cf('projectSelect', 'You do not have permission to select this project.'), 400);

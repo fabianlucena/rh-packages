@@ -31,10 +31,6 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
     }
 
     async translateRow(row, loc, options) {
-        if (row.toJSON) {
-            row = row.toJSON();
-        }
-
         if (row.isTranslatable && this.translatableColumns?.length) {
             const translationContext = row.translationContext ?? this.defaultTranslationContext ?? null;
             await Promise.all(this.translatableColumns.map(async field => {

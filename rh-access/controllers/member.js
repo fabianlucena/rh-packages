@@ -313,11 +313,11 @@ export class MemberController {
         if (sites.length !== 1)
             throw new _HttpError(loc._cf('member', 'You cannot change the member password because the member has another accesses. Please contact the asministrator.', 403));
 
-        const site = sites[0].toJSON();
+        const site = sites[0];
         if (sites[0].id !== req.site.id)
             throw new _HttpError(loc._cf('member', 'You cannot change the member password because the member the user belongs to another site. Please contact the asministrator.', 403));
 
-        const user = (await userService.getForId(userId)).toJSON();
+        const user = (await userService.getForId(userId));
 
         const rolesId = await roleService.getAllIdsForUsernameAndSiteName(user.username, site.name);
         const assignableRolesId = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);

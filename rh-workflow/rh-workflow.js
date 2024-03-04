@@ -229,11 +229,6 @@ async function getted(entity, result, options) {
             continue;
         }
 
-        if (row.toJSON) {
-            row = row.toJSON();
-            rows[iRow] = row;
-        }
-
         for (const workflow of workflows) {
             const wfCase = await conf.wfCaseService.getSingleFor(
                 {
