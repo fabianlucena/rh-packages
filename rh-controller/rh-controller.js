@@ -3,7 +3,7 @@ import express from 'express';
 import dasherize from 'dasherize';
 
 export class RHController {
-    static installRouteForMethod(router, checkPermission, httpMethod, methodName) {
+    static installRouteForMethod(router, checkPermission, path, httpMethod, methodName) {
         methodName ??= httpMethod;
         if (!this[methodName]) {
             return;
@@ -16,18 +16,47 @@ export class RHController {
             params.push(checkPermission(this[withPermission]));
         }
 
+        const with__permission = methodName + '__permission';
+        if (this[with__permission]) {
+            params.push(checkPermission(this[with__permission]));
+        }
+
         const withMiddleware = methodName + 'Middleware';
         if (this[withMiddleware]) {
             params.push(this[withMiddleware]);
         }
 
+
+        const with__middleware = methodName + '__middleware';
+        if (this[with__middleware]) {
+            params.push(this[with__middleware]);
+        }
+
         params.push(asyncHandler(this, methodName));
 
-        router[httpMethod]('', ...params);
+        router[httpMethod](path, ...params);
 
-        this.allMethods ??= [];
-        this.allMethods.push(httpMethod.toUpperCase());
+        this.allPathsMethods ??= {};
+        this.allPathsMethods[path] ??= [];
+        this.allPathsMethods[path].push(httpMethod.toUpperCase());
     }
+
+    static installRoutesForMethod(router, checkPermission, httpMethod, methodName) {
+        const httpMethod_ = httpMethod + '_';
+        const methodsNames = Object.getOwnPropertyNames(this)
+            .filter(prop => prop.startsWith(httpMethod_))
+            .filter(prop => typeof this[prop] === 'function');
+
+        for (const methodName of methodsNames) {
+            const rawArgs = methodName.slice(httpMethod_.length);
+            const args = rawArgs.split('__');
+            const path = '/' + args[0];
+
+            this.installRouteForMethod(router, checkPermission, path, httpMethod, methodName);
+        }
+
+        this.installRouteForMethod(router, checkPermission, '', httpMethod, methodName);
+    } 
     
     static routes(router, checkPermission, config) {
         let path = this.path;
@@ -50,18 +79,20 @@ export class RHController {
             getMethod = 'defaultGet';
         }
 
-        this.installRouteForMethod(ownRouter, checkPermission, 'get', getMethod);
-        this.installRouteForMethod(ownRouter, checkPermission, 'post');
-        this.installRouteForMethod(ownRouter, checkPermission, 'patch');
-        this.installRouteForMethod(ownRouter, checkPermission, 'put');
-        this.installRouteForMethod(ownRouter, checkPermission, 'delete');
-        this.installRouteForMethod(ownRouter, checkPermission, 'options');
+        this.installRoutesForMethod(ownRouter, checkPermission, 'get', getMethod);
+        this.installRoutesForMethod(ownRouter, checkPermission, 'post');
+        this.installRoutesForMethod(ownRouter, checkPermission, 'patch');
+        this.installRoutesForMethod(ownRouter, checkPermission, 'put');
+        this.installRoutesForMethod(ownRouter, checkPermission, 'delete');
+        this.installRoutesForMethod(ownRouter, checkPermission, 'options');
 
-        if (config?.server?.cors && !this.options) {
-            ownRouter.options('', corsSimplePreflight(this.allMethods.join(',')));
+        if (config?.server?.cors && !this.options && this.allPathsMethods) {
+            for (const thePath in this.allPathsMethods) {
+                ownRouter.options(thePath, corsSimplePreflight(this.allPathsMethods[thePath].join(',')));
+            }
         }
 
-        this.installRouteForMethod(ownRouter, checkPermission, 'all');
+        this.installRouteForMethod(ownRouter, checkPermission, '', 'all');
     }
 
     static all(req, res) {
