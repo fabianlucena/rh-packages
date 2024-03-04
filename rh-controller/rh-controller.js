@@ -2,6 +2,52 @@ import {corsSimplePreflight, asyncHandler} from 'http-util';
 import express from 'express';
 import dasherize from 'dasherize';
 
+/**
+ * This is the base class for HTTP controller definitions.
+ * The controlle takes the function static methods and map to routes.
+ * If no static variable path defined the path is taken from the name of the 
+ * controller whitout the controller subfix and dasherising the name.
+ * This behavior is made by the routes static function, su if yo overrides
+ * this method remember call to super.routes().
+ * 
+ * - GET     => get
+ * - POST    => post
+ * - PATH    => path
+ * - PUT     => put
+ * - DELETE  => delete
+ * - OPTIONS => options
+ * 
+ * Also an "all" static function method can be defined in the class for
+ * hands the rest or all of the HTTP methods.
+ * 
+ * For the special case OPTIONS if is not defined the class can handle 
+ * automatically for CORS case.
+ * 
+ * For the GET verb also the static function methods getGrid, getForm, and 
+ * getData can be defined in place of get static function method. But warning
+ * if the get static function method is defined in the class this behavior will 
+ * be override, unless in the function call super.get(...).
+ * 
+ * A middlewares and permission checker can be defined using, theese word as 
+ * sufix:
+ * 
+ *    static postMiddleware(req, res, next) { middleware body}
+ *    static postPermission = 'create';
+ *    static post(req, res) {...}
+ * 
+ * For defining subpath a especial sintax can be used.
+ *    static post_special_path(...) {...}
+ *    static ['post_special/path'](...) {...}
+ * 
+ * Also a middleware and permission can be defined using theese word as prefix:
+ *    static middleware_post_special_path(...) {...}
+ *    static permission_post_special_path = 'permission';
+ *    static post_special_path(...) {...}
+ * 
+ *    static ['permission_post_special/path'](...) {...}
+ *    static ['permission_post_special/path'] = 'permission';
+ *    static ['post_special/path'](...) {...}
+ */
 export class RHController {
     static installRouteForMethod(router, checkPermission, path, httpMethod, methodName) {
         methodName ??= httpMethod;
@@ -16,9 +62,9 @@ export class RHController {
             params.push(checkPermission(this[withPermission]));
         }
 
-        const with__permission = methodName + '__permission';
-        if (this[with__permission]) {
-            params.push(checkPermission(this[with__permission]));
+        const withPermission_ = 'permission_' + methodName;
+        if (this[withPermission_]) {
+            params.push(checkPermission(this[withPermission_]));
         }
 
         const withMiddleware = methodName + 'Middleware';
@@ -26,10 +72,9 @@ export class RHController {
             params.push(this[withMiddleware]);
         }
 
-
-        const with__middleware = methodName + '__middleware';
-        if (this[with__middleware]) {
-            params.push(this[with__middleware]);
+        const withMiddleware_ = 'middleware_' + methodName;
+        if (this[withMiddleware_]) {
+            params.push(this[withMiddleware_]);
         }
 
         params.push(asyncHandler(this, methodName));
