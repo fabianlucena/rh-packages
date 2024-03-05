@@ -1,0 +1,13 @@
+{
+  "name": "rf-express-routes",
+  "version": "1.0.0",
+  "main": "rf-express-routes.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Fabian Lucena",
+  "license": "ISC",
+  "description": ""
+}
