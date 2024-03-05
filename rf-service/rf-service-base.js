@@ -296,22 +296,21 @@ export class ServiceBase {
 
         for (const include of includes) {
             const Name = include.slice(7);
-            const name = Name.slice(0, 8).toLowerCase() + include.slice(1);
-            const reference = this.references[name];
-            if (!reference) {
+
+            const association = this.model.associations[Name];
+            if (!association) {
                 continue;
             }
 
-            if (!this.models) {
-                throw new _Error(loc._f('No models defined on %s. Try adding "models = conf.global.models;" to the class.', this.constructor.name));
+            const associationOptions = {model: association.target};
+            if (association.as) {
+                associationOptions.as = association.as;
             }
 
             completeIncludeOptions(
                 options,
                 Name,
-                {
-                    model: this.models[Name],
-                }
+                associationOptions,
             );
 
             delete options[include];
