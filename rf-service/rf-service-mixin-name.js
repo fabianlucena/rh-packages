@@ -46,7 +46,7 @@ export const ServiceMixinName = Service => class extends Service {
      */
     async getForName(name, options) {
         if (name === undefined) {
-            throw new Error(loc._f('Invalid value for name to get row'));
+            throw new Error(loc._f(`Invalid value for name to get row in ${this.constructor.name}.`));
         }
 
         if (Array.isArray(name)) {

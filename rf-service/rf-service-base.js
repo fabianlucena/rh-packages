@@ -1,6 +1,6 @@
 import {NoRowsError, ManyRowsError} from './rf-service-errors.js';
 import {ucfirst, lcfirst} from 'rf-util/rf-util-string.js';
-import {arrangeOptions} from 'sql-util';
+import {arrangeOptions, completeIncludeOptions} from 'sql-util';
 import {trim, _Error} from 'rf-util';
 import {loc} from 'rf-locale';
 
@@ -289,12 +289,38 @@ export class ServiceBase {
      * - view: show visible peoperties.
      */
     async getListOptions(options) {
-        options ??= {};
+        options = {...options};
+
+        const includes = Object.getOwnPropertyNames(options)
+            .filter(prop => prop.length > 7 && prop.startsWith('include'));
+
+        for (const include of includes) {
+            const Name = include.slice(7);
+            const name = Name.slice(0, 8).toLowerCase() + include.slice(1);
+            const reference = this.references[name];
+            if (!reference) {
+                continue;
+            }
+
+            if (!this.models) {
+                throw new _Error(loc._f('No models defined on %s. Try adding "models = conf.global.models;" to the class.', this.constructor.name));
+            }
+
+            completeIncludeOptions(
+                options,
+                Name,
+                {
+                    model: this.models[Name],
+                }
+            );
+
+            delete options[include];
+        }
 
         const searchColumns = this.searchColumns = options.searchColumns || this.searchColumns;
         if (options.q && searchColumns) {
             if (!this.Sequelize?.Op) {
-                throw new _Error(loc._f('No Sequalize.Op defined on %s. Try adding "Sequelize = conf.global.Sequelize" to the class.', this.constructor.name));
+                throw new _Error(loc._f('No Sequalize.Op defined on %s. Try adding "Sequelize = conf.global.Sequelize;" to the class.', this.constructor.name));
             }
             
             const Op = this.Sequelize.Op;
@@ -620,7 +646,7 @@ export class ServiceBase {
         options = {...options};
         if (!options.where) {
             if (data.id) {
-                options.where.id = {id: data.id};
+                options.where = {id: data.id};
             } else {
                 options.where = {...data};
             }
@@ -643,7 +669,7 @@ export class ServiceBase {
     }
 
     async createIfNotExists(data, where) {
-        const [, created] = this.findOrCreate(data, where);
+        const [, created] = await this.findOrCreate(data, where);
         return created;
     }
 }
