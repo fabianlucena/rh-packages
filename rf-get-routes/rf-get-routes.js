@@ -163,10 +163,10 @@ export function getRoutes(controllerClass, options) {
                 route.method = handler.handler;
                 route.methodIsStatic = true;
             } else if (controllerInstance[prop]) {
-                route.method = name;
+                route.method = prop;
                 route.methodIsStatic = false;
             } else if (controllerClass[prop]) {
-                route.method = name;
+                route.method = prop;
                 route.methodIsStatic = true;
             }
 
