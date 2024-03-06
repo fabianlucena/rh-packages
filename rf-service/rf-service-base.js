@@ -302,7 +302,21 @@ export class ServiceBase {
                 continue;
             }
 
-            const associationOptions = {model: association.target};
+            let associationOptions;
+            if (typeof options[include] === 'object') {
+                associationOptions = {...options[include]};
+                if (this.references) {
+                    const name = Name.slice(0, 1).toLowerCase() + Name.slice(1);
+                    const reference = this.references[name];
+                    if (reference) {
+                        associationOptions = await reference.getListOptions(associationOptions);
+                    }
+                }
+            } else {
+                associationOptions = {};
+            }
+            associationOptions.model = association.target;
+
             if (association.as) {
                 associationOptions.as = association.as;
             }
