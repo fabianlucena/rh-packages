@@ -441,10 +441,7 @@ export async function getWhereOptionsFromParams(params, definitions, options) {
                     }
                 }
             
-                if (!options.where) {
-                    options.where = {};
-                }
-
+                options.where ??= {};
                 options.where[name] = value;
             }
         }
