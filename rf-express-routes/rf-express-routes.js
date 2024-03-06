@@ -43,15 +43,13 @@ function asyncHandler(controller, method, isStatic) {
                     if (isStatic) {
                         await controller[method](req, res, next);
                     } else {
-                        controller = new controller;
-                        await controller[method](req, res, next);
+                        await (new controller)[method](req, res, next);
                     }
                 } else if (typeof method === 'function') {
                     if (isStatic) {
                         await controller.call(method, req, res, next);
                     } else {
-                        controller = new controller;
-                        await controller.call(method, req, res, next);
+                        await (new controller).call(method, req, res, next);
                     }
                 } else {
                     throw new Error('Error in method definition.');
