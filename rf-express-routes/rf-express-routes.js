@@ -38,25 +38,33 @@ function asyncHandler(controller, method, isStatic) {
                 throw new Error('No method defined.');
             }
 
+            let result;
+
             if (method) {
                 if (typeof method === 'string') {
                     if (isStatic) {
-                        await controller[method](req, res, next);
+                        result = await controller[method](req, res, next);
                     } else {
-                        await (new controller)[method](req, res, next);
+                        result = await (new controller)[method](req, res, next);
                     }
                 } else if (typeof method === 'function') {
                     if (isStatic) {
-                        await controller.call(method, req, res, next);
+                        result = await controller.call(method, req, res, next);
                     } else {
-                        await (new controller).call(method, req, res, next);
+                        result = await (new controller).call(method, req, res, next);
                     }
                 } else {
                     throw new Error('Error in method definition.');
                 }
             } else {
-                await controller(req, res, next);
+                result = await controller(req, res, next);
             }
+
+            if (result) {
+                res.send(result);
+            }
+
+            res.end();
         } catch(err) {
             next(err);
         }
