@@ -19,17 +19,17 @@ export class RHController {
         );
     }
 
-    static all(req, res) {
+    all(req, res) {
         res.status(405).send({error: 'HTTP method not allowed.'});
     }
 
-    static async defaultGet(req, res, next) {
+    async defaultGet(req, res, next) {
         if ('$grid' in req.query) {
             let instance;
-            if (this.prototype.getGrid) {
-                instance = new this;
-            } else if (this.getGrid) {
+            if (this.getGrid) {
                 instance = this;
+            } else if (this.constructor.getGrid) {
+                instance = this.constructor;
             }
 
             if (instance) {
@@ -41,10 +41,10 @@ export class RHController {
         
         if ('$form' in req.query) {
             let instance;
-            if (this.prototype.getForm) {
-                instance = new this;
-            } else if (this.getForm) {
+            if (this.getForm) {
                 instance = this;
+            } else if (this.constructor.getForm) {
+                instance = this.constructor;
             }
 
             if (instance) {
@@ -55,10 +55,10 @@ export class RHController {
         }
 
         let instance;
-        if (this.prototype.getData) {
-            instance = new this;
-        } else if (this.getData) {
+        if (this.getData) {
             instance = this;
+        } else if (this.constructor.getData) {
+            instance = this.constructor;
         }
 
         if (instance) {

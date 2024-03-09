@@ -19,11 +19,8 @@ export function installRoutes(masterRouter, routes, options) {
             params.push(route.middleware);
         }
 
-        if (route.handler) {
-            params.push(asyncHandler(route.handler));
-        } else {
-            params.push(asyncHandler(route.controller ?? routes.controller, route.method, route.methodIsStatic));
-        }
+        const handler = getHandler(route, routes);
+        params.push(execHandler(handler));
 
         router[route.httpMethod](route.path, ...params);
     }
@@ -31,35 +28,61 @@ export function installRoutes(masterRouter, routes, options) {
     return router;
 }
 
-function asyncHandler(controller, method, isStatic) {
+
+function getHandler(route, routes) {
+    if (route.handler) {
+        if (typeof route.handler !== 'function') {
+            throw new Error('Error in route handler definition, handler is not a function.');
+        }
+
+        return route.handler;
+    }
+
+    const method = route.method;
+    if (!method) {
+        throw new Error('Error in route handler definition, no method defined.');
+    }
+
+    const controller = route.controller ?? routes.controller;
+    if (!controller) {
+        if (typeof method !== 'function') {
+            throw new Error('Error in route handler definition, method is not a function, and no controller provided.');
+        }
+
+        return method;
+    }
+    
+    if (typeof controller !== 'function' || controller.prototype === undefined) {
+        throw new Error('Error in route handler definition, controller is not a class.');
+    }
+
+    if (typeof method === 'string') {
+        if (method in controller.prototype) {
+            return (req, res, next) => (new controller)[method](req, res, next);
+        }
+
+        if (method in controller) {
+            return controller[method];
+        }
+        
+        throw new Error('Error in route handler definition, method is not a method of controller.');
+    }
+    
+    if (typeof method !== 'function') {
+        throw new Error('Error in route handler definition, method is not a function or a string.');
+    }
+
+    if (route.isStaticMethod) {
+        return method;
+    }
+
+    return async (req, res, next) => await (new controller).call(method, req, res, next);
+}
+
+function execHandler(handler) {
     return async (req, res, next) => {
         try {
-            if (!controller) {
-                throw new Error('No method defined.');
-            }
-
-            let result;
-
-            if (method) {
-                if (typeof method === 'string') {
-                    if (isStatic) {
-                        result = await controller[method](req, res, next);
-                    } else {
-                        result = await (new controller)[method](req, res, next);
-                    }
-                } else if (typeof method === 'function') {
-                    if (isStatic) {
-                        result = await controller.call(method, req, res, next);
-                    } else {
-                        result = await (new controller).call(method, req, res, next);
-                    }
-                } else {
-                    throw new Error('Error in method definition.');
-                }
-            } else {
-                result = await controller(req, res, next);
-            }
-
+            const result = await handler(req, res, next);
             if (result) {
                 res.send(result);
             }
