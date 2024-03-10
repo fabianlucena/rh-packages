@@ -137,6 +137,7 @@ export function getRoutes(controllerClass, options) {
 
     const routes = [];
     handlers.forEach(handler => {
+        const addToRoutes = [];
         props.forEach(prop => {
             const parts = prop.split(' ');
             const name = parts[0];
@@ -148,6 +149,10 @@ export function getRoutes(controllerClass, options) {
                 parts.slice(1).join(' '):
                 '';
             if (routes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
+                return;
+            }
+
+            if (addToRoutes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
                 return;
             }
 
@@ -192,8 +197,12 @@ export function getRoutes(controllerClass, options) {
                 route.middlewareIsStatic = true;
             }
 
-            routes.push(route);
+            addToRoutes.push(route);
         });
+
+        if (addToRoutes.length) {
+            routes.push(...addToRoutes);
+        }
     });
 
     let path = controllerInstance.path;

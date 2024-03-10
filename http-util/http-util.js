@@ -667,35 +667,35 @@ export async function configureModules(global, modules) {
         await installModule(global, module);
     }
 
-    if (global.router && global.controllers) {
-        for (const controllerName in global.controllers) {
-            const controller = global.controllers[controllerName];
-            if (controller.routes) {
-                const routes = controller.routes();
+    filterData(global);
+}
 
-                if (routes.cors) {
-                    for (const item of routes.cors) {
-                        const allowedMethods = item.httpMethods.join(',');
-                        routes.routes.unshift({
-                            httpMethod: 'options',
-                            path: item.path,
-                            handler: corsSimplePreflight(allowedMethods),
-                        });
-                    }
+export function installControllerRoutes(global) {
+    for (const controllerName in global.controllers) {
+        const controller = global.controllers[controllerName];
+        if (controller.routes) {
+            const routes = controller.routes();
+
+            if (routes.cors) {
+                for (const item of routes.cors) {
+                    const allowedMethods = item.httpMethods.join(',');
+                    routes.routes.unshift({
+                        httpMethod: 'options',
+                        path: item.path,
+                        handler: corsSimplePreflight(allowedMethods),
+                    });
                 }
-
-                installRoutes(
-                    global.router,
-                    routes,
-                    {
-                        checkPermission: global.checkPermission,
-                    },
-                );
             }
+
+            installRoutes(
+                global.router,
+                routes,
+                {
+                    checkPermission: global.checkPermission,
+                },
+            );
         }
     }
-
-    filterData(global);
 }
 
 export async function filterData(global) {
