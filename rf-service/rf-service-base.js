@@ -1,8 +1,9 @@
-import {NoRowsError, ManyRowsError} from './rf-service-errors.js';
-import {ucfirst, lcfirst} from 'rf-util/rf-util-string.js';
-import {arrangeOptions, completeIncludeOptions} from 'sql-util';
-import {trim, _Error} from 'rf-util';
-import {loc} from 'rf-locale';
+import { NoRowsError, ManyRowsError } from './rf-service-errors.js';
+import { ucfirst, lcfirst } from 'rf-util/rf-util-string.js';
+import { arrangeOptions, completeIncludeOptions } from 'sql-util';
+import { trim, _Error } from 'rf-util';
+import { loc } from 'rf-locale';
+import rfDependency from 'rf-dependency';
 
 export class ServiceBase {
     /**
@@ -59,10 +60,7 @@ export class ServiceBase {
     }
 
     constructor() {
-        if (!this.hiddenColumns) {
-            this.hiddenColumns ??= [];
-            this.hiddenColumns.push('id');
-        }
+        this.Sequelize = rfDependency.get('Sequelize');
     }
 
     init() {
@@ -330,10 +328,10 @@ export class ServiceBase {
             delete options[include];
         }
 
-        const searchColumns = this.searchColumns = options.searchColumns || this.searchColumns;
+        const searchColumns = options.searchColumns || this.searchColumns;
         if (options.q && searchColumns) {
             if (!this.Sequelize?.Op) {
-                throw new _Error(loc._f('No Sequalize.Op defined on %s. Try adding "Sequelize = conf.global.Sequelize;" to the class.', this.constructor.name));
+                throw new _Error(loc._f('No Sequalize.Op defined on %s. Try adding "Sequelize" dependency to the project.'));
             }
             
             const Op = this.Sequelize.Op;

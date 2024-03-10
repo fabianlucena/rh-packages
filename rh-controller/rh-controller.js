@@ -1,4 +1,4 @@
-import {getRoutes} from 'rf-get-routes';
+import { getRoutes } from 'rf-get-routes';
 
 /**
  * This is the base class for HTTP controller definitions.
@@ -7,7 +7,7 @@ import {getRoutes} from 'rf-get-routes';
  */
 export class RHController {
     static routes() {
-        return getRoutes(
+        const routes = getRoutes(
             this,
             {
                 appendHandlers: [
@@ -17,6 +17,8 @@ export class RHController {
                 ],
             },
         );
+
+        return routes;
     }
 
     all(req, res) {
