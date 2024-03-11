@@ -46,6 +46,8 @@ export const data = {
             translationContext: 'issue',
             modelEntityName: 'Issue',
             ownerModule: name,
+            assigneeTitle: loc._cf('issue', 'Assignee'),
+            workflowTitle: loc._cf('issue', 'Workflow'),
             type: {
                 name: 'minimalist',
                 title: loc._cf('issue', 'Minimalist'),
