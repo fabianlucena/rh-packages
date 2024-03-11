@@ -60,10 +60,7 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
             return super.getList(options);
         }
         
-        const result = await super.getList(options);
-        const menuItems = options?.withCount?
-            result.rows:
-            result;
+        const menuItems = await super.getList(options);
 
         const menuItemsName = menuItems.map(menuItem => menuItem.name).filter(menuItemName => menuItemName);
         let parentsNameToLoad = [];
@@ -88,7 +85,6 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
         const parentOptions = {
             where: {},
             ...options,
-            withCount: undefined,
             includeParentAsMenuItem: undefined
         };
 
@@ -113,10 +109,6 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
             }
         }
 
-        if (options?.withCount) {
-            return {length: result.length, menuItems};
-        }
-
         return menuItems;
     }
 
@@ -136,7 +128,7 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
             }
         }
 
-        const miList = await this.getList({...options, withCount: false, translate: false});
+        const miList = await this.getList({...options, translate: false});
 
         delete options.where;
         let result = 0;
