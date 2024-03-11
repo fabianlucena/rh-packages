@@ -297,16 +297,12 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
         return this.getList(options);
     }
 
-    async completeForEntities(entitiesResult, options) {
+    async completeForEntities(entities, options) {
         if (!options.includeAttributeTag) {
-            return entitiesResult;
+            return entities;
         }
 
-        entitiesResult = await entitiesResult;
-        const entities = options.withCount?
-            entitiesResult.rows:
-            entitiesResult;
-
+        entities = await entities;
         for (const i in entities) {
             const entity = entities[i];
             const tags = await this.getForEntityId(entity.id);
@@ -315,13 +311,7 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
             entities[i] = entity;
         }
 
-        if (options.withCount) {
-            entitiesResult = {...entitiesResult, rows: entities};
-        } else {
-            entitiesResult = entities;
-        }
-
-        return entitiesResult;
+        return entities;
     }
 
     async getForTags(tags, options) {

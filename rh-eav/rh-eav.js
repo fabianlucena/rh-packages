@@ -350,7 +350,6 @@ async function updated(entity, result, data, options, service) {
 
     const rows = await service.getList({
         ...options,
-        withCount: false,
         raw: true,
         nest: true,
         loc: options.loc,
@@ -412,7 +411,6 @@ async function deleting(entity, options, service) {
 
     const rows = await service.getList({
         ...options,
-        withCount: false,
         raw: true,
         nest: true,
         loc: options.loc,
