@@ -52,7 +52,13 @@ function _getDependency(name, scope, defaultValue) {
 
     if (dependency.singleton) {
         if (!dependency.value) {
-            dependency.value = new dependency.dependency();
+            if (dependency.dependency.singleton) {
+                dependency.value = dependency.dependency.singleton();
+            } else if (dependency.dependency.create) {
+                dependency.value = dependency.dependency.create();
+            } else {
+                dependency.value = new dependency.dependency();
+            }
         }
 
         return dependency.value;
