@@ -3,7 +3,6 @@ import { ucfirst, lcfirst } from 'rf-util/rf-util-string.js';
 import { arrangeOptions, completeIncludeOptions } from 'sql-util';
 import { trim, _Error } from 'rf-util';
 import { loc } from 'rf-locale';
-import rfDependency from 'rf-dependency';
 
 export class ServiceBase {
     /**
@@ -60,7 +59,7 @@ export class ServiceBase {
     }
 
     constructor() {
-        this.Sequelize = rfDependency.get('Sequelize');
+        this.hiddenColumns ??= ['id'];
     }
 
     init() {
@@ -331,7 +330,7 @@ export class ServiceBase {
         const searchColumns = options.searchColumns || this.searchColumns;
         if (options.q && searchColumns) {
             if (!this.Sequelize?.Op) {
-                throw new _Error(loc._f('No Sequalize.Op defined on %s. Try adding "Sequelize" dependency to the project.'));
+                throw new _Error(loc._f('No Sequalize.Op defined on %s. Try adding "Sequelize = conf.global.Sequelize;" to the class.', this.constructor.name));
             }
             
             const Op = this.Sequelize.Op;
@@ -362,35 +361,18 @@ export class ServiceBase {
     async getList(options) {
         options = await this.getListOptions(options);
         await this.emit('getting', options?.emitEvent, options, this);
-        let result;
-        if (options.withCount) {
-            result = this.model.findAndCountAll(options);
-            if (!options.raw) {
-                result = await result;
-                if (this.dto) {
-                    result.rows = result.rows.map(r => new this.dto(r.toJSON()));
-                } else {
-                    result.rows = result.rows.map(r => r.toJSON());
-                }
-            } else if (this.dto) {
-                result = await result;
-                result.rows = result.rows.map(r => new this.dto(r));
+        let result = this.model.findAll(options);
+        if (!options.raw) {
+            result = await result;
+            if (this.dto) {
+                result = result.map(r => new this.dto(r.toJSON()));
+            } else {
+                result = result.map(r => r.toJSON());
             }
-        } else {
-            result = this.model.findAll(options);
-            if (!options.raw) {
-                result = await result;
-                if (this.dto) {
-                    result = result.map(r => new this.dto(r.toJSON()));
-                } else {
-                    result = result.map(r => r.toJSON());
-                }
-            } else if (this.dto) {
-                result = await result;
-                result = result.map(r => new this.dto(r));
-            }
+        } else if (this.dto) {
+            result = await result;
+            result = result.map(r => new this.dto(r));
         }
-
         await this.emit('getted', options?.emitEvent, result, options, this);
 
         return result;
@@ -411,7 +393,9 @@ export class ServiceBase {
      * @returns {Promise[{Array[row], count}]}
      */
     async getListAndCount(options) {
-        return this.getList({...options, withCount: true});
+        const rows = await this.getList(options);
+        const count = await this.count({...options, attributes: []});
+        return {rows, count};
     }
 
     /**
