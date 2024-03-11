@@ -160,12 +160,13 @@ async function interfaceGridGet(grid, options) {
     const columnsCache = conf.columnsCache[entity];
     const detailsCache = conf.detailsCache[entity];
 
-    const language = options?.loc?.language;
+    const loc = options?.loc;
+    const language = loc?.language;
     if (columnsCache[language] === undefined) {
         columnsCache[language] = [];
         detailsCache[language] = [];
 
-        const workflows = await getWorkflowsForEntity(entity, {loc: options.loc});
+        const workflows = await getWorkflowsForEntity(entity, {loc});
         const columns = [];
         const details = [];
         for (const workflow of workflows) {
@@ -179,10 +180,10 @@ async function interfaceGridGet(grid, options) {
                     className: 'framed',
                 },
                 {
-                    isColumn: workflow.showAsigneeInColumn,
-                    isDetail: workflow.showAsigneeInDetail,
-                    name: workflow.asigneeName,
-                    label: workflow.asigneeTitle,
+                    isColumn: workflow.showAssigneeInColumn,
+                    isDetail: workflow.showAssigneeInDetail,
+                    name: workflow.assigneeName,
+                    label: workflow.assigneeTitle,
                     type: 'text',
                 },
                 {
@@ -220,10 +221,8 @@ async function getted(entity, result, options) {
     }
 
     result = await result;
-
-    const rows = result.rows || result;
-    for (const iRow in rows) {
-        let row = rows[iRow];
+    for (const iRow in result) {
+        let row = result[iRow];
         const entityId = row.id;
         if (entityId === undefined) {
             continue;
@@ -250,8 +249,8 @@ async function getted(entity, result, options) {
                     row[workflow.currentStatusName] = wfCase?.CurrentStatus?.Status?.title;
                 }
 
-                if (workflow.asigneeName) {
-                    row[workflow.asigneeName] = wfCase?.CurrentStatus?.Assignee?.displayName;
+                if (workflow.assigneeName) {
+                    row[workflow.assigneeName] = wfCase?.CurrentStatus?.Assignee?.displayName;
                 }
             }
 

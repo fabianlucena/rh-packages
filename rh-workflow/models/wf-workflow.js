@@ -1,4 +1,5 @@
-import {conf} from '../conf.js';
+import { conf } from '../conf.js';
+import { loc} from 'rf-locale';
 
 export default (sequelize, DataTypes) => {
     class WfWorkflow extends sequelize.Sequelize.Model {
@@ -79,25 +80,25 @@ export default (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 'Status',
         },
-        showAsigneeInColumn: {
+        showAssigneeInColumn: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: true,
         },
-        showAsigneeInDetail: {
+        showAssigneeInDetail: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false,
         },
-        asigneeName: {
+        assigneeName: {
             type: DataTypes.TEXT,
             allowNull: false,
-            defaultValue: 'asignee',
+            defaultValue: 'assignee',
         },
-        asigneeTitle: {
+        assigneeTitle: {
             type: DataTypes.TEXT,
             allowNull: false,
-            defaultValue: 'Asignee',
+            defaultValue: loc._f('Assignee'),
         },
         showWorkflowInColumn: {
             type: DataTypes.BOOLEAN,
@@ -117,7 +118,7 @@ export default (sequelize, DataTypes) => {
         workflowTitle: {
             type: DataTypes.TEXT,
             allowNull: false,
-            defaultValue: 'Workflow',
+            defaultValue: loc._f('Workflow'),
         },
     }, {
         sequelize,

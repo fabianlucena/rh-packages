@@ -16,7 +16,7 @@ export class WfWorkflowService extends ServiceIdUuidNameTitleDescriptionEnabledM
         'title',
         'description',
         'currentStatusTitle',
-        'asigneeTitle',
+        'assigneeTitle',
         'workflowTitle',
     ];
 
