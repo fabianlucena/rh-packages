@@ -1,5 +1,6 @@
 import {setUpError, errorHandler, deepComplete, runSequentially, stripQuotes, checkParameterUuid} from 'rf-util';
 import {loc, defaultLoc} from 'rf-locale';
+import {installRoutes} from 'rf-express-routes';
 import * as uuid from 'uuid';
 import fs from 'fs';
 import path from 'path';
@@ -440,10 +441,7 @@ export async function getWhereOptionsFromParams(params, definitions, options) {
                     }
                 }
             
-                if (!options.where) {
-                    options.where = {};
-                }
-
+                options.where ??= {};
                 options.where[name] = value;
             }
         }
@@ -669,16 +667,35 @@ export async function configureModules(global, modules) {
         await installModule(global, module);
     }
 
-    if (global.router && global.controllers) {
-        for (const controllerName in global.controllers) {
-            const controller = global.controllers[controllerName];
-            if (controller.routes) {
-                controller.routes(global.router, global.checkPermission, global.config);
+    filterData(global);
+}
+
+export function installControllerRoutes(global) {
+    for (const controllerName in global.controllers) {
+        const controller = global.controllers[controllerName];
+        if (controller.routes) {
+            const routes = controller.routes();
+
+            if (routes.cors) {
+                for (const item of routes.cors) {
+                    const allowedMethods = item.httpMethods.join(',');
+                    routes.routes.unshift({
+                        httpMethod: 'options',
+                        path: item.path,
+                        handler: corsSimplePreflight(allowedMethods),
+                    });
+                }
             }
+
+            installRoutes(
+                global.router,
+                routes,
+                {
+                    checkPermission: global.checkPermission,
+                },
+            );
         }
     }
-
-    filterData(global);
 }
 
 export async function filterData(global) {
@@ -996,7 +1013,7 @@ export function corsMiddlewareOrigins(...origins) {
 export function corsPreflight(options) {
     return (req, res) => {
         checkCors(req, res, 'Access-Control-Request-Headers', options.headers, 'Access-Control-Allow-Headers', s => s.trim().toLowerCase());
-        checkCors(req, res, 'Access-Control-Request-Method', options.methods, 'Access-Control-Allow-Methods', s => s.trim().toUpperCase());
+        checkCors(req, res, 'Access-Control-Request-Method',  options.methods, 'Access-Control-Allow-Methods', s => s.trim().toUpperCase());
         res.sendStatus(204);
     };
 }

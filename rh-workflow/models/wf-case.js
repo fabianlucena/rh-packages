@@ -1,9 +1,16 @@
 import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-    class IssueWorkflow extends sequelize.Sequelize.Model {
+    class WfCase extends sequelize.Sequelize.Model {
+        static associate(models) {
+            this.belongsTo(models.WfWorkflow,  {foreignKey: 'workflowId'});
+        }
+
+        static postAssociate(models) {
+            this.hasOne(models.WfCurrentStatus, {as: 'CurrentStatus', foreignKey: 'caseId'});
+        }
     }
-    IssueWorkflow.init({
+    WfCase.init({
         id: {
             type: DataTypes.BIGINT,
             autoIncrement: true,
@@ -21,28 +28,19 @@ export default (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: true,
         },
-        name: {
-            type: DataTypes.STRING,
+        workflowId: {
+            type: DataTypes.BIGINT,
             allowNull: false,
         },
-        title: {
-            type: DataTypes.STRING,
+        entityId: {
+            type: DataTypes.BIGINT,
             allowNull: false,
-        },
-        isTranslatable: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false
-        },
-        description: {
-            type: DataTypes.TEXT,
-            allowNull: true,
         },
     }, {
         sequelize,
         timestamps: true,
-        freezeTableName: true,
+        tableName: 'Case',
         schema: conf.schema,
     });
-    return IssueWorkflow;
+    return WfCase;
 };

@@ -60,12 +60,7 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
             return super.getList(options);
         }
         
-        const result = await super.getList(options);
-        const rawRows = options?.withCount?
-            result.rows:
-            result;
-
-        const menuItems = rawRows.map(menuItem => menuItem.toJSON());
+        const menuItems = await super.getList(options);
 
         const menuItemsName = menuItems.map(menuItem => menuItem.name).filter(menuItemName => menuItemName);
         let parentsNameToLoad = [];
@@ -90,18 +85,15 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
         const parentOptions = {
             where: {},
             ...options,
-            withCount: undefined,
             includeParentAsMenuItem: undefined
         };
 
         while (parentsNameToLoad.length) {
             parentOptions.where.name = parentsNameToLoad;
-            const parentMenuItemsRaw = await super.getList(parentOptions);
-            if (!parentMenuItemsRaw.length) {
+            const parentMenuItems = await super.getList(parentOptions);
+            if (!parentMenuItems.length) {
                 break;
             }
-
-            const parentMenuItems = parentMenuItemsRaw.map(menuItem => menuItem.toJSON());
 
             menuItems.splice(0, 0, ...parentMenuItems);
             menuItemsName.splice(0, 0, ...parentMenuItems.map(menuItem => menuItem.name).filter(menuItemName => menuItemName));
@@ -115,10 +107,6 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
 
                 parentsNameToLoad.push(menuItem.Parent.name);
             }
-        }
-
-        if (options?.withCount) {
-            return {length: result.length, menuItems};
         }
 
         return menuItems;
@@ -140,15 +128,11 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
             }
         }
 
-        const miList = await this.getList({...options, withCount: false, translate: false});
+        const miList = await this.getList({...options, translate: false});
 
         delete options.where;
         let result = 0;
         for (let mi of miList) {
-            if (mi.toJSON) {
-                mi = mi.toJSON();
-            }
-
             const id = mi.id;
             mi = {
                 ...mi,

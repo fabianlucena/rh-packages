@@ -194,10 +194,6 @@ export class BranchController {
         const result = await branchService.getListAndCount(options);
 
         result.rows = result.rows.map(row => {
-            if (row.toJSON) {
-                row = row.toJSON();
-            }
-
             row.companyUuid = row.Company.uuid;
             return row;
         });
@@ -602,8 +598,6 @@ export class BranchController {
 
         const loc = req.loc;
         result.rows = result.rows.map(row => {
-            row = row.toJSON();
-
             if (row.isTranslatable) {
                 row.title = loc._(row.title);
                 row.description = loc._(row.description);

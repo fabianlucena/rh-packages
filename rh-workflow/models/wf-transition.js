@@ -1,9 +1,15 @@
 import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-    class IssueStatus extends sequelize.Sequelize.Model {
+    class WfTransition extends sequelize.Sequelize.Model {
+        static associate(models) {
+            this.belongsTo(models.Module,         {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
+            this.belongsTo(models.WfWorkflowType, {foreignKey: 'workflowTypeId'});
+            this.belongsTo(models.WfStatus,       {as: 'From', foreignKey: 'fromId'});
+            this.belongsTo(models.WfStatus,       {as: 'To',   foreignKey: 'toId'});
+        }
     }
-    IssueStatus.init({
+    WfTransition.init({
         id: {
             type: DataTypes.BIGINT,
             autoIncrement: true,
@@ -21,6 +27,18 @@ export default (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: true,
         },
+        workflowTypeId: {
+            type: DataTypes.BIGINT,
+            allowNull: false,
+        },
+        fromId: {
+            type: DataTypes.BIGINT,
+            allowNull: false,
+        },
+        toId: {
+            type: DataTypes.BIGINT,
+            allowNull: false,
+        },
         name: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -28,11 +46,6 @@ export default (sequelize, DataTypes) => {
         title: {
             type: DataTypes.STRING,
             allowNull: false,
-        },
-        isClosed: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false,
         },
         isTranslatable: {
             type: DataTypes.BOOLEAN,
@@ -46,8 +59,8 @@ export default (sequelize, DataTypes) => {
     }, {
         sequelize,
         timestamps: true,
-        freezeTableName: true,
+        tableName: 'Transition',
         schema: conf.schema,
     });
-    return IssueStatus;
+    return WfTransition;
 };

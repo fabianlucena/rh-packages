@@ -46,10 +46,6 @@ export class UserAccessService extends UserSiteRoleService {
             } else {
                 user = await this.userService.create(data.User, {transaction});
             }
-
-            if (user.toJSON) {
-                user = user.toJSON();
-            }
             
             if (!data.rolesId?.length && data.rolesUuid?.length) {
                 data.rolesId = await this.roleService.getIdForUuid(data.rolesUuid);
@@ -141,9 +137,6 @@ export class UserAccessService extends UserSiteRoleService {
         options = await this.getListOptions(options);
 
         const result = await super.getList(options);
-        const rows = options.withCount?
-            result.rows:
-            result;
 
         const roleQueryOptions = {
             view: true,
@@ -161,7 +154,7 @@ export class UserAccessService extends UserSiteRoleService {
             roleQueryOptions.where = {roleId: options.includeRolesId};
         }
 
-        for (const row of rows) {
+        for (const row of result) {
             row.uuid = row.User.uuid + ',' + row.Site.uuid;
 
             roleQueryOptions.where.userId = row.userId;

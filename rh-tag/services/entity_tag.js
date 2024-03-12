@@ -238,24 +238,12 @@ export class EntityTagService extends ServiceBase {
         }
 
         result = await result;
-        let rows = options.withCount? result.rows: result;
-
-        for (const i in rows) {
-            let row = rows[i];
-            if (row.toJSON) {
-                row = row.toJSON();
-            }
-
+        for (const i in result) {
+            const row = result[i];
             const tags = await this.getForEntityId(row.id);
             row.tags = tags.map(tag => tag.Tag.name);
 
-            rows[i] = row;
-        }
-
-        if (options.withCount) {
-            result.rows = rows;
-        } else {
-            result = rows;
+            result[i] = row;
         }
 
         return result;

@@ -1,8 +1,8 @@
-import {NoRowsError, ManyRowsError} from './rf-service-errors.js';
-import {ucfirst, lcfirst} from 'rf-util/rf-util-string.js';
-import {arrangeOptions} from 'sql-util';
-import {trim, _Error} from 'rf-util';
-import {loc} from 'rf-locale';
+import { NoRowsError, ManyRowsError } from './rf-service-errors.js';
+import { ucfirst, lcfirst } from 'rf-util/rf-util-string.js';
+import { arrangeOptions, completeIncludeOptions } from 'sql-util';
+import { trim, _Error } from 'rf-util';
+import { loc } from 'rf-locale';
 
 export class ServiceBase {
     /**
@@ -59,10 +59,7 @@ export class ServiceBase {
     }
 
     constructor() {
-        if (!this.hiddenColumns) {
-            this.hiddenColumns ??= [];
-            this.hiddenColumns.push('id');
-        }
+        this.hiddenColumns ??= ['id'];
     }
 
     init() {
@@ -289,12 +286,51 @@ export class ServiceBase {
      * - view: show visible peoperties.
      */
     async getListOptions(options) {
-        options ??= {};
+        options = {...options};
 
-        const searchColumns = this.searchColumns = options.searchColumns || this.searchColumns;
+        const includes = Object.getOwnPropertyNames(options)
+            .filter(prop => prop.length > 7 && prop.startsWith('include'));
+
+        for (const include of includes) {
+            const Name = include.slice(7);
+
+            const association = this.model.associations[Name];
+            if (!association) {
+                continue;
+            }
+
+            let associationOptions;
+            if (typeof options[include] === 'object') {
+                associationOptions = {...options[include]};
+                if (this.references) {
+                    const name = Name.slice(0, 1).toLowerCase() + Name.slice(1);
+                    const reference = this.references[name];
+                    if (reference) {
+                        associationOptions = await reference.getListOptions(associationOptions);
+                    }
+                }
+            } else {
+                associationOptions = {};
+            }
+            associationOptions.model = association.target;
+
+            if (association.as) {
+                associationOptions.as = association.as;
+            }
+
+            completeIncludeOptions(
+                options,
+                Name,
+                associationOptions,
+            );
+
+            delete options[include];
+        }
+
+        const searchColumns = options.searchColumns || this.searchColumns;
         if (options.q && searchColumns) {
             if (!this.Sequelize?.Op) {
-                throw new _Error(loc._f('No Sequalize.Op defined on %s. Try adding "Sequelize = conf.global.Sequelize" to the class.', this.constructor.name));
+                throw new _Error(loc._f('No Sequalize.Op defined on %s. Try adding "Sequelize = conf.global.Sequelize;" to the class.', this.constructor.name));
             }
             
             const Op = this.Sequelize.Op;
@@ -325,13 +361,18 @@ export class ServiceBase {
     async getList(options) {
         options = await this.getListOptions(options);
         await this.emit('getting', options?.emitEvent, options, this);
-        let result;
-        if (options.withCount) {
-            result = this.model.findAndCountAll(options);
-        } else {
-            result = this.model.findAll(options);
+        let result = this.model.findAll(options);
+        if (!options.raw) {
+            result = await result;
+            if (this.dto) {
+                result = result.map(r => new this.dto(r.toJSON()));
+            } else {
+                result = result.map(r => r.toJSON());
+            }
+        } else if (this.dto) {
+            result = await result;
+            result = result.map(r => new this.dto(r));
         }
-
         await this.emit('getted', options?.emitEvent, result, options, this);
 
         return result;
@@ -352,7 +393,9 @@ export class ServiceBase {
      * @returns {Promise[{Array[row], count}]}
      */
     async getListAndCount(options) {
-        return this.getList({...options, withCount: true});
+        const rows = await this.getList(options);
+        const count = await this.count({...options, attributes: []});
+        return {rows, count};
     }
 
     /**
@@ -369,8 +412,9 @@ export class ServiceBase {
      * This behavior can be skipped with option skipManyRowsError.
      * 
      * Options: 
-     * - skipNoRowsError: if is true the exception NoRowsError will be omitted.
-     * - skipManyRowsError: if is true the exception ManyRowsError will be omitted.
+     * - skipNoRowsError: if is true the exception NoRowsError will be omitted and return undefined.
+     * - nullOnManyRowsError: : if is true the exception ManyRowsError will be omitted and returns undefined.
+     * - skipManyRowsError: if is true the exception ManyRowsError will be omitted and returns the first row.
      */
     async getSingleFromRows(rows, options) {
         if (rows.then) {
@@ -388,12 +432,16 @@ export class ServiceBase {
             
             throw new NoRowsError();
         }
+
+        if (options?.nullOnManyRowsError) {
+            return;
+        }
         
         if (options?.skipManyRowsError) {
             return rows[0];
         }
 
-        return new ManyRowsError({length: rows.length});
+        throw new ManyRowsError({length: rows.length});
     }
 
     /**
@@ -424,6 +472,16 @@ export class ServiceBase {
      */
     async getSingleFor(where, options) {
         return this.getSingle({...options, where: {...options?.where, ...where}});
+    }
+
+    /**
+     * Gets a single row for a given criteria or null if not exists.
+     * @param {object} where - criteria to get the row list (where object).
+     * @param {object} options - Options for the @ref getList function.
+     * @returns {Promise[row]}
+     */
+    async getSingleOrNullFor(where, options) {
+        return this.getSingle({...options, where: {...options?.where, ...where}, skipNoRowsError: true, nullOnManyRowsError: true});
     }
 
     async count(options) {
@@ -526,9 +584,6 @@ export class ServiceBase {
 
     async sanitizeRow(row, options) {
         await this.emit('sanitizingRow', options?.emitEvent, row, options, this);
-        if (row.toJSON) {
-            row = row.toJSON();
-        }
 
         if (this.hiddenColumns?.length) {
             row = {...row};
@@ -580,5 +635,36 @@ export class ServiceBase {
         await this.emit('sanitizedRow', options?.emitEvent, row, options, this);
 
         return row;
+    }
+
+    async findOrCreate(data, options) {
+        options = {...options};
+        if (!options.where) {
+            if (data.id) {
+                options.where = {id: data.id};
+            } else {
+                options.where = {...data};
+            }
+        }
+
+        let [row, created] = await this.model.findOrCreate({
+            ...options,
+            defaults: data,
+            raw: true,
+        });
+        if (created) {
+            row = row.toJSON();
+        }
+
+        if (this.dto) {
+            row = new this.dto(row);
+        }
+
+        return [row, created];
+    }
+
+    async createIfNotExists(data, where) {
+        const [, created] = await this.findOrCreate(data, where);
+        return created;
     }
 }

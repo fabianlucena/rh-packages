@@ -127,7 +127,7 @@ export class PrivilegesService extends ServiceBase {
         }
         
         const privileges = await this.getForUsernameAndSiteName(username, site?.name);
-        privileges.site = site?.toJSON();
+        privileges.site = site;
 
         sessionId ||= privileges.site?.id;
 

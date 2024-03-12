@@ -186,7 +186,6 @@ export class CompanyController {
         const result = await companyService.getListAndCount(options);
 
         result.rows = result.rows.map(row => {
-            row = row.toJSON();
             if (row.Collaborators) {
                 row.ownerDisplayName = row.Collaborators[0]?.User?.displayName;
             }

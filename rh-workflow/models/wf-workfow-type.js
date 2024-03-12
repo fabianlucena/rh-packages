@@ -1,14 +1,12 @@
 import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-    class IssueTransition extends sequelize.Sequelize.Model {
+    class WfWorkflowType extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.IssueWorkflow, {foreignKey: 'workflowId'});
-            this.belongsTo(models.IssueStatus,   {as: 'From', foreignKey: 'fromId'});
-            this.belongsTo(models.IssueStatus,   {as: 'To',   foreignKey: 'toId'});
+            this.belongsTo(models.Module, {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
         }
     }
-    IssueTransition.init({
+    WfWorkflowType.init({
         id: {
             type: DataTypes.BIGINT,
             autoIncrement: true,
@@ -25,18 +23,6 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: true,
-        },
-        workflowId: {
-            type: DataTypes.BIGINT,
-            allowNull: false,
-        },
-        fromId: {
-            type: DataTypes.BIGINT,
-            allowNull: false,
-        },
-        toId: {
-            type: DataTypes.BIGINT,
-            allowNull: false,
         },
         name: {
             type: DataTypes.STRING,
@@ -58,8 +44,8 @@ export default (sequelize, DataTypes) => {
     }, {
         sequelize,
         timestamps: true,
-        freezeTableName: true,
+        tableName: 'WorkflowType',
         schema: conf.schema,
     });
-    return IssueTransition;
+    return WfWorkflowType;
 };

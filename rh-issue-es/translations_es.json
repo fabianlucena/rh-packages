@@ -1,5 +1,13 @@
 [
     {
+        "source": "Assignee",
+        "language": "es",
+        "context": "issue",
+        "isDraft": false,
+        "translation": "Encargado",
+        "ref": "..\\rh-issue\\conf_data.js [49,32]"
+    },
+    {
         "source": "Blocker",
         "language": "es",
         "context": "issue",
@@ -18,28 +26,28 @@
         "language": "es",
         "context": "issue",
         "translation": "Cerrar",
-        "ref": "..\\rh-issue\\conf_data.js [51,88]"
+        "ref": "..\\rh-issue\\conf_data.js [81,36]"
     },
     {
         "source": "Close a ticket.",
         "language": "es",
         "context": "issue",
         "translation": "Cierra una incidencia.",
-        "ref": "..\\rh-issue\\conf_data.js [51,150]"
+        "ref": "..\\rh-issue\\conf_data.js [84,42]"
     },
     {
         "source": "Close reason",
         "language": "es",
         "context": "issue",
         "translation": "Motivo de cierre",
-        "ref": "..\\rh-issue\\controllers\\issue.js [318,38]\n..\\rh-issue\\controllers\\issue.js [459,34]\n..\\rh-issue\\controllers\\issue.js [460,40]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [307,34]\n..\\rh-issue\\controllers\\issue.js [424,34]\n..\\rh-issue\\controllers\\issue.js [425,40]"
     },
     {
         "source": "Closed",
         "language": "es",
         "context": "issue",
         "translation": "Cerrado",
-        "ref": "..\\rh-issue\\conf_data.js [36,37]"
+        "ref": "..\\rh-issue\\conf_data.js [68,36]"
     },
     {
         "source": "Company productivity has stopped until this is resolved.",
@@ -67,7 +75,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Descripción ",
-        "ref": "..\\rh-issue\\controllers\\issue.js [312,38]\n..\\rh-issue\\controllers\\issue.js [424,34]\n..\\rh-issue\\controllers\\issue.js [425,40]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [301,34]\n..\\rh-issue\\controllers\\issue.js [417,34]\n..\\rh-issue\\controllers\\issue.js [418,40]"
     },
     {
         "source": "Desirable",
@@ -81,14 +89,14 @@
         "language": "es",
         "context": "issue",
         "translation": "Descartado",
-        "ref": "..\\rh-issue\\conf_data.js [41,41]"
+        "ref": "..\\rh-issue\\conf_data.js [36,41]"
     },
     {
         "source": "Duplicated",
         "language": "es",
         "context": "issue",
         "translation": "Duplicado",
-        "ref": "..\\rh-issue\\conf_data.js [42,41]"
+        "ref": "..\\rh-issue\\conf_data.js [37,41]"
     },
     {
         "source": "Edit issues",
@@ -102,28 +110,21 @@
         "language": "es",
         "context": "issue",
         "translation": "Habilitado ",
-        "ref": "..\\rh-issue\\controllers\\issue.js [417,34]\n..\\rh-issue\\controllers\\issue.js [418,40]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [410,34]\n..\\rh-issue\\controllers\\issue.js [411,40]"
     },
     {
         "source": "Exists another issue with that name in this project.",
         "language": "es",
         "context": "issue",
         "translation": "Existe otra incidencia con ese nombre en este proyecto.",
-        "ref": "..\\rh-issue\\services\\issue.js [34,42]"
+        "ref": "..\\rh-issue\\services\\issue.js [33,42]"
     },
     {
         "source": "Exists another issue with that title in this project.",
         "language": "es",
         "context": "issue",
         "translation": "Existe otra incidencia con ese título en este proyecto.",
-        "ref": "..\\rh-issue\\services\\issue.js [45,42]"
-    },
-    {
-        "source": "From parameter is missing or from status does not exist.",
-        "language": "es",
-        "context": "issue",
-        "translation": "El parámetro desde (from) no existe o el estado que representa.",
-        "ref": "..\\rh-issue\\services\\issue-transition.js [23,38]"
+        "ref": "..\\rh-issue\\services\\issue.js [44,42]"
     },
     {
         "source": "Get issues",
@@ -151,7 +152,7 @@
         "language": "es",
         "context": "issue",
         "translation": "La incidencia con el UUID %s no existe.",
-        "ref": "..\\rh-issue\\controllers\\issue.js [527,42]\n..\\rh-issue\\controllers\\issue.js [577,42]\n..\\rh-issue\\controllers\\issue.js [627,42]\n..\\rh-issue\\controllers\\issue.js [678,42]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [493,38]\n..\\rh-issue\\controllers\\issue.js [544,38]\n..\\rh-issue\\controllers\\issue.js [595,38]\n..\\rh-issue\\controllers\\issue.js [647,38]"
     },
     {
         "source": "Issues",
@@ -164,56 +165,56 @@
         "source": "Issues",
         "language": "es",
         "translation": "Incidencias",
-        "ref": "..\\rh-issue\\controllers\\issue.js [301,30]\n..\\rh-issue\\controllers\\issue.js [472,30]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [312,30]\n..\\rh-issue\\controllers\\issue.js [437,30]"
     },
     {
         "source": "Minimalist",
         "language": "es",
         "context": "issue",
         "translation": "Minimalista",
-        "ref": "..\\rh-issue\\conf_data.js [47,41]"
+        "ref": "..\\rh-issue\\conf_data.js [44,24]\n..\\rh-issue\\conf_data.js [53,28]"
     },
     {
         "source": "Name",
         "language": "es",
         "context": "issue",
         "translation": "Nombre ",
-        "ref": "..\\rh-issue\\controllers\\issue.js [153,46]\n..\\rh-issue\\controllers\\issue.js [272,34]\n..\\rh-issue\\controllers\\issue.js [364,34]\n..\\rh-issue\\controllers\\issue.js [365,40]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [155,46]\n..\\rh-issue\\controllers\\issue.js [275,34]\n..\\rh-issue\\controllers\\issue.js [357,34]\n..\\rh-issue\\controllers\\issue.js [358,40]"
     },
     {
         "source": "Open",
         "language": "es",
         "context": "issue",
         "translation": "Abierto",
-        "ref": "..\\rh-issue\\conf_data.js [35,37]"
+        "ref": "..\\rh-issue\\conf_data.js [60,36]"
     },
     {
         "source": "Priority",
         "language": "es",
         "context": "issue",
         "translation": "Prioridad",
-        "ref": "..\\rh-issue\\controllers\\issue.js [290,34]\n..\\rh-issue\\controllers\\issue.js [404,34]\n..\\rh-issue\\controllers\\issue.js [405,40]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [293,34]\n..\\rh-issue\\controllers\\issue.js [397,34]\n..\\rh-issue\\controllers\\issue.js [398,40]"
     },
     {
         "source": "Project",
         "language": "es",
         "context": "issue",
         "translation": "Proyecto",
-        "ref": "..\\rh-issue\\controllers\\issue.js [278,34]\n..\\rh-issue\\controllers\\issue.js [376,34]\n..\\rh-issue\\controllers\\issue.js [377,40]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [281,34]\n..\\rh-issue\\controllers\\issue.js [369,34]\n..\\rh-issue\\controllers\\issue.js [370,40]"
     },
     {
         "source": "Project parameter is missing.",
         "language": "es",
         "context": "issue",
         "translation": "No se encuentra el parámetro proyecto.",
-        "ref": "..\\rh-issue\\services\\issue.js [25,38]"
+        "ref": "..\\rh-issue\\services\\issue.js [24,38]"
     },
     {
         "source": "Resolved",
         "language": "es",
         "context": "issue",
         "translation": "Resuelto",
-        "ref": "..\\rh-issue\\conf_data.js [40,41]"
+        "ref": "..\\rh-issue\\conf_data.js [35,41]"
     },
     {
         "source": "Spanish",
@@ -226,13 +227,6 @@
         "language": "es",
         "translation": "Idioma español.",
         "ref": "rh-issue-es.js [19,34]"
-    },
-    {
-        "source": "Status",
-        "language": "es",
-        "context": "issue",
-        "translation": "Estado",
-        "ref": "..\\rh-issue\\controllers\\issue.js [296,34]\n..\\rh-issue\\controllers\\issue.js [431,34]\n..\\rh-issue\\controllers\\issue.js [432,40]"
     },
     {
         "source": "Task",
@@ -260,7 +254,7 @@
         "language": "es",
         "context": "issue",
         "translation": "La incidencia está cerrada.",
-        "ref": "..\\rh-issue\\conf_data.js [36,100]"
+        "ref": "..\\rh-issue\\conf_data.js [71,42]"
     },
     {
         "source": "The issue is important and must be solved.",
@@ -288,7 +282,7 @@
         "language": "es",
         "context": "issue",
         "translation": "La incidencia está abierta.",
-        "ref": "..\\rh-issue\\conf_data.js [35,100]"
+        "ref": "..\\rh-issue\\conf_data.js [63,42]"
     },
     {
         "source": "The issue is very important and must be resolved as soon as possible..",
@@ -302,63 +296,56 @@
         "language": "es",
         "context": "issue",
         "translation": "La incidencia se cerró porque está duplicada en otra incidencia.",
-        "ref": "..\\rh-issue\\conf_data.js [42,109]"
+        "ref": "..\\rh-issue\\conf_data.js [37,109]"
     },
     {
         "source": "The issue was closed because it was checked and work properly so don\\'t need work on it.",
         "language": "es",
         "context": "issue",
         "translation": "La incidencia se cerró porque se verificó y trabaja apropiadamente, por lo tanto no requiere trabajo.",
-        "ref": "..\\rh-issue\\conf_data.js [43,109]"
+        "ref": "..\\rh-issue\\conf_data.js [38,109]"
     },
     {
         "source": "The issue was closed because the problem was discarded and will not be worked on.",
         "language": "es",
         "context": "issue",
         "translation": "La incidencia se cerró porque el problema se ha descartado no se trabajará en ella.",
-        "ref": "..\\rh-issue\\conf_data.js [41,109]"
+        "ref": "..\\rh-issue\\conf_data.js [36,109]"
     },
     {
         "source": "The issue was closed because the problem was solved.",
         "language": "es",
         "context": "issue",
         "translation": "La incidencia se cerró porque el problema se ha solucionado.",
-        "ref": "..\\rh-issue\\conf_data.js [40,109]"
+        "ref": "..\\rh-issue\\conf_data.js [35,109]"
     },
     {
         "source": "The issue with UUID %s does not exists.",
         "language": "es",
         "context": "issue",
         "translation": "La incidencia con el UUID %s no existe.",
-        "ref": "..\\rh-issue\\controllers\\issue.js [108,42]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [110,38]"
     },
     {
         "source": "The minimalist workflow only support open and close status.",
         "language": "es",
         "context": "issue",
         "translation": "El flujo de trabajo minimalista unicamente admite los estados abierto y cerrado.",
-        "ref": "..\\rh-issue\\conf_data.js [47,108]"
+        "ref": "..\\rh-issue\\conf_data.js [56,34]"
     },
     {
         "source": "The project does not exist or you do not have permission to access it.",
         "language": "es",
         "context": "issue",
         "translation": "El proyecto no existe o usted no tiene permiso para accederlo.",
-        "ref": "..\\rh-issue\\controllers\\issue.js [92,46]\n..\\rh-issue\\controllers\\issue.js [98,42]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [93,42]\n..\\rh-issue\\controllers\\issue.js [99,38]"
     },
     {
         "source": "Title",
         "language": "es",
         "context": "issue",
         "translation": "Título ",
-        "ref": "..\\rh-issue\\controllers\\issue.js [153,79]\n..\\rh-issue\\controllers\\issue.js [267,34]\n..\\rh-issue\\controllers\\issue.js [343,34]\n..\\rh-issue\\controllers\\issue.js [344,40]"
-    },
-    {
-        "source": "To parameter is missing or to status does not exist.",
-        "language": "es",
-        "context": "issue",
-        "translation": "El parámetro hasta (to) no existe o el estado que representa.",
-        "ref": "..\\rh-issue\\services\\issue-transition.js [27,38]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [155,79]\n..\\rh-issue\\controllers\\issue.js [270,34]\n..\\rh-issue\\controllers\\issue.js [336,34]\n..\\rh-issue\\controllers\\issue.js [337,40]"
     },
     {
         "source": "Trivial",
@@ -372,7 +359,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Tipo",
-        "ref": "..\\rh-issue\\controllers\\issue.js [284,34]\n..\\rh-issue\\controllers\\issue.js [390,34]\n..\\rh-issue\\controllers\\issue.js [391,40]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [287,34]\n..\\rh-issue\\controllers\\issue.js [383,34]\n..\\rh-issue\\controllers\\issue.js [384,40]"
     },
     {
         "source": "Urgent",
@@ -386,20 +373,14 @@
         "language": "es",
         "context": "issue",
         "translation": "Trabaja para mí",
-        "ref": "..\\rh-issue\\conf_data.js [43,41]"
+        "ref": "..\\rh-issue\\conf_data.js [38,41]"
     },
     {
         "source": "Workflow",
         "language": "es",
         "context": "issue",
+        "isDraft": false,
         "translation": "Flujo de trabajo",
-        "ref": "..\\rh-issue\\controllers\\issue.js [324,38]\n..\\rh-issue\\controllers\\issue.js [445,34]\n..\\rh-issue\\controllers\\issue.js [446,40]"
-    },
-    {
-        "source": "Workflow parameter is missing or workflow does not exist.",
-        "language": "es",
-        "context": "issue",
-        "translation": "El parámetro flujo de trabajo (workflow) no existe o el flujo de trabajo que representa.",
-        "ref": "..\\rh-issue\\services\\issue-transition.js [19,38]"
+        "ref": "..\\rh-issue\\conf_data.js [50,32]"
     }
 ]

@@ -253,15 +253,10 @@ async function getted(entity, result, options) {
 
     const rows = result.rows || result;
     for (const i in rows) {
-        let row = rows[i];
+        const row = rows[i];
         const entityId = row.id;
         if (entityId === undefined) {
             continue;
-        }
-
-        if (row.toJSON) {
-            row = row.toJSON();
-            rows[i] = row;
         }
 
         for (const commentType of commentTypes) {
@@ -317,7 +312,6 @@ async function updated(entity, result, data, options, service) {
 
     const rows = await service.getList({
         ...options,
-        withCount: false,
         raw: true,
         nest: true,
         loc: options.loc,
@@ -390,7 +384,6 @@ async function deleting(entity, options, service) {
 
     const rows = await service.getList({
         ...options,
-        withCount: false,
         raw: true,
         nest: true,
         loc: options.loc,

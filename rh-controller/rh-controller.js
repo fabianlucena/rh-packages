@@ -1,76 +1,74 @@
-import {corsSimplePreflight, asyncHandler} from 'http-util';
-import express from 'express';
-import dasherize from 'dasherize';
+import { getRoutes } from 'rf-get-routes';
 
+/**
+ * This is the base class for HTTP controller definitions.
+ * The controller takes the functions methods static and non static and map to
+ * routes. For more information please referer to rf-get-routes library.
+ */
 export class RHController {
-    static installRouteForMethod(router, checkPermission, httpMethod, methodName) {
-        methodName ??= httpMethod;
-        if (!this[methodName]) {
-            return;
-        }
+    static routes() {
+        const routes = getRoutes(
+            this,
+            {
+                appendHandlers: [
+                    {name: 'getData', httpMethod: 'get', handler: 'defaultGet'},
+                    {name: 'getGrid', httpMethod: 'get', handler: 'defaultGet'}, 
+                    {name: 'getForm', httpMethod: 'get', handler: 'defaultGet'},
+                ],
+            },
+        );
 
-        const params = [];
-
-        const withPermission = methodName + 'Permission';
-        if (this[withPermission]) {
-            params.push(checkPermission(this[withPermission]));
-        }
-
-        const withMiddleware = methodName + 'Middleware';
-        if (this[withMiddleware]) {
-            params.push(this[withMiddleware]);
-        }
-
-        params.push(asyncHandler(this, methodName));
-
-        router[httpMethod]('', ...params);
-
-        this.allMethods ??= [];
-        this.allMethods.push(httpMethod.toUpperCase());
-    }
-    
-    static routes(router, checkPermission, config) {
-        let path = this.path;
-        if (!path) {
-            path = this.name;
-            if (path.endsWith('controller') || path.endsWith('Controller')) {
-                path = path.substring(0, path.length - 10);
-            }
-
-            path = '/' + dasherize(path);
-        }
-
-        const ownRouter = express.Router();
-        router.use(path, ownRouter);
-
-        let getMethod;
-        if (this.get) {
-            getMethod = 'get';
-        } else if (this.getData) {
-            getMethod = 'defaultGet';
-        }
-
-        this.installRouteForMethod(ownRouter, checkPermission, 'get', getMethod);
-        this.installRouteForMethod(ownRouter, checkPermission, 'post');
-        this.installRouteForMethod(ownRouter, checkPermission, 'patch');
-        this.installRouteForMethod(ownRouter, checkPermission, 'put');
-        this.installRouteForMethod(ownRouter, checkPermission, 'delete');
-        this.installRouteForMethod(ownRouter, checkPermission, 'options');
-
-        if (config?.server?.cors && !this.options) {
-            ownRouter.options('', corsSimplePreflight(this.allMethods.join(',')));
-        }
-
-        this.installRouteForMethod(ownRouter, checkPermission, 'all');
+        return routes;
     }
 
-    static all(req, res) {
+    all(req, res) {
         res.status(405).send({error: 'HTTP method not allowed.'});
     }
 
-    static defaultGet(req, res, next) {
-        if (this.getData) {
-            res.status(200).json(this.getData(req, res, next));    
+    async defaultGet(req, res, next) {
+        if ('$grid' in req.query) {
+            let instance;
+            if (this.getGrid) {
+                instance = this;
+            } else if (this.constructor.getGrid) {
+                instance = this.constructor;
+            }
+
+            if (instance) {
+                const result = await instance.getGrid(req, res, next);
+                res.status(200).json(result);
+                return;
+            }
         }
+        
+        if ('$form' in req.query) {
+            let instance;
+            if (this.getForm) {
+                instance = this;
+            } else if (this.constructor.getForm) {
+                instance = this.constructor;
+            }
+
+            if (instance) {
+                const result = await instance.getForm(req, res, next);
+                res.status(200).json(result);
+                return;
+            }
+        }
+
+        let instance;
+        if (this.getData) {
+            instance = this;
+        } else if (this.constructor.getData) {
+            instance = this.constructor;
+        }
+
+        if (instance) {
+            const result = await instance.getData(req, res, next);
+            res.status(200).json(result);
+            return;    
+        }
+
+        res.status(405).send({error: 'HTTP method not allowed.'});
     }
 }

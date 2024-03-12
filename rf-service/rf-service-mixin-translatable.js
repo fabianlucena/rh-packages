@@ -10,15 +10,7 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
 
         const loc = options.loc;
         if (loc) {
-            if (result.then) {
-                result = await result;
-            }
-            
-            if (options.withCount) {
-                result.rows = await this.translateRows(await result.rows, loc);
-            } else {
-                result = await this.translateRows(await result, loc);
-            }
+            result = await this.translateRows(await result, loc);
         } else if (options.translate) {
             console.warn('Cannot translate because no localization (loc) defined.');
         }
@@ -31,10 +23,6 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
     }
 
     async translateRow(row, loc, options) {
-        if (row.toJSON) {
-            row = row.toJSON();
-        }
-
         if (row.isTranslatable && this.translatableColumns?.length) {
             const translationContext = row.translationContext ?? this.defaultTranslationContext ?? null;
             await Promise.all(this.translatableColumns.map(async field => {

@@ -1,7 +1,8 @@
 import {conf} from '../conf.js';
 import {ServiceIdUuidNameTitleDescriptionEnabledTranslatable} from 'rf-service';
 import {completeIncludeOptions} from 'sql-util';
-import {CheckError, loc} from 'rf-util';
+import {CheckError} from 'rf-util';
+import {loc} from 'rf-locale';
 import {_ConflictError} from 'http-util';
 
 export class IssueService extends ServiceIdUuidNameTitleDescriptionEnabledTranslatable {
@@ -13,8 +14,6 @@ export class IssueService extends ServiceIdUuidNameTitleDescriptionEnabledTransl
         type: conf.global.services.IssueType.singleton(),
         priority: conf.global.services.IssuePriority.singleton(),
         assignee: conf.global.services.User.singleton(),
-        status: conf.global.services.IssueStatus.singleton(),
-        workflow: conf.global.services.IssueWorkflow.singleton(),
         closeReason: conf.global.services.IssueCloseReason.singleton(),
     };
     defaultTranslationContext = 'issue';
@@ -176,68 +175,6 @@ export class IssueService extends ServiceIdUuidNameTitleDescriptionEnabledTransl
             );
 
             delete options.includeAssignee;
-        }
-
-        if (options.includeStatus || options.where?.statusUuid !== undefined) {
-            let where;
-
-            if (options.isEnabled !== undefined) {
-                where = {isEnabled: options.isEnabled};
-            }
-
-            if (options.where?.statusUuid !== undefined) {
-                where ??= {};
-                where.uuid = options.where.statusUuid;
-                delete options.where.statusUuid;
-            }
-
-            const attributes = options.includeStatus?
-                ['uuid', 'name', 'title', 'isTranslatable']:
-                [];
-
-            completeIncludeOptions(
-                options,
-                'Status',
-                {
-                    as: 'Status',
-                    model: conf.global.models.IssueStatus,
-                    attributes,
-                    where,
-                }
-            );
-
-            delete options.includeStatus;
-        }
-
-        if (options.includeWorkflow || options.where?.workflowUuid !== undefined) {
-            let where;
-
-            if (options.isEnabled !== undefined) {
-                where = {isEnabled: options.isEnabled};
-            }
-
-            if (options.where?.workflowUuid !== undefined) {
-                where ??= {};
-                where.uuid = options.where.workflowUuid;
-                delete options.where.workflowUuid;
-            }
-
-            const attributes = options.includeWorkflow?
-                ['uuid', 'name', 'title', 'isTranslatable']:
-                [];
-
-            completeIncludeOptions(
-                options,
-                'Workflow',
-                {
-                    as: 'Workflow',
-                    model: conf.global.models.IssueWorkflow,
-                    attributes,
-                    where,
-                }
-            );
-
-            delete options.includeWorkflow;
         }
 
         if (options.includeCloseReason || options.where?.closeReasonUuid !== undefined) {
