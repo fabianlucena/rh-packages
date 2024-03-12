@@ -1,20 +1,20 @@
-import {EavAttributeTypeService} from './attribute_type.js';
-import {EavAttributeOptionService} from './attribute_option.js';
-import {conf} from '../conf.js';
-import {runSequentially} from 'rf-util';
-import {loc} from 'rf-locale';
-import {ServiceIdUuidNameTitleDescriptionEnabledTranslatable} from 'rf-service';
-import {completeIncludeOptions} from 'sql-util';
+import { EavAttributeTypeService } from './attribute_type.js';
+import { EavAttributeCategoryService } from './attribute_category.js';
+import { EavAttributeOptionService } from './attribute_option.js';
+import { EavAttributeTagService } from './attribute_tag.js';
+import { conf } from '../conf.js';
+import { runSequentially, _Error } from 'rf-util';
+import { loc } from 'rf-locale';
+import { ServiceIdUuidNameTitleDescriptionEnabledTranslatable } from 'rf-service';
+import { completeIncludeOptions } from 'sql-util';
 import { ConflictError } from 'http-util';
 
 export class EavAttributeService extends ServiceIdUuidNameTitleDescriptionEnabledTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.EavAttribute;
     references = {
-        attributeType: {
-            service: EavAttributeTypeService.singleton(),
-            otherName: 'type',
-        },
+        type: EavAttributeTypeService.singleton(),
+        category: EavAttributeCategoryService.singleton(),
         modelEntityName: {
             service: conf?.global?.services?.ModelEntityName?.singleton(),
             createIfNotExists: true,
@@ -27,6 +27,43 @@ export class EavAttributeService extends ServiceIdUuidNameTitleDescriptionEnable
         }
 
         super();
+    }
+
+    init() {
+        this.eavAttributeTypeService =     EavAttributeTypeService.    singleton();
+        this.eavAttributeCategoryService = EavAttributeCategoryService.singleton();
+        this.eavAttributeOptionService =   EavAttributeOptionService.  singleton();
+        this.eavAttributeTagService =      EavAttributeTagService.     singleton();
+    }
+
+    async validateForCreation(data) {
+        if (!data.typeId) {
+            throw new _Error(loc._cf('No type defined for attribute "%s".', data.name));
+        }
+
+        const type = await this.eavAttributeTypeService.getNameForId(data.typeId);
+        if (type === 'select' || type === 'tags') {
+            if (!data.categoryId) {
+                let category = await this.eavAttributeCategoryService.getSingleOrNullForName(data.name);
+                if (!category) {
+                    category = await this.eavAttributeCategoryService.create({
+                        name: data.name,
+                        title: data.title,
+                        isTranaslatable: data.isTranaslatable,
+                        translationContext: data.translationContext,
+                        description: data.description,
+                    });
+                
+                    if (!category) {
+                        throw new _Error(loc._cf('No category defined for attribute "%s".', data.name));
+                    }
+                }
+
+                data = {...data, categoryId: category.id};
+            }        
+        }
+
+        return super.validateForCreation(data); 
     }
 
     async checkTitleForConflict(title, data) {
@@ -44,16 +81,19 @@ export class EavAttributeService extends ServiceIdUuidNameTitleDescriptionEnable
         }
     }
 
-    init() {
-        this.eavAttributeOptionService = EavAttributeOptionService.singleton();
-    }
-
     async createOrUpdate(data) {
         const attribute = await this.createIfNotExists(data);
-        const attributeId = attribute.id;
+        const commonData = {
+            categoryId: attribute.categoryId,
+        };
         await runSequentially(
             data.options,
-            async data => await this.eavAttributeOptionService.createIfNotExists({attributeId, ...data})
+            async option => await this.eavAttributeOptionService.createIfNotExists({...commonData, ...option})
+        );
+
+        await runSequentially(
+            data.tags,
+            async tag => await this.eavAttributeTagService.createIfNotExists({...commonData, ...tag})
         );
 
         return attribute;
@@ -82,6 +122,7 @@ export class EavAttributeService extends ServiceIdUuidNameTitleDescriptionEnable
                 options,
                 'EavAttributeType',
                 {
+                    as: 'Type',
                     model: conf.global.models.EavAttributeType,
                     attributes,
                     where,

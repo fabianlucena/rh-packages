@@ -4,7 +4,7 @@ export default (sequelize, DataTypes) => {
     class EavValueOption extends sequelize.Sequelize.Model {
         static associate(models) {
             this.belongsTo(models.EavAttribute,       {foreignKey: 'attributeId'});
-            this.belongsTo(models.EavAttributeOption, {foreignKey: 'attributeOptionId'});
+            this.belongsTo(models.EavAttributeOption, {foreignKey: 'optionId',  as: 'Option'});
         }
     }
     EavValueOption.init({
@@ -28,7 +28,7 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.BIGINT,
             allowNull: false,
         },
-        attributeOptionId: {
+        optionId: {
             type: DataTypes.BIGINT,
             allowNull: false,
         },

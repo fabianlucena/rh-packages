@@ -56,6 +56,10 @@ export const ServiceMixinName = Service => class extends Service {
         return this.getSingleFor({name}, options);
     }
 
+    async getSingleOrNullForName(name, options) {
+        return this.getForName(name, {...options, skipNoRowsError: true, nullOnManyRowsError: true});
+    }
+
     /**
      * Creates a new row into DB if not exists.
      * @param {object} data - data for the row @see create.

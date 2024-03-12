@@ -3,11 +3,8 @@ import {conf} from '../conf.js';
 export default (sequelize, DataTypes) => {
     class EavAttributeTag extends sequelize.Sequelize.Model {
         static associate(models) {
-            this.belongsTo(models.EavAttribute, {foreignKey: 'attributeId'});
-
-            if (models.Module) {
-                this.belongsTo(models.Module, {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
-            }
+            this.belongsTo(models.EavAttributeCategory, {foreignKey: 'categoryId',    as: 'Category'});
+            this.belongsTo(models.Module,               {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
         }
     }
     EavAttributeTag.init({
@@ -30,6 +27,10 @@ export default (sequelize, DataTypes) => {
         description: {
             type: DataTypes.TEXT,
             allowNull: true,
+        },
+        categoryId: {
+            type: DataTypes.BIGINT,
+            allowNull: false,
         },
     }, {
         sequelize,

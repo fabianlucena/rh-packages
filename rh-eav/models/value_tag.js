@@ -4,7 +4,7 @@ export default (sequelize, DataTypes) => {
     class EavValueTag extends sequelize.Sequelize.Model {
         static associate(models) {
             this.belongsTo(models.EavAttribute,    {foreignKey: 'attributeId'});
-            this.belongsTo(models.EavAttributeTag, {foreignKey: 'attributeTagId'});
+            this.belongsTo(models.EavAttributeTag, {foreignKey: 'tagId',      as: 'Tag'});
         }
     }
     EavValueTag.init({
@@ -28,7 +28,7 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.BIGINT,
             allowNull: false,
         },
-        attributeTagId: {
+        tagId: {
             type: DataTypes.BIGINT,
             allowNull: false,
         },

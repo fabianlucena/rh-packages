@@ -18,7 +18,7 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
 
     async validateForCreation(data) {
         checkParameterNotNullOrEmpty(data.attributeId, loc._cf('eav', 'Attribute'));
-        checkParameterNotNullOrEmpty(data.attributeTagId, loc._cf('eav', 'Tag'));
+        checkParameterNotNullOrEmpty(data.tagId,       loc._cf('eav', 'Tag'));
 
         const rows = await this.getFor(data, {skipNoRowsError: true});
         if (rows.length) {
@@ -64,10 +64,10 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
                 delete options.where?.attributeTagUuid;
             }
 
-            if (options.where?.attributeTagId) {
+            if (options.where?.tagId) {
                 where ??= {};
-                where.id = options.where.attributeTagId;
-                delete options.where?.attributeTagId;
+                where.id = options.where.tagId;
+                delete options.where?.tagId;
             }
 
             const EavAttributeTagOptions = {
@@ -207,7 +207,7 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
 
                 const tagId = tagRow.id;
                 tagsId.push(tagId);
-                serviceData.attributeTagId = tagId;
+                serviceData.tagId = tagId;
                 const rows = await this.getFor(serviceData, {...options, skipNoRowsError: true});
                 if (rows?.length) {
                     continue;
@@ -217,8 +217,8 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
                 result++;
             }
 
-            delete serviceData.attributeTagId;
-            serviceData.notAttributeTagId = tagsId;
+            delete serviceData.tagId;
+            serviceData.notTagId = tagsId;
             result += await this.deleteFor(serviceData, {...options, where: undefined});
         }
 
@@ -255,14 +255,14 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
             }
         }
 
-        if (where.attributeTagId) {
-            filters.push({attributeTagId: where.attributeTagId});
-            delete where.attributeTagId;
+        if (where.tagId) {
+            filters.push({tagId: where.tagId});
+            delete where.tagId;
         }
 
-        if (where.notAttributeTagId) {
-            filters.push({attributeTagId: {[Op.notIn]: where.notAttributeTagId}});
-            delete where.notAttributeTagId;
+        if (where.notTagId) {
+            filters.push({tagId: {[Op.notIn]: where.notTagId}});
+            delete where.notTagId;
         }
 
         if (filters.length) {

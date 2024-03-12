@@ -12,7 +12,7 @@ export class EavValueOptionService extends ServiceIdUuidTranslatable {
     model = conf.global.models.EavValueOption;
     references = {
         attribute: EavAttributeService.singleton(),
-        attributeOption: EavAttributeOptionService.singleton(),
+        option: EavAttributeOptionService.singleton(),
     };
 
     constructor() {
@@ -26,8 +26,8 @@ export class EavValueOptionService extends ServiceIdUuidTranslatable {
     async getListOptions(options) {
         options ||= {};
 
-        if (options.includeAttributeOption || options.where?.attributeOptionUuid) {
-            let attributes = options.includeAttributeOption || [];
+        if (options.includeOption || options.where?.optionUuid) {
+            let attributes = options.includeOption || [];
             if (attributes === true) {
                 attributes = ['uuid', 'name', 'title', 'isTranslatable', 'translationContext', 'description'];
             }
@@ -37,15 +37,16 @@ export class EavValueOptionService extends ServiceIdUuidTranslatable {
                 where = {isEnabled: options.isEnabled};
             }
 
-            if (options.where?.attributeOptionUuid) {
-                where = {...where, uuid: options.where.attributeOptionUuid};
-                delete options.where?.attributeOptionUuid;
+            if (options.where?.optionUuid) {
+                where = {...where, uuid: options.where.optionUuid};
+                delete options.where?.optionUuid;
             }
     
             completeIncludeOptions(
                 options,
                 'EavAttributeOption',
                 {
+                    as: 'Option',
                     model: conf.global.models.EavAttributeOption,
                     attributes,
                     where,
@@ -107,14 +108,14 @@ export class EavValueOptionService extends ServiceIdUuidTranslatable {
         const serviceData = {
             attributeId: data.attributeId,
             entityId: data.entityId,
-            attributeOptionUuid: data.value,
+            optionUuid: data.value,
         };
 
         if (data.value) {
-            data.attributeOptionUuid = data.value;
-            const result = await conf.eavValueOptionService.getFor(serviceData, options);
+            data.optionUuid = data.value;
+            const result = await this.getFor(serviceData, options);
             if (!result?.length) {
-                const inserted = await conf.eavValueOptionService.create(serviceData, options);
+                const inserted = await this.create(serviceData, options);
                 valueId = inserted.id;
             } else {
                 valueId = result[0].id;
@@ -125,6 +126,6 @@ export class EavValueOptionService extends ServiceIdUuidTranslatable {
 
         serviceData.notId = valueId;
 
-        await conf.eavValueOptionService.deleteFor(serviceData);
+        await this.deleteFor(serviceData);
     }
 }

@@ -262,11 +262,15 @@ export class ServiceBase {
 
         try {
             await this.emit('creating', options?.emitEvent, data, options, this);
-            const row = await this.model.create(data, options);
+            let row = await this.model.create(data, options);
             await this.emit('created', options?.emitEvent, row, data, options, this);
 
             await transaction?.commit();
 
+            if (this.dto) {
+                row = new this.dto(row);
+            }
+    
             return row;
         } catch (error) {
             await transaction?.rollback();
@@ -647,20 +651,13 @@ export class ServiceBase {
             }
         }
 
-        let [row, created] = await this.model.findOrCreate({
-            ...options,
-            defaults: data,
-            raw: true,
-        });
-        if (created) {
-            row = row.toJSON();
+        let row = this.getSingle({...options, skipNoRowsError: true});
+        if (row) {
+            return [row, false];
         }
 
-        if (this.dto) {
-            row = new this.dto(row);
-        }
-
-        return [row, created];
+        row = await this.create(data, {raw: true});
+        return [row, true];
     }
 
     async createIfNotExists(data, where) {

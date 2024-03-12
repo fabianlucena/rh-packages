@@ -7,9 +7,14 @@ export default (sequelize, DataTypes) => {
                 throw new Error('There is no ModelEntityName model. Try adding RH Model Entity Name module to the project.');
             }
 
-            this.belongsTo(models.Module,           {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
-            this.belongsTo(models.EavAttributeType, {foreignKey: 'attributeTypeId'});
-            this.belongsTo(models.ModelEntityName,  {foreignKey: 'modelEntityNameId'});
+            if (!models?.Module) {
+                throw new Error('There is no Module model. Try adding RH Module module to the project.');
+            }
+
+            this.belongsTo(models.ModelEntityName,      {foreignKey: 'modelEntityNameId'});
+            this.belongsTo(models.EavAttributeType,     {foreignKey: 'typeId',        as: 'Type'});
+            this.belongsTo(models.EavAttributeCategory, {foreignKey: 'categoryId',    as: 'Category',    allowNull: true});
+            this.belongsTo(models.Module,               {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
         }
     }
     EavAttribute.init({
@@ -55,9 +60,13 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.BIGINT,
             allowNull: false,
         },
-        attributeTypeId: {
+        typeId: {
             type: DataTypes.BIGINT,
             allowNull: false,
+        },
+        categoryId: {
+            type: DataTypes.BIGINT,
+            allowNull: true,
         },
         order: {
             type: DataTypes.BIGINT,

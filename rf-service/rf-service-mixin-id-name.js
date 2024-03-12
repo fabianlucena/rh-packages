@@ -25,6 +25,19 @@ export const ServiceMixinIdName = Service => class ServiceIdName extends Service
         return row.id;
     }
 
+    async getNameForId(id, options) {
+        if (Array.isArray(id)) {
+            return (await this.getForId(id, {attributes: ['name'], ...options})).map(row => row.name);
+        }
+        
+        const row = await this.getForId(id, {attributes: ['name'], ...options});
+        if (!row) {
+            return;
+        }
+
+        return row.name;
+    }
+
     /**
     * Gets a row ID for its name. For many coincidences this method fails, for no rows this method will creates a newone.
     * @param {string} name - name for the source to get.

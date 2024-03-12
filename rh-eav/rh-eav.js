@@ -97,8 +97,8 @@ async function getAttributes(entity, options) {
         attributesCache[language] = attributes;
 
         for (const attribute of attributes) {
-            const attributeOptions = await conf.eavAttributeOptionService.getFor(
-                {attributeId: attribute.id},
+            const attrOptions = await conf.eavAttributeOptionService.getFor(
+                {categoryId: attribute.categoryId},
                 {
                     raw: true,
                     nest: true,
@@ -106,9 +106,9 @@ async function getAttributes(entity, options) {
                 },
             );
 
-            if (attributeOptions?.length) {
+            if (attrOptions?.length) {
                 attribute.options ||= [];
-                attribute.options.push(...attributeOptions.map(option => {
+                attribute.options.push(...attrOptions.map(option => {
                     return {
                         name: option.name,
                         value: option.uuid,
@@ -117,7 +117,7 @@ async function getAttributes(entity, options) {
                 }));
             }
 
-            attribute.type = attribute.EavAttributeType.name;
+            attribute.type = attribute.Type.name;
             attribute.htmlType = attribute.type;
         }
     }
@@ -256,7 +256,7 @@ async function getted(entity, result, options) {
         for (const attribute of attributes) {
             const attributeId = attribute.id;
             const name = attribute.name;
-            const typeName = attribute.EavAttributeType.name;
+            const typeName = attribute.Type.name;
             const where = {
                 attributeId,
                 entityId,
@@ -279,7 +279,7 @@ async function getted(entity, result, options) {
                 const valueRows = await conf.eavValueOptionService.getFor(
                     where,
                     {
-                        includeAttributeOption: true,
+                        includeOption: true,
                         raw: true,
                         nest: true,
                         loc: options?.loc,
@@ -287,7 +287,7 @@ async function getted(entity, result, options) {
                 );
 
                 if (valueRows?.length) {
-                    row[name] = valueRows[0]?.EavAttributeOption;
+                    row[name] = valueRows[0]?.Option;
                 }
             } break;
             case 'tags': {
@@ -386,6 +386,7 @@ async function updateValues(entity, entityIds, data, options) {
             const optionData = {
                 attributeId: attribute.id,
                 entityId,
+                categoryId: attribute.categoryId,
                 value,
             };
 

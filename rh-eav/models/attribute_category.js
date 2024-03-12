@@ -1,13 +1,9 @@
 import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-    class EavAttributeOption extends sequelize.Sequelize.Model {
-        static associate(models) {
-            this.belongsTo(models.EavAttributeCategory, {foreignKey: 'categoryId',    as: 'Category'});
-            this.belongsTo(models.Module,               {foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true});
-        }
+    class EavAttributeCategory extends sequelize.Sequelize.Model {
     }
-    EavAttributeOption.init({
+    EavAttributeCategory.init({
         id: {
             type: DataTypes.BIGINT,
             autoIncrement: true,
@@ -41,15 +37,11 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
             allowNull: true,
         },
-        categoryId: {
-            type: DataTypes.BIGINT,
-            allowNull: false,
-        },
     }, {
         sequelize,
         timestamps: true,
-        tableName: 'AttributeOption',
+        tableName: 'AttributeCategory',
         schema: conf.schema,
     });
-    return EavAttributeOption;
+    return EavAttributeCategory;
 };
