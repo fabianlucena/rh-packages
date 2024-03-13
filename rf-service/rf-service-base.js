@@ -446,8 +446,15 @@ export class ServiceBase {
      * @returns {Promise[{Array[row], count}]}
      */
     async getListAndCount(options) {
+        options = await this.getListOptions(options);
         const rows = await this.getList(options);
-        const count = await this.count({...options, attributes: []});
+
+        options.attributes = [];
+        if (options.include) {
+            options.include = options.include.map(i => ({...i, attributes: []}));
+        }
+        const count = await this.count(options);
+
         return {rows, count};
     }
 

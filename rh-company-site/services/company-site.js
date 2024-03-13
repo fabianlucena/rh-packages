@@ -88,7 +88,10 @@ export class CompanySiteService extends ServiceBase {
             }
         }
 
-        if (options.includeCompany || options.where.companyName || options.where.companyUuid) {
+        if (options.includeCompany || 
+            options.where?.companyName || 
+            options.where?.companyUuid
+        ) {
             let where;
             if (options.isEnabled !== undefined) {
                 where = {isEnabled: options.isEnabled};

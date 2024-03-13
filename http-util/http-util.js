@@ -1,6 +1,6 @@
-import {setUpError, errorHandler, deepComplete, runSequentially, stripQuotes, checkParameterUuid} from 'rf-util';
-import {loc, defaultLoc} from 'rf-locale';
-import {installRoutes} from 'rf-express-routes';
+import { setUpError, errorHandler, deepComplete, runSequentially, stripQuotes, checkParameterUuid } from 'rf-util';
+import { loc, defaultLoc } from 'rf-locale';
+import { installRoutes } from 'rf-express-routes';
 import * as uuid from 'uuid';
 import fs from 'fs';
 import path from 'path';
