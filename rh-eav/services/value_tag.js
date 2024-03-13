@@ -1,19 +1,17 @@
-import {EavAttributeService} from './attribute.js';
-import {EavAttributeTagService} from './attribute_tag.js';
-import {conf} from '../conf.js';
-import {ServiceIdUuidTranslatable} from 'rf-service';
-import {completeIncludeOptions} from 'sql-util';
-import {checkParameterNotNullOrEmpty, _Error} from 'rf-util';
-import {loc} from 'rf-locale';
-import {_ConflictError} from 'http-util';
+import { conf } from '../conf.js';
+import { ServiceIdUuidTranslatable } from 'rf-service';
+import { completeIncludeOptions } from 'sql-util';
+import { checkParameterNotNullOrEmpty, _Error } from 'rf-util';
+import { loc } from 'rf-locale';
+import { _ConflictError } from 'http-util';
 
 export class EavValueTagService extends ServiceIdUuidTranslatable {
     Sequelize = conf.global.Sequelize;
     sequelize = conf.global.sequelize;
     model = conf.global.models.EavValueTag;
     references = {
-        attribute: EavAttributeService.singleton(),
-        attributeTag: EavAttributeTagService.singleton(),
+        attribute: true,
+        tag:       true,
     };
 
     async validateForCreation(data) {
@@ -33,15 +31,15 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
 
         if (options.includeAttribute
             || options.where?.attribute
-            || options.includeAttributeTag
+            || options.includeTag
             || options.where?.attributeTagUuid
             || options.where?.tags
         ) {
-            const attributes = (options.includeAttributeTag === true)?
+            const attributes = (options.includeTag === true)?
                 ['uuid', 'name', 'description']:
-                (!options.includeAttributeTag)?
+                (!options.includeTag)?
                     []:
-                    options.includeAttributeTag;
+                    options.includeTag;
 
             let where;
             if (options.q) {
@@ -72,6 +70,7 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
 
             const EavAttributeTagOptions = {
                 model: conf.global.models.EavAttributeTag,
+                as: 'Tag',
                 attributes,
             };
 
@@ -288,8 +287,8 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
             },
         };
 
-        if (options.includeAttributeTag === undefined) {
-            options.includeAttributeTag = true;
+        if (options.includeTag === undefined) {
+            options.includeTag = true;
         }
 
         delete options.tagAttributes;
@@ -298,7 +297,7 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
     }
 
     async completeForEntities(entities, options) {
-        if (!options.includeAttributeTag) {
+        if (!options.includeTag) {
             return entities;
         }
 

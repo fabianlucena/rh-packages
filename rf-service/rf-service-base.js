@@ -3,6 +3,7 @@ import { ucfirst, lcfirst } from 'rf-util/rf-util-string.js';
 import { arrangeOptions, completeIncludeOptions } from 'sql-util';
 import { trim, _Error } from 'rf-util';
 import { loc } from 'rf-locale';
+import dependency from 'rf-dependency';
 
 export class ServiceBase {
     /**
@@ -52,25 +53,84 @@ export class ServiceBase {
     static singleton() {
         if (!this.singletonInstance) {
             this.singletonInstance = new this();
-            this.singletonInstance.init();
         }
 
         return this.singletonInstance;
     }
 
     constructor() {
-        this.hiddenColumns ??= ['id'];
-    }
-
-    init() {
         let name = this.constructor.name;
         if (name.endsWith('Service')) {
             name = name.substring(0, name.length - 7);
         }
 
+        this.hiddenColumns ??= ['id'];
         this.shareObject ||= name;
         this.defaultTranslationContext ||= name.toLocaleLowerCase();
         this.eventName = name;
+
+        this.prepareReferences();
+    }
+
+    init() {
+    }
+
+    prepareReferences() {
+        for (const name in this.references) {
+            let reference = this.references[name];
+            if (reference === true) {
+                reference = {
+                    service: ucfirst(name),
+                };
+                this.references[name] = reference;
+            } else if (typeof reference === 'string' || typeof reference === 'function') {
+                reference = {
+                    service: reference,
+                };
+                this.references[name] = reference;
+            }
+                
+            if (typeof reference !== 'object') {
+                throw new _Error(loc._f('Error in reference definition for rerence name "%s", in service "%s".', name, this.constructor.name));
+            }
+
+            if (reference.function) {
+                continue;
+            }
+
+            if (!reference.service) {
+                reference = {service: reference};
+                this.references[name] = reference;
+            }
+
+            if (typeof reference.service === 'string') {
+                reference.service = dependency.get(reference);
+            }
+
+            if (reference.service.singleton) {
+                reference.service = reference.service.singleton();
+            } else if (reference.service.creator) {
+                reference.service = reference.service.creator();
+            } else if (typeof reference.service === 'function') {
+                reference.service = new reference.service();
+            }
+
+            reference.name ??= name;
+            reference.Name ??= ucfirst(reference.name);
+            reference.idPropertyName ??=   lcfirst(reference.name) + 'Id';
+            reference.uuidPropertyName ??= lcfirst(reference.name) + 'Uuid';
+            reference.namePropertyName ??= lcfirst(reference.name) + 'Name';
+            reference.getIdForName ??= 'getIdForName';
+            reference.getIdForUuid ??= 'getIdForUuid';
+
+            if (reference.createIfNotExists === true) {
+                reference.createIfNotExists = 'createIfNotExists';
+            }
+
+            if (!reference.otherName && reference.name !== name) {
+                reference.otherName = name;
+            }
+        }
     }
 
     /**
@@ -108,22 +168,10 @@ export class ServiceBase {
      */
     async completeReferences(data, clean) {
         for (const name in this.references) {
-            let reference = this.references[name];
-            if (!reference) {
-                continue;
-            }
-
+            const reference = this.references[name];
             if (reference.function) {
                 await reference.function(data);
                 continue;
-            }
-
-            if (!reference.service) {
-                reference = {service: reference};
-            }
-                
-            if (typeof reference !== 'object') {
-                reference = {};
             }
 
             await this.completeEntityId(data, {name, ...reference, clean});
@@ -144,27 +192,29 @@ export class ServiceBase {
      * that property is true after create the reference cleans the data object of 
      * the value referenced data.
      */
-    async completeEntityId(data, options) {
-        const name = options.name;
-        const Name = options.Name ?? ucfirst(name);
-        const idPropertyName = options.idPropertyName ?? (lcfirst(Name) + 'Id');
-        const uuidPropertyName = options.uuidPropertyName ?? (lcfirst(Name) + 'Uuid');
+    async completeEntityId(data, reference) {
+        const idPropertyName = reference.idPropertyName;
+        const uuidPropertyName = reference.uuuidPropertyName;
+        const namePropertyName = reference.namePropertyName;
+        const service = reference.service;
+        const name = reference.name;
+        const Name = reference.Name;
+        const otherName = reference.otherName;
+        const getIdForUuid = reference.getIdForUuid;
+        const getIdForName = reference.getIdForName;
         if (!data[idPropertyName]) {
-            const service = options.service.singleton?
-                options.service.singleton():
-                options.service;
-            const getIdForName = options.getIdForName ?? 'getIdForName';
-
-            if (data[uuidPropertyName] && service.getIdForUuid) {
-                data[idPropertyName] = await service.getIdForUuid(data[uuidPropertyName]);
+            if (data[uuidPropertyName] && service[getIdForUuid]) {
+                data[idPropertyName] = await service[getIdForUuid](data[uuidPropertyName]);
+            } else if (data[namePropertyName] && service[getIdForName]) {
+                data[idPropertyName] = await service[getIdForName](data[uuidPropertyName]);
             } else if (typeof data[name] === 'string' && data[name] && service[getIdForName]) {
                 data[idPropertyName] = await service[getIdForName](data[name], {skipNoRowsError: true});
             } else {
                 if (data[Name] && typeof data[Name] === 'object') {
                     if (data[Name].id) {
                         data[idPropertyName] = data[Name].id;
-                    } else if (data[Name].uuid && service.getIdForUuid) {
-                        data[idPropertyName] = await service.getIdForUuid(data[Name].uuid);
+                    } else if (data[Name].uuid && service[getIdForUuid]) {
+                        data[idPropertyName] = await service[getIdForUuid](data[Name].uuid);
                     } else if (data[Name].name && service[getIdForName]) {
                         data[idPropertyName] = await service[getIdForName](data[Name].name);
                     }
@@ -172,21 +222,20 @@ export class ServiceBase {
             }
 
             if (!data[idPropertyName]) {
-                const otherName = options.otherName;
                 if (otherName && typeof data[otherName] === 'string' && data[otherName] && service[getIdForName]) {
                     data[idPropertyName] = await service[getIdForName](data[otherName], {skipNoRowsError: true});
                 }
 
-                if (!data[idPropertyName] && options.createIfNotExists) {
+                if (!data[idPropertyName] && reference.createIfNotExists) {
                     let object;
                     if (typeof data[Name] === 'object' && data[Name]) {
-                        object = await service.createIfNotExists(data[Name]);
+                        object = await service[reference.createIfNotExists](data[Name]);
                     } else if (typeof data[Name] === 'string' && data[Name]) {
-                        object = await service.createIfNotExists({name: data[Name]});
+                        object = await service[reference.createIfNotExists]({name: data[Name]});
                     } else if (typeof data[name] === 'string' && data[name]) {
-                        object = await service.createIfNotExists({name: data[name]});
+                        object = await service[reference.createIfNotExists]({name: data[name]});
                     } else if (typeof data[otherName] === 'string' && data[otherName]) {
-                        object = await service.createIfNotExists({name: data[otherName]});
+                        object = await service[reference.createIfNotExists]({name: data[otherName]});
                     }
 
                     if (object) {
@@ -204,7 +253,7 @@ export class ServiceBase {
                         if (list?.length) {
                             const id = [];
                             for (const item of list) {
-                                id.push((await service.createIfNotExists({name: item})).id);
+                                id.push((await service[reference.createIfNotExists]({name: item})).id);
                             }
                             
                             data[idPropertyName] = id;
@@ -214,7 +263,7 @@ export class ServiceBase {
             }
         }
 
-        if (options.clean && data[idPropertyName]) {
+        if (reference.clean && data[idPropertyName]) {
             delete data[uuidPropertyName];
             delete data[Name];
             delete data[name];

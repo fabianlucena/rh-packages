@@ -294,7 +294,7 @@ async function getted(entity, result, options) {
                 const valueRows = await conf.eavValueTagService.getFor(
                     where,
                     {
-                        includeAttributeTag: true,
+                        includeTag: true,
                         raw: true,
                         nest: true,
                         loc: options?.loc,
@@ -302,7 +302,7 @@ async function getted(entity, result, options) {
                 );
 
                 if (valueRows?.length) {
-                    row[name] = valueRows.map(r => r.EavAttributeTag.name);
+                    row[name] = valueRows.map(r => r.Tag.name);
                 }
             } break;
             default: row[name] = (options?.loc ?? loc)._c('eav', 'Error unknown attribute type: %s', typeName);
