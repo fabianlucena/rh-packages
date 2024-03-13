@@ -8,6 +8,7 @@ import {EavValueTagService} from './services/value_tag.js';
 import {conf as localConf} from './conf.js';
 import {runSequentially} from 'rf-util';
 import {loc} from 'rf-locale';
+import dependency from 'rf-dependency';
 
 export const conf = localConf;
 
@@ -24,6 +25,14 @@ async function configure(global, options) {
     for (const k in options) {
         conf[k] = options[k];
     }
+
+    dependency.addSingleton('attributeService',       EavAttributeService);
+    dependency.addSingleton('attributeTypeService',   EavAttributeTypeService);
+    dependency.addSingleton('attributeOptionService', EavAttributeOptionService);
+    dependency.addSingleton('attributeTagService',    EavAttributeTagService);
+    dependency.addSingleton('valueTextService',       EavValueTextService);
+    dependency.addSingleton('valueOptionService',     EavValueOptionService);
+    dependency.addSingleton('valueTagService',        EavValueTagService);
 
     global.eventBus?.$on('interface.grid.get', interfaceGridGet);
     global.eventBus?.$on('interface.form.get', interfaceFormGet);

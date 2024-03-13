@@ -52,13 +52,23 @@ export class ServiceBase {
      */
     static singleton() {
         if (!this.singletonInstance) {
-            this.singletonInstance = new this();
+            this.singletonInstance = this.factory();
         }
 
         return this.singletonInstance;
     }
 
-    constructor() {
+    static factory() {
+        const service = new this();
+        if (!this.singletonInstance) {
+            this.singletonInstance = service;
+        }
+
+        service.init();
+        return service;
+    }
+
+    init() {
         let name = this.constructor.name;
         if (name.endsWith('Service')) {
             name = name.substring(0, name.length - 7);
@@ -72,15 +82,12 @@ export class ServiceBase {
         this.prepareReferences();
     }
 
-    init() {
-    }
-
     prepareReferences() {
         for (const name in this.references) {
             let reference = this.references[name];
             if (reference === true) {
                 reference = {
-                    service: ucfirst(name),
+                    service: name + 'Service',
                 };
                 this.references[name] = reference;
             } else if (typeof reference === 'string' || typeof reference === 'function') {
@@ -104,7 +111,13 @@ export class ServiceBase {
             }
 
             if (typeof reference.service === 'string') {
-                reference.service = dependency.get(reference);
+                let serviceName = reference.service;
+                let service = dependency.get(serviceName, null);
+                if (!service) {
+                    throw new _Error(loc._f('Error reference name "%s", not found for service "%s".', name, this.constructor.name));
+                }
+
+                reference.service = service;
             }
 
             if (reference.service.singleton) {

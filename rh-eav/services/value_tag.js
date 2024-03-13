@@ -11,7 +11,7 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
     model = conf.global.models.EavValueTag;
     references = {
         attribute: true,
-        tag:       true,
+        tag:       'attributeTagService',
     };
 
     async validateForCreation(data) {

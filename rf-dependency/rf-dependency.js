@@ -39,7 +39,7 @@ export function getScoped(name, scope, defaultValue) {
 function _getDependency(name, scope, defaultValue) {
     const dependency = dependencies[name];
     if (!dependency) {
-        if (defaultValue) {
+        if (defaultValue !== undefined) {
             return defaultValue;
         }
 
@@ -54,6 +54,8 @@ function _getDependency(name, scope, defaultValue) {
         if (!dependency.value) {
             if (dependency.dependency.singleton) {
                 dependency.value = dependency.dependency.singleton();
+            } else if (dependency.dependency.factory) {
+                dependency.value = dependency.dependency.factory();
             } else if (dependency.dependency.create) {
                 dependency.value = dependency.dependency.create();
             } else {
