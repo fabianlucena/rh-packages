@@ -1,9 +1,18 @@
-import {ModuleService} from './services/module.js';
-import {conf as localConf} from './conf.js';
+import { ModuleService } from './services/module.js';
+import { conf as localConf } from './conf.js';
+import dependency from 'rf-dependency';
 
 export const conf = localConf;
 
-conf.updateData = async function() {
+conf.configure = configure;
+conf.updateData = updateData;
+
+async function configure() {
+    dependency.addSingleton('moduleService', ModuleService);
+    dependency.addSingleton('ownerModuleService', ModuleService);
+}
+
+async function updateData() {
     const updateData = conf?.global?.config?.db?.updateData;
     if (updateData?.skip?.length && updateData.skip.includes('modules')) {
         return;
@@ -25,4 +34,4 @@ conf.updateData = async function() {
         };
         await moduleService.createIfNotExists(moduleData);
     }
-};
+}
