@@ -1,10 +1,9 @@
-import {IssueService} from '../services/issue.js';
-import {conf} from '../conf.js';
-import {getOptionsFromParamsAndOData, _HttpError, getUuidFromRequest, makeContext} from 'http-util';
-import {checkParameter, filterVisualItemsByAliasName} from 'rf-util';
-import {loc, defaultLoc} from 'rf-locale';
-
-const issueService = IssueService.singleton();
+import { conf} from '../conf.js';
+import { RHController } from 'rh-controller';
+import { getOptionsFromParamsAndOData, _HttpError, getUuidFromRequest, makeContext } from 'http-util';
+import { checkParameter, filterVisualItemsByAliasName } from 'rf-util';
+import { loc, defaultLoc } from 'rf-locale';
+import dependency from 'rf-dependency';
 
 /**
  * @swagger
@@ -72,8 +71,13 @@ const issueService = IssueService.singleton();
  *                      example: Admin
  */
     
-export class IssueController {
-    static async checkDataForProjectId(req, data) {
+export class IssueController extends RHController {
+    constructor() {
+        super();
+        this.issueService = dependency.get('issueService');
+    }
+    
+    async checkDataForProjectId(req, data) {
         if (!conf.filters?.getCurrentProjectId) {
             return data.projectId;
         }
@@ -102,10 +106,10 @@ export class IssueController {
         return data.projectId;
     }
 
-    static async checkUuid(req) {
+    async checkUuid(req) {
         const loc = req.loc ?? defaultLoc;
         const uuid = await getUuidFromRequest(req);
-        const issue = await issueService.getForUuid(uuid, {skipNoRowsError: true, loc});
+        const issue = await this.issueService.getForUuid(uuid, {skipNoRowsError: true, loc});
         if (!issue) {
             throw new _HttpError(loc._cf('issue', 'The issue with UUID %s does not exists.'), 404, uuid);
         }
@@ -150,14 +154,14 @@ export class IssueController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static async post(req, res) {
+    async post(req, res) {
         const loc = req.loc ?? defaultLoc;
         checkParameter(req?.body, {name: loc._cf('issue', 'Name'), title: loc._cf('issue', 'Title')});
         
         const data = {...req.body};
         await IssueController.checkDataForProjectId(req, data);
 
-        await issueService.create(data, {context: makeContext(req, res)});
+        await this.issueService.create(data, {context: makeContext(req, res)});
 
         res.status(204).send();
     }
@@ -214,7 +218,7 @@ export class IssueController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static async get(req, res) {
+    async get(req, res) {
         if ('$grid' in req.query) {
             return IssueController.getGrid(req, res);
         } else if ('$form' in req.query) {
@@ -244,16 +248,16 @@ export class IssueController {
 
         await conf.global.eventBus?.$emit('Issue.response.getting', options);
 
-        let result = await issueService.getListAndCount(options);
+        let result = await this.issueService.getListAndCount(options);
 
         await conf.global.eventBus?.$emit('Issue.response.getted', result, options);
 
-        result = await issueService.sanitize(result);
+        result = await this.issueService.sanitize(result);
 
         res.status(200).send(result);
     }
 
-    static async getGrid(req, res) {
+    async getGrid(req, res) {
         checkParameter(req.query, '$grid');
 
         const actions = [];
@@ -325,7 +329,7 @@ export class IssueController {
         res.status(200).send(grid);
     }
 
-    static async getForm(req, res) {
+    async getForm(req, res) {
         checkParameter(req.query, '$form');
 
         const loc = req.loc ?? defaultLoc;
@@ -484,10 +488,10 @@ export class IssueController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static async delete(req, res) {
+    async delete(req, res) {
         const {uuid} = await this.checkUuid(req);
 
-        const rowsDeleted = await issueService.deleteForUuid(uuid);
+        const rowsDeleted = await this.issueService.deleteForUuid(uuid);
         if (!rowsDeleted) {
             const loc = req.loc ?? defaultLoc;
             throw new _HttpError(loc._cf('issue', 'Issue with UUID %s does not exists.'), 403, uuid);
@@ -535,10 +539,10 @@ export class IssueController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static async enablePost(req, res) {
+    async enablePost(req, res) {
         const {uuid} = await this.checkUuid(req);
 
-        const rowsUpdated = await issueService.enableForUuid(uuid);
+        const rowsUpdated = await this.issueService.enableForUuid(uuid);
         if (!rowsUpdated) {
             const loc = req.loc ?? defaultLoc;
             throw new _HttpError(loc._cf('issue', 'Issue with UUID %s does not exists.'), 403, uuid);
@@ -586,10 +590,10 @@ export class IssueController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static async disablePost(req, res) {
+    async disablePost(req, res) {
         const {uuid} = await this.checkUuid(req);
 
-        const rowsUpdated = await issueService.disableForUuid(uuid);
+        const rowsUpdated = await this.issueService.disableForUuid(uuid);
         if (!rowsUpdated) {
             const loc = req.loc ?? defaultLoc;
             throw new _HttpError(loc._cf('issue', 'Issue with UUID %s does not exists.'), 403, uuid);
@@ -635,14 +639,14 @@ export class IssueController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static async patch(req, res) {
+    async patch(req, res) {
         const {uuid, projectId} = await this.checkUuid(req);
 
         const loc = req.loc ?? defaultLoc;
         const data = {...req.body, uuid: undefined};
         const where = {uuid, projectId};
 
-        const rowsUpdated = await issueService.updateFor(data, where, {context: makeContext(req, res)});
+        const rowsUpdated = await this.issueService.updateFor(data, where, {context: makeContext(req, res)});
         if (!rowsUpdated) {
             throw new _HttpError(loc._cf('issue', 'Issue with UUID %s does not exists.'), 403, uuid);
         }
@@ -702,7 +706,7 @@ export class IssueController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static async getProject(req, res) {
+    async getProject(req, res) {
         const loc = req.loc ?? defaultLoc;
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {view: true, limit: 10, offset: 0, loc};
@@ -770,7 +774,7 @@ export class IssueController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static async getType(req, res) {
+    async getType(req, res) {
         const loc = req.loc ?? defaultLoc;
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {view: true, limit: 10, offset: 0, loc};
@@ -833,7 +837,7 @@ export class IssueController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static async getPriority(req, res) {
+    async getPriority(req, res) {
         const loc = req.loc ?? defaultLoc;
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {view: true, limit: 10, offset: 0, loc};
@@ -896,7 +900,7 @@ export class IssueController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static async getCloseReason(req, res) {
+    async getCloseReason(req, res) {
         const loc = req.loc ?? defaultLoc;
         const definitions = {uuid: 'uuid', name: 'string'};
         let options = {view: true, limit: 10, offset: 0, loc};
