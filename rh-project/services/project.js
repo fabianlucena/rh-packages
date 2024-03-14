@@ -1,5 +1,5 @@
 import {conf} from '../conf.js';
-import {ServiceIdUuidNameTitleEnabledSharedTranslatable} from 'rf-service';
+import {ServiceIdUuidNameTitleEnabledSharedTranslatable, OptionalService} from 'rf-service';
 import {completeIncludeOptions} from 'sql-util';
 import {CheckError} from 'rf-util';
 import {loc} from 'rf-locale';
@@ -12,8 +12,8 @@ export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslata
     shareObject = 'Project';
     shareService = conf.global.services.Share.singleton();
     references = {
-        company: conf.global.services.Company,
-        ownerModule: conf.global.services.Module,
+        company: OptionalService(),
+        ownerModule: true,
     };
     defaultTranslationContext = 'project';
     eventBus = conf.global.eventBus;
