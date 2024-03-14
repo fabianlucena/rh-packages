@@ -12,7 +12,15 @@ import {ServiceMixinModule} from './rf-service-mixin-module.js';
 import {ServiceMixinTitle} from './rf-service-mixin-title.js';
 import {ServiceMixinDescription} from './rf-service-mixin-description.js';
 
+function OptionalService(options) {
+    return {
+        ...options,
+        optional: true
+    };
+}
+
 export {
+    OptionalService,
     ServiceBase,
     ServiceMixinId,
     ServiceMixinTranslatable,

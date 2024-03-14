@@ -105,16 +105,24 @@ export class ServiceBase {
                 continue;
             }
 
-            if (!reference.service) {
+            if (reference instanceof ServiceBase) {
                 reference = {service: reference};
                 this.references[name] = reference;
+            }
+
+            if (!reference.service) {
+                reference.service = name + 'Service';
             }
 
             if (typeof reference.service === 'string') {
                 let serviceName = reference.service;
                 let service = dependency.get(serviceName, null);
                 if (!service) {
-                    throw new _Error(loc._f('Error reference name "%s", not found for service "%s".', name, this.constructor.name));
+                    if (!reference.optional) {
+                        throw new _Error(loc._f('Error reference name "%s", not found for service "%s".', name, this.constructor.name));
+                    }
+
+                    continue;
                 }
 
                 reference.service = service;
@@ -184,6 +192,10 @@ export class ServiceBase {
             const reference = this.references[name];
             if (reference.function) {
                 await reference.function(data);
+                continue;
+            }
+
+            if (!reference.service) {
                 continue;
             }
 
@@ -720,7 +732,7 @@ export class ServiceBase {
             }
         }
 
-        let row = this.getSingle({...options, skipNoRowsError: true});
+        let row = await this.getSingle({...options, skipNoRowsError: true});
         if (row) {
             return [row, false];
         }

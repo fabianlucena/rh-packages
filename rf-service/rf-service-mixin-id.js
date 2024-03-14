@@ -3,13 +3,16 @@ import {loc} from 'rf-locale';
 
 export const ServiceMixinId = Service => class ServiceId extends Service {
     async validateForCreation(data) {
-        if (data?.id) {
-            throw new CheckError(loc._f('ID parameter is forbidden for creation.'));
-        }
-
+        await this.checkIdForCreation(data.id, data);
         return super.validateForCreation(data);
     }
-    
+
+    async checkIdForCreation(id) {
+        if (id) {
+            throw new CheckError(loc._f('ID parameter is forbidden for creation.'));
+        }
+    }
+
     async validateForUpdate(data) {
         if (data?.id) {
             throw new CheckError(loc._f('ID parameter is forbidden for update.'));
