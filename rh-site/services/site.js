@@ -4,6 +4,7 @@ import {getIncludedModelOptions, getSingle, completeAssociationOptions} from 'sq
 
 export class SiteService extends ServiceIdUuidNameEnabledModuleTranslatable {
     sequelize = conf.global.sequelize;
+    Sequelize = conf.global.Sequelize;
     model = conf.global.models.Site;
     moduleModel = conf.global.models.Module;
     moduleService = conf.global.services.Module.singleton();

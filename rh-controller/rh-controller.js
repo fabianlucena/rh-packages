@@ -5,7 +5,7 @@ import { getRoutes } from 'rf-get-routes';
  * The controller takes the functions methods static and non static and map to
  * routes. For more information please referer to rf-get-routes library.
  */
-export class RHController {
+export class Controller {
     static routes() {
         const routes = getRoutes(
             this,

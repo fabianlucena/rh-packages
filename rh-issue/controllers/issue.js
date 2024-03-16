@@ -1,5 +1,5 @@
 import { conf} from '../conf.js';
-import { RHController } from 'rh-controller';
+import { Controller } from 'rh-controller';
 import { getOptionsFromParamsAndOData, _HttpError, getUuidFromRequest, makeContext } from 'http-util';
 import { checkParameter, filterVisualItemsByAliasName } from 'rf-util';
 import { loc, defaultLoc } from 'rf-locale';
@@ -71,7 +71,7 @@ import dependency from 'rf-dependency';
  *                      example: Admin
  */
     
-export class IssueController extends RHController {
+export class IssueController extends Controller {
     constructor() {
         super();
         this.issueService = dependency.get('issueService');
