@@ -3,6 +3,7 @@ import {loc, defaultLoc} from 'rf-locale';
 import fs from 'fs';
 import path from 'path';
 import {Op, Utils} from 'sequelize';
+import dependency from 'rf-dependency';
 
 export class NoRowsError extends Error {
     static _message = loc._f('There are no "%s" for "%s" in "%s"');
@@ -93,7 +94,10 @@ export async function configureModels(modelsPath, sequelize) {
         await fs
             .readdirSync(modelsPath)
             .filter(file => (file.indexOf('.') !== 0) && (file.slice(-3) === '.js'))
-            .map(async file => (await import('file://' + path.join(modelsPath, file))).default(sequelize, sequelize.Sequelize.DataTypes))
+            .map(async file => {
+                const model = (await import('file://' + path.join(modelsPath, file))).default(sequelize, sequelize.Sequelize.DataTypes);
+                dependency.addStatic(model.name + 'Model', model);
+            })
     );
 }
 
@@ -259,8 +263,6 @@ export function getIncludedModelOptions(options, model, as) {
  * @return {Options}
  */
 export function completeIncludeOptions(options, name, includeOptions, includeDefaultOptions) {
-    options ??= {};
-    
     if (options?.foreign && options?.foreign[name] === false) {
         return options;
     }
@@ -303,15 +305,15 @@ export function completeIncludeOptions(options, name, includeOptions, includeDef
 }
 
 export function addEnabledFilter(options) {
-    options ??= {};
-    options.where ??= {};
+    options = {...options};
+    options.where = {...options.where};
     options.where.isEnabled = options.isEnabled ?? true;
 
     return options;
 }
 
 export function addEnabledOwnerModuleFilter(options, ownerModule, ownerModuleAlias) {
-    options = completeIncludeOptions(
+    completeIncludeOptions(
         options,
         'ownerModuleId',
         {
@@ -403,10 +405,78 @@ export function arrangeOptions(options, sequelize) {
         options.order = options.order.map(order => {
             let col = order[0];
             const sort = order[1];
-            if (!(col instanceof Utils.Col))
+            if (!(col instanceof Utils.Col)) {
                 col = sequelize.col(col);
+            }
             return [col, sort];
         });
+    }
+
+    return options;
+}
+
+export function isIncludedColumn(options, columnName) {
+    if (typeof columnName !== 'string' || !columnName.includes('.') || !options.include?.length) {
+        return true;
+    }
+
+    const columnNameParts = columnName.split('.');
+    const tableName = columnNameParts[0];
+    const included = options.include.find(i => i.model.name === tableName);
+    if (!included) {
+        return false;
+    }
+
+    if (columnNameParts.length === 2) {
+        return true;
+    }
+
+    const includedColumnName = columnNameParts.slice(1).join('.');
+
+    return isIncludedColumn(included, includedColumnName);
+}
+
+export function arrangeSearchColumns(options, entity) {
+    options = {...options};
+
+    if (!options.q) {
+        return options;
+    }
+
+    const searchColumns = options.searchColumns ?? entity.searchColumns;    
+    if (!searchColumns) {
+        return options;
+    }
+
+    if (!entity.Sequelize?.Op) {
+        throw new _Error(loc._f('No Sequalize.Op defined on %s. Try adding "Sequelize = conf.global.Sequelize;" to the class.', entity.constructor.name));
+    }
+
+    if (!entity.sequelize?.col) {
+        throw new _Error(loc._f('No sequalize.col defined on %s. Try adding "sequelize = conf.global.sequelize;" to the class.', entity.constructor.name));
+    }
+
+    const Op = entity.Sequelize.Op;
+    const q = `%${options.q}%`;
+    const qColumns = [];
+    for (let searchColumn of searchColumns) {
+        if (typeof searchColumn === 'string'
+            && searchColumn.includes('.')
+            && isIncludedColumn(options, searchColumn)
+        ) {
+            searchColumn = '$' + searchColumn + '$';
+        }
+
+        qColumns?.push({[searchColumn]: {[Op.like]: q}});
+    }
+
+    if (qColumns.length) {
+        const qWhere = {[Op.or]: qColumns};
+        if (options.where) {
+            options.where = {[Op.and]: [options.where, qWhere]};
+        } else {
+            options.where = qWhere;
+        }
     }
 
     return options;
