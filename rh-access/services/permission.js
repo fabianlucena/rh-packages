@@ -6,6 +6,7 @@ import {runSequentially} from 'rf-util';
 
 export class PermissionService extends ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable {
     sequelize = conf.global.sequelize;
+    Sequelize = conf.global.Sequelize;
     model = conf.global.models.Permission;
     moduleModel = conf.global.models.Module;
     moduleService = conf.global.services.Module.singleton();

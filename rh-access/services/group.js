@@ -5,6 +5,7 @@ import {checkDataForMissingProperties, completeAssociationOptions, getSingle} fr
 
 export class GroupService extends ServiceIdUuidEnabledModule {
     sequelize = conf.global.sequelize;
+    Sequelize = conf.global.Sequelize;
     model = conf.global.models.User;
     moduleModel = conf.global.models.Module;
     references = {

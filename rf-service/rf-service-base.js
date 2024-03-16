@@ -1,6 +1,6 @@
 import { NoRowsError, ManyRowsError } from './rf-service-errors.js';
 import { ucfirst, lcfirst } from 'rf-util/rf-util-string.js';
-import { arrangeOptions, completeIncludeOptions } from 'sql-util';
+import { arrangeOptions, completeIncludeOptions, arrangeSearchColumns } from 'sql-util';
 import { trim, _Error } from 'rf-util';
 import { loc } from 'rf-locale';
 import dependency from 'rf-dependency';
@@ -337,6 +337,7 @@ export class ServiceBase {
         try {
             await this.emit('creating', options?.emitEvent, data, options, this);
             let row = await this.model.create(data, options);
+            row = row.get();
             await this.emit('created', options?.emitEvent, row, data, options, this);
 
             await transaction?.commit();
@@ -364,6 +365,10 @@ export class ServiceBase {
      * - view: show visible peoperties.
      */
     async getListOptions(options) {
+        if (options.arranged) {
+            return options;
+        }
+
         options = {...options};
 
         const includes = Object.getOwnPropertyNames(options)
@@ -375,7 +380,7 @@ export class ServiceBase {
             const association = this.model.associations[Name];
             if (!association) {
                 continue;
-            }
+            }            
 
             let associationOptions;
             if (typeof options[include] === 'object') {
@@ -383,8 +388,8 @@ export class ServiceBase {
                 if (this.references) {
                     const name = Name.slice(0, 1).toLowerCase() + Name.slice(1);
                     const reference = this.references[name];
-                    if (reference) {
-                        associationOptions = await reference.getListOptions(associationOptions);
+                    if (reference?.service) {
+                        associationOptions = await reference.service.getListOptions(associationOptions);
                     }
                 }
             } else {
@@ -405,28 +410,9 @@ export class ServiceBase {
             delete options[include];
         }
 
-        const searchColumns = options.searchColumns || this.searchColumns;
-        if (options.q && searchColumns) {
-            if (!this.Sequelize?.Op) {
-                throw new _Error(loc._f('No Sequalize.Op defined on %s. Try adding "Sequelize = conf.global.Sequelize;" to the class.', this.constructor.name));
-            }
-            
-            const Op = this.Sequelize.Op;
-            const q = `%${options.q}%`;
-            const qColumns = [];
-            for (const searchColumn of searchColumns) {
-                qColumns?.push({[searchColumn]: {[Op.like]: q}});
-            }
-
-            const qWhere = {[Op.or]: qColumns};
-            if (options.where) {
-                options.where = {[Op.and]: [options.where, qWhere]};
-            } else {
-                options.where = qWhere;
-            }
-        }
-
-        arrangeOptions(options, this.sequelize);
+        options = arrangeSearchColumns(options, this);
+        options = arrangeOptions(options, this.sequelize);
+        options.arranged = true;
 
         return options;
     }

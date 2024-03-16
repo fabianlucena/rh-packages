@@ -8,7 +8,6 @@ conf.configure = configure;
 conf.updateData = updateData;
 
 async function configure() {
-    dependency.addSingleton('moduleService', ModuleService);
     dependency.addSingleton('ownerModuleService', ModuleService);
 }
 

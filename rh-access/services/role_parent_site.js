@@ -4,6 +4,7 @@ import {checkDataForMissingProperties} from 'sql-util';
 
 export class RoleParentSiteService extends ServiceModuleTranslatable {
     sequelize = conf.global.sequelize;
+    Sequelize = conf.global.Sequelize;
     model = conf.global.models.RoleParentSite;
     moduleModel = conf.global.models.Module;
     moduleService = conf.global.services.Module.singleton();
