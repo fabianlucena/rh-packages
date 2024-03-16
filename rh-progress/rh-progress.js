@@ -1,4 +1,5 @@
 export class Progress {
+    json = true;
     separator = '\n';
     progressJsonPropertyName = 'progress';
     progressMessagePropertyName = 'message';
@@ -12,6 +13,7 @@ export class Progress {
         }
 
         this.setOptions(options);
+        this.init();
     }
 
     setOptions(options) {
