@@ -1,6 +1,23 @@
 const dependencies = {};
 
+export function lcfirst(text) {
+    return text[0].toLowerCase() + text.slice(1);
+}
+
 function addDependency(name, dependencyData) {
+    if (!dependencyData.dependency) {
+        dependencyData.dependency = name;
+        if (dependencyData.static) {
+            name = dependencyData.dependency.constructor;
+        } else if (dependencyData.singleton) {
+            name = lcfirst(dependencyData.dependency.name);
+        }
+
+        if (!name) {
+            throw new Error(`No name provided for dependency ${dependencyData.dependency}.`);
+        }
+    }
+
     if (dependencies[name]) {
         throw new Error(`Dependency ${name} already exists.`);
     }

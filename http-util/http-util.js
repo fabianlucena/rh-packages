@@ -1,6 +1,7 @@
 import { setUpError, errorHandler, deepComplete, runSequentially, stripQuotes, checkParameterUuid } from 'rf-util';
 import { loc, defaultLoc } from 'rf-locale';
 import { installRoutes } from 'rf-express-routes';
+import dependency from 'rf-dependency';
 import * as uuid from 'uuid';
 import fs from 'fs';
 import path from 'path';
@@ -265,16 +266,16 @@ export function configureServices(services, servicesPath, options) {
         .readdirSync(servicesPath)
         .filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js' && (!options?.exclude || !options.exclude.test(file)))
         .forEach(async file => {
-            const modules = await import('file://' + path.join(servicesPath, file));
-            for (let k in modules) {
-                let module = modules[k];
-                let name = k;
+            const loadedServices = await import('file://' + path.join(servicesPath, file));
+            for (let name in loadedServices) {
+                const service = loadedServices[name];
                 let l = name.length;
                 if (l > 7 && name.endsWith('Service')) {
                     name = name.substring(0, l - 7);
                 }
 
-                services[name] = module;
+                services[name] = service;
+                dependency.addSingleton(service);
             }
         });
 }
