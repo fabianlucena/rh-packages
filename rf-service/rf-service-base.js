@@ -219,7 +219,7 @@ export class ServiceBase {
      */
     async completeEntityId(data, reference) {
         const idPropertyName = reference.idPropertyName;
-        const uuidPropertyName = reference.uuuidPropertyName;
+        const uuidPropertyName = reference.uuidPropertyName;
         const namePropertyName = reference.namePropertyName;
         const service = reference.service;
         const name = reference.name;
