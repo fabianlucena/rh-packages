@@ -152,6 +152,9 @@ export class LoginController {
                         expires: expires30.toISOString(),
                         sameSite: 'strict',
                     },
+                    authToken: {
+                        value: session.authToken,
+                    },
                 },
             };
 
