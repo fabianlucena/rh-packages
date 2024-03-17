@@ -23,7 +23,8 @@ function configure(global) {
         global.router.use(PrivilegesController.middleware());
     }
 
-    global.checkPermissionHandler = getCheckPermissionHandler(global.checkPermissionHandler);
+    const previousHandler = global.checkPermissionHandler;
+    global.checkPermissionHandler = getCheckPermissionHandler(previousHandler);
 
     global.eventBus?.$on('login', login);
     global.eventBus?.$on('sessionUpdated', sessionUpdated);

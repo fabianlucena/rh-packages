@@ -20,7 +20,8 @@ function configure (global) {
         global.router.use(SessionController.configureMiddleware());
     }
 
-    global.checkPermissionHandler = getCheckPermissionHandler(global.checkPermissionHandler);
+    const previousHandler = global.checkPermissionHandler;
+    global.checkPermissionHandler = getCheckPermissionHandler(previousHandler);
 
     global.eventBus?.$on('sessionUpdated', sessionUpdated);
 }

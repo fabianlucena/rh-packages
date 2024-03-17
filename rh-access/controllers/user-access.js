@@ -1,10 +1,8 @@
-import {RoleService} from '../services/role.js';
-import {UserAccessService} from '../services/user_access.js';
-import {AssignableRolePerRoleService} from '../services/assignable_role_per_role.js';
-import {conf} from '../conf.js';
-import {getOptionsFromParamsAndOData, _HttpError} from 'http-util';
-import {checkParameter, checkParameterUuid, checkParameterUuidList, checkNotNullNotEmptyAndNotUndefined} from 'rf-util';
-import {defaultLoc} from 'rf-locale';
+import { conf } from '../conf.js';
+import { getOptionsFromParamsAndOData, _HttpError } from 'http-util';
+import { checkParameter, checkParameterUuid, checkParameterUuidList, checkNotNullNotEmptyAndNotUndefined } from 'rf-util';
+import { defaultLoc } from 'rf-locale';
+import dependency from 'rf-dependency';
 
 /**
  * @swagger
@@ -25,10 +23,6 @@ import {defaultLoc} from 'rf-locale';
  *          isEnabled:
  *              type: boolean
  */
-
-const roleService = RoleService.singleton();
-const userAccessService = new UserAccessService;
-const assignableRolePerRoleService = AssignableRolePerRoleService.singleton();
 
 export class UserAccessController {
     /**
@@ -85,10 +79,11 @@ export class UserAccessController {
             }
         }
 
-        if (!req.roles.includes('admin'))
-            data.assignableRolesId = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
+        if (!req.roles.includes('admin')) {
+            data.assignableRolesId = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
+        }
 
-        await userAccessService.create(data);
+        await dependency.get('userAccessService').create(data);
 
         res.status(204).send();
     }
@@ -172,7 +167,7 @@ export class UserAccessController {
         }
 
         if (!req.roles.includes('admin')) {
-            const assignableRolesId = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
+            const assignableRolesId = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
             options.includeRolesId = assignableRolesId;
         }
 
@@ -184,7 +179,7 @@ export class UserAccessController {
             options.includeSite = {...options.includeSite, where: {...options.includeSite.where, uuid: uuid[1]}};
         }
 
-        const result = await userAccessService.getListAndCount(options);
+        const result = await dependency.get('userAccessService').getListAndCount(options);
 
         res.status(200).send(result);
     }
@@ -322,9 +317,9 @@ export class UserAccessController {
         options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, definitions, options);
 
         if (!req.roles.includes('admin'))
-            options.where = {...options?.where, id: await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles)};
+            options.where = {...options?.where, id: await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles)};
 
-        const result = await roleService.getListAndCount(options);
+        const result = await dependency.get('roleService').getListAndCount(options);
         
         const loc = req.loc ?? defaultLoc;
         result.rows = await Promise.all(result.rows.map(async row => {
@@ -401,9 +396,9 @@ export class UserAccessController {
         let rowsDeleted;
         const deleteWhere = {userUuid, siteUuid};
         if (!req.roles.includes('admin'))
-            deleteWhere.notRoleName = await assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
+            deleteWhere.notRoleName = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
 
-        rowsDeleted = await userAccessService.deleteFor(deleteWhere);
+        rowsDeleted = await dependency.get('userAccessService').deleteFor(deleteWhere);
 
         if (!rowsDeleted)
             throw new _HttpError(loc._cf('userAccess', 'User with UUID %s has not access to the site with UUID %s.'), 403, userUuid, siteUuid);

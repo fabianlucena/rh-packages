@@ -1,31 +1,52 @@
-import {conf} from '../conf.js';
-import {ServiceModuleTranslatable} from 'rf-service';
-import {addEnabledOwnerModuleFilter, checkDataForMissingProperties, completeIncludeOptions, getIncludedModelOptions} from 'sql-util';
+import { conf } from '../conf.js';
+import { ServiceModuleTranslatable } from 'rf-service';
+import { MissingPropertyError, addEnabledOwnerModuleFilter, checkDataForMissingProperties, completeIncludeOptions, getIncludedModelOptions } from 'sql-util';
+import dependency from 'rf-dependency';
 
 export class UserSiteRoleService extends ServiceModuleTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.UserSiteRole;
     references = {
         user: {
-            service: conf.global.services.User.singleton(),
             getIdForName: 'getIdForUsername',
             otherName: 'username',
         },
-        site: conf.global.services.Site.singleton(),
-        role: conf.global.services.Role.singleton(),
+        site: true,
+        role: true,
     };
     defaultTranslationContext = 'userSiteRole';
 
-    constructor() {
-        if (!conf?.global?.services?.Site?.singleton) {
+    init() {
+        if (!dependency.get('siteService', null))  {
             throw new Error('There is no Site service. Try adding RH Site module to the project.');
         }
+        
+        super.init();
+    }
 
-        super();
+    async validateUserId(userId) {
+        if (!userId) {
+            throw new MissingPropertyError('UserSiteRole', 'userId');
+        }
+    }
+
+    async validateSiteId(siteId) {
+        if (!siteId) {
+            throw new MissingPropertyError('UserSiteRole', 'siteId');
+        }
+    }
+
+    async validateRoleId(roleId) {
+        if (!roleId) {
+            throw new MissingPropertyError('UserSiteRole', 'roleId');
+        }
     }
 
     async validateForCreation(data) {
-        await checkDataForMissingProperties(data, 'UserSiteRole', 'userId', 'siteId', 'roleId');
+        await this.validateUserId(data.userId, data);
+        await this.validateSiteId(data.siteId, data);
+        await this.validateRoleId(data.roleId, data);
+
         return super.validateForCreation(data);
     }
 

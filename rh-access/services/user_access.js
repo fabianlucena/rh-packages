@@ -1,18 +1,24 @@
-import {UserSiteRoleService} from './user_site_role.js';
-import {RoleService} from './role.js';
-import {conf} from '../conf.js';
-import {MissingPropertyError, checkDataForMissingProperties} from 'sql-util';
+import { UserSiteRoleService } from './user_site_role.js';
+import { MissingPropertyError, checkDataForMissingProperties } from 'sql-util';
+import dependency from 'rf-dependency';
 
 export class UserAccessService extends UserSiteRoleService {
-    constructor() {
-        super();
-        this.userService = conf.global.services.User.singleton();
-        this.roleService = RoleService.singleton();
-        this.userSiteRoleService = UserSiteRoleService.singleton();
+    init () {
+        super.init();
+
+        this.userService = dependency.get('userService');
+        this.roleService = dependency.get('roleService');
+        this.userSiteRoleService = dependency.get('userSiteRoleService');
+    }
+
+    async validateRoleId(roleId, data) {
+        if (!roleId && !data.rolesId) {
+            throw new MissingPropertyError('UserSiteRole', 'roleId');
+        }
     }
 
     async completeReferences(data, clean) {
-        await super.completeReferences(data, clean);
+        data = await super.completeReferences(data, clean);
 
         if (!data.rolesId?.length && data.rolesUuid?.length) {
             data.rolesId = await this.roleService.getIdForUuid(data.rolesUuid);
@@ -20,11 +26,11 @@ export class UserAccessService extends UserSiteRoleService {
     }
 
     async validateForCreation(data) {
-        await this.completeReferences(data);
-        
         if (data.User) {
             await this.userService.validateForCreation(data.User);
         }
+        
+        await checkDataForMissingProperties(data, 'UserSiteRole', 'userId', 'siteId');
 
         if (!data.rolesId?.length) {
             throw new MissingPropertyError('UserAccess', 'roles');
@@ -34,6 +40,7 @@ export class UserAccessService extends UserSiteRoleService {
     }
 
     async create(data) {
+        await this.completeReferences(data, true);
         await this.validateForCreation(data);
 
         const transaction = await this.createTransaction();
