@@ -130,32 +130,12 @@ export class LoginController {
                 session = await loginService.forUsernamePasswordDeviceTokenAndSessionIndex(req.body.username, req.body.password, req.body.deviceToken, req.body.sessionIndex ?? req.body.index, loc);
                 req.log?.info(`User ${req.body.username} successfully logged with username and password.`, {session});
             }
-
-            const now = new Date();
-            const expires30  = new Date();
-            const expires365 = new Date();
-            expires30. setDate(now.getDate() + 30);
-            expires365.setDate(now.getDate() + 365);
             
-            let result = {
+            const result = {
                 index: session.index,
                 authToken: session.authToken,
-                setCookies: {
-                    deviceToken: {
-                        value: session.deviceToken,
-                        expires: expires365.toISOString(),
-                        path: '/',
-                        sameSite: 'strict',
-                    },
-                    autoLoginToken: {
-                        value: session.autoLoginToken,
-                        expires: expires30.toISOString(),
-                        sameSite: 'strict',
-                    },
-                    authToken: {
-                        value: session.authToken,
-                    },
-                },
+                deviceToken: session.deviceToken,
+                autoLoginToken: session.autoLoginToken,
             };
 
             await conf.global.eventBus?.$emit(
@@ -170,8 +150,6 @@ export class LoginController {
 
             req.session = session;
             res.header('Authorization', 'Bearer ' + session.authToken);
-            res.cookie('deviceToken',  session.deviceToken,  {expire: expires365, path: '/'});
-            res.cookie('autoLoginToken', session.autoLoginToken, {expire: expires30});
             res.status(201).send(result);
         } catch (error) {
             if (req.body.autoLoginToken) {
@@ -181,6 +159,14 @@ export class LoginController {
             }
 
             throw new _HttpError(loc._cf('login', 'Invalid login'), 403);
+        }
+    }
+
+    static async getCheck(req, res) {
+        if (req.session.id) {
+            res.status(204).send();
+        } else {
+            res.status(401).send();
         }
     }
 }
