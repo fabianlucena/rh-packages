@@ -48,7 +48,7 @@ export class Progress {
     }
 
     async end(data) {
-        this.sendProgress(1, {...data, skipOnProgress: true});
+        this.sendProgress(1, data, true);
         if (this.json) {
             this.res.write('}');
         }
@@ -88,9 +88,9 @@ export class Progress {
         this.sendRaw(data);
     }
 
-    async sendProgress(progress, data) {
+    async sendProgress(progress, data, skipOnProgress) {
         let progressData;
-        if (!data?.skipOnProgress && this.onProgress) {
+        if (!skipOnProgress && this.onProgress) {
             progressData = this.onProgress(progress);
         }
 
