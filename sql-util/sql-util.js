@@ -415,15 +415,15 @@ export function arrangeOptions(options, sequelize) {
     return options;
 }
 
-export function isIncludedColumn(options, columnName) {
-    if (typeof columnName !== 'string' || !columnName.includes('.') || !options.include?.length) {
+export function isIncludedColumn(entity, columnName) {
+    if (typeof columnName !== 'string' || !columnName.includes('.')) {
         return true;
     }
 
     const columnNameParts = columnName.split('.');
     const tableName = columnNameParts[0];
-    const included = options.include.find(i => i.model.name === tableName);
-    if (!included) {
+    const reference = entity.references[tableName];
+    if (!reference) {
         return false;
     }
 
@@ -433,7 +433,7 @@ export function isIncludedColumn(options, columnName) {
 
     const includedColumnName = columnNameParts.slice(1).join('.');
 
-    return isIncludedColumn(included, includedColumnName);
+    return isIncludedColumn(reference.service, includedColumnName);
 }
 
 export function arrangeSearchColumns(options, entity) {
@@ -462,7 +462,7 @@ export function arrangeSearchColumns(options, entity) {
     for (let searchColumn of searchColumns) {
         if (typeof searchColumn === 'string'
             && searchColumn.includes('.')
-            && isIncludedColumn(options, searchColumn)
+            && isIncludedColumn(entity, searchColumn)
         ) {
             searchColumn = '$' + searchColumn + '$';
         }
