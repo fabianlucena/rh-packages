@@ -365,36 +365,39 @@ export class ServiceBase {
      * - view: show visible peoperties.
      */
     async getListOptions(options) {
-        if (options.arranged) {
+        if (options?.arranged) {
             return options;
         }
 
         options = {...options};
 
         const includes = Object.getOwnPropertyNames(options)
-            .filter(prop => prop.length > 7 && prop.startsWith('include'));
+            .filter(prop => prop.length > 7 && prop.startsWith('include'))
+            .map(i => i.slice(7));
 
-        for (const include of includes) {
-            const Name = include.slice(7);
+        for (const Name of includes) {
+            const name = Name.slice(0, 1).toLowerCase() + Name.slice(1);
+            const reference = this.references[Name]
+                ?? this.references[name];
+            if (!reference) {
+                continue;
+            }
 
-            const association = this.model.associations[Name];
+            const modelName = reference.service.model.name;
+            const association = this.model.associations[modelName]
+                ?? this.model.associations[Name]
+                ?? this.model.associations[name];
             if (!association) {
                 continue;
-            }            
+            }        
 
             let associationOptions;
-            if (typeof options[include] === 'object') {
-                associationOptions = {...options[include]};
-                if (this.references) {
-                    const name = Name.slice(0, 1).toLowerCase() + Name.slice(1);
-                    const reference = this.references[name];
-                    if (reference?.service) {
-                        associationOptions = await reference.service.getListOptions(associationOptions);
-                    }
-                }
+            if (reference?.service) {
+                associationOptions = await reference.service.getListOptions(associationOptions);
             } else {
                 associationOptions = {};
             }
+
             associationOptions.model = association.target;
 
             if (association.as) {
@@ -403,11 +406,11 @@ export class ServiceBase {
 
             completeIncludeOptions(
                 options,
-                Name,
+                modelName,
                 associationOptions,
             );
 
-            delete options[include];
+            delete options[name];
         }
 
         options = arrangeSearchColumns(options, this);
@@ -727,8 +730,35 @@ export class ServiceBase {
         return [row, true];
     }
 
-    async createIfNotExists(data, where) {
-        const [, created] = await this.findOrCreate(data, where);
+    async createIfNotExists(data, options) {
+        const [, created] = await this.findOrCreate(data, options);
         return created;
+    }
+
+    async createOrUpdate(data, options) {
+        options = {...options};
+        if (!options.where) {
+            if (data.id) {
+                options.where = {id: data.id};
+                data = {...data, id: undefined};
+            } else if (data.uuid) {
+                options.where = {uuid: data.uuid};
+                data = {...data, uuid: undefined};
+            } else if (data.name) {
+                options.where = {name: data.name};
+                data = {...data, name: undefined};
+            } else {
+                throw new Error('No criteria for find the row.');
+            }
+        }
+
+        let row = await this.getSingle({...options, skipNoRowsError: true});
+        if (row) {
+            await this.update(data, options);
+            return [row, false];
+        }
+
+        row = await this.create(data, {raw: true});
+        return [row, true];
     }
 }
