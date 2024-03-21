@@ -87,7 +87,7 @@ export class ServiceBase {
             let reference = this.references[name];
             if (reference === true) {
                 reference = {
-                    service: name + 'Service',
+                    service: name.slice(0, 1).toLowerCase() + name.slice(1) + 'Service',
                 };
                 this.references[name] = reference;
             } else if (typeof reference === 'string' || typeof reference === 'function') {
@@ -369,13 +369,13 @@ export class ServiceBase {
             return options;
         }
 
-        options = {...options};
+        options = { ...options };
 
         const includes = Object.getOwnPropertyNames(options)
-            .filter(prop => prop.length > 7 && prop.startsWith('include'))
-            .map(i => i.slice(7));
+            .filter(prop => prop.length > 7 && prop.startsWith('include'));
 
-        for (const Name of includes) {
+        for (const includeName of includes) {
+            const Name = includeName.slice(7);
             const name = Name.slice(0, 1).toLowerCase() + Name.slice(1);
             const reference = this.references[Name]
                 ?? this.references[name];
@@ -391,23 +391,21 @@ export class ServiceBase {
                 continue;
             }        
 
-            let associationOptions;
+            let includeOptions = {...options[includeName]};
             if (reference?.service) {
-                associationOptions = await reference.service.getListOptions(associationOptions);
-            } else {
-                associationOptions = {};
+                includeOptions = await reference.service.getListOptions(includeOptions);
             }
 
-            associationOptions.model = association.target;
+            includeOptions.model = association.target;
 
             if (association.as) {
-                associationOptions.as = association.as;
+                includeOptions.as = association.as;
             }
 
             completeIncludeOptions(
                 options,
                 modelName,
-                associationOptions,
+                includeOptions,
             );
 
             delete options[name];
@@ -588,7 +586,7 @@ export class ServiceBase {
      */
     async update(data, options) {
         await this.completeReferences(data);
-        data = await this.validateForUpdate(data, options.where);
+        data = await this.validateForUpdate(data, options?.where);
 
         await this.emit('updating', options?.emitEvent, data, options, this);
         let result = await this.model.update(data, options);
