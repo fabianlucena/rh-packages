@@ -342,8 +342,7 @@ export function asyncHandler(methodContainer, method) {
 }
 
 export async function getOptionsFromOData(params, options) {
-    options ??= {};
-
+    options = { ...options };
     if (!params) {
         return options;
     }
@@ -416,7 +415,18 @@ export async function getOptionsFromOData(params, options) {
                 throw new _HttpError(loc._f('Error to compile filter in part "%s", only the "eq" operator is supported.'), 400, filter);
             }
 
-            where[parts[0]] = stripQuotes(parts.slice(2).join(' '));
+            let value = parts.slice(2).join(' ');
+            if (value === 'null') {
+                value = null;
+            } else if (value === 'true') {
+                value = true;
+            } else if (value === 'false') {
+                value = false;
+            } else {
+                value = stripQuotes(value);
+            }
+
+            where[parts[0]] = value;
         }
 
         options.where = {...options.where, ...where};
@@ -426,25 +436,25 @@ export async function getOptionsFromOData(params, options) {
 }
 
 export async function getWhereOptionsFromParams(params, definitions, options) {
-    if (!options) {
-        options = {};
+    options = { ...options };
+
+    if (!params || !definitions) {
+        return options;
     }
 
-    if (params && definitions) {
-        for (const name in definitions) {
-            const value = params[name];
-            if (value !== undefined) {
-                const def = definitions[name];
-                switch (def) {
-                case 'uuid':
-                    if (!uuid.validate(params.uuid)) {
-                        throw new NoUUIDError(name);
-                    }
+    for (const name in definitions) {
+        const value = params[name];
+        if (value !== undefined) {
+            const def = definitions[name];
+            switch (def) {
+            case 'uuid':
+                if (!uuid.validate(params.uuid)) {
+                    throw new NoUUIDError(name);
                 }
-            
-                options.where ??= {};
-                options.where[name] = value;
             }
+        
+            options.where ??= {};
+            options.where[name] = value;
         }
     }
 
