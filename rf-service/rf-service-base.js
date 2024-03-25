@@ -460,11 +460,6 @@ export class ServiceBase {
     async getListAndCount(options) {
         options = await this.getListOptions(options);
         const rows = await this.getList(options);
-
-        options.attributes = [];
-        if (options.include) {
-            options.include = options.include.map(i => ({...i, attributes: []}));
-        }
         const count = await this.count(options);
 
         return {rows, count};
@@ -558,6 +553,11 @@ export class ServiceBase {
 
     async count(options) {
         options = await this.getListOptions(options);
+        options.attributes = [];
+        if (options.include) {
+            options.include = options.include.map(i => ({...i, attributes: []}));
+        }
+        
         await this.emit('gettingCount', options?.emitEvent, options);
         const result = this.model.count(options);
         await this.emit('gettingCount', options?.emitEvent, result, options);
