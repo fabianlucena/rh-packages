@@ -122,6 +122,7 @@ export class CompanySiteController {
 
         const actions = [{
             name: 'select',
+            type: 'button',
             icon: 'get-into',
             actionData: {
                 bodyParam: {companyUuid: 'Company.uuid'},

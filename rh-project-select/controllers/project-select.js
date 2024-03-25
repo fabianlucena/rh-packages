@@ -121,6 +121,7 @@ export class ProjectSelectController {
         const actions = [
             {
                 name: 'select',
+                type: 'button',
                 icon: 'get-into',
                 actionData: {
                     bodyParam: {projectUuid: 'uuid'},
