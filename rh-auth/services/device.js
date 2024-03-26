@@ -62,6 +62,10 @@ export class DeviceService extends ServiceIdUuid {
         return getSingle(rows, {params: ['devices', 'token', token, 'Device'], ...options});
     }
 
+    async getForTokenOrNull(token, options) {
+        return this.getForToken(token, { ...options, skipNoRowsError: true });
+    }
+
     /**
      * Get a device for a given token value from the cache or from the DB. @see getForToken method.
      * @param {string} token - value for the token to get the device.

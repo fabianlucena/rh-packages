@@ -1,8 +1,9 @@
-import {LoginService} from '../services/login.js';
-import {conf} from '../conf.js';
-import {_HttpError} from 'http-util';
-import {checkParameter} from 'rf-util';
-import {defaultLoc} from 'rf-locale';
+import { LoginService } from '../services/login.js';
+import { conf } from '../conf.js';
+import { _HttpError } from 'http-util';
+import { checkParameter } from 'rf-util';
+import { defaultLoc } from 'rf-locale';
+import dependency from 'rf-dependency';
 
 export class LoginController {
     /**
@@ -127,7 +128,19 @@ export class LoginController {
                 session = await loginService.forAutoLoginTokenAndSessionIndex(req.body.autoLoginToken, req.body.deviceToken, req.body?.sessionIndex ?? req.body.index, loc);
                 req.log?.info('Auto logged by autoLoginToken.', {autoLoginToken: req.body.autoLoginToken, session});
             } else {
-                session = await loginService.forUsernamePasswordDeviceTokenAndSessionIndex(req.body.username, req.body.password, req.body.deviceToken, req.body.sessionIndex ?? req.body.index, loc);
+                let deviceToken = req.body.deviceToken;
+                const deviceService = dependency.get('deviceService');
+                if (deviceService) {
+                    if (deviceToken) {
+                        let device = await deviceService.getForTokenOrNull(deviceToken);
+                        if (!device) {
+                            device = await deviceService.create({ data: '' });
+                            deviceToken = device.token;
+                        }
+                    }
+                }
+
+                session = await loginService.forUsernamePasswordDeviceTokenAndSessionIndex(req.body.username, req.body.password, deviceToken, req.body.sessionIndex ?? req.body.index, loc);
                 req.log?.info(`User ${req.body.username} successfully logged with username and password.`, {session});
             }
             
