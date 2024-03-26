@@ -132,11 +132,15 @@ export class LoginController {
                 const deviceService = dependency.get('deviceService');
                 if (deviceService) {
                     if (deviceToken) {
-                        let device = await deviceService.getForTokenOrNull(deviceToken);
+                        const device = await deviceService.getForTokenOrNull(deviceToken);
                         if (!device) {
-                            device = await deviceService.create({ data: '' });
-                            deviceToken = device.token;
+                            deviceToken = null;
                         }
+                    }
+
+                    if (!deviceToken) {
+                        const device = await deviceService.create({ data: '' });
+                        deviceToken = device.token;
                     }
                 }
 
