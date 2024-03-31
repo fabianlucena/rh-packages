@@ -106,7 +106,7 @@ export class ServiceBase {
             }
 
             if (reference instanceof ServiceBase) {
-                reference = {service: reference};
+                reference = { service: reference };
                 this.references[name] = reference;
             }
 
@@ -739,25 +739,26 @@ export class ServiceBase {
     }
 
     async createOrUpdate(data, options) {
-        options = {...options};
+        options = { ...options };
+        let updateData;
         if (!options.where) {
             if (data.id) {
-                options.where = {id: data.id};
-                data = {...data, id: undefined};
+                options.where = { id: data.id };
+                updateData = { ...data, id: undefined };
             } else if (data.uuid) {
-                options.where = {uuid: data.uuid};
-                data = {...data, uuid: undefined};
+                options.where = { uuid: data.uuid };
+                updateData = { ...data, uuid: undefined };
             } else if (data.name) {
-                options.where = {name: data.name};
-                data = {...data, name: undefined};
+                options.where = { name: data.name };
+                updateData = { ...data, name: undefined };
             } else {
                 throw new Error('No criteria for find the row.');
             }
         }
 
-        let row = await this.getSingle({...options, skipNoRowsError: true});
+        let row = await this.getSingle({ ...options, skipNoRowsError: true });
         if (row) {
-            await this.update(data, options);
+            await this.update(updateData, options);
             return [row, false];
         }
 

@@ -61,7 +61,7 @@ async function projectInterfaceFormGet(form, options) {
         name:  'tags',
         type:  'tags',
         label: await getTagTitle(options),
-        loadOptionsFrom: {service: 'project-tag/tags'},
+        loadOptionsFrom: { service: 'project-tag/tags' },
     });
 }
 
