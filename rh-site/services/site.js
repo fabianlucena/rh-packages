@@ -10,6 +10,14 @@ export class SiteService extends ServiceIdUuidNameEnabledModuleTranslatable {
     moduleService = conf.global.services.Module.singleton();
     defaultTranslationContext = 'site';
 
+    async validateForCreation(data) {
+        if (!data.title) {
+            data.title = data.name[0].toUpperCase() + data.name.slice(1);
+        }
+
+        return super.validateForCreation(data);
+    }
+
     async getListOptions(options) {
         if (options?.view) {
             if (!options.attributes) {
