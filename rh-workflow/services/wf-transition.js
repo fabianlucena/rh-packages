@@ -1,20 +1,18 @@
-import { WfWorkflowTypeService } from './wf-workflow-type.js';
-import { WfStatusService } from './wf-status.js';
-import {conf} from '../conf.js';
-import {ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable} from 'rf-service';
-import {completeIncludeOptions} from 'sql-util';
-import {CheckError} from 'rf-util';
-import {loc} from 'rf-locale';
-import {ConflictError} from 'http-util';
+import { conf } from '../conf.js';
+import { ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable } from 'rf-service';
+import { completeIncludeOptions } from 'sql-util';
+import { CheckError } from 'rf-util';
+import { loc } from 'rf-locale';
+import { ConflictError } from 'http-util';
 
 export class WfTransitionService extends ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.WfTransition;
     references = {
-        ownerModule:  conf.global.services.Module?.singleton(),
-        workflowType: WfWorkflowTypeService.singleton(),
-        from:         WfStatusService.singleton(),
-        to:           WfStatusService.singleton(),
+        ownerModule:  'moduleService',
+        workflowType: 'wfWorkflowTypeService',
+        from:         'wfStatusService',
+        to:           'wfStatusService',
     };
     defaultTranslationContext = 'workflow';
 

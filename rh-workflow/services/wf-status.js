@@ -1,21 +1,22 @@
-import {WfWorkflowTypeService} from './wf-workflow-type.js';
-import {WfStatusIsInitialService} from './wf-status-is-initial.js';
-import {WfStatusIsFinalService} from './wf-status-is-final.js';
-import {conf} from '../conf.js';
-import {ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable} from 'rf-service';
+import { WfStatusIsInitialService } from './wf-status-is-initial.js';
+import { WfStatusIsFinalService } from './wf-status-is-final.js';
+import { conf } from '../conf.js';
+import { ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable } from 'rf-service';
 
 export class WfStatusService extends ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.WfStatus;
     references = {
-        ownerModule: conf.global.services.Module?.singleton(),
-        workflowType: WfWorkflowTypeService.singleton(),
+        ownerModule: 'moduleService',
+        workflowType: 'wfWorkflowTypeService',
     };
     defaultTranslationContext = 'workflow';
 
     init() {
         this.wfStatusIsInitialService = WfStatusIsInitialService.singleton();
         this.wfStatusIsFinalService =   WfStatusIsFinalService.singleton();
+
+        super.init();
     }
 
     async create(data, options) {

@@ -1,15 +1,15 @@
-import {WfWorkflowTypeService} from './wf-workflow-type.js';
-import {conf} from '../conf.js';
-import {ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable} from 'rf-service';
-import {completeIncludeOptions} from 'sql-util';
+import { conf } from '../conf.js';
+import { ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable } from 'rf-service';
+import { completeIncludeOptions } from 'sql-util';
 
 export class WfWorkflowService extends ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable {
     sequelize = conf.global.sequelize;
     model = conf.global.models.WfWorkflow;
     moduleService = conf.global.services.Module.singleton();
     references = {
-        modelEntityName: conf?.global?.services?.ModelEntityName?.singleton(),
-        workflowType: WfWorkflowTypeService.singleton(),
+        ownerModule:     'moduleService',
+        modelEntityName: 'modelEntityNameService',
+        workflowType:    'wfWorkflowTypeService',
     };
     defaultTranslationContext = 'workflow';
     translatableColumns = [
