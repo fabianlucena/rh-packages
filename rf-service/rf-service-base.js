@@ -119,7 +119,7 @@ export class ServiceBase {
                 let service = dependency.get(serviceName, null);
                 if (!service) {
                     if (!reference.optional) {
-                        throw new _Error(loc._f('Error reference name "%s", not found for service "%s".', name, this.constructor.name));
+                        throw new _Error(loc._f('Error service name "%s", not found for reference "%s" in service "%s".', serviceName, name, this.constructor.name));
                     }
 
                     continue;
@@ -248,7 +248,7 @@ export class ServiceBase {
 
             if (!data[idPropertyName]) {
                 if (otherName && typeof data[otherName] === 'string' && data[otherName] && service[getIdForName]) {
-                    data[idPropertyName] = await service[getIdForName](data[otherName], {skipNoRowsError: true});
+                    data[idPropertyName] = await service[getIdForName](data[otherName], { skipNoRowsError: true });
                 }
 
                 if (!data[idPropertyName] && reference.createIfNotExists) {
@@ -426,7 +426,12 @@ export class ServiceBase {
     async getList(options) {
         options = await this.getListOptions(options);
         await this.emit('getting', options?.emitEvent, options, this);
-        let result = this.model.findAll(options);
+        const sequelizeOptions = { ...options };
+        if (sequelizeOptions.orderBy) {
+            sequelizeOptions.order = sequelizeOptions.orderBy;
+            delete sequelizeOptions.orderBy;
+        }
+        let result = this.model.findAll(sequelizeOptions);
         if (!options.raw) {
             result = await result;
             if (this.dto) {
