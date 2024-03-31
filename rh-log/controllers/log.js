@@ -14,7 +14,7 @@ export class LogController {
             view: true,
             limit: 10,
             offset: 0,
-            order: [['dateTime', 'DESC']],
+            orderBy: [['dateTime', 'DESC']],
             loc: req.loc,
             includeUser: true,
             searchColumns: [
