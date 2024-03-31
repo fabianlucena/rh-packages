@@ -401,10 +401,10 @@ export function includeCollaborators(options, object, models, collaboratorOption
 }
 
 export function arrangeOptions(options, sequelize) {
-    if (options.order?.length) {
-        options.order = options.order.map(order => {
-            let col = order[0];
-            const sort = order[1];
+    if (options.orderBy?.length) {
+        options.orderBy = options.orderBy.map(orderBy => {
+            let col = orderBy[0];
+            const sort = orderBy[1];
             if (!(col instanceof Utils.Col)) {
                 col = sequelize.col(col);
             }
