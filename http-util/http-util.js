@@ -434,8 +434,8 @@ export async function getOptionsFromOData(params, options) {
 
     let orderBy = params.$orderBy ?? params.$orderby;
     if (orderBy) {
-        options.order ??= [];
-        options.order.push(
+        options.orderBy ??= [];
+        options.orderBy.push(
             ...orderBy
                 .split(',')
                 .map(o => o.split(' '))
