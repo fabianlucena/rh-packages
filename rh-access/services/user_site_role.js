@@ -11,7 +11,9 @@ export class UserSiteRoleService extends ServiceModuleTranslatable {
             getIdForName: 'getIdForUsername',
             otherName: 'username',
         },
-        site: true,
+        site: {
+            createIfNotExists: true,
+        },
         role: true,
     };
     defaultTranslationContext = 'userSiteRole';
@@ -172,9 +174,9 @@ export class UserSiteRoleService extends ServiceModuleTranslatable {
             options.group = [...new Set((options.group ?? []).concat(autoGroup))];
         }
         
-        if (!options.order && getIncludedModelOptions(options, conf.global.models.User)) {
-            options.order ??= [];
-            options.order.push(['User.username', 'ASC']);
+        if (!options.orderBy && getIncludedModelOptions(options, conf.global.models.User)) {
+            options.orderBy ??= [];
+            options.orderBy.push(['User.username', 'ASC']);
         }
 
         return super.getListOptions(options);
