@@ -44,6 +44,10 @@ export const ServiceMixinId = Service => class ServiceId extends Service {
         return this.getSingleFromRows(rows, options);
     }
 
+    async getForIdOrNull(id, options) {
+        return this.getForId(id, { ...options, skipNoRowsError: true });
+    }
+
     /**
      * Gets a row ID list for a given criteria.
      * @param {object} where - criteria to get the row list.
