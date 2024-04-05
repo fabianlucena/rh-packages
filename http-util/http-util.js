@@ -1040,7 +1040,7 @@ export function corsPreflight(options) {
 }
 
 export function corsSimplePreflight(methods) {
-    return corsPreflight({headers: 'Content-Type,Authorization', methods: methods});
+    return corsPreflight({headers: 'Content-Type,Authorization', methods});
 }
 
 export async function getUuidFromRequest(req) {

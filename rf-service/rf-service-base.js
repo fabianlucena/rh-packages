@@ -178,6 +178,10 @@ export class ServiceBase {
      * @returns {sequelize.Transaction}
      */
     async createTransaction() {
+        if (!this.sequelize) {
+            throw new _Error(loc._f('No sequalize defined on %s. Try adding "sequelize = conf.global.sequelize;" to the class.', this.constructor.name));
+        }
+
         return this.sequelize.transaction();
     }
     
