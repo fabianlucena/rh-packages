@@ -5,7 +5,7 @@ export class Progress {
     progressMessagePropertyName = 'message';
 
     constructor(res, options) {
-        options = {...options};
+        options = { ...options };
         if (res.constructor.name === 'ServerResponse') {
             options.res = res;
         } else {
