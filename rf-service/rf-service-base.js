@@ -540,6 +540,15 @@ export class ServiceBase {
         return this.getSingleFromRows(rows, options);
     }
 
+    async getFirst(options) {
+        const rows = await this.getList({ limit: 1, ...options });
+        if (!rows?.length) {
+            return;
+        }
+
+        return rows[0];
+    }
+
     /**
      * Gets a single row for a given criteria.
      * @param {object} where - criteria to get the row list (where object).
@@ -558,6 +567,10 @@ export class ServiceBase {
      */
     async getSingleOrNullFor(where, options) {
         return this.getSingle({...options, where: {...options?.where, ...where}, skipNoRowsError: true, nullOnManyRowsError: true});
+    }
+
+    async getFirstOrNullFor(where, options) {
+        return this.getFirst({...options, where: {...options?.where, ...where}});
     }
 
     async count(options) {
