@@ -179,7 +179,7 @@ log.error = (message) => log({type: 'error', message});
 log.info = (message) => log({type: 'info', message});
 log.warining = (message) => log({type: 'warning', message});
 
-export const maxRowsInResult = 1000;
+export const maxRowsInResult = 100;
 export const defaultRowsInResult = 20;
 export const defaultGlobal = {
     app: null,
