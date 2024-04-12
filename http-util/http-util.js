@@ -366,7 +366,7 @@ export async function getOptionsFromOData(params, options) {
             throw new _HttpError(loc._f('Error to convert $top = "%s" parameter value to a integer number.'), 400, params.$top);
         }
 
-        if (limit > maxRowsInResult) {
+        if (!options.overrideMaxRowsInResult && limit > maxRowsInResult) {
             throw new _HttpError(loc._f('Too many rows to return, please select a lower number (at most %s) for $top parameter.'), 400, maxRowsInResult);
         }
 
