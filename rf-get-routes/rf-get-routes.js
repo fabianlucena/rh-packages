@@ -96,175 +96,175 @@
  *      this.defaultGet after return to properly handle. 
  */
 export function getRoutes(controllerClass, options) {
-    options ??= {};
+  options ??= {};
 
-    const handlers = [
-        {name: 'get'},
-        {name: 'post'},
-        {name: 'patch'},
-        {name: 'put'},
-        {name: 'delete'},
-        {name: 'options'},
-    ];
+  const handlers = [
+    { name: 'get' },
+    { name: 'post' },
+    { name: 'patch' },
+    { name: 'put' },
+    { name: 'delete' },
+    { name: 'options' },
+  ];
 
-    if (options.appendHandlers) {
-        handlers.push(...options.appendHandlers);
+  if (options.appendHandlers) {
+    handlers.push(...options.appendHandlers);
+  }
+
+  handlers.push({ name: 'all' });
+
+  const controllerInstance = new controllerClass;
+
+  const props = [];
+  if (!options.skipStatic) {
+    props.push(...Object.getOwnPropertyNames(controllerClass));
+  }
+
+  if (!options.skipNonStatic) {
+    props.push(
+      ...Object.getOwnPropertyNames(controllerInstance.__proto__),
+      ...Object.getOwnPropertyNames(controllerInstance)
+    );
+  }
+
+  if (!options.skipParent) {
+    let parent = controllerClass.__proto__;
+    while (parent && parent.name) {
+      props.push(...Object.getOwnPropertyNames(parent));
+      parent = parent.__proto__;
     }
+  }
 
-    handlers.push({name: 'all'});
+  const routes = [];
+  handlers.forEach(handler => {
+    const addToRoutes = [];
+    props.forEach(prop => {
+      const parts = prop.split(' ');
+      const name = parts[0];
+      if (handler.name !== name) {
+        return;
+      }
 
-    const controllerInstance = new controllerClass;
+      const path = parts.length > 1?
+        parts.slice(1).join(' '):
+        '';
+      if (routes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
+        return;
+      }
 
-    const props = [];
-    if (!options.skipStatic) {
-        props.push(...Object.getOwnPropertyNames(controllerClass));
-    }
+      if (addToRoutes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
+        return;
+      }
 
-    if (!options.skipNonStatic) {
-        props.push(
-            ...Object.getOwnPropertyNames(controllerInstance.__proto__),
-            ...Object.getOwnPropertyNames(controllerInstance)
-        );
-    }
+      const route = {
+        httpMethod: handler.httpMethod ?? name,
+        path,
+      };
 
-    if (!options.skipParent) {
-        let parent = controllerClass.__proto__;
-        while (parent && parent.name) {
-            props.push(...Object.getOwnPropertyNames(parent));
-            parent = parent.__proto__;
-        }
-    }
+      if (controllerInstance[handler.handler]) {
+        route.method = handler.handler;
+        route.methodIsStatic = false;
+      } else if (controllerClass[handler.handler]) {
+        route.method = handler.handler;
+        route.methodIsStatic = true;
+      } else if (controllerInstance[prop]) {
+        route.method = prop;
+        route.methodIsStatic = false;
+      } else if (controllerClass[prop]) {
+        route.method = prop;
+        route.methodIsStatic = true;
+      }
 
-    const routes = [];
-    handlers.forEach(handler => {
-        const addToRoutes = [];
-        props.forEach(prop => {
-            const parts = prop.split(' ');
-            const name = parts[0];
-            if (handler.name !== name) {
-                return;
-            }
+      const pathSuffix = path?
+        ' ' + path
+        :'';
 
-            const path = parts.length > 1?
-                parts.slice(1).join(' '):
-                '';
-            if (routes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
-                return;
-            }
+      let withSuffix = name + 'Permission' + pathSuffix;
+      if (controllerInstance[withSuffix]) {
+        route.permission = controllerInstance[withSuffix];
+        route.permissionIsStatic = false;
+      } else if (controllerClass[withSuffix]) {
+        route.permission = controllerClass[withSuffix];
+        route.permissionIsStatic = true;
+      }
 
-            if (addToRoutes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
-                return;
-            }
+      withSuffix = name + 'Middleware' + pathSuffix;
+      if (controllerInstance[withSuffix]) {
+        route.middleware = controllerInstance[withSuffix];
+        route.middlewareIsStatic = false;
+      } else if (controllerClass[withSuffix]) {
+        route.middleware = controllerClass[withSuffix];
+        route.middlewareIsStatic = true;
+      }
 
-            const route = {
-                httpMethod: handler.httpMethod ?? name,
-                path,
-            };
-
-            if (controllerInstance[handler.handler]) {
-                route.method = handler.handler;
-                route.methodIsStatic = false;
-            } else if (controllerClass[handler.handler]) {
-                route.method = handler.handler;
-                route.methodIsStatic = true;
-            } else if (controllerInstance[prop]) {
-                route.method = prop;
-                route.methodIsStatic = false;
-            } else if (controllerClass[prop]) {
-                route.method = prop;
-                route.methodIsStatic = true;
-            }
-
-            const pathSuffix = path?
-                ' ' + path
-                :'';
-
-            let withSuffix = name + 'Permission' + pathSuffix;
-            if (controllerInstance[withSuffix]) {
-                route.permission = controllerInstance[withSuffix];
-                route.permissionIsStatic = false;
-            } else if (controllerClass[withSuffix]) {
-                route.permission = controllerClass[withSuffix];
-                route.permissionIsStatic = true;
-            }
-
-            withSuffix = name + 'Middleware' + pathSuffix;
-            if (controllerInstance[withSuffix]) {
-                route.middleware = controllerInstance[withSuffix];
-                route.middlewareIsStatic = false;
-            } else if (controllerClass[withSuffix]) {
-                route.middleware = controllerClass[withSuffix];
-                route.middlewareIsStatic = true;
-            }
-
-            addToRoutes.push(route);
-        });
-
-        if (addToRoutes.length) {
-            routes.push(...addToRoutes);
-        }
+      addToRoutes.push(route);
     });
 
-    let path = controllerInstance.path;
+    if (addToRoutes.length) {
+      routes.push(...addToRoutes);
+    }
+  });
+
+  let path = controllerInstance.path;
+  if (path === undefined) {
+    path = controllerClass.path;
+
     if (path === undefined) {
-        path = controllerClass.path;
+      path = '/{controller}';
+    }
+  }
 
-        if (path === undefined) {
-            path = '/{controller}';
-        }
+  if (path) {
+    if (path.search('{controller}')) {
+      let controller = controllerClass.name;
+      if (controller.endsWith('controller') || controller.endsWith('Controller')) {
+        controller = dasherize(controller.substring(0, controller.length - 10));
+      }
+      controller = dasherize(controller);
+
+      path = path.replace(/\{controller\}/g, controller);
     }
 
-    if (path) {
-        if (path.search('{controller}')) {
-            let controller = controllerClass.name;
-            if (controller.endsWith('controller') || controller.endsWith('Controller')) {
-                controller = dasherize(controller.substring(0, controller.length - 10));
-            }
-            controller = dasherize(controller);
+    if (path.search('{{}')) {
+      path = path.replace(/\{\{\}/g, '{');
+    }
+  }
 
-            path = path.replace(/\{controller\}/g, controller);
-        }
-
-        if (path.search('{{}')) {
-            path = path.replace(/\{\{\}/g, '{');
-        }
+  const cors = [];
+  for (const route of routes) {
+    const httpMethod = route.httpMethod.toUpperCase();
+    if (httpMethod === 'ALL') {
+      continue;
     }
 
-    const cors = [];
-    for (const route of routes) {
-        const httpMethod = route.httpMethod.toUpperCase();
-        if (httpMethod === 'ALL') {
-            continue;
-        }
-
-        const path = route.path;
-        const item = cors.find(i => i.path === path);
-        if (!item) {
-            cors.push({
-                path,
-                httpMethods: [httpMethod],
-            });
-        } else {
-            if (!item.httpMethods.includes(httpMethod)) {
-                item.httpMethods.push(httpMethod);
-            }
-        }
+    const path = route.path;
+    const item = cors.find(i => i.path === path);
+    if (!item) {
+      cors.push({
+        path,
+        httpMethods: [httpMethod],
+      });
+    } else {
+      if (!item.httpMethods.includes(httpMethod)) {
+        item.httpMethods.push(httpMethod);
+      }
     }
+  }
 
-    return {controller: controllerClass, path, routes, cors};
+  return { controller: controllerClass, path, routes, cors };
 }
 
 function dasherize(text, sep) {
-    if (!text) {
-        return text;
-    }
+  if (!text) {
+    return text;
+  }
 
-    return text
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .split(/([^a-zA-Z0-9]|(?<=[a-z])(?=[A-Z0-9])|(?<=[A-Z])(?=[0-9])|(?<=[0-9])(?=[a-zA-Z]))/)
-        .map(t => t.trim().toLowerCase())
-        .filter(t => t && t.match(/[a-zA-Z0-9]/))
-        .join(sep ?? '-')
-        .trim();
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .split(/([^a-zA-Z0-9]|(?<=[a-z])(?=[A-Z0-9])|(?<=[A-Z])(?=[0-9])|(?<=[0-9])(?=[a-zA-Z]))/)
+    .map(t => t.trim().toLowerCase())
+    .filter(t => t && t.match(/[a-zA-Z0-9]/))
+    .join(sep ?? '-')
+    .trim();
 }

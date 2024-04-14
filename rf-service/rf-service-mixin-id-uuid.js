@@ -1,5 +1,5 @@
 export const ServiceMixinIdUuid = Service => class ServiceIdUuid extends Service {
-    /**
+  /**
      * Gets a row ID for its UUID. For many coincidences and for no rows this 
      * function fails.
      * @param {string|Array} uuid - UUID for the row to get.
@@ -12,10 +12,10 @@ export const ServiceMixinIdUuid = Service => class ServiceIdUuid extends Service
      * This function uses @ref getForUuid function so the options for getForUuid
      * function can be specified.
      */
-    async getIdForUuid(name, options) {
-        if (Array.isArray(name))
-            return (await this.getForUuid(name, {attributes: ['id'], ...options})).map(row => row.id);
+  async getIdForUuid(name, options) {
+    if (Array.isArray(name))
+      return (await this.getForUuid(name, { attributes: ['id'], ...options })).map(row => row.id);
         
-        return (await this.getForUuid(name, {attributes: ['id'], ...options})).id;
-    }
+    return (await this.getForUuid(name, { attributes: ['id'], ...options })).id;
+  }
 };

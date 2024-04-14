@@ -1,5 +1,5 @@
-import {SiteService} from '../services/site.js';
-import {getOptionsFromParamsAndOData} from 'http-util';
+import { SiteService } from '../services/site.js';
+import { getOptionsFromParamsAndOData } from 'http-util';
 
 /**
  * @swagger
@@ -18,7 +18,7 @@ import {getOptionsFromParamsAndOData} from 'http-util';
  */
 
 export class SiteController {
-    /** 
+  /** 
      * @swagger
      * /api/site:
      *  get:
@@ -38,13 +38,13 @@ export class SiteController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static async get(req, res) {
-        const definitions = {uuid: 'uuid', name: 'string'};
-        let options = {view: true, limit: 10, offset: 0};
+  static async get(req, res) {
+    const definitions = { uuid: 'uuid', name: 'string' };
+    let options = { view: true, limit: 10, offset: 0 };
 
-        options = await getOptionsFromParamsAndOData(req?.query, definitions, options);
-        const rows = await SiteService.singleton().getList(options);
+    options = await getOptionsFromParamsAndOData(req?.query, definitions, options);
+    const rows = await SiteService.singleton().getList(options);
 
-        res.status(200).send(rows);
-    }
+    res.status(200).send(rows);
+  }
 }

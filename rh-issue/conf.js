@@ -5,13 +5,13 @@ const name = 'rhIssue';
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export const conf = {
-    name,
-    title: 'RH Issue',
-    version: '0.1',
-    path: dirname,
-    schema: 'issue',
-    routesPath: dirname + '/routes',
-    modelsPath: dirname + '/models',
-    servicesPath: dirname + '/services',
-    apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
+  name,
+  title: 'RH Issue',
+  version: '0.1',
+  path: dirname,
+  schema: 'issue',
+  routesPath: dirname + '/routes',
+  modelsPath: dirname + '/models',
+  servicesPath: dirname + '/services',
+  apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
 };

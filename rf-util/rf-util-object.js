@@ -1,4 +1,4 @@
-import {MergeTypeError} from './rf-util-error.js';
+import { MergeTypeError } from './rf-util-error.js';
 
 /**
  * Merge the objects source and destiny. The result is the merged object. But, if the replace option is defined the destiny object is updated.
@@ -12,135 +12,135 @@ import {MergeTypeError} from './rf-util-error.js';
  * @returns {object} - the merged object.
  */
 export function merge(dst, src, options) {
-    if (!src) {
-        return dst;
-    }
+  if (!src) {
+    return dst;
+  }
 
-    if (Array.isArray(src)) {
-        if (!dst) {
-            dst = [];
-        } else if (!Array.isArray(dst)) {
-            throw new MergeTypeError(typeof dst, typeof src);
-        }
-
-        let result;
-        if (options?.replace) {
-            result = dst;
-        } else {
-            result = [...dst];
-        }
-
-        if (options?.deep) {
-            const deepOptions = merge(options, {});
-            if (deepOptions.deep > 0) {
-                deepOptions.deep--;
-            }
-                
-            for (let i = 0, e = src.length; i < e; i++) {
-                let v = src[i];
-                if (v && typeof v === 'object') {
-                    if (Array.isArray(v)) {
-                        v = merge([], v, deepOptions);
-                    } else {
-                        v = merge({}, v, deepOptions);
-                    }
-                }
-
-                result.push(v);
-            }
-        } else {
-            result.push(...src);
-        }
-
-        return result;
-    }
-
+  if (Array.isArray(src)) {
     if (!dst) {
-        dst = {};
-    } else if (Array.isArray(dst)) {
-        throw new MergeTypeError(typeof dst, typeof src);
-    }
-
-    let properties;
-    if (Array.isArray(options)) {
-        properties = options;
-        options = {};
-    } else {
-        properties = options?.properties;
-    }
-        
-    if (properties === undefined) {
-        properties = Object.keys(src);
+      dst = [];
+    } else if (!Array.isArray(dst)) {
+      throw new MergeTypeError(typeof dst, typeof src);
     }
 
     let result;
     if (options?.replace) {
-        result = dst;
+      result = dst;
     } else {
-        result = {};
-        for (const k in dst) {
-            result[k] = dst[k];
-        }
+      result = [...dst];
     }
 
     if (options?.deep) {
-        const deepOptions = merge(options, {});
-        if (deepOptions.deep > 0) {
-            deepOptions.deep--;
+      const deepOptions = merge(options, {});
+      if (deepOptions.deep > 0) {
+        deepOptions.deep--;
+      }
+                
+      for (let i = 0, e = src.length; i < e; i++) {
+        let v = src[i];
+        if (v && typeof v === 'object') {
+          if (Array.isArray(v)) {
+            v = merge([], v, deepOptions);
+          } else {
+            v = merge({}, v, deepOptions);
+          }
         }
 
-        for(let i = 0, e = properties.length; i < e; i++) {
-            const p = properties[i];
-            let isSrcObject = typeof src[p] === 'object';
-            let v;
-
-            if (dst[p] === undefined) {
-                if (isSrcObject) {
-                    if (Array.isArray(src[p])) {
-                        v = merge([], src[p], deepOptions);
-                    } else if (Buffer.isBuffer(src[p])) {
-                        v = Buffer.from(src[p]);
-                    } else if (src[p] === null) {
-                        v = null;
-                    } else {
-                        v = merge({}, src[p], deepOptions);
-                    }
-                } else {
-                    v = src[p];
-                }
-            } else {
-                let isDstObject = typeof dst[p] === 'object';
-
-                if (isDstObject) {
-                    if (isSrcObject && deepOptions.deep && !Buffer.isBuffer(src[p])) {
-                        v = merge(dst[p], src[p], deepOptions);
-                    } else if (options?.skipExistent) {
-                        v = dst[p];
-                    } else {
-                        v = src[p];
-                    }
-                } else if (options?.skipExistent) {
-                    v = dst[p] || src[p];
-                } else {
-                    v = src[p] || dst[p];
-                }
-            }
-
-            result[p] = v;
-        }
-    } else if (options?.skipExistent) {
-        for(let i = 0, e = properties.length; i < e; i++) {
-            const p = properties[i];
-            result[p] = dst[p] ?? src[p];
-        }
+        result.push(v);
+      }
     } else {
-        for(let i = 0, e = properties.length; i < e; i++) {
-            const p = properties[i];
-            result[p] = src[p] ?? dst[p];
-        }
+      result.push(...src);
     }
-    
+
     return result;
+  }
+
+  if (!dst) {
+    dst = {};
+  } else if (Array.isArray(dst)) {
+    throw new MergeTypeError(typeof dst, typeof src);
+  }
+
+  let properties;
+  if (Array.isArray(options)) {
+    properties = options;
+    options = {};
+  } else {
+    properties = options?.properties;
+  }
+        
+  if (properties === undefined) {
+    properties = Object.keys(src);
+  }
+
+  let result;
+  if (options?.replace) {
+    result = dst;
+  } else {
+    result = {};
+    for (const k in dst) {
+      result[k] = dst[k];
+    }
+  }
+
+  if (options?.deep) {
+    const deepOptions = merge(options, {});
+    if (deepOptions.deep > 0) {
+      deepOptions.deep--;
+    }
+
+    for(let i = 0, e = properties.length; i < e; i++) {
+      const p = properties[i];
+      let isSrcObject = typeof src[p] === 'object';
+      let v;
+
+      if (dst[p] === undefined) {
+        if (isSrcObject) {
+          if (Array.isArray(src[p])) {
+            v = merge([], src[p], deepOptions);
+          } else if (Buffer.isBuffer(src[p])) {
+            v = Buffer.from(src[p]);
+          } else if (src[p] === null) {
+            v = null;
+          } else {
+            v = merge({}, src[p], deepOptions);
+          }
+        } else {
+          v = src[p];
+        }
+      } else {
+        let isDstObject = typeof dst[p] === 'object';
+
+        if (isDstObject) {
+          if (isSrcObject && deepOptions.deep && !Buffer.isBuffer(src[p])) {
+            v = merge(dst[p], src[p], deepOptions);
+          } else if (options?.skipExistent) {
+            v = dst[p];
+          } else {
+            v = src[p];
+          }
+        } else if (options?.skipExistent) {
+          v = dst[p] || src[p];
+        } else {
+          v = src[p] || dst[p];
+        }
+      }
+
+      result[p] = v;
+    }
+  } else if (options?.skipExistent) {
+    for(let i = 0, e = properties.length; i < e; i++) {
+      const p = properties[i];
+      result[p] = dst[p] ?? src[p];
+    }
+  } else {
+    for(let i = 0, e = properties.length; i < e; i++) {
+      const p = properties[i];
+      result[p] = src[p] ?? dst[p];
+    }
+  }
+    
+  return result;
 }
 
 /**
@@ -151,7 +151,7 @@ export function merge(dst, src, options) {
  * @returns {object} - the destiny
  */
 export function deepMerge(dst, src) {
-    return merge(dst, src, {deep: -1});
+  return merge(dst, src, { deep: -1 });
 }
 
 /**
@@ -162,7 +162,7 @@ export function deepMerge(dst, src) {
  * @returns {object} - the destiny
  */
 export function complete(dst, src, options) {
-    return merge(dst, src, merge(options, {skipExistent: true, replace: true}));
+  return merge(dst, src, merge(options, { skipExistent: true, replace: true }));
 }
 
 /**
@@ -173,7 +173,7 @@ export function complete(dst, src, options) {
  * @returns {object} - the destiny
  */
 export function deepComplete(dst, src, options) {
-    return merge(dst, src, merge(options, {skipExistent: true, replace: true, deep: -1}));
+  return merge(dst, src, merge(options, { skipExistent: true, replace: true, deep: -1 }));
 }
 
 /**
@@ -184,5 +184,5 @@ export function deepComplete(dst, src, options) {
  * @returns {object} - the destiny
  */
 export function replace(dst, src, options) {
-    return merge(dst, src, merge(options, {replace: true}));
+  return merge(dst, src, merge(options, { replace: true }));
 }

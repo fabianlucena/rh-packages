@@ -1,4 +1,4 @@
 export class SwitchSiteService {
-    //static switchSitePost
-    //static currentSiteGet
+  //static switchSitePost
+  //static currentSiteGet
 }

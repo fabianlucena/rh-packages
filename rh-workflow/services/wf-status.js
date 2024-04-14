@@ -4,90 +4,90 @@ import { conf } from '../conf.js';
 import { ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable } from 'rf-service';
 
 export class WfStatusService extends ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable {
-    sequelize = conf.global.sequelize;
-    model = conf.global.models.WfStatus;
-    references = {
-        ownerModule: 'moduleService',
-        workflowType: 'wfWorkflowTypeService',
-    };
-    defaultTranslationContext = 'workflow';
+  sequelize = conf.global.sequelize;
+  model = conf.global.models.WfStatus;
+  references = {
+    ownerModule: 'moduleService',
+    workflowType: 'wfWorkflowTypeService',
+  };
+  defaultTranslationContext = 'workflow';
 
-    init() {
-        this.wfStatusIsInitialService = WfStatusIsInitialService.singleton();
-        this.wfStatusIsFinalService =   WfStatusIsFinalService.singleton();
+  init() {
+    this.wfStatusIsInitialService = WfStatusIsInitialService.singleton();
+    this.wfStatusIsFinalService =   WfStatusIsFinalService.singleton();
 
-        super.init();
+    super.init();
+  }
+
+  async create(data, options) {
+    data = { ...data };
+
+    const isInitial = data.isInitial;
+    delete data.isInitial;
+
+    const isFinal = data.isFinal;
+    delete data.isFinal;
+
+    const result = await super.create(data, options);
+    const id = result.id;
+
+    if (isInitial) {
+      await this.wfStatusIsInitialService.create({ statusId: id }, options);
     }
 
-    async create(data, options) {
-        data = {...data};
+    if (isFinal) {
+      await this.wfStatusIsFinalService.create({ statusId: id }, options);
+    }
 
-        const isInitial = data.isInitial;
-        delete data.isInitial;
+    return result;
+  }
 
-        const isFinal = data.isFinal;
-        delete data.isFinal;
+  async update(data, options) {
+    data = { ...data };
 
-        const result = await super.create(data, options);
-        const id = result.id;
+    const isInitial = data.isInitial;
+    delete data.isInitial;
 
+    const isFinal = data.isFinal;
+    delete data.isFinal;
+
+    const result = super.update(data, options);
+
+    if (isInitial !== undefined || isFinal !== undefined) {
+      const rows = this.getList({ ...options, attributes: ['id'], raw: true });
+      const idList = rows.map(r => r.id);
+
+      if (isInitial !== undefined) {
         if (isInitial) {
-            await this.wfStatusIsInitialService.create({statusId: id}, options);
+          for (const id of idList) {
+            await this.wfStatusIsInitialService.createIfNotExists({ statusId: id }, options);
+          }
+        } else {
+          await this.wfStatusIsInitialService.deleteFor({ statusId: idList }, options);
         }
+      }
 
+      if (isFinal !== undefined) {
         if (isFinal) {
-            await this.wfStatusIsFinalService.create({statusId: id}, options);
+          for (const id of idList) {
+            await this.wfStatusIsFinalService.createIfNotExists({ statusId: id }, options);
+          }
+        } else {
+          await this.wfStatusIsFinalService.deleteFor({ statusId: idList }, options);
         }
-
-        return result;
+      }
     }
 
-    async update(data, options) {
-        data = {...data};
+    return result;
+  }
 
-        const isInitial = data.isInitial;
-        delete data.isInitial;
+  async delete(options) {
+    const rows = this.getList({ ...options, attributes: ['id'], raw: true });
+    const idList = rows.map(r => r.id);
 
-        const isFinal = data.isFinal;
-        delete data.isFinal;
+    await this.wfStatusIsInitialService.deleteFor({ statusId: idList }, options);
+    await this.wfStatusIsFinalService.deleteFor({ statusId: idList }, options);
 
-        const result = super.update(data, options);
-
-        if (isInitial !== undefined || isFinal !== undefined) {
-            const rows = this.getList({...options, attributes: ['id'], raw: true});
-            const idList = rows.map(r => r.id);
-
-            if (isInitial !== undefined) {
-                if (isInitial) {
-                    for (const id of idList) {
-                        await this.wfStatusIsInitialService.createIfNotExists({statusId: id}, options);
-                    }
-                } else {
-                    await this.wfStatusIsInitialService.deleteFor({statusId: idList}, options);
-                }
-            }
-
-            if (isFinal !== undefined) {
-                if (isFinal) {
-                    for (const id of idList) {
-                        await this.wfStatusIsFinalService.createIfNotExists({statusId: id}, options);
-                    }
-                } else {
-                    await this.wfStatusIsFinalService.deleteFor({statusId: idList}, options);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    async delete(options) {
-        const rows = this.getList({...options, attributes: ['id'], raw: true});
-        const idList = rows.map(r => r.id);
-
-        await this.wfStatusIsInitialService.deleteFor({statusId: idList}, options);
-        await this.wfStatusIsFinalService.deleteFor({statusId: idList}, options);
-
-        return super.delete(options);
-    }
+    return super.delete(options);
+  }
 }

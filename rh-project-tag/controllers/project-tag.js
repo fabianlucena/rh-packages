@@ -1,5 +1,5 @@
-import {conf} from '../conf.js';
-import {getOptionsFromParamsAndOData} from 'http-util';
+import { conf } from '../conf.js';
+import { getOptionsFromParamsAndOData } from 'http-util';
 
 /**
  * @swagger
@@ -18,7 +18,7 @@ import {getOptionsFromParamsAndOData} from 'http-util';
 const tagService = conf.global.services.Tag.singleton();
 
 export class projectTagController {
-    /** 
+  /** 
      * @swagger
      * /api/project-tag:
      *  get:
@@ -38,19 +38,19 @@ export class projectTagController {
      *              schema:
      *                  $ref: '#/definitions/Error'
      */
-    static async getTags(req, res) {
-        const defaultOptions = {
-            view: true,
-            limit: 20,
-            offset: 0,
-            attributes: ['name'],
-            where: {isEnabled: true},
-        };
-        const options = await getOptionsFromParamsAndOData({...req.query, ...req.params}, null, defaultOptions);
-        options.where.tagCategory = conf.tagCategory;
+  static async getTags(req, res) {
+    const defaultOptions = {
+      view: true,
+      limit: 20,
+      offset: 0,
+      attributes: ['name'],
+      where: { isEnabled: true },
+    };
+    const options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, null, defaultOptions);
+    options.where.tagCategory = conf.tagCategory;
 
-        const result = await tagService.getListAndCount(options);
+    const result = await tagService.getListAndCount(options);
 
-        res.status(200).send(result);
-    }
+    res.status(200).send(result);
+  }
 }
