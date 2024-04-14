@@ -137,7 +137,7 @@ export class Log {
         }
 
         if (this.console) {
-            let text = `${this.dateFormat(line.dateTime)} - ${type ?? '{NO TYPE}'} - ${line.session ?? line.sessionId ?? '{NO SESSION}'} - ${message ?? '{NO MESSAGE}'}`;
+            let text = `${this.dateFormat(line.dateTime)} - ${ type ?? '{NO TYPE}'} - ${line.session ?? line.sessionId ?? '{NO SESSION}'} - ${message ?? '{NO MESSAGE}'}`;
             if (data) {
                 text += ' - ' + JSON.stringify(data);
             }

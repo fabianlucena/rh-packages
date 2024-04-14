@@ -175,9 +175,9 @@ function log(message) {
     }
 }
 
-log.error = (message) => log({type: 'error', message});
-log.info = (message) => log({type: 'info', message});
-log.warining = (message) => log({type: 'warning', message});
+log.error = (message) => log({ type: 'error', message});
+log.info = (message) => log({ type: 'info', message});
+log.warining = (message) => log({ type: 'warning', message});
 
 export const maxRowsInResult = 100;
 export const defaultRowsInResult = 20;
