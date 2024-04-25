@@ -18,7 +18,7 @@ export class PageController {
         view: true,
         limit: 10,
         offset: 0,
-        //include: { company: true },
+        include: { company: true },
       },
     );
 
