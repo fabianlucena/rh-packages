@@ -3,10 +3,10 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class WfCaseTransition extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.WfCase,   { foreignKey: 'caseId' });
-      this.belongsTo(models.WfStatus, { as: 'From',     foreignKey: 'fromId' });
-      this.belongsTo(models.WfStatus, { as: 'To',       foreignKey: 'toId' });
-      this.belongsTo(models.User,     { as: 'Operator', foreignKey: 'userId' });
+      this.belongsTo(models.WfCase,   { as: 'case',     foreignKey: 'caseId' });
+      this.belongsTo(models.WfStatus, { as: 'from',     foreignKey: 'fromId' });
+      this.belongsTo(models.WfStatus, { as: 'to',       foreignKey: 'toId' });
+      this.belongsTo(models.User,     { as: 'operator', foreignKey: 'userId' });
     }
   }
   WfCaseTransition.init({

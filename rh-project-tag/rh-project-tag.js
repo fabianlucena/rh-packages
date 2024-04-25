@@ -66,11 +66,11 @@ async function projectInterfaceFormGet(form, options) {
 }
 
 async function projectResponseGetting(options) {
-  options.includeTags ??= true;
+  options.include = { Tags: true, ...options.include };
 }
 
 async function projectGetting(options) {
-  if (options.includeTags) {
+  if (options.include?.Tags) {
     if (options.attributes && !options.attributes.includes('id')) {
       options.attributes.push('id');
     }

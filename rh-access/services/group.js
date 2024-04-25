@@ -1,18 +1,15 @@
 import { UserGroupService } from './user_group.js';
 import { conf } from '../conf.js';
-import { ServiceIdUuidEnabledModule } from 'rf-service';
+import { ServiceIdUuidEnabledOwnerModule } from 'rf-service';
 import { checkDataForMissingProperties, completeAssociationOptions, getSingle } from 'sql-util';
 
-export class GroupService extends ServiceIdUuidEnabledModule {
-  sequelize = conf.global.sequelize;
-  Sequelize = conf.global.Sequelize;
-  model = conf.global.models.User;
-  moduleModel = conf.global.models.Module;
+export class GroupService extends ServiceIdUuidEnabledOwnerModule {
+  model = 'userModel';
   references = {
-    type: conf.global.services.UserType.singleton(),
+    type: 'userTypeService',
   };
-  defaultTranslationContext = 'group';
   searchColumns = ['username', 'displayName'];
+  viewAttributes = ['uuid', 'isEnabled', 'username', 'displayName'];
 
   async validateForCreation(data) {
     data ??= {};
@@ -24,10 +21,10 @@ export class GroupService extends ServiceIdUuidEnabledModule {
   }
 
   /**
-     * Creates a new Groups row into DB if not exists.
-     * @param {data} data - data for the new Role @see create.
-     * @returns {Promise{Role}}
-     */
+   * Creates a new Groups row into DB if not exists.
+   * @param {data} data - data for the new Role @see create.
+   * @returns {Promise{Role}}
+   */
   async createIfNotExists(data, options) {
     const row = await this.getForUsername(data.username, { attributes: ['id'], foreign: { module: { attributes:[] }}, skipNoRowsError: true, ...options });
     if (row) {
@@ -38,38 +35,11 @@ export class GroupService extends ServiceIdUuidEnabledModule {
   }
 
   /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {object} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {object}
-     */
-  async getListOptions(options) {
-    options ??= {};
-
-    if (options.view) {
-      if (!options.attributes) {
-        options.attributes = ['uuid', 'isEnabled', 'username', 'displayName'];
-      }
-    }
-
-    options.include ??= [];
-
-    if (options.includeType) {
-      options.include.push({ 
-        model: conf.global.models.UserType, 
-        attributes: ['uuid', 'name', 'title']
-      });
-    }
-
-    return super.getListOptions(options);
-  }
-
-  /**
-     * Gets a group for its username. For many coincidences and for no rows this method fails.
-     * @param {string} username - username for the group to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Group}}
-     */
+   * Gets a group for its username. For many coincidences and for no rows this method fails.
+   * @param {string} username - username for the group to get.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{Group}}
+   */
   async getForUsername(username, options) {
     options = { ...options, where: { ...options?.where, username }};
 
@@ -84,23 +54,25 @@ export class GroupService extends ServiceIdUuidEnabledModule {
   }
 
   /**
-     * Gets a group ID for its username. For many coincidences and for no rows this method fails.
-     * @param {string} username - username for the group to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Permission}}
-     */
+   * Gets a group ID for its username. For many coincidences and for no rows this method fails.
+   * @param {string} username - username for the group to get.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{Permission}}
+   */
   async getIdForUsername(username, options) {
     return (await this.getForUsername(username, { ...options, attributes: ['id'] })).id;
   }
 
   /**
-     * Gets the direct (first level) groups for a given group username.
-     * @param {string} username - username for the group to retrive its parent groups.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{GroupList}}
-     */
+   * Gets the direct (first level) groups for a given group username.
+   * @param {string} username - username for the group to retrive its parent groups.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{GroupList}}
+   */
   async getParentsForUsername(username, options) {
-    await checkDataForMissingProperties({ username }, 'Group', 'username');
+    throw new Error('This method needs to be refactor.');
+
+    /*await checkDataForMissingProperties({ username }, 'Group', 'username');
         
     const isEnabled = options?.isEnabled ?? true;
     const Op = conf.global.Sequelize.Op;
@@ -108,12 +80,12 @@ export class GroupService extends ServiceIdUuidEnabledModule {
     options.include = [
       {
         model: conf.global.models.User,
-        as: 'Group',
+        as: 'group',
         attributes: [],
         include: [
           {
             model: conf.global.models.Module,
-            as: 'OwnerModule',
+            as: 'ownerModule',
             attributes: [],
             where: {
               [Op.or]: [
@@ -130,34 +102,36 @@ export class GroupService extends ServiceIdUuidEnabledModule {
     options.include.push(
       completeAssociationOptions({
         model: conf.global.models.User,
-        as: 'User',
+        as: 'user',
         attributes: [],
         where: { username }
       }, options),
     );
 
-    return conf.global.models.UserGroup.findAll(options);
+    return conf.global.models.UserGroup.findAll(options);*/
   }
 
   /**
-     * Gets the direct (first level) group usernames for a given group username.
-     * @param {string} username - username for the group to retrive its parents group usernames.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{[]string}}
-     */
+   * Gets the direct (first level) group usernames for a given group username.
+   * @param {string} username - username for the group to retrive its parents group usernames.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{[]string}}
+   */
   async getParentsNameForUsername(username, options) {
     const rowList = await this.getParentsForUsername(username, { ...options, attributes: ['username'], skipThroughAssociationAttributes: true });
     return rowList.map(row => row.username);
   }
 
   /**
-     * Gets all of the groups ID for a given group username and.
-     * @param {string} username - username for the group to retrive its parents group ID.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{GroupList}}
-     */
+   * Gets all of the groups ID for a given group username and.
+   * @param {string} username - username for the group to retrive its parents group ID.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{GroupList}}
+   */
   async getAllIdsForUsername(username, options) {
-    const isEnabled = options?.isEnabled ?? true;
+    throw new Error('This method needs to be refactor.');
+
+    /*const isEnabled = options?.isEnabled ?? true;
     const Op = conf.global.Sequelize.Op;
     const parentOptions = {
       ...options,
@@ -165,12 +139,12 @@ export class GroupService extends ServiceIdUuidEnabledModule {
       include: [
         {
           model: conf.global.models.User,
-          as: 'User',
+          as: 'user',
           attributes: [],
           include: [
             {
               model: conf.global.models.Module,
-              as: 'OwnerModule',
+              as: 'ownerModule',
               attributes: [],
               where: {
                 [Op.or]: [
@@ -184,12 +158,12 @@ export class GroupService extends ServiceIdUuidEnabledModule {
         },
         {
           model: conf.global.models.User,
-          as: 'Group',
+          as: 'group',
           attributes: [],
           include: [
             {
               model: conf.global.models.Module,
-              as: 'OwnerModule',
+              as: 'ownerModule',
               attributes: [],
               where: {
                 [Op.or]: [
@@ -222,26 +196,26 @@ export class GroupService extends ServiceIdUuidEnabledModule {
       allGroupIdList = [...allGroupIdList, ...newGroupIdList];
     }
 
-    return allGroupIdList;
+    return allGroupIdList; */
   }
 
   /**
-     * Gets all of the groups for a given username.
-     * @param {string} username - username for the user to retrive its groupss.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{GroupList}}
-     */
+   * Gets all of the groups for a given username.
+   * @param {string} username - username for the user to retrive its groupss.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{GroupList}}
+   */
   async getAllForUsername(username, options) {
     const groupIdList = await this.getAllIdsForUsername(username);
     return this.getList({ ...options, where: { ...options?.where, id: groupIdList }});
   }
 
   /**
-     * Gets all of the group names for a given username and site name.
-     * @param {string} username - username for the user to retrive its groups.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{[]string}}
-     */
+   * Gets all of the group names for a given username and site name.
+   * @param {string} username - username for the user to retrive its groups.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{[]string}}
+   */
   async getAllNamesForUsername(username, options) {
     if (!username) {
       return [];

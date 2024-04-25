@@ -108,7 +108,10 @@ export class ProjectSelectController {
       options.where.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
     }
 
-    options.includeCompany = true;
+    options.include = {
+      company: true,
+      ...options.include,
+    };
 
     const result = await projectService.getListAndCount(options);
         

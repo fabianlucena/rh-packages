@@ -14,7 +14,15 @@ export class CompanySiteController {
       throw new MissingParameterError(loc._cf('companySite', 'Company UUID'), loc._cf('companySite', 'Site UUID'));
     }
 
-    const options = { attributes:['companyId', 'siteId'], view: true, includeCompany: true, includeSite: true, where: {}};
+    const options = {
+      attributes:['companyId', 'siteId'],
+      view: true,
+      include: {
+        company: true,
+        site: true,
+      },
+      where: {},
+    };
     if (companyUuid) {
       await checkParameterUuid(companyUuid, loc._cf('companySite', 'Company UUID'));
       options.where.companyUuid = companyUuid;
@@ -35,7 +43,7 @@ export class CompanySiteController {
     }
 
     const companySite = companySites[0];
-    if (!companySite.Company.isEnabled || !companySite.Site.isEnabled) {
+    if (!companySite.company.isEnabled || !companySite.site.isEnabled) {
       throw new _HttpError(loc._cf('companySite', 'The selected company is disabled.'), 403);
     }
 
@@ -44,19 +52,19 @@ export class CompanySiteController {
 
     conf.global.services.SessionSite.singleton().createOrUpdate({ sessionId, siteId });
 
-    if (companySite.Company.isTranslatable) {
-      companySite.Company.title = await loc._(companySite.Company.title);
-      companySite.Company.description = await loc._(companySite.Company.description);
+    if (companySite.company.isTranslatable) {
+      companySite.company.title = await loc._(companySite.company.title);
+      companySite.company.description = await loc._(companySite.company.description);
     }
 
-    delete companySite.Company.isTranslatable;
+    delete companySite.company.isTranslatable;
 
     const menuItem = {
       name: 'company-site',
       parent: 'breadcrumb',
       action: 'object',
       service: 'company-site',
-      label: await loc._('Company: %s', companySite.Company.title),
+      label: await loc._('Company: %s', companySite.company.title),
       icon: 'company',
     };
 
@@ -64,7 +72,7 @@ export class CompanySiteController {
       api: {
         clear: true,
         data: {
-          companyUuid: companySite.Company.uuid,
+          companyUuid: companySite.company.uuid,
         },
       },
       menu: [menuItem],
@@ -76,7 +84,7 @@ export class CompanySiteController {
 
       sessionData.api ??= {};
       sessionData.api.data = {};
-      sessionData.api.data.companyUuid = companySite.Company.uuid;
+      sessionData.api.data.companyUuid = companySite.company.uuid;
 
       sessionData.menu ??= [];
       sessionData.menu = sessionData.menu.filter(item => item.parent != 'breadcrumb' && item.name != 'company-site');
@@ -91,7 +99,7 @@ export class CompanySiteController {
     await conf.global.eventBus?.$emit('companySwitch', data, { sessionId });
     await conf.global.eventBus?.$emit('sessionUpdated', sessionId);
 
-    req.log?.info(`Company switched to: ${companySite.Company.title}.`, { sessionId, siteId, companyName: companySite.Company.name });
+    req.log?.info(`Company switched to: ${companySite.company.title}.`, { sessionId, siteId, companyName: companySite.company.name });
 
     res.status(200).send(data);
   }
@@ -110,7 +118,10 @@ export class CompanySiteController {
       options.where.siteName = req?.sites ?? null;
     }
 
-    options.includeCompany = true;
+    options.include = {
+      company: true,
+      ...options.include,
+    };
 
     const result = await CompanySiteService.singleton().getListAndCount(options);
         
@@ -125,7 +136,7 @@ export class CompanySiteController {
       type: 'button',
       icon: 'get-into',
       actionData: {
-        bodyParam: { companyUuid: 'Company.uuid' },
+        bodyParam: { companyUuid: 'company.uuid' },
         onSuccess: { reloadMenu: true },
       },
     }];
@@ -141,17 +152,17 @@ export class CompanySiteController {
       actions: actions,
       properties: [
         {
-          name: 'Company.title',
+          name: 'company.title',
           type: 'text',
           label: await loc._('Title'),
         },
         {
-          name: 'Company.name',
+          name: 'company.name',
           type: 'text',
           label: await loc._('Name'),
         },
         {
-          name: 'Company.description',
+          name: 'company.description',
           type: 'text',
           label: await loc._('Description'),
         },

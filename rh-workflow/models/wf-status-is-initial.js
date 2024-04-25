@@ -3,7 +3,7 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class WfStatusIsInitial extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.WfStatus, { foreignKey: 'statusId' });
+      this.belongsTo(models.WfStatus, { as: 'status', foreignKey: 'statusId' });
     }
   }
   WfStatusIsInitial.init({

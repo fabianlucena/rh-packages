@@ -75,9 +75,9 @@ async function clearCache() {
 
 async function checkClearCache(entity) {
   if (entity === 'EavAttribute'
-        || entity === 'EavAttributeType'
-        || entity === 'EavAttributeOption'
-        || entity === 'ModelEntityName'
+    || entity === 'EavAttributeType'
+    || entity === 'EavAttributeOption'
+    || entity === 'ModelEntityName'
   ) {
     await clearCache();
   }
@@ -96,9 +96,9 @@ async function getAttributes(entity, options) {
     const attributes = await conf.eavAttributeService.getForEntityName(
       entity,
       {
-        includeAttributeType: true,
-        raw: true,
-        nest: true,
+        include: {
+          AttributeType: true,
+        },
         loc: options.loc,
       }
     );
@@ -109,8 +109,6 @@ async function getAttributes(entity, options) {
       const attrOptions = await conf.eavAttributeOptionService.getFor(
         { categoryId: attribute.categoryId },
         {
-          raw: true,
-          nest: true,
           loc: options.loc,
         },
       );
@@ -276,8 +274,6 @@ async function getted(entity, result, options) {
         const valueRow = await conf.eavValueTextService.getSingleFor(
           where,
           {
-            raw: true,
-            nest: true,
             loc: options?.loc,
             skipNoRowsError: true,
           }
@@ -288,9 +284,9 @@ async function getted(entity, result, options) {
         const valueRows = await conf.eavValueOptionService.getFor(
           where,
           {
-            includeOption: true,
-            raw: true,
-            nest: true,
+            include: {
+              Option: true,
+            },
             loc: options?.loc,
           },
         );
@@ -303,9 +299,9 @@ async function getted(entity, result, options) {
         const valueRows = await conf.eavValueTagService.getFor(
           where,
           {
-            includeTag: true,
-            raw: true,
-            nest: true,
+            include: {
+              Tag: true,
+            },
             loc: options?.loc,
           },
         );
@@ -359,8 +355,6 @@ async function updated(entity, result, data, options, service) {
 
   const rows = await service.getList({
     ...options,
-    raw: true,
-    nest: true,
     loc: options.loc,
   });
 
@@ -421,8 +415,6 @@ async function deleting(entity, options, service) {
 
   const rows = await service.getList({
     ...options,
-    raw: true,
-    nest: true,
     loc: options.loc,
   });
   for (const row of rows) {

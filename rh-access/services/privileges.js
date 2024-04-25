@@ -37,6 +37,8 @@ complete(
 conf.init.push(() => conf.privilegesCacheMaintenance = setInterval(conf.privilegesCacheMaintenanceMethod, conf.privilegesCacheMaintenanceInterval));
 
 export class PrivilegesService extends ServiceBase {
+  model = false;
+
   async create() {
     throw new _Error(loc._cf('privileges', 'Cannot create privileges, privileges is a container not an entity.'));
   }
@@ -54,11 +56,11 @@ export class PrivilegesService extends ServiceBase {
   }
 
   /**
-     * Gets the privileges data for a given username and site name.
-     * @param {string} username - username for the privileges to get.
-     * @param {string} siteName - siteName for the privileges to get.
-     * @returns {Promise{{}}}
-     */
+   * Gets the privileges data for a given username and site name.
+   * @param {string} username - username for the privileges to get.
+   * @param {string} siteName - siteName for the privileges to get.
+   * @returns {Promise{{}}}
+   */
   async getForUsernameAndSiteName(username, siteName) {
     const privileges = {};
 
@@ -98,11 +100,11 @@ export class PrivilegesService extends ServiceBase {
   }
 
   /**
-     * Get the privileges for a given username and session ID from the cache or from the DB. @see getForUsernameAndSiteName method.
-     * @param {string} username - username for the privileges to get.
-     * @param {integer} sessionId - value for the ID to get the site.
-     * @returns {Promise{privileges}}
-     */
+   * Get the privileges for a given username and session ID from the cache or from the DB. @see getForUsernameAndSiteName method.
+   * @param {string} username - username for the privileges to get.
+   * @param {integer} sessionId - value for the ID to get the site.
+   * @returns {Promise{privileges}}
+   */
   async getJSONForUsernameAndSessionIdCached(username, sessionId) {
     let site;
     if (sessionId) {

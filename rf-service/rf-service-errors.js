@@ -59,3 +59,51 @@ export class DisabledRowError extends Error {
     );
   }
 }
+
+export class CheckError extends Error {
+  static VisibleProperties = ['message'];
+
+  constructor(message, options, ...params) {
+    super();
+    setUpError(
+      this,
+      {
+        message: message,
+        options: options,
+        params: params
+      }
+    );
+  }
+}
+
+export function format(text, ...params) {
+  if (!text) {
+    return text;
+  }
+
+  text = text.replace(/%%/g, '%');
+  for (const replacement of params) {
+    text = text.replace('%s', replacement);
+  }
+
+  return text;
+}
+
+export class _Error extends Error {
+  static VisibleProperties = ['message'];
+
+  constructor(message, ...params) {
+    super();
+    setUpError(
+      this,
+      {
+        _message: message,
+        params
+      }
+    );
+  }
+
+  get message() {
+    return format(...this._message);
+  }
+}

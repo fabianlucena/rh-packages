@@ -16,18 +16,18 @@ export class LoginService {
   }
 
   /**
-     * Perform the login for username and password, in a given device.
-     * @param {string} username 
-     * @param {string} password 
-     * @param {number} deviceId 
-     * @param {string} sessionIndex 
-     * @returns {Promise[{
-     *  deviceId: integer,
-     *  userId: integer,
-     *  index: sessionIndex,
-     *  open: Date.now(),
-     * }]}
-     */
+   * Perform the login for username and password, in a given device.
+   * @param {string} username 
+   * @param {string} password 
+   * @param {number} deviceId 
+   * @param {string} sessionIndex 
+   * @returns {Promise[{
+   *  deviceId: integer,
+   *  userId: integer,
+   *  index: sessionIndex,
+   *  open: Date.now(),
+   * }]}
+   */
   async forUsernamePasswordDeviceTokenAndSessionIndex(username, password, deviceToken, sessionIndex, loc) {
     const userService = UserService.singleton();
 
@@ -72,18 +72,18 @@ export class LoginService {
   }
 
   /**
-     * Perform the login for username and password, in a given device.
-     * @param {string} username 
-     * @param {string} password 
-     * @param {number} deviceId 
-     * @param {string} sessionIndex 
-     * @returns {Promise[{
-    *  deviceId: integer,
-    *  userId: integer,
-    *  index: sessionIndex,
-    *  open: Date.now(),
-    * }]}
-    */
+   * Perform the login for username and password, in a given device.
+   * @param {string} username 
+   * @param {string} password 
+   * @param {number} deviceId 
+   * @param {string} sessionIndex 
+   * @returns {Promise[{
+  *  deviceId: integer,
+  *  userId: integer,
+  *  index: sessionIndex,
+  *  open: Date.now(),
+  * }]}
+  */
   async forAutoLoginTokenAndSessionIndex(autoLoginToken, deviceToken, sessionIndex) {
     const sessionService = SessionService.singleton();
 

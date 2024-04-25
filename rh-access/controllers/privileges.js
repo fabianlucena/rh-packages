@@ -2,24 +2,6 @@ import { PrivilegesService } from '../services/privileges.js';
 import { errorHandler } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
 
-/**
- * @swagger
- * definitions:
- *  Privileges:
- *      properties:
- *          userId:
- *              type: string
- *          typeId:
- *              type: integer
- *          data:
- *              type: JSON
- *  Error:
- *      properties:
- *          error:
- *              type: string
- *              example: Example error
- */
-
 const privilegesService = PrivilegesService.singleton();
 
 export class PrivilegesController {
@@ -44,27 +26,7 @@ export class PrivilegesController {
         });
     };
   }
-
-  /** 
-     * @swagger
-     * /api/privilege:
-     *  get:
-     *      tags:
-     *          - Access
-     *      summary: Login
-     *      description: Get privileges for the logged user
-     *      produces:
-     *          -  application/json
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Privileges'
-     *          '403':
-     *              description: No session
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
+  
   static async get(req, res) {
     let result;
 

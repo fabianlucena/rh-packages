@@ -33,126 +33,126 @@ export const rt = {
   },
 
   /**
-     * Test and endpoint
-     * @param {*} options values to setup the test. This parameter can be an Array of test definitions objecta to send each of ones to @see rt.testEndPointMethodSend(test) method, or an object. If it is an object an array is created to send to @see rt.testEndPointMethodSend(test) method.
-     * Object properties:
-     * {
-     *  agent: agent        agent or require object.
-     *  url: url            URL of the endpoint to test.
-     *  headers:            optional JSON headers to send.
-     *  query: query        optional query to send as get parameters.
-     *  [others]            others root properties but notAllowedMethods, send, get, post, put, patch, delete, options, head; will be used as default values for each test. @see rt.testEndPointMethodSend(test) for the rest of properties.
-     *  trace: true         show partial construction of the tests
-     * 
-     *  notAllowedMethods:  comma separated strings, list of strings, or object of type {method: options} to check for method not allowed. If the name of the method is prefixed with ! the method is skipped. If this is a string or a list, whis will be cnverted to object: {method: true, ...} or {method: false} if the method name is prefixed with !.
-     *      true            for true values the default values are:
-     *      {
-     *          status: 405,
-     *          empty: true|false,                          true for the head method, undefined for the rest.
-     *          haveProperties = undefined|['error'],       undefined for the head method, ['error'] for the rest.
-     *      }
-     * 
-     *  [method]:                       options to check HTTP methods: send, get, post, put, patch, delete, options, head. For the options @see rt.testEndPointMethodSend(test) method. This value can be an array of tests or a object. For array each test is completed with the default root options and the methos name defined. For object the default properties can be overrided.
-     *      For object:
-     *          send:                   list of each test to perform. If this option is not defined a single test is performed. @see rt.testEndPointMethodSend(test) for the options.
-     *          $form:                  perform a get with $form query parameter to get the form. Valid options are:
-     *          {
-     *              status: 200,        expected status @see rt.checkStatus() for the options.
-     *              haveProperties = 'error',
-     *              query: '$form',
-     *              title: 'should get a form usign $form query parameter',
-     *          }
-     *          noParametersError:      test the endpoint for an error on method without parameters
-     *          noQueryError:           test the endpoint for an error on method without query parameters
-     *          {
-     *              status: 400,
-     *              haveProperties: 'error',
-     *              title: 'should get a no parameters error',
-     *          }, 
-     *          missingParameters:      perform a test for missing parameters and expect an error. This is a list of lists. For each item of the master list a test is performed, without the parameters in the child list. For the right behavior the parameters used must exist as parameters in the parameters option in the parent level.
-     *          [
-     *              ['param1', 'param2'],
-     *              ['param1'],
-     *              ['param2']
-     *          ]
-     * }
-     * @example
-     * {
-     *   agent: agent,                                              // agent is defined as global variable: agent = chai.request.agent(app);
-     *   url: '/api/login',                                         // endpoint URL to test
-     *   notAllowedMethods: 'PUT,PATCH,DELETE',                     // not allowed methods for this endpoint
-     *   get: [                                                     // test for GET HTTP method using array
-     *      'noParametersError',                                    // test for no parameters expect error
-     *      'noQueryError',    
-     *      {                                                       // begin test definition for get form
-     *          $form: true,                                        // test for get form using the $form as query parameter '/api/login?$form'
-     *          haveProperties: ['username', 'password']            // check for the result exists the properties username andpassword
-     *      },
-     *   ],
-     *   post: {                                                    // test for POST HTTP method using object
-     *      parameters: {                                           // default parameters options for the rest of tests
-     *          username: 'admin',
-     *          password: '1234'
-     *      },
-     *      send: [                                                 // test definitions
-     *          'noParametersError',                                // test for no parameters expect error (same as above)
-     *          {                                                   // begin test definition for missingParameters
-     *              missingParameters: [                       
-     *                  ['username', 'password'],                   // test for no parameters body = {}
-     *                  ['username'],                               // test for no parameters username
-     *                  ['password']                                // test for no parameters password
-     *              ]
-     *          },
-     *          {                                                   // begin custom test item for Invalid login
-     *              title: '"Invalid login" login error',           // test title
-     *              parameters: {                                   // override parameters for introduce an error
-     *                  username: 'admin',
-     *                  password: '12345'
-     *              },
-     *              status: 403,                                    // expected status
-     *              haveProperties: 'error',                        // expected property error in the result
-     *              propertyContains: {                             // expected message 'Invalid login' in the property message in the result
-     *                  message: 'Invalid login'
-     *              }
-     *          },
-     *          {                                                                               // begin custom test item for login
-     *              title: 'login should returns a valid session authToken',
-     *              status: 201,                                                                // expected status
-     *              haveProperties: ['authToken', 'index'],                                     // expected properties in the result
-     *              after: res => headers.Authorization = `Bearer ${res.body.authToken}`,       // after succesfull test, store the authToken for reuse as authorization header
-     *          },
-     *          {
-     *              title: 'should returns a distinct valid session authToken',                 // begin custom test item for another login a distinct authToken is espected
-     *              status: 201,
-     *              haveProperties: ['authToken', 'index'],
-     *              after: res => expect(headers.Authorization).to.be.not.equals(`Bearer ${res.body.authToken}`),    // after succesfull test, use a custom check to verify the authToken
-     *          },
-     *      ]
-     * }
-     * 
-     * @example of use for before and after
-     * {
-     *   agent: agent,
-     *   url: '/api/not-found',
-     *   get: [
-     *       {
-     *           title: 'should get a value for cookie device',
-     *           haveCookies: 'device',
-     *           after: res => cookies.device = httpUtil.cookies(res, 'device', 'value')    // after succesfull test, store the cookie
-     *       },
-     *       {                                                                              // in a second call with the cookie (automatic for the same agent) no cookie is expected
-     *           title: 'should not get a cookie device',
-     *           noHaveCookies: 'device',
-     *       },
-     *       {
-     *           agent: chai.request(app),                                                  // override the agent to get another cookie
-     *           title: 'should get a distinct cookie device',
-     *           haveCookies: 'device',
-     *           before: test => test.noHaveCookies = {device: cookies.device},             // before send this request update the test for check the cookie distint to the stored one
-     *       },
-     *   ]
-     * }
-     */
+   * Test and endpoint
+   * @param {*} options values to setup the test. This parameter can be an Array of test definitions objecta to send each of ones to @see rt.testEndPointMethodSend(test) method, or an object. If it is an object an array is created to send to @see rt.testEndPointMethodSend(test) method.
+   * Object properties:
+   * {
+   *  agent: agent        agent or require object.
+   *  url: url            URL of the endpoint to test.
+   *  headers:            optional JSON headers to send.
+   *  query: query        optional query to send as get parameters.
+   *  [others]            others root properties but notAllowedMethods, send, get, post, put, patch, delete, options, head; will be used as default values for each test. @see rt.testEndPointMethodSend(test) for the rest of properties.
+   *  trace: true         show partial construction of the tests
+   * 
+   *  notAllowedMethods:  comma separated strings, list of strings, or object of type {method: options} to check for method not allowed. If the name of the method is prefixed with ! the method is skipped. If this is a string or a list, whis will be cnverted to object: {method: true, ...} or {method: false} if the method name is prefixed with !.
+   *      true            for true values the default values are:
+   *      {
+   *          status: 405,
+   *          empty: true|false,                          true for the head method, undefined for the rest.
+   *          haveProperties = undefined|['error'],       undefined for the head method, ['error'] for the rest.
+   *      }
+   * 
+   *  [method]:                       options to check HTTP methods: send, get, post, put, patch, delete, options, head. For the options @see rt.testEndPointMethodSend(test) method. This value can be an array of tests or a object. For array each test is completed with the default root options and the methos name defined. For object the default properties can be overrided.
+   *      For object:
+   *          send:                   list of each test to perform. If this option is not defined a single test is performed. @see rt.testEndPointMethodSend(test) for the options.
+   *          $form:                  perform a get with $form query parameter to get the form. Valid options are:
+   *          {
+   *              status: 200,        expected status @see rt.checkStatus() for the options.
+   *              haveProperties = 'error',
+   *              query: '$form',
+   *              title: 'should get a form usign $form query parameter',
+   *          }
+   *          noParametersError:      test the endpoint for an error on method without parameters
+   *          noQueryError:           test the endpoint for an error on method without query parameters
+   *          {
+   *              status: 400,
+   *              haveProperties: 'error',
+   *              title: 'should get a no parameters error',
+   *          }, 
+   *          missingParameters:      perform a test for missing parameters and expect an error. This is a list of lists. For each item of the master list a test is performed, without the parameters in the child list. For the right behavior the parameters used must exist as parameters in the parameters option in the parent level.
+   *          [
+   *              ['param1', 'param2'],
+   *              ['param1'],
+   *              ['param2']
+   *          ]
+   * }
+   * @example
+   * {
+   *   agent: agent,                                              // agent is defined as global variable: agent = chai.request.agent(app);
+   *   url: '/api/login',                                         // endpoint URL to test
+   *   notAllowedMethods: 'PUT,PATCH,DELETE',                     // not allowed methods for this endpoint
+   *   get: [                                                     // test for GET HTTP method using array
+   *      'noParametersError',                                    // test for no parameters expect error
+   *      'noQueryError',    
+   *      {                                                       // begin test definition for get form
+   *          $form: true,                                        // test for get form using the $form as query parameter '/api/login?$form'
+   *          haveProperties: ['username', 'password']            // check for the result exists the properties username andpassword
+   *      },
+   *   ],
+   *   post: {                                                    // test for POST HTTP method using object
+   *      parameters: {                                           // default parameters options for the rest of tests
+   *          username: 'admin',
+   *          password: '1234'
+   *      },
+   *      send: [                                                 // test definitions
+   *          'noParametersError',                                // test for no parameters expect error (same as above)
+   *          {                                                   // begin test definition for missingParameters
+   *              missingParameters: [                       
+   *                  ['username', 'password'],                   // test for no parameters body = {}
+   *                  ['username'],                               // test for no parameters username
+   *                  ['password']                                // test for no parameters password
+   *              ]
+   *          },
+   *          {                                                   // begin custom test item for Invalid login
+   *              title: '"Invalid login" login error',           // test title
+   *              parameters: {                                   // override parameters for introduce an error
+   *                  username: 'admin',
+   *                  password: '12345'
+   *              },
+   *              status: 403,                                    // expected status
+   *              haveProperties: 'error',                        // expected property error in the result
+   *              propertyContains: {                             // expected message 'Invalid login' in the property message in the result
+   *                  message: 'Invalid login'
+   *              }
+   *          },
+   *          {                                                                               // begin custom test item for login
+   *              title: 'login should returns a valid session authToken',
+   *              status: 201,                                                                // expected status
+   *              haveProperties: ['authToken', 'index'],                                     // expected properties in the result
+   *              after: res => headers.Authorization = `Bearer ${res.body.authToken}`,       // after succesfull test, store the authToken for reuse as authorization header
+   *          },
+   *          {
+   *              title: 'should returns a distinct valid session authToken',                 // begin custom test item for another login a distinct authToken is espected
+   *              status: 201,
+   *              haveProperties: ['authToken', 'index'],
+   *              after: res => expect(headers.Authorization).to.be.not.equals(`Bearer ${res.body.authToken}`),    // after succesfull test, use a custom check to verify the authToken
+   *          },
+   *      ]
+   * }
+   * 
+   * @example of use for before and after
+   * {
+   *   agent: agent,
+   *   url: '/api/not-found',
+   *   get: [
+   *       {
+   *           title: 'should get a value for cookie device',
+   *           haveCookies: 'device',
+   *           after: res => cookies.device = httpUtil.cookies(res, 'device', 'value')    // after succesfull test, store the cookie
+   *       },
+   *       {                                                                              // in a second call with the cookie (automatic for the same agent) no cookie is expected
+   *           title: 'should not get a cookie device',
+   *           noHaveCookies: 'device',
+   *       },
+   *       {
+   *           agent: chai.request(app),                                                  // override the agent to get another cookie
+   *           title: 'should get a distinct cookie device',
+   *           haveCookies: 'device',
+   *           before: test => test.noHaveCookies = {device: cookies.device},             // before send this request update the test for check the cookie distint to the stored one
+   *       },
+   *   ]
+   * }
+   */
   testEndPoint(tests) {
     if (typeof tests === 'object') {
       const options = tests;
@@ -529,20 +529,20 @@ export const rt = {
   },
 
   /**
-     * Send a test to an endpoint.
-     * @param {*} test test definition.
-     * {
-     *  test: it || it.skip || it.only  method name to perform the test.
-     *  title: title                    the test title. If it is not provided a default title is created.
-     *  method: get|post|put|...        HTTP method to call the endpoint. If it is not provided uses a get.
-     *  headers: headers                JSON headers to send to the endpoint.
-     *  before: method                  method to call before send the request.
-     *  check: method                   method to call after the request to check the response with the response and the test as paramaters. If it is not defined uses @see rt.checkReponse method.
-     *  requestLog: true|string|list    show a console.log of listed items from request. It this is true showe all calculates test options
-     *  logRequest: true|string|list    alias for requestLog
-     *  [checkOptions]                  options for checking the response @see rt.checkReponse for detail.
-     * }
-     */
+   * Send a test to an endpoint.
+   * @param {*} test test definition.
+   * {
+   *  test: it || it.skip || it.only  method name to perform the test.
+   *  title: title                    the test title. If it is not provided a default title is created.
+   *  method: get|post|put|...        HTTP method to call the endpoint. If it is not provided uses a get.
+   *  headers: headers                JSON headers to send to the endpoint.
+   *  before: method                  method to call before send the request.
+   *  check: method                   method to call after the request to check the response with the response and the test as paramaters. If it is not defined uses @see rt.checkReponse method.
+   *  requestLog: true|string|list    show a console.log of listed items from request. It this is true showe all calculates test options
+   *  logRequest: true|string|list    alias for requestLog
+   *  [checkOptions]                  options for checking the response @see rt.checkReponse for detail.
+   * }
+   */
   testEndPointMethodSend(test) {
     if (test.test === undefined) {
       if (test.only) {
@@ -648,27 +648,27 @@ export const rt = {
   },
 
   /**
-     * Check the response for given options
-     * @param {*} res response
-     * @param {*} options options to check the response. Valid options are:
-     *  {
-     *      status: 200,                    check the status code if exists except if is undefined or false, @see rt.checkStatus for reference.
-     *      haveCookies: cookies            check the headers response for the given cookies to exists. This option can be a string for a single cookie, a list for multiple cookies, or a object in this case check the cookies value.
-     *      noHaveCookies: cookies          check the headers response for the given cookies to not exists. This option can be a string for a single cookie, a list for multiple cookies, or a object in this case check the cookies to be distinct value.
-     *      empty: true,                    check the response body to be empty.
-     *      json: true,                     check the response body to be a JSON. If this option is not specified but haveProperties or noHaveProperties it is this option will be set to true.
-     *      bodyLengthOf: int               check the response body to have the given items bodyLengthOf.
-     *      checkItem: int|string           search a specific item in the body to check
-     *      lengthOf: int                   check the value to have the given items lengthOf.
-     *      haveProperties: properties,     check the value for the given properties to exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties value.
-     *      noHaveProperties: properties,   check the value for the given properties to not exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties to be distinct value.
-     *      propertyContains: {             check the value to have a property and its value contains the given values.
-     *          propertyName: ['one', 'two']
-     *      },
-     *      after: method                   call the method with response has parameter.
-     *      log: true|string|list           show a console.log of listed items from response. It this is true uses: [status, body]
-     *  }
-     */
+   * Check the response for given options
+   * @param {*} res response
+   * @param {*} options options to check the response. Valid options are:
+   *  {
+   *      status: 200,                    check the status code if exists except if is undefined or false, @see rt.checkStatus for reference.
+   *      haveCookies: cookies            check the headers response for the given cookies to exists. This option can be a string for a single cookie, a list for multiple cookies, or a object in this case check the cookies value.
+   *      noHaveCookies: cookies          check the headers response for the given cookies to not exists. This option can be a string for a single cookie, a list for multiple cookies, or a object in this case check the cookies to be distinct value.
+   *      empty: true,                    check the response body to be empty.
+   *      json: true,                     check the response body to be a JSON. If this option is not specified but haveProperties or noHaveProperties it is this option will be set to true.
+   *      bodyLengthOf: int               check the response body to have the given items bodyLengthOf.
+   *      checkItem: int|string           search a specific item in the body to check
+   *      lengthOf: int                   check the value to have the given items lengthOf.
+   *      haveProperties: properties,     check the value for the given properties to exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties value.
+   *      noHaveProperties: properties,   check the value for the given properties to not exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties to be distinct value.
+   *      propertyContains: {             check the value to have a property and its value contains the given values.
+   *          propertyName: ['one', 'two']
+   *      },
+   *      after: method                   call the method with response has parameter.
+   *      log: true|string|list           show a console.log of listed items from response. It this is true uses: [status, body]
+   *  }
+   */
   checkReponse(res, options) {
     if (options.log) {
       let log = options.log;
@@ -867,21 +867,21 @@ export const rt = {
   },
 
   /**
-     * Checks the status code
-     * @param {*} res response
-     * @param {*} options options to check the status response. Valid values are:
-     *  positive integer                any number and equality is checked
-     *  negative integer                any number and if the number exists in the response the check is not passed
-     *  RegExp                          regular expression to test against the status response
-     *  string                          string can be:
-     *      '200'                       a number to check for positive
-     *      '!200'                      a number prefixed with !, to check for negative
-     *      '2xx' | '!2xx'              the "x" represent any number in that place
-     *  Array                           A list of any prior values. The first match resolve the entire check list for the positive or for the negative way.
-     *  Comma separated strings         It is interpreted as Array
-     *      '!2xx,!4xx'
-     * @returns 
-     */
+   * Checks the status code
+   * @param {*} res response
+   * @param {*} options options to check the status response. Valid values are:
+   *  positive integer                any number and equality is checked
+   *  negative integer                any number and if the number exists in the response the check is not passed
+   *  RegExp                          regular expression to test against the status response
+   *  string                          string can be:
+   *      '200'                       a number to check for positive
+   *      '!200'                      a number prefixed with !, to check for negative
+   *      '2xx' | '!2xx'              the "x" represent any number in that place
+   *  Array                           A list of any prior values. The first match resolve the entire check list for the positive or for the negative way.
+   *  Comma separated strings         It is interpreted as Array
+   *      '!2xx,!4xx'
+   * @returns 
+   */
   checkStatus(res, options) {
     if (!options.status) {
       return;
@@ -947,11 +947,11 @@ export const rt = {
   },
 
   /**
-     * Perform a HTTP not allowed method testa on an end point expect errors. This method uses the @see rt.testEndPoint with get: {noParametersError: true} options.
-     * @param {*} options options for the method @see rt.testEndPoint method.
-     * @param  {...srting} notAllowedMethods method names to check not allwoed.
-     * @returns 
-     */
+   * Perform a HTTP not allowed method testa on an end point expect errors. This method uses the @see rt.testEndPoint with get: {noParametersError: true} options.
+   * @param {*} options options for the method @see rt.testEndPoint method.
+   * @param  {...srting} notAllowedMethods method names to check not allwoed.
+   * @returns 
+   */
   testNotAllowedMethod(options, ...notAllowedMethods) {
     options = deepMerge(options, { notAllowedMethods });
 
@@ -959,9 +959,9 @@ export const rt = {
   },
 
   /**
-     * Perform a get test on an end point for no parameters and expect an error. This method uses the @see rt.testEndPoint with get: {noParametersError: true} options.
-     * @param {*} options options for the method @see rt.testEndPoint method.
-     */
+   * Perform a get test on an end point for no parameters and expect an error. This method uses the @see rt.testEndPoint with get: {noParametersError: true} options.
+   * @param {*} options options for the method @see rt.testEndPoint method.
+   */
   testGetNoParametesError(options) {
     options = deepMerge(options, { get: { noParametersError: true }});
 
@@ -969,10 +969,10 @@ export const rt = {
   },
 
   /**
-     * Perform a test on an end point to get the form using the $form query get parameter. This method uses the @see rt.testEndPoint with get: {$form: {haveProperties: haveProperties}} options.
-     * @param {*} options options for the method @see rt.testEndPoint method.
-     * @param  {...string} haveProperties properties names to check in the result.
-     */
+   * Perform a test on an end point to get the form using the $form query get parameter. This method uses the @see rt.testEndPoint with get: {$form: {haveProperties: haveProperties}} options.
+   * @param {*} options options for the method @see rt.testEndPoint method.
+   * @param  {...string} haveProperties properties names to check in the result.
+   */
   testGetForm(options, ...haveProperties) {
     options = deepMerge(
       options,
@@ -989,26 +989,26 @@ export const rt = {
   },
 
   /**
-     * Perform a login in the endpoint sending a post to the endpoint. This method uses @see rt.testEndPoint.
-     * @param {*} options options to use the @see rt.testEndPoint.
-     * Other options are:
-     *  credentials:    here you can specify the parameters,
-     *  username:       here you can specify the username of credentials,
-     *  password:       here you can specify the password of credentials,
-     * Username and password are used for create the credentials: {username, password}.
-     * This method uses as default values:
-     * {
-     *  title: 'login should returns a valid session authToken',
-     *  url: '/login',
-     *  method: 'post',
-     *  parameters: rt.credentials,
-     *  status: 201,
-     *  haveProperties: ['authToken', 'index'],
-     *  send: {},
-     * }
-     * 
-     * For use as method other than send you must set send to false or [];
-     */
+   * Perform a login in the endpoint sending a post to the endpoint. This method uses @see rt.testEndPoint.
+   * @param {*} options options to use the @see rt.testEndPoint.
+   * Other options are:
+   *  credentials:    here you can specify the parameters,
+   *  username:       here you can specify the username of credentials,
+   *  password:       here you can specify the password of credentials,
+   * Username and password are used for create the credentials: {username, password}.
+   * This method uses as default values:
+   * {
+   *  title: 'login should returns a valid session authToken',
+   *  url: '/login',
+   *  method: 'post',
+   *  parameters: rt.credentials,
+   *  status: 201,
+   *  haveProperties: ['authToken', 'index'],
+   *  send: {},
+   * }
+   * 
+   * For use as method other than send you must set send to false or [];
+   */
   testLogin(options) {
     options = complete(
       options,
@@ -1036,11 +1036,11 @@ export const rt = {
   },
 
   /**
-     * Perform an automatic login in the agent using the endpoint sending a post to the endpoint. This method uses @see rt.testLogin.
-     * @param {*} options Options for @see rt.testLogin.
-     * You can specify the agent or app method to override the rt.app or rt.agent values.
-     * This method test the existence of the rt.headers?.Authorization value if the value does not exists perform a new login.
-     */
+   * Perform an automatic login in the agent using the endpoint sending a post to the endpoint. This method uses @see rt.testLogin.
+   * @param {*} options Options for @see rt.testLogin.
+   * You can specify the agent or app method to override the rt.app or rt.agent values.
+   * This method test the existence of the rt.headers?.Authorization value if the value does not exists perform a new login.
+   */
   autoLogin(options) {
     if (rt.headers?.Authorization) {
       return;
@@ -1055,67 +1055,67 @@ export const rt = {
   },
 
   /**
-     * Check the tests for the general behavior of an endponit. This method uses the @see rt.testEndPoint method several times.
-     * @param {*} options options, see the example for detail.
-     * 
-     * Perform several checks for the endpoint:
-     *  - Not allowed HTTP methods
-     *  - POST create object with missing params
-     *  - POST create object with the right params
-     *  - GET objects
-     *  - POST forbidden double creation of object
-     *  - GET the created object
-     *  - GET single object using query parameters
-     *  - GET single object using URL parameters
-     *  - GET objects using query parameters
-     *  - GET objects using URL parameters
-     *  - DELETE tests only if the DELETE method is not in the not allowed HTTP method list
-     *  - DELETE object no query error
-     *  - DELETE error in UUID parameter
-     *  - DELETE delete the previously created object by query
-     *  - DELETE trying to delete a second time the same record must return an error
-     *  - GET trying to get the deleted object
-     *  - POST should create a new object again
-     *  - GET should get the recently create objects
-     *  - PATCH updates the created objets
-     *  - DELETE delete the previously created object by URL
-     * 
-     * @example
-     *  {
-     *      url: '/user',                                       // URL of the endpoint to check, @see rt.testEndPoint.
-     *      notAllowedMethods: 'PUT,PATCH',                     // Not allowed method, @see rt.testEndPoint.
-     *      parameters: {                                       // Parameters, @see rt.testEndPoint.
-     *          username: 'test1',
-     *          displayName: 'Test 1',
-     *          password: 'abc123',
-     *      },
-     *      missingParameters: [                                // Test for missing parameters, @see rt.testEndPoint.
-     *          ['username'],
-     *          ['displayName'],
-     *          ['username', 'displayName'],
-     *      ],
-     *      id: 'uuid'                                                                      // name for the object id by default is uuid
-     *      forbiddenDoubleCreation: true,                                                  // Test for forbidden double creation of the same object
-     *      getProperties: ['uuid', 'isEnabled', 'username', 'displayName', 'UserType'],    // Properties to check the GET method.
-     *      getCreated: {query:{username:'test1'}},                                         // Options to get the created object to perform the rest of the tests.
-     *      getByQuery: [                                                                   // Test to get objects using the query params, each item is a separated test
-     *          'username', string|CSV|array                                                // Use the values listed in parameters to get objects
-     *          'uuid'
-     *      ],
-     *      getSingleByQuery: [                                                             // Same as above but check single result
-     *          'username',
-     *          'uuid'
-     *      ],
-     *      getByUrl: ['uuid'],                                                             // Same as above the form used is URL/name1/value1/name2/value2, when a test with the id parameter as the only parameter the form URL/idValue is used.
-     *      getSingleByUrl: ['uuid'],                                                       // Same as above but check single result
-     *      patchParameters: [                                                              // Test the HTTP patch method for each element in the list.
-     *          {
-     *              name1: value1,
-     *              name2, value2
-     *          },
-     *      ]
-     *  }
-     */
+   * Check the tests for the general behavior of an endponit. This method uses the @see rt.testEndPoint method several times.
+   * @param {*} options options, see the example for detail.
+   * 
+   * Perform several checks for the endpoint:
+   *  - Not allowed HTTP methods
+   *  - POST create object with missing params
+   *  - POST create object with the right params
+   *  - GET objects
+   *  - POST forbidden double creation of object
+   *  - GET the created object
+   *  - GET single object using query parameters
+   *  - GET single object using URL parameters
+   *  - GET objects using query parameters
+   *  - GET objects using URL parameters
+   *  - DELETE tests only if the DELETE method is not in the not allowed HTTP method list
+   *  - DELETE object no query error
+   *  - DELETE error in UUID parameter
+   *  - DELETE delete the previously created object by query
+   *  - DELETE trying to delete a second time the same record must return an error
+   *  - GET trying to get the deleted object
+   *  - POST should create a new object again
+   *  - GET should get the recently create objects
+   *  - PATCH updates the created objets
+   *  - DELETE delete the previously created object by URL
+   * 
+   * @example
+   *  {
+   *      url: '/user',                                       // URL of the endpoint to check, @see rt.testEndPoint.
+   *      notAllowedMethods: 'PUT,PATCH',                     // Not allowed method, @see rt.testEndPoint.
+   *      parameters: {                                       // Parameters, @see rt.testEndPoint.
+   *          username: 'test1',
+   *          displayName: 'Test 1',
+   *          password: 'abc123',
+   *      },
+   *      missingParameters: [                                // Test for missing parameters, @see rt.testEndPoint.
+   *          ['username'],
+   *          ['displayName'],
+   *          ['username', 'displayName'],
+   *      ],
+   *      id: 'uuid'                                                                      // name for the object id by default is uuid
+   *      forbiddenDoubleCreation: true,                                                  // Test for forbidden double creation of the same object
+   *      getProperties: ['uuid', 'isEnabled', 'username', 'displayName', 'UserType'],    // Properties to check the GET method.
+   *      getCreated: {query:{username:'test1'}},                                         // Options to get the created object to perform the rest of the tests.
+   *      getByQuery: [                                                                   // Test to get objects using the query params, each item is a separated test
+   *          'username', string|CSV|array                                                // Use the values listed in parameters to get objects
+   *          'uuid'
+   *      ],
+   *      getSingleByQuery: [                                                             // Same as above but check single result
+   *          'username',
+   *          'uuid'
+   *      ],
+   *      getByUrl: ['uuid'],                                                             // Same as above the form used is URL/name1/value1/name2/value2, when a test with the id parameter as the only parameter the form URL/idValue is used.
+   *      getSingleByUrl: ['uuid'],                                                       // Same as above but check single result
+   *      patchParameters: [                                                              // Test the HTTP patch method for each element in the list.
+   *          {
+   *              name1: value1,
+   *              name2, value2
+   *          },
+   *      ]
+   *  }
+   */
   testGeneralBehaviorEndPoint(options) {
     describe('General behavior', () => {
       rt.testEndPoint({

@@ -3,8 +3,8 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class Identity extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.User,         { foreignKey: 'userId', allowNull: false, onDelete: 'cascade' });
-      this.belongsTo(models.IdentityType, { foreignKey: 'typeId', allowNull: false });
+      this.belongsTo(models.User,         { as: 'user', foreignKey: 'userId', allowNull: false, onDelete: 'cascade' });
+      this.belongsTo(models.IdentityType, { as: 'type', foreignKey: 'typeId', allowNull: false });
     }
   }
   Identity.init({

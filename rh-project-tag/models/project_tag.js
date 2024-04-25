@@ -3,8 +3,8 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class ProjectTag extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Project, { foreignKey: 'projectId' });
-      this.belongsTo(models.Tag,     { foreignKey: 'tagId' });
+      this.belongsTo(models.Project, { as: 'project', foreignKey: 'projectId' });
+      this.belongsTo(models.Tag,     { as: 'tag',     foreignKey: 'tagId' });
     }
   }
   ProjectTag.init({

@@ -35,10 +35,6 @@ complete(
 conf.init.push(() => conf.deviceCacheMaintenance = setInterval(conf.deviceCacheMaintenanceMethod, conf.deviceCacheMaintenanceInterval));
 
 export class DeviceService extends ServiceIdUuid {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.Device;
-  defaultTranslationContext = 'device';
-
   async validateForCreation(data) {
     data ??= {};
     data.token ||= crypto.randomBytes(64).toString('hex');
@@ -47,11 +43,11 @@ export class DeviceService extends ServiceIdUuid {
   }
 
   /**
-     * Gets a device for a given token value. For many coincidences and for no rows this method fails.
-     * @param {string} token - value for the token to get the device.
-     * @param {Options} options - Options for the @see getList method.
-     * @returns {Promise[Device]}
-     */
+   * Gets a device for a given token value. For many coincidences and for no rows this method fails.
+   * @param {string} token - value for the token to get the device.
+   * @param {Options} options - Options for the @see getList method.
+   * @returns {Promise[Device]}
+   */
   async getForToken(token, options) {
     if (Array.isArray(token)) {
       return this.getList({ ...options, where: { ...options?.where, token }});
@@ -67,10 +63,10 @@ export class DeviceService extends ServiceIdUuid {
   }
 
   /**
-     * Get a device for a given token value from the cache or from the DB. @see getForToken method.
-     * @param {string} token - value for the token to get the device.
-     * @returns {Promise[Device]}
-     */
+   * Get a device for a given token value from the cache or from the DB. @see getForToken method.
+   * @param {string} token - value for the token to get the device.
+   * @returns {Promise[Device]}
+   */
   async getForTokenCached(token) {
     if (conf.deviceCache && conf.deviceCache[token]) {
       const deviceData = conf.deviceCache[token];

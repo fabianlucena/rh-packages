@@ -1,20 +1,17 @@
 import { conf } from '../conf.js';
-import { ServiceIdUuidNameEnabledSharedTranslatable } from 'rf-service';
-import { completeIncludeOptions } from 'sql-util';
+import { ServiceIdUuidNameEnabledOwnerModuleSharedTranslatable } from 'rf-service';
 import { CheckError } from 'rf-util';
 import { loc } from 'rf-locale';
 
-export class BranchService extends ServiceIdUuidNameEnabledSharedTranslatable {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.Branch;
-  shareObject = 'Branch';
-  shareService = conf.global.services.Share.singleton();
+export class BranchService extends ServiceIdUuidNameEnabledOwnerModuleSharedTranslatable {
   references = {
-    company: conf.global.services.Company,
-    ownerModule: conf.global.services.Module,
+    company: {
+      attributes: ['uuid', 'name', 'title'],
+    },
   };
   searchColumns = ['name', 'title', 'description'];
   eventBus = conf.global.eventBus;
+  viewAttributes = ['uuid', 'isEnabled', 'name', 'title', 'description'];
 
   async validateForCreation(data) {
     if (!data.companyId) {
@@ -25,42 +22,8 @@ export class BranchService extends ServiceIdUuidNameEnabledSharedTranslatable {
   }
 
   async getListOptions(options) {
-    options ??= {};
-
-    if (options.view) {
-      if (!options.attributes) {
-        options.attributes = ['uuid', 'isEnabled', 'name', 'title', 'description'];
-      }
-    }
-
-    if (options.includeCompany || options.where?.companyUuid !== undefined) {
-      let where;
-
-      if (options.isEnabled !== undefined) {
-        where = { isEnabled: options.isEnabled };
-      }
-
-      if (options.where?.companyUuid !== undefined) {
-        where ??= {};
-        where.uuid = options.where.companyUuid;
-        delete options.where.companyUuid;
-      }
-
-      const attributes = options.includeCompany?
-        ['uuid', 'name', 'title']:
-        [];
-
-      completeIncludeOptions(
-        options,
-        'Company',
-        {
-          model: conf.global.models.Company,
-          attributes,
-          where,
-        }
-      );
-
-      delete options.includeCompany;
+    if (options.where?.companyUuid) {
+      throw new Error('options.where.companyUuid is obsolete in BranchService.');
     }
 
     return super.getListOptions(options);

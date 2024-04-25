@@ -1,27 +1,22 @@
 import { PageFormatService } from './page_format.js';
-import { conf } from '../conf.js';
-import { ServiceIdUuidNameTitleEnabledModuleSharedTranslatable } from 'rf-service';
-import { completeIncludeOptions, checkViewOptions } from 'sql-util';
+import { ServiceIdUuidNameTitleEnabledOwnerModuleSharedTranslatable } from 'rf-service';
 import { checkParameterStringNotNullOrEmpty } from 'rf-util';
 import { loc } from 'rf-locale';
 
-export class PageService extends ServiceIdUuidNameTitleEnabledModuleSharedTranslatable {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.Page;
-  shareObject = 'Page';
-  shareService = conf.global.services.Share.singleton();
+export class PageService extends ServiceIdUuidNameTitleEnabledOwnerModuleSharedTranslatable {
   references = {
     format: {
-      service: conf.global.services.PageFormat,
+      service: 'pageFormatService',
       otherName: 'pageFormat',
     },
-    language: conf.global.services.Language,
+    language: true,
   };
-  defaultTranslationContext = 'page';
+  viewAttributes = ['uuid', 'name', 'isTranslatable', 'translationContext', 'title', 'content'];
   skipNoOwnerCheck = true;
 
-  constructor() {
-    super();
+  init() {
+    super.init();
+
     this.pageFormatService = PageFormatService.singleton();
   }
 
@@ -32,33 +27,5 @@ export class PageService extends ServiceIdUuidNameTitleEnabledModuleSharedTransl
     }
 
     return super.validateForCreation(data);
-  }
-
-  /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {options}
-     */
-  async getListOptions(options) {
-    if (options.view) {
-      if (!options.attributes) {
-        options.attributes = ['uuid', 'name', 'isTranslatable', 'translationContext', 'title', 'content'];
-      }
-
-      completeIncludeOptions(
-        options,
-        'Format',
-        {
-          model: conf.global.models.PageFormat,
-          as: 'Format',
-          attributes: ['name'],
-        }
-      );
-
-      await checkViewOptions(options);
-    }
-
-    return super.getListOptions(options);
   }
 }

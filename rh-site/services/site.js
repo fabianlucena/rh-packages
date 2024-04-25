@@ -1,14 +1,12 @@
-import { conf } from '../conf.js';
-import { ServiceIdUuidNameEnabledModuleTranslatable } from 'rf-service';
-import { getIncludedModelOptions, getSingle, completeAssociationOptions } from 'sql-util';
+import { ServiceIdUuidNameEnabledOwnerModuleTranslatable } from 'rf-service';
 
-export class SiteService extends ServiceIdUuidNameEnabledModuleTranslatable {
-  sequelize = conf.global.sequelize;
-  Sequelize = conf.global.Sequelize;
-  model = conf.global.models.Site;
-  moduleModel = conf.global.models.Module;
-  moduleService = conf.global.services.Module.singleton();
-  defaultTranslationContext = 'site';
+export class SiteService extends ServiceIdUuidNameEnabledOwnerModuleTranslatable {
+  references = {
+    user: {
+      attributes: [],
+    },
+  };
+  viewAttributes = ['uuid', 'name', 'title'];
 
   async validateForCreation(data) {
     if (!data.title) {
@@ -18,77 +16,74 @@ export class SiteService extends ServiceIdUuidNameEnabledModuleTranslatable {
     return super.validateForCreation(data);
   }
 
-  async getListOptions(options) {
-    if (options?.view) {
-      if (!options.attributes) {
-        options.attributes = ['uuid', 'name', 'title'];
-      }
-
-      const includedUserOptions = getIncludedModelOptions(options, conf.global.models.User);
-      if (includedUserOptions) {
-        if (!includedUserOptions.attributes) {
-          includedUserOptions.attributes = [];
-        }
-      }
-    }
-
-    return super.getListOptions(options);
-  }
-
   /**
-     * Gets the site for a given session ID.
-     * @param {integer} sessionId - session ID to retrieve the site.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Site}}
-     */
+   * Gets the site for a given session ID.
+   * @param {integer} sessionId - session ID to retrieve the site.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise<Site>}
+   */
   async getForSessionId(sessionId, options) {
-    options = { ...options, include: [], limit: 2 };
-    options.include.push(completeAssociationOptions({ model: conf.global.models.Session, where: { id: sessionId }}, options));
-
-    const rowList = await this.getList(options);
-    return getSingle(rowList, { params: ['site', ['session id = %s', sessionId], 'Site'], ...options });
+    return this.getSingleFor({ sessionId }, options);
   }
 
   /**
-     * Gets a site list for an user ID.
-     * @param {string} userId - 
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{[]Site]}}
-     */
+   * Gets a site list for an user ID.
+   * @param {string} userId - 
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{[]Site]}}
+   */
   async getForUserId(userId, options) {
-    options ??= {};
-    options.include ??= [];       
-    options.include.push(completeAssociationOptions({ model: conf.global.models.User, where: { id: userId }}, options));
-
-    return this.getList(options);
+    return this.getSingle(
+      {
+        ...options,
+        include: {
+          ...options?.include,
+          Session: {
+            ...options?.include?.Session,
+            where: { id: userId },
+          }
+        },
+      },
+      options,
+    );
   }
 
   /**
-     * Gets a site list for an user with the username.
-     * @param {string} username - 
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{[]Site]}}
-     */
+   * Gets a site list for an user with the username.
+   * @param {string} username - 
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{[]Site]}}
+   */
   async getForUsername(username, options) {
-    options ??= {};
-    options.include ??= [];       
-    options.include.push(completeAssociationOptions({ model: conf.global.models.User, where: { username }}, options));
-
-    return this.getList(options);
+    return this.getSingle(
+      {
+        ...options,
+        include: {
+          ...options?.include,
+          User: {
+            ...options?.include?.User,
+            where: { username },
+          }
+        },
+      },
+      options,
+    );
   }
 
   /**
-     * Gets a site name list for an user with the username.
-     * @param {string} username - 
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{[]Site]}}
-     */
+   * Gets a site name list for an user with the username.
+   * @param {string} username - 
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{[]Site]}}
+   */
   async getNameForUsername(username, options) {
     if (!username) {
       return [];
     }
 
-    return this.getForUsername(username, { ...options, attributes: ['name'], skipThroughAssociationAttributes: true })
-      .then(async list => list.map(role => role.name));
+    const sites = await this.getForUsername(username, { ...options, attributes: ['name'], skipThroughAssociationAttributes: true });
+    const sitesNames = sites.map(s => s.name);
+
+    return sitesNames;
   }
 }

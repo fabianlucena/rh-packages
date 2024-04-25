@@ -3,7 +3,7 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class EavValueText extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.EavAttribute, { foreignKey: 'attributeId' });
+      this.belongsTo(models.EavAttribute, { as: 'attribute', foreignKey: 'attributeId' });
     }
   }
   EavValueText.init({

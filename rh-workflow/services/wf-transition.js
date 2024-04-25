@@ -1,15 +1,10 @@
-import { conf } from '../conf.js';
-import { ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable } from 'rf-service';
-import { completeIncludeOptions } from 'sql-util';
+import { ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable } from 'rf-service';
 import { CheckError } from 'rf-util';
 import { loc } from 'rf-locale';
 import { ConflictError } from 'http-util';
 
-export class WfTransitionService extends ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.WfTransition;
+export class WfTransitionService extends ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable {
   references = {
-    ownerModule:  'moduleService',
     workflowType: 'wfWorkflowTypeService',
     from:         'wfStatusService',
     to:           'wfStatusService',
@@ -42,145 +37,17 @@ export class WfTransitionService extends ServiceIdUuidNameTitleDescriptionEnable
   async getListOptions(options) {
     options ??= {};
 
-    if (options.includeWorkflowType
-            || options.where?.workflowType
-            || options.where?.workflowTypeName
-            || options.where?.workflowTypeUuid
+    if (options.where?.workflowType
+      || options.where?.workflowTypeName
+      || options.where?.workflowTypeUuid
+      || options.where?.from
+      || options.where?.fromName
+      || options.where?.fromUuid
+      || options.where?.to
+      || options.where?.toName
+      || options.where?.toUuid
     ) {
-      let where;
-
-      if (options.isEnabled !== undefined) {
-        where = { isEnabled: options.isEnabled };
-      }
-
-      if (options.where?.workflowType !== undefined) {
-        where ??= {};
-        where.name = options.where.workflowType;
-        delete options.where.workflowType;
-      }
-
-      if (options.where?.workflowTypeName !== undefined) {
-        where ??= {};
-        where.uuid = options.where.workflowTypeName;
-        delete options.where.workflowTypeName;
-      }
-
-      if (options.where?.workflowTypeUuid !== undefined) {
-        where ??= {};
-        where.uuid = options.where.workflowTypeUuid;
-        delete options.where.workflowTypeUuid;
-      }
-
-      const attributes = options.includeWorkflowType?
-        ['uuid', 'name', 'title']:
-        [];
-
-      completeIncludeOptions(
-        options,
-        'WorkflowType',
-        {
-          as: 'WorkflowType',
-          model: conf.global.models.WfWorkflowType,
-          attributes,
-          where,
-        }
-      );
-
-      delete options.includeWorkflow;
-    }
-
-    if (options.includeFrom
-            || options.where?.from
-            || options.where?.fromName
-            || options.where?.fromUuid
-    ) {
-      let where;
-
-      if (options.isEnabled !== undefined) {
-        where = { isEnabled: options.isEnabled };
-      }
-
-      if (options.where?.from !== undefined) {
-        where ??= {};
-        where.name = options.where.from;
-        delete options.where.from;
-      }
-
-      if (options.where?.fromName !== undefined) {
-        where ??= {};
-        where.name = options.where.fromName;
-        delete options.where.fromName;
-      }
-
-      if (options.where?.fromUuid !== undefined) {
-        where ??= {};
-        where.uuid = options.where.fromUuid;
-        delete options.where.fromUuid;
-      }
-
-      const attributes = options.includeFrom?
-        ['uuid', 'name', 'title']:
-        [];
-
-      completeIncludeOptions(
-        options,
-        'From',
-        {
-          as: 'From',
-          model: conf.global.models.WfStatus,
-          attributes,
-          where,
-        }
-      );
-
-      delete options.includeFrom;
-    }
-
-    if (options.includeTo
-            || options.where?.to
-            || options.where?.toName
-            || options.where?.toUuid
-    ) {
-      let where;
-
-      if (options.isEnabled !== undefined) {
-        where = { isEnabled: options.isEnabled };
-      }
-
-      if (options.where?.to !== undefined) {
-        where ??= {};
-        where.name = options.where.to;
-        delete options.where.to;
-      }
-
-      if (options.where?.toName !== undefined) {
-        where ??= {};
-        where.name = options.where.toName;
-        delete options.where.toName;
-      }
-
-      if (options.where?.toUuid !== undefined) {
-        where ??= {};
-        where.uuid = options.where.toUuid;
-        delete options.where.toUuid;
-      }
-
-      const attributes = options.includeTo?
-        ['uuid', 'name', 'title']:
-        [];
-
-      completeIncludeOptions(
-        options,
-        'To',
-        {
-          as: 'To',
-          model: conf.global.models.WfStatus,
-          attributes,
-          where,
-        }
-      );
-
-      delete options.includeTo;
+      throw new Error('Este estilo de where está obsoleto');
     }
 
     return super.getListOptions(options);

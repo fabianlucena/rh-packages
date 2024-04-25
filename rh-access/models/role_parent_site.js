@@ -3,10 +3,10 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class RoleParentSite extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Module, { foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true });
-      this.belongsTo(models.Role,   { foreignKey: 'roleId',   as: 'Role' });
-      this.belongsTo(models.Role,   { foreignKey: 'parentId', as: 'Parent' });
-      this.belongsTo(models.Site,   { foreignKey: 'siteId' });
+      this.belongsTo(models.Module, { as: 'ownerModule', foreignKey: 'ownerModuleId' });
+      this.belongsTo(models.Role,   { as: 'role',        foreignKey: 'roleId' });
+      this.belongsTo(models.Role,   { as: 'parent',      foreignKey: 'parentId' });
+      this.belongsTo(models.Site,   { as: 'site',        foreignKey: 'siteId' });
     }
   }
   RoleParentSite.init({
@@ -24,6 +24,10 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BIGINT,
       primaryKey: true,
       allowNull: false,
+    },
+    ownerModuleId: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
     },
   }, {
     sequelize,

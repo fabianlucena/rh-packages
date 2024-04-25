@@ -10,10 +10,10 @@ export class LogoutService {
   }
 
   /**
-     * Close the given session and it is no longr valid.
-     * @param {{id: number}} session 
-     * @returns {Promise[integer]}
-     */
+   * Close the given session and it is no longr valid.
+   * @param {{id: number}} session 
+   * @returns {Promise[integer]}
+   */
   async logout(session) {
     return SessionService.singleton().closeForId(session.id);
   }

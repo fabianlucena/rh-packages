@@ -3,7 +3,7 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class UserType extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Module, { foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true });
+      this.belongsTo(models.Module, { as: 'ownerModule', foreignKey: 'ownerModuleId' });
     }
   }
   UserType.init({
@@ -38,6 +38,10 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    ownerModuleId: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
     },
   }, {
     sequelize,

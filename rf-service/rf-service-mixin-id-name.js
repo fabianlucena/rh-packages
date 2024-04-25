@@ -1,17 +1,17 @@
 export const ServiceMixinIdName = Service => class ServiceIdName extends Service {
   /**
-     * Gets a row ID for its name. For many coincidences and for no rows this 
-     * function fails.
-     * @param {string|Array} name - name for the row to get.
-     * @param {Options} options - Options for the @ref getList function.
-     * @returns {ID}
-     * 
-     * If the name parammeter is a string return a single ID or throw an exception.
-     * But if the name parameter is a array can return a ID list.
-     * 
-     * This function uses @ref getForName function so the options for getForName
-     * function can be specified.
-     */
+   * Gets a row ID for its name. For many coincidences and for no rows this 
+   * function fails.
+   * @param {string|Array} name - name for the row to get.
+   * @param {Options} options - Options for the @ref getList function.
+   * @returns {ID}
+   * 
+   * If the name parammeter is a string return a single ID or throw an exception.
+   * But if the name parameter is a array can return a ID list.
+   * 
+   * This function uses @ref getForName function so the options for getForName
+   * function can be specified.
+   */
   async getIdForName(name, options) {
     if (Array.isArray(name)) {
       return (await this.getForName(name, { attributes: ['id'], ...options })).map(row => row.id);
@@ -39,11 +39,11 @@ export const ServiceMixinIdName = Service => class ServiceIdName extends Service
   }
 
   /**
-    * Gets a row ID for its name. For many coincidences this method fails, for no rows this method will creates a newone.
-    * @param {string} name - name for the source to get.
-    * @param {Options} options - Options for the @ref getList method.
-    * @returns {Promise[ID]}
-    */
+   * Gets a row ID for its name. For many coincidences this method fails, for no rows this method will creates a newone.
+   * @param {string} name - name for the source to get.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise[ID]}
+   */
   async getIdOrCreateForName(name, options) {
     if (Array.isArray(name)) {
       const ids = [];

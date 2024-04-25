@@ -1,22 +1,18 @@
 import { conf } from '../conf.js';
 import { ServiceIdUuidNameTitleEnabledSharedTranslatable, OptionalService } from 'rf-service';
-import { completeIncludeOptions } from 'sql-util';
 import { CheckError } from 'rf-util';
 import { loc } from 'rf-locale';
 import { _ConflictError } from 'http-util';
 
 export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslatable {
-  sequelize = conf.global.sequelize;
-  models = conf.global.models;
-  model = conf.global.models.Project;
-  shareObject = 'Project';
-  shareService = conf.global.services.Share.singleton();
   references = {
-    company: OptionalService(),
+    company: OptionalService({
+      attribute: ['uuid', 'name', 'title'],
+    }),
     ownerModule: true,
   };
-  defaultTranslationContext = 'project';
   eventBus = conf.global.eventBus;
+  viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'description'];
 
   async validateForCreation(data) {
     if (conf.global.models.Company) {
@@ -61,42 +57,8 @@ export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslata
   }
 
   async getListOptions(options) {
-    options ??= {};
-
-    if (options.view) {
-      if (!options.attributes) {
-        options.attributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'description'];
-      }
-    }
-
-    if (conf.global.models.Company && (options.includeCompany || options.where?.companyUuid !== undefined)) {
-      let where;
-
-      if (options.isEnabled !== undefined) {
-        where = { isEnabled: options.isEnabled };
-      }
-
-      if (options.where?.companyUuid !== undefined) {
-        where ??= {};
-        where.uuid = options.where.companyUuid;
-        delete options.where.companyUuid;
-      }
-
-      const attributes = options.includeCompany?
-        ['uuid', 'name', 'title']:
-        [];
-
-      completeIncludeOptions(
-        options,
-        'Company',
-        {
-          model: conf.global.models.Company,
-          attributes,
-          where,
-        }
-      );
-
-      delete options.includeCompany;
+    if (options.where?.companyUuid) {
+      throw new Error('Where option companyUuid format is obsolete.');
     }
 
     return super.getListOptions(options);

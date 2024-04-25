@@ -1,14 +1,13 @@
 import { conf } from '../conf.js';
-import { ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable } from 'rf-service';
-import { completeIncludeOptions } from 'sql-util';
+import { ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable } from 'rf-service';
 
-export class WfWorkflowService extends ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.WfWorkflow;
-  moduleService = conf.global.services.Module.singleton();
+export class WfWorkflowService extends ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable {
   references = {
-    ownerModule:     'moduleService',
-    modelEntityName: 'modelEntityNameService',
+    modelEntityName: {
+      createIfNotExists: true,
+      attributes: ['uuid', 'name'],
+      singleWhereColumn: 'name',
+    },
     workflowType:    'wfWorkflowTypeService',
   };
   defaultTranslationContext = 'workflow';
@@ -31,33 +30,36 @@ export class WfWorkflowService extends ServiceIdUuidNameTitleDescriptionEnabledM
   async getListOptions(options) {
     options = { ...options };
 
-    if (options.includeModelEntityName
-            || options.where?.modelEntityName
+    if (options.include?.ModelEntityName
+      || options.where?.modelEntityName
     ) {
-      let attributes = options.includeModelEntityName || [];
-      if (attributes === true) {
-        attributes = ['uuid', 'name'];
+      if (options.include?.ModelEntityName) {
+        if (options.include.ModelEntityName === true) {
+          options.include.ModelEntityName = {};
+        }
+
+        if (!options.include.ModelEntityName.attributes) {
+          options.include.ModelEntityName.attributes = ['uuid', 'name'];
+        }
+      } else {
+        options.include ??= {};
+        options.include.ModelEntityName = {};
       }
 
-      let where;
       if (options.isEnabled !== undefined) {
-        where = { isEnabled: options.isEnabled };
+        options.include.ModelEntityName.where = {
+          isEnabled: options.isEnabled,
+          ...options.include.ModelEntityName.where,
+        };
       }
 
       if (options.where?.modelEntityName) {
-        where = { ...where, ...options.where.modelEntityName };
+        options.include.ModelEntityName.where = {
+          isEnabled: options.isEnabled,
+          ...options.where.modelEntityName,
+        };
         delete options.where?.modelEntityName;
       }
-
-      completeIncludeOptions(
-        options,
-        'ModelEntityName',
-        {
-          model: conf.global.models.ModelEntityName,
-          attributes,
-          where,
-        }
-      );
     }
         
     return super.getListOptions(options);

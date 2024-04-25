@@ -11,10 +11,10 @@ export default (sequelize, DataTypes) => {
         throw new Error('There is no Module model. Try adding RH Module module to the project.');
       }
 
-      this.belongsTo(models.ModelEntityName,      { foreignKey: 'modelEntityNameId' });
-      this.belongsTo(models.EavAttributeType,     { foreignKey: 'typeId',        as: 'Type' });
-      this.belongsTo(models.EavAttributeCategory, { foreignKey: 'categoryId',    as: 'Category',    allowNull: true });
-      this.belongsTo(models.Module,               { foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true });
+      this.belongsTo(models.ModelEntityName,      { as: 'modelEntityName', foreignKey: 'modelEntityNameId' });
+      this.belongsTo(models.EavAttributeType,     { as: 'type',            foreignKey: 'typeId' });
+      this.belongsTo(models.EavAttributeCategory, { as: 'category',        foreignKey: 'categoryId' });
+      this.belongsTo(models.Module,               { as: 'ownerModule',     foreignKey: 'ownerModuleId' });
     }
   }
   EavAttribute.init({
@@ -97,6 +97,10 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+    },
+    ownerModuleId: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
     },
   }, {
     sequelize,

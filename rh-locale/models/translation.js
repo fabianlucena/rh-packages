@@ -3,10 +3,10 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class Translation extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Source,   { foreignKey: 'sourceId',   allowNull: false });
-      this.belongsTo(models.Language, { foreignKey: 'languageId', allowNull: false });
-      this.belongsTo(models.Domain,   { foreignKey: 'domainId',   allowNull: true });
-      this.belongsTo(models.Context,  { foreignKey: 'contextId',  allowNull: true });
+      this.belongsTo(models.Source,   { as: 'source',   foreignKey: 'sourceId' });
+      this.belongsTo(models.Language, { as: 'language', foreignKey: 'languageId' });
+      this.belongsTo(models.Domain,   { as: 'domain',   foreignKey: 'domainId' });
+      this.belongsTo(models.Context,  { as: 'context',  foreignKey: 'contextId' });
     }
   }
   Translation.init({
@@ -14,32 +14,48 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
-      unique: true
+      unique: true,
     },
     uuid: {
       type: DataTypes.UUID,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
-      unique: true
+      unique: true,
     },
     isEnabled: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: true
+      defaultValue: true,
     },
     isDraft: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false
+      defaultValue: false,
     },
     isJson: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false
+      defaultValue: false,
     },
     text: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: true,
+    },
+    sourceId: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    languageId: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    domainId: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
+    },
+    contextId: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
     },
   }, {
     sequelize,

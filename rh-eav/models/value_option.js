@@ -3,8 +3,8 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class EavValueOption extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.EavAttribute,       { foreignKey: 'attributeId' });
-      this.belongsTo(models.EavAttributeOption, { foreignKey: 'optionId',  as: 'Option' });
+      this.belongsTo(models.EavAttribute,       { as: 'attribute', foreignKey: 'attributeId' });
+      this.belongsTo(models.EavAttributeOption, { as: 'option',    foreignKey: 'optionId' });
     }
   }
   EavValueOption.init({

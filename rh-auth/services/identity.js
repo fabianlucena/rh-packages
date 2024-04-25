@@ -1,29 +1,19 @@
 import { conf } from '../conf.js';
 import { ServiceIdUuidEnabled } from 'rf-service';
-import { checkDataForMissingProperties, MissingPropertyError, completeAssociationOptions, addEnabledFilter, getSingle } from 'sql-util';
+import { checkDataForMissingProperties, MissingPropertyError, completeAssociationOptions, getSingle } from 'sql-util';
 import crypto from 'crypto';
 
 export class IdentityService extends ServiceIdUuidEnabled {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.Identity;
   references = {
-    type: conf.global.services.IdentityType,
-    username: {
-      service: conf.global.services.User.singleton(),
-      name: 'username',
-      Name: 'User',
-      idPropertyName: 'userId',
-      uuidPropertyName: 'userUuid',
-      getIdForName: 'getIdForUsername',
-    },
+    type: 'identityTypeService',
+    user: true,
   };
-  defaultTranslationContext = 'identity';
 
   /**
-     * Hash the password with a randomic salt
-     * @param {string} password - the plain passwor to be hashed 
-     * @returns {Promise[string]} - hashed password in hex text format
-     */
+   * Hash the password with a randomic salt
+   * @param {string} password - the plain passwor to be hashed 
+   * @returns {Promise[string]} - hashed password in hex text format
+   */
   async hashPassword(password) {
     return new Promise((resolve, reject) => {
       const salt = crypto.randomBytes(8).toString('hex');
@@ -38,11 +28,11 @@ export class IdentityService extends ServiceIdUuidEnabled {
   }
 
   /**
-     * Completes, if not exists, the data property of data object with the hashed JSON password data, 
-     * taked from the password property.
-     * @param {{data: string, password: JSON}} data - data to pass to create method.
-     * @returns {Promise[data]}
-     */
+   * Completes, if not exists, the data property of data object with the hashed JSON password data, 
+   * taked from the password property.
+   * @param {{data: string, password: JSON}} data - data to pass to create method.
+   * @returns {Promise[data]}
+   */
   async completeDataFromPassword(data) {
     if (!data.password) {
       return data;
@@ -74,11 +64,11 @@ export class IdentityService extends ServiceIdUuidEnabled {
   }
 
   /**
-     * Creates a local identity, this method set the type property of data to 'local' and then calls create method.
-     * @param {{isEnabled: boolean, data: JSON, userId: integer}} data - data to pass to create method.
-     * @param {object} options - options to pass to creator, for use transacion.
-     * @returns {Promise[data]}
-     */
+   * Creates a local identity, this method set the type property of data to 'local' and then calls create method.
+   * @param {{isEnabled: boolean, data: JSON, userId: integer}} data - data to pass to create method.
+   * @param {object} options - options to pass to creator, for use transacion.
+   * @returns {Promise[data]}
+   */
   async createLocal(data, options) {
     delete data.typeId;
     data.type = 'local';
@@ -86,76 +76,69 @@ export class IdentityService extends ServiceIdUuidEnabled {
   }
 
   /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {options}
-     */
-  async getListOptions(options) {
-    if (options.isEnabled !== undefined) {
-      options = addEnabledFilter(options);
-    }
-
-    return options;
-  }
-
-  /**
-     * Get the identity for a given user ID and type name. If not exists or exist many cohincidences the method fails. If the isEnabled value is not defined this value is setted to true.
-     * @param {string} userId - the user ID to search.
-     * @param {string} typeName - the typename to search.
-     * @param {OptionsObject} options - For valid options see: sqlUtil.completeAssociationOptions method, and sqlUtil.getSingle.
-     * @returns {Promise[Identity]}
-     */
+   * Get the identity for a given user ID and type name. If not exists or exist many cohincidences the method fails. If the isEnabled value is not defined this value is setted to true.
+   * @param {string} userId - the user ID to search.
+   * @param {string} typeName - the typename to search.
+   * @param {OptionsObject} options - For valid options see: sqlUtil.completeAssociationOptions method, and sqlUtil.getSingle.
+   * @returns {Promise[Identity]}
+   */
   async getForUserIdTypeName(userId, typeName, options) {
+    throw new Error('This method needs to be refactor.');
+
+    /*
     options = { include: [], limit: 2, ...options, where: { ...options?.where, userId }};
     options.include.push(completeAssociationOptions({ model: conf.global.models.IdentityType, where: { name: typeName }, required: true }, options));
 
     const rowList = await this.getList(options);
     return getSingle(rowList, options);
+    */
   }
 
   /**
-     * Get the identity for a given username and type name. If not exists or exist many cohincidences the method fails. If the isEnabled value is not defined this value is setted to true.
-     * @param {string} username - the username to search.
-     * @param {string} typeName - the typename to search.
-     * @param {OptionsObject} options - For valid options see: sqlUtil.completeAssociationOptions method, and sqlUtil.getSingle.
-     * @returns {Promise[Identity]}
-     */
+   * Get the identity for a given username and type name. If not exists or exist many cohincidences the method fails. If the isEnabled value is not defined this value is setted to true.
+   * @param {string} username - the username to search.
+   * @param {string} typeName - the typename to search.
+   * @param {OptionsObject} options - For valid options see: sqlUtil.completeAssociationOptions method, and sqlUtil.getSingle.
+   * @returns {Promise[Identity]}
+   */
   async getForUsernameTypeName(username, typeName, options) {
+    throw new Error('This method needs to be refactor.');
+    /*
     options = { include: [], limit: 2, ...options };
     options.include.push(completeAssociationOptions({ model: conf.global.models.IdentityType, where: { name: typeName }, required: true }, options));
     options.include.push(completeAssociationOptions({ model: conf.global.models.User,         where: { username },       required: true }, options));
 
     const rowList = await this.getList(options);
     return getSingle(rowList, options);
+    */
   }
 
   /**
-     * Get the 'local' type identity for a given user ID. See getForUserIdTypeName for more details.
-     * @param {string} userId - the user ID to search. 
-     * @param {object} options - For valid options see: sqlUtil.getForUserIdTypeName method.
-     * @returns {Promise[Identity]}
-     */
+   * Get the 'local' type identity for a given user ID. See getForUserIdTypeName for more details.
+   * @param {string} userId - the user ID to search. 
+   * @param {object} options - For valid options see: sqlUtil.getForUserIdTypeName method.
+   * @returns {Promise[Identity]}
+   */
   async getLocalForUserId(userId, options) {
     return this.getForUserIdTypeName(userId, 'local', options);
   }
 
   /**
-     * Get the 'local' type identity for a given username. See getForUsernameTypeName for more details.
-     * @param {string} username - the username to search. 
-     * @param {OptionsObject} options - For valid options see: sqlUtil.getForUsernameTypeName method.
-     * @returns {Promise[Identity]}
-     */
+   * Get the 'local' type identity for a given username. See getForUsernameTypeName for more details.
+   * @param {string} username - the username to search. 
+   * @param {OptionsObject} options - For valid options see: sqlUtil.getForUsernameTypeName method.
+   * @returns {Promise[Identity]}
+   */
   async getLocalForUsername(username, options) {
     return this.getForUsernameTypeName(username, 'local', options);
   }
 
   /**
-     * Checks the password for a local identity of the username user.
-     * @param {string} username - the username for check password.
-     * @param {string} password - the plain password to check.
-     * @returns {Promise[bool|errorMessage]}
-     */
+   * Checks the password for a local identity of the username user.
+   * @param {string} username - the username for check password.
+   * @param {string} password - the plain password to check.
+   * @returns {Promise[bool|errorMessage]}
+   */
   async checkLocalPasswordForUsername(username, rawPassword, loc) {
     const identity = await this.getLocalForUsername(username);
 
@@ -180,11 +163,11 @@ export class IdentityService extends ServiceIdUuidEnabled {
   }
 
   /**
-     * Checks if the password match with the encripted password.
-     * @param {string} rawPassword - the username for check password.
-     * @param {string} encriptedPassword - the plain password to check.
-     * @returns {Promise[bool|errorMessage]}
-     */
+   * Checks if the password match with the encripted password.
+   * @param {string} rawPassword - the username for check password.
+   * @param {string} encriptedPassword - the plain password to check.
+   * @returns {Promise[bool|errorMessage]}
+   */
   async checkRawPasswordAndEncryptedPassword(rawPassword, encriptedPassword) {
     return new Promise(resolve => {
       const [salt, key] = encriptedPassword.split(':');
@@ -199,10 +182,10 @@ export class IdentityService extends ServiceIdUuidEnabled {
   }
     
   /**
-     * Creates a new identity row into DB if not exists.
-     * @param {data} data - data for the new identity @see create.
-     * @returns {Promise[Identity]}
-     */
+   * Creates a new identity row into DB if not exists.
+   * @param {data} data - data for the new identity @see create.
+   * @returns {Promise[Identity]}
+   */
   async createIfNotExists(data, options) {
     const row = this.getForUsernameTypeName(data.username, data.type, { attributes: ['id'], skipNoRowsError: true, ...options });
     if (row) {
@@ -213,11 +196,11 @@ export class IdentityService extends ServiceIdUuidEnabled {
   }
 
   /**
-     * Updates an identity.
-     * @param {object} data - Data to update.
-     * @param {object} where - Where object with the criteria to update.
-     * @returns {Promise[integer]} updated rows count.
-     */
+   * Updates an identity.
+   * @param {object} data - Data to update.
+   * @param {object} where - Where object with the criteria to update.
+   * @returns {Promise[integer]} updated rows count.
+   */
   async update(data, options) {
     if (data.password) {
       if (!data.data) {

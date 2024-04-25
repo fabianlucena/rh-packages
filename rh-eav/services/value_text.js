@@ -1,23 +1,13 @@
-import { EavAttributeService } from './attribute.js';
 import { conf } from '../conf.js';
 import { ServiceIdUuid } from 'rf-service';
 import { _Error } from 'rf-util';
 import { loc } from 'rf-locale';
 
 export class EavValueTextService extends ServiceIdUuid {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.EavValueText;
   references = {
-    attribute: EavAttributeService.singleton(),
+    attribute: 'eavAttributeService',
+    modelEntityName: true,
   };
-
-  constructor() {
-    if (!conf?.global?.services?.ModelEntityName?.singleton) {
-      throw new Error('There is no ModelEntityName service. Try adding RH Model Entity Name module to the project.');
-    }
-
-    super();
-  }
 
   async updateValue(data, options) {
     if (!data.attributeId) {

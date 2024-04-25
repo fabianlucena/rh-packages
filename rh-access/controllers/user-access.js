@@ -4,68 +4,13 @@ import { checkParameter, checkParameterUuid, checkParameterUuidList, checkNotNul
 import { defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
 
-/**
- * @swagger
- * definitions:
- *  User:
- *      type: object
- *      properties:
- *          username:
- *              type: string
- *              required: true
- *              example: admin
- *          displayName:
- *              type: string
- *              required: true
- *              example: Admin
- *          typeId:
- *              type: integer
- *          isEnabled:
- *              type: boolean
- */
-
 export class UserAccessController {
-  /**
-     * @swagger
-     * /api/user-access:
-     *  post:
-     *      tags:
-     *          - User
-     *      summary: Create an user
-     *      description: Add a new user to the database
-     *      security:
-     *          - bearerAuth: []
-     *      produces:
-     *          - application/json
-     *      parameters:
-     *          -  User: body
-     *             in: body
-     *             schema:
-     *                $ref: '#/definitions/User'
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '400':
-     *              description: Missing parameters
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async post(req, res) {
     const loc = req.loc ?? defaultLoc;
     const data = {
       userUuid: checkParameterUuid(req.body.User, loc._cf('userAccess', 'User')),
       siteUuid: checkParameterUuid(req.body.Site, loc._cf('userAccess', 'Site')),
-      rolesUuid: await checkParameterUuidList(req.body.Roles, loc._cf('userAccess', 'Roles')),
+      rolesUuid: await checkParameterUuidList(req.body.roles, loc._cf('userAccess', 'Roles')),
     };
 
     if (req.body.Site) {
@@ -88,58 +33,6 @@ export class UserAccessController {
     res.status(204).send();
   }
 
-  /**
-     * @swagger
-     * /api/user-access:
-     *  get:
-     *      tags:
-     *          - User
-     *      summary: Get an user list
-     *      description: If the UUID or username params is provided this endpoint returns a single user otherwise returns a list of users
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *          -   name: username
-     *              in: query
-     *              type: string
-     *              example: admin
-     *          -   name: limit
-     *              in: query
-     *              type: int
-     *          -   name: offset
-     *              in: query
-     *              type: int
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/User'
-     *          '204':
-     *              description: Success no user
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async get(req, res) {
     if ('$grid' in req.query)
       return this.getGrid(req, res);
@@ -153,9 +46,11 @@ export class UserAccessController {
       view: true,
       where: {},
       loc,
-      includeUser: true,
-      includeSite: true,
-      includeRoles: true,
+      include: {
+        user: true,
+        site: true,
+        roles: true,
+      },
     };
 
     const definitions = { uuid: 'string', username: 'string' };
@@ -168,15 +63,15 @@ export class UserAccessController {
 
     if (!req.roles.includes('admin')) {
       const assignableRolesId = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
-      options.includeRolesId = assignableRolesId;
+      options.include.RolesId = assignableRolesId;
     }
 
     if (options.where?.uuid) {
       const uuid = options.where.uuid.split(',');
       delete options.where.uuid;
 
-      options.includeUser = { ...options.includeUser, where: { ...options.includeUser.where, uuid: uuid[0] }};
-      options.includeSite = { ...options.includeSite, where: { ...options.includeSite.where, uuid: uuid[1] }};
+      options.include.User = { ...options.include.User, where: { ...options.include.User.where, uuid: uuid[0] }};
+      options.include.Site = { ...options.include.Site, where: { ...options.include.Site.where, uuid: uuid[1] }};
     }
 
     const result = await dependency.get('userAccessService').getListAndCount(options);
@@ -214,7 +109,7 @@ export class UserAccessController {
           label: await loc._('Site'),
         },
         {
-          name: 'Roles',
+          name: 'roles',
           type: 'list',
           label: await loc._('Roles'),
           singleProperty: 'title',
@@ -263,7 +158,7 @@ export class UserAccessController {
           },
         },
         {
-          name: 'Roles',
+          name: 'roles',
           type: 'select',
           multiple: true,
           big: true,
@@ -311,7 +206,6 @@ export class UserAccessController {
       offset: 0,
       attributes: ['uuid', 'name', 'title', 'description', 'isTranslatable'],
       isEnabled: true,
-      raw: true,
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
@@ -334,45 +228,6 @@ export class UserAccessController {
     res.status(200).send(result);
   }
 
-  /**
-     * @swagger
-     * /api/user-access:
-     *  delete:
-     *      tags:
-     *          - User Access
-     *      summary: Delete an user access
-     *      description: Delete a user access from the user UUID and site UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID,UUID
-     *              required: true
-     *              example: 0F7B8F7F-D792-405B-8DE0-2E9E04BAC3A4,D781CFDF-CB71-4428-8F49-614387500813
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async delete(req, res) {
     const loc = req.loc ?? defaultLoc;
 

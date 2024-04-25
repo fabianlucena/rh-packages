@@ -1,16 +1,13 @@
-import { conf } from '../conf.js';
 import { ServiceIdUuidNameEnabledTranslatable } from 'rf-service';
-import { completeIncludeOptions, checkViewOptions } from 'sql-util';
 import { spacialize, ucfirst } from 'rf-util';
 
 export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.MenuItem;
   references = {
-    permission: conf.global.services.Permission,
-    parent: conf.global.services.MenuItem,
+    permission: true,
+    parent: 'menuItemService',
   };
   defaultTranslationContext = 'menu';
+  viewAttributes = ['uuid', 'name', 'jsonData', 'isTranslatable', 'data'];
 
   async validateForCreation(data) {
     if (!data.parentId && data.parent) {
@@ -26,37 +23,8 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
     return super.validateForCreation(data);
   }
 
-  /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {options}
-     */
-  async getListOptions(options) {
-    if (options?.view) {
-      if (!options.attributes) {
-        options.attributes = ['uuid', 'name', 'jsonData', 'isTranslatable', 'data'];
-      }
-            
-      completeIncludeOptions(
-        options,
-        'Parent',
-        {
-          model: conf.global.models.MenuItem,
-          as: 'Parent',
-          required: false,
-          attributes: ['name'],
-          where: { isEnabled: true }}
-      );
-
-      checkViewOptions(options);
-    }
-
-    return super.getListOptions(options);
-  }
-
   async getList(options) {
-    if (!options.includeParentAsMenuItem) {
+    if (!options?.include?.ParentAsMenuItem) {
       return super.getList(options);
     }
         
@@ -73,20 +41,14 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
       parentsNameToLoad.push(menuItem.Parent.name);
     }
 
-    completeIncludeOptions(
-      options,
-      'Permission',
-      {
-        model: conf.global.models.Permission,
-        required: false,
-      }
-    );
-
     const parentOptions = {
       where: {},
       ...options,
-      includeParentAsMenuItem: undefined
     };
+
+    if (parentOptions.include?.ParentAsMenuItem) {
+      delete parentOptions.include?.ParentAsMenuItem;
+    }
 
     while (parentsNameToLoad.length) {
       parentOptions.where.name = parentsNameToLoad;

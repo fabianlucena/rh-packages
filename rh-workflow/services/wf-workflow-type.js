@@ -1,15 +1,8 @@
-import { conf } from '../conf.js';
-import { ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable } from 'rf-service';
+import { ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable } from 'rf-service';
 
-export class WfWorkflowTypeService extends ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.WfWorkflowType;
-  moduleService = conf.global.services.Module.singleton();
+export class WfWorkflowTypeService extends ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable {
   references = {
-    modelEntityName: {
-      service: conf?.global?.services?.ModelEntityName?.singleton(),
-      createIfNotExists: true,
-    }
+    modelEntityName: { createIfNotExists: true },
   };
   defaultTranslationContext = 'workflow';
 }

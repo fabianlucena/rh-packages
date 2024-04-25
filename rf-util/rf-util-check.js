@@ -1,4 +1,4 @@
-import { MissingParameterError, CheckError, } from './rf-util-error.js';
+import { MissingParameterError, CheckError } from './rf-util-error.js';
 import { loc } from 'rf-locale';
 import * as uuid from 'uuid';
 

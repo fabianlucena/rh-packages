@@ -3,7 +3,7 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class Company extends sequelize.Sequelize.Model {
     static postAssociate(models) {
-      this.hasMany(models.Share, { as: 'Collaborators', foreignKey: 'objectId' });
+      this.hasMany(models.Share, { as: 'collaborators', foreignKey: 'objectId' });
     }
   }
   Company.init({

@@ -1,11 +1,7 @@
-import { conf } from '../conf.js';
 import { ServiceIdUuidEnabled } from 'rf-service';
 import { checkDataForMissingProperties } from 'sql-util';
 
 export class SourceService extends ServiceIdUuidEnabled {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.Source;
-
   async sanitizeText(text) {
     return text.trim().replace(/\r/g, '\\r').replace(/\n/g, '\\n');
   }
@@ -30,12 +26,12 @@ export class SourceService extends ServiceIdUuidEnabled {
   }
 
   /**
-     * Gets a source for its text. For many coincidences returns the first ocurrence and for no rows this method fails.
-     * @param {string} text - text for the source to get.
-     * @param {boolean} isJson - indicates if the text is a object in JSON format.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Source}}
-     */
+   * Gets a source for its text. For many coincidences returns the first ocurrence and for no rows this method fails.
+   * @param {string} text - text for the source to get.
+   * @param {boolean} isJson - indicates if the text is a object in JSON format.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{Source}}
+   */
   async getForTextAndIsJson(text, isJson, options) {
     const rows = await this.getList({ where: { text, isJson: isJson ?? false, ...options?.where }, limit: 1, ...options });
     if (!rows?.length) {
@@ -57,10 +53,10 @@ export class SourceService extends ServiceIdUuidEnabled {
   }
 
   /**
-     * Creates a new source row into DB if not exists.
-     * @param {data} data - data for the new source @see create.
-     * @returns {Promise{Source}}
-     */
+   * Creates a new source row into DB if not exists.
+   * @param {data} data - data for the new source @see create.
+   * @returns {Promise{Source}}
+   */
   async createIfNotExists(data, options) {
     data.text = data.text.trim();
     data.isJson ??= false;

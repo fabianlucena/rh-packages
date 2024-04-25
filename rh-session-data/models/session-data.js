@@ -3,7 +3,7 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class SessionData extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Session, { foreignKey: 'sessionId' });
+      this.belongsTo(models.Session, { as: 'session', foreignKey: 'sessionId' });
     }
   }
   SessionData.init({

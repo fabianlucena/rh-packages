@@ -3,8 +3,8 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class Site extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Module, { foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true });
-      this.belongsToMany(models.Module, { through: models.SiteModule, foreignKey: 'siteId', otherKey: 'moduleId' });
+      this.belongsTo(models.Module,     { as: 'ownerModule', foreignKey: 'ownerModuleId' });
+      this.belongsToMany(models.Module, { as: 'modules',     through: models.SiteModule, foreignKey: 'siteId', otherKey: 'moduleId' });
     }
   }
   Site.init({
@@ -41,6 +41,10 @@ export default (sequelize, DataTypes) => {
     },
     description: {
       type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    ownerModuleId: {
+      type: DataTypes.BIGINT,
       allowNull: true,
     },
   }, {

@@ -3,9 +3,8 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class User extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.UserType, { foreignKey: 'typeId' });
-      if (models.Module)
-        this.belongsTo(models.Module, { foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true });
+      this.belongsTo(models.UserType, { as: 'type',        foreignKey: 'typeId' });
+      this.belongsTo(models.Module,   { as: 'ownerModule', foreignKey: 'ownerModuleId' });
     }
   }
   User.init({
@@ -40,6 +39,14 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    typeId: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    ownerModuleId: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
     },
   }, {
     sequelize,

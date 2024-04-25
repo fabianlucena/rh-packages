@@ -1,20 +1,15 @@
 import { IdentityService } from '../services/identity.js';
 import { conf } from '../conf.js';
-import { ServiceIdUuidEnabledModule } from 'rf-service';
+import { ServiceIdUuidEnabledOwnerModule } from 'rf-service';
 import { getSingle } from 'sql-util';
 import { _ConflictError } from 'http-util';
 import { checkParameter, _Error } from 'rf-util';
 import { loc } from 'rf-locale';
 
-export class UserService extends ServiceIdUuidEnabledModule {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.User;
-  moduleModel = conf.global.models.Module;
-  moduleService = conf.global.services.Module.singleton();
+export class UserService extends ServiceIdUuidEnabledOwnerModule {
   references = {
-    type: conf.global.services.UserType.singleton(),
+    type: 'userTypeService',
   };
-  defaultTranslationContext = 'user';
   searchColumns = ['username', 'displayName'];
 
   async validateForCreation(data) {
@@ -37,11 +32,11 @@ export class UserService extends ServiceIdUuidEnabledModule {
   }
 
   /**
-     * Creates a new user row into DB. If no typeId provided or type, 'user' type is used. If a password is provided also a local @ref Identity is created.
-     * @param {{isEnabled: boolean, username: string, displayName: string, typeId: integer, type: string}} data - data for the new User.
-     *  - username: must be unique.
-     * @returns {Promise[User]}
-     */
+   * Creates a new user row into DB. If no typeId provided or type, 'user' type is used. If a password is provided also a local @ref Identity is created.
+   * @param {{isEnabled: boolean, username: string, displayName: string, typeId: integer, type: string}} data - data for the new User.
+   *  - username: must be unique.
+   * @returns {Promise[User]}
+   */
   async create(data, options) {
     const user = await super.create(data, options);
     if (data.password) {
@@ -58,13 +53,13 @@ export class UserService extends ServiceIdUuidEnabledModule {
   }
 
   /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {object} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {object}
-     */
+   * Gets the options for use in the getList and getListAndCount methods.
+   * @param {object} options - options for the @see sequelize.findAll method.
+   *  - view: show visible peoperties.
+   * @returns {object}
+   */
   async getListOptions(options) {
-    options ??= {};
+    options = { ...options };
 
     if (options.view) {
       if (!options.attributes) {
@@ -74,7 +69,7 @@ export class UserService extends ServiceIdUuidEnabledModule {
 
     options.include ??= [];
 
-    if (options.includeType) {
+    if (options.include?.Type) {
       options.include.push({ 
         model: conf.global.models.UserType, 
         attributes: ['uuid', 'name', 'title']
@@ -85,11 +80,11 @@ export class UserService extends ServiceIdUuidEnabledModule {
   }
 
   /**
-     * Gets an user for its username. For many coincidences and for no rows this method fails.
-     * @param {string} username - username for the user to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{User}}
-     */
+   * Gets an user for its username. For many coincidences and for no rows this method fails.
+   * @param {string} username - username for the user to get.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{User}}
+   */
   async getForUsername(username, options) {
     options = { ...options, where: { ...options?.where, username }};
 
@@ -104,11 +99,11 @@ export class UserService extends ServiceIdUuidEnabledModule {
   }
 
   /**
-     * Gets an user for its display name. For many coincidences and for no rows this method fails.
-     * @param {string} username - username for the user to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{User}}
-     */
+   * Gets an user for its display name. For many coincidences and for no rows this method fails.
+   * @param {string} username - username for the user to get.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{User}}
+   */
   async getForDisplayName(displayName, options) {
     options = { ...options, where: { ...options?.where, displayName }};
 
@@ -123,11 +118,11 @@ export class UserService extends ServiceIdUuidEnabledModule {
   }
 
   /**
-     * Gets an user for its username. For many coincidences and for no rows this method fails.
-     * @param {string} username - username for the user to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise[BigInt|Array[BigInt]]}
-     */
+   * Gets an user for its username. For many coincidences and for no rows this method fails.
+   * @param {string} username - username for the user to get.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise[BigInt|Array[BigInt]]}
+   */
   async getIdForUsername(username, options) {
     const result = await this.getForUsername(username, { attributes: ['id'], ...options });
     if (Array.isArray(username)) {
@@ -138,11 +133,11 @@ export class UserService extends ServiceIdUuidEnabledModule {
   }
 
   /**
-     * Checks for an existent and enabled user. If the user exists and is enabled resolve, otherwise fail.
-     * @param {User} user - user model object to check.
-     * @param {*string} username - username only for result message purpuose.
-     * @returns 
-     */
+   * Checks for an existent and enabled user. If the user exists and is enabled resolve, otherwise fail.
+   * @param {User} user - user model object to check.
+   * @param {*string} username - username only for result message purpuose.
+   * @returns 
+   */
   async checkEnabledUser(user, username) {
     if (!user) {
       throw new _Error(loc._cf('user', 'User "%s" does not exist'), username);
@@ -156,11 +151,11 @@ export class UserService extends ServiceIdUuidEnabledModule {
   }
 
   /**
-     * Updates an user.
-     * @param {object} data - Data to update.
-     * @param {object} where - Where object with the criteria to update.
-     * @returns {Promise[integer]} updated rows count.
-     */
+   * Updates an user.
+   * @param {object} data - Data to update.
+   * @param {object} where - Where object with the criteria to update.
+   * @returns {Promise[integer]} updated rows count.
+   */
   async update(data, where) {
     const result = await super.update(data, where);
     if (!result) {
@@ -185,10 +180,10 @@ export class UserService extends ServiceIdUuidEnabledModule {
   }
 
   /**
-     * Creates a new User row into DB if not exists.
-     * @param {data} data - data for the new Role @see create.
-     * @returns {Promise{Role}}
-     */
+   * Creates a new User row into DB if not exists.
+   * @param {data} data - data for the new Role @see create.
+   * @returns {Promise{Role}}
+   */
   async createIfNotExists(data, options) {
     const row = await this.getForUsername(data.username, { attributes: ['id'], foreign: { module: { attributes:[] }}, skipNoRowsError: true, ...options });
     if (row) {

@@ -1,16 +1,9 @@
 import { RoleParentSiteService } from './role_parent_site.js';
 import { conf } from '../conf.js';
-import { ServiceIdUuidNameTitleEnabledModuleTranslatable } from 'rf-service';
+import { ServiceIdUuidNameTitleEnabledOwnerModuleTranslatable } from 'rf-service';
 import { checkDataForMissingProperties, completeAssociationOptions } from 'sql-util';
 
-export class RoleService extends ServiceIdUuidNameTitleEnabledModuleTranslatable {
-  sequelize = conf.global.sequelize;
-  Sequelize = conf.global.Sequelize;
-  model = conf.global.models.Role;
-  moduleModel = conf.global.models.Module;
-  moduleService = conf.global.services.Module.singleton();
-  defaultTranslationContext = 'role';
-
+export class RoleService extends ServiceIdUuidNameTitleEnabledOwnerModuleTranslatable {
   constructor() {
     if (!conf?.global?.services?.Module?.singleton) {
       throw new Error('There is no Module service. Try adding RH Module module to the project.');
@@ -27,13 +20,15 @@ export class RoleService extends ServiceIdUuidNameTitleEnabledModuleTranslatable
   }
 
   /**
-     * Gets the direct (first level) roles for a given username and site name.
-     * @param {string} username - username for the user to retrive its roles.
-     * @param {string} siteName - siteName in wich the user has the roles.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{RoleList}}
-     */
+   * Gets the direct (first level) roles for a given username and site name.
+   * @param {string} username - username for the user to retrive its roles.
+   * @param {string} siteName - siteName in wich the user has the roles.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{RoleList}}
+   */
   async getForUsernameAndSiteName(username, siteName, options) {
+    throw new Error('This method needs to be refactor.');
+    /*
     await checkDataForMissingProperties({ username, siteName }, 'Role', 'username', 'siteName');
         
     options ??= {};
@@ -44,29 +39,32 @@ export class RoleService extends ServiceIdUuidNameTitleEnabledModuleTranslatable
     );
 
     return this.model.findAll(options);
+    */
   }
 
   /**
-     * Gets the direct (first level) role names for a given username and site name.
-     * @param {string} username - username for the user to retrive its roles.
-     * @param {string} siteName - siteName in wich the user has the roles.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{[]string}}
-     */
+   * Gets the direct (first level) role names for a given username and site name.
+   * @param {string} username - username for the user to retrive its roles.
+   * @param {string} siteName - siteName in wich the user has the roles.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{[]string}}
+   */
   async getNameForUsernameAndSiteName(username, siteName, options) {
     const roleList = await this.getForUsernameAndSiteName(username, siteName, { ...options, attributes: ['name'], skipThroughAssociationAttributes: true });
     return roleList.map(role => role.name);
   }
 
   /**
-     * Gets all of the roles ID for a given username and site name.
-     * @param {string} username - username for the user to retrive its roles.
-     * @param {string} siteName - siteName in wich the user has the roles.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{RoleList}}
-     */
+   * Gets all of the roles ID for a given username and site name.
+   * @param {string} username - username for the user to retrive its roles.
+   * @param {string} siteName - siteName in wich the user has the roles.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{RoleList}}
+   */
   async getAllIdsForUsernameAndSiteName(username, siteName, options) {
-    const site = await this.siteService.getForName(siteName, { isEnabled: true });
+    throw new Error('This method needs to be refactor.');
+
+    /*const site = await this.siteService.getForName(siteName, { isEnabled: true });
     if (!site || (Array.isArray(site) && !site.length)) {
       return;
     }
@@ -83,12 +81,12 @@ export class RoleService extends ServiceIdUuidNameTitleEnabledModuleTranslatable
       include: [
         {
           model: this.model,
-          as: 'Role',
+          as: 'role',
           attributes: [],
           include: [
             {
               model: conf.global.models.Module,
-              as: 'OwnerModule',
+              as: 'ownerModule',
               required: false,
               attributes: [],
               where: {
@@ -103,12 +101,12 @@ export class RoleService extends ServiceIdUuidNameTitleEnabledModuleTranslatable
         },
         {
           model: this.model,
-          as: 'Parent',
+          as: 'parent',
           attributes: [],
           include: [
             {
               model: conf.global.models.Module,
-              as: 'OwnerModule',
+              as: 'ownerModule',
               required: false,
               attributes: [],
               where: {
@@ -143,28 +141,28 @@ export class RoleService extends ServiceIdUuidNameTitleEnabledModuleTranslatable
       allRoleIdList = [...allRoleIdList, ...newRoleIdList];
     }
 
-    return allRoleIdList;
+    return allRoleIdList;*/
   }
 
   /**
-     * Gets all of the roles for a given username and site name.
-     * @param {string} username - username for the user to retrive its roles.
-     * @param {string} siteName - siteName in wich the user has the roles.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{RoleList}}
-     */
+   * Gets all of the roles for a given username and site name.
+   * @param {string} username - username for the user to retrive its roles.
+   * @param {string} siteName - siteName in wich the user has the roles.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{RoleList}}
+   */
   async getAllForUsernameAndSiteName(username, siteName, options) {
     const roleIdList = await this.getAllIdsForUsernameAndSiteName(username, siteName, options);
     return this.getList({ ...options, where: { id:roleIdList ?? null, ...options?.where, }});
   }
 
   /**
-     * Gets all of the role names for a given username and site name.
-     * @param {string} username - username for the user to retrive its roles.
-     * @param {string} siteName - siteName in wich the user has the roles.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{[]string}}
-     */
+   * Gets all of the role names for a given username and site name.
+   * @param {string} username - username for the user to retrive its roles.
+   * @param {string} siteName - siteName in wich the user has the roles.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{[]string}}
+   */
   async getAllNamesForUsernameAndSiteName(username, siteName, options) {
     const roleList = await this.getAllForUsernameAndSiteName(username, siteName, { ...options, attributes: ['name'], skipThroughAssociationAttributes: true });
     return Promise.all(await roleList.map(role => role.name));

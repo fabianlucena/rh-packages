@@ -8,23 +8,14 @@ import { checkDataForMissingProperties, getSingle } from 'sql-util';
 import { deepComplete } from 'rf-util';
 
 export class TranslationService extends ServiceIdUuidEnabled {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.Translation;
   references = {
     source: {
-      service: conf.global.services.Source,
       createIfNotExists: true,
       function: this.completeSourceId,
     },
-    language: conf.global.services.Language,
-    domain: {
-      service: conf.global.services.Domain,
-      createIfNotExists: true,
-    },
-    context: {
-      service: conf.global.services.Context,
-      createIfNotExists: true,
-    },
+    language: true,
+    domain: { createIfNotExists: true },
+    context: { createIfNotExists: true },
   };
 
   async sanitizeText(text) {
@@ -36,10 +27,10 @@ export class TranslationService extends ServiceIdUuidEnabled {
   }
 
   /**
-     * Complete the data object with the sourceId property if not exists. 
-     * @param {{source: string, sourceId: integer, ...}} data 
-     * @returns {Promise{data}}
-     */
+   * Complete the data object with the sourceId property if not exists. 
+   * @param {{source: string, sourceId: integer, ...}} data 
+   * @returns {Promise{data}}
+   */
   async completeSourceId(data) {
     if (!data.sourceId && data.source) {
       data.sourceId = await SourceService.singleton().getIdOrCreateForTextAndIsJson(data.source, data.isJson, { data: { ref: data.ref }});
@@ -56,11 +47,11 @@ export class TranslationService extends ServiceIdUuidEnabled {
   }
 
   /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {options}
-     */
+   * Gets the options for use in the getList and getListAndCount methods.
+   * @param {Options} options - options for the @see sequelize.findAll method.
+   *  - view: show visible peoperties.
+   * @returns {options}
+   */
   async getListOptions(options) {
     await this.completeReferences(options.where, true);
 
@@ -232,23 +223,23 @@ export class TranslationService extends ServiceIdUuidEnabled {
   }
 
   /**
-     * Gets a translation for its language, source, and domain. For many coincidences and for no rows this method fails.
-     * @param {string} language - language for the translation to get.
-     * @param {string} source - source for the translation to get.
-     * @param {string} domain - domain for the translation to get.
-     * @param {Options} options - Options for the @ref getList method.
-     * @returns {Promise{Language}}
-     */
+   * Gets a translation for its language, source, and domain. For many coincidences and for no rows this method fails.
+   * @param {string} language - language for the translation to get.
+   * @param {string} source - source for the translation to get.
+   * @param {string} domain - domain for the translation to get.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{Language}}
+   */
   async getForLanguageSourceAndDomain(language, source, domain, options) {
     return this.getList(deepComplete(options, { where:{ language, source, domain: domain ?? null }, limit: 2 }))
       .then(rowList => getSingle(rowList, deepComplete(options, { params: ['translation', 'source', source, 'translation'] })));
   }
     
   /**
-     * Creates a new tranlaion row into DB if not exists.
-     * @param {data} data - data for the new Language @see create.
-     * @returns {Promise{Language}}
-     */
+   * Creates a new tranlaion row into DB if not exists.
+   * @param {data} data - data for the new Language @see create.
+   * @returns {Promise{Language}}
+   */
   async createIfNotExists(data, options) {
     await this.completeReferences(data);
 

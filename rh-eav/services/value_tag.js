@@ -1,18 +1,31 @@
-import { conf } from '../conf.js';
-import { ServiceIdUuidTranslatable } from 'rf-service';
-import { completeIncludeOptions } from 'sql-util';
+import { ServiceIdUuidTranslatable, Op } from 'rf-service';
 import { checkParameterNotNullOrEmpty, _Error } from 'rf-util';
 import { loc } from 'rf-locale';
 import { _ConflictError } from 'http-util';
+import dependency from 'rf-dependency';
 
 export class EavValueTagService extends ServiceIdUuidTranslatable {
-  Sequelize = conf.global.Sequelize;
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.EavValueTag;
   references = {
-    attribute: true,
-    tag:       'attributeTagService',
+    attribute: {
+      service: 'eavAttributeService',
+      attributes: ['uuid', 'name', 'description'],
+      singleWhereColumn: 'attribute',
+    },
+    tag: {
+      service: 'eavAttributeTagService',
+      attributes: ['uuid', 'name', 'description'],
+      singleWhereColumn: 'tags',
+    },
   };
+  searchColumns = [
+    'tag.name',
+  ];
+
+  init() {
+    super.init();
+
+    this.eavAttributeTagService = dependency.get('eavAttributeTagService');
+  }
 
   async validateForCreation(data) {
     checkParameterNotNullOrEmpty(data.attributeId, loc._cf('eav', 'Attribute'));
@@ -27,94 +40,12 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
   }
 
   async getListOptions(options) {
-    options ||= {};
-
-    if (options.includeAttribute
-            || options.where?.attribute
-            || options.includeTag
-            || options.where?.attributeTagUuid
-            || options.where?.tags
-    ) {
-      const attributes = (options.includeTag === true)?
-        ['uuid', 'name', 'description']:
-        (!options.includeTag)?
-          []:
-          options.includeTag;
-
-      let where;
-      if (options.q) {
-        const q = `%${options.q}%`;
-        const Op = this.Sequelize.Op;
-        where ??= {};
-        where.name = { [Op.like]: q };
-        delete options.q;
-      }
-
-      if (options.where?.tags) {
-        where ??= {};
-        where.name = options.where.tags;
-        delete options.where.tags;
-      }
-
-      if (options.where?.attributeTagUuid) {
-        where ??= {};
-        where.uuid = options.where.attributeTagUuid;
-        delete options.where?.attributeTagUuid;
-      }
-
-      if (options.where?.tagId) {
-        where ??= {};
-        where.id = options.where.tagId;
-        delete options.where?.tagId;
-      }
-
-      const EavAttributeTagOptions = {
-        model: conf.global.models.EavAttributeTag,
-        as: 'Tag',
-        attributes,
-      };
-
-      if (where) {
-        EavAttributeTagOptions.where = where;
-      }
-            
-      if (options.includeAttribute || options.where?.attribute) {
-        const attributes = (options.includeAttribute === true)?
-          ['uuid', 'name', 'description']:
-          (!options.includeAttribute)?
-            []:
-            options.includeAttribute;
+    if (options.where?.attributeTagUuid) {
+      throw new Error('options.where.attributeTagUuid is obsolete in EavValueTagService.');
+    }
     
-        let where;
-        if (options.where?.attribute) {
-          where ??= {};
-          where.name = options.where.attribute;
-          delete options.where.attribute;
-        }
-
-        const EavAttributeOptions = {
-          model: conf.global.models.EavAttribute,
-          attributes,
-        };
-
-        if (where) {
-          EavAttributeOptions.where = where;
-        }
-    
-        const includeAttributeOptions = completeIncludeOptions(
-          null,
-          'EavAttribute',
-          EavAttributeOptions,
-        );
-
-        EavAttributeTagOptions.include = includeAttributeOptions.include[0];
-      }
-
-      completeIncludeOptions(
-        options,
-        'EavAttributeTag',
-        EavAttributeTagOptions,
-      );
+    if (options.where?.tagId) {
+      throw new Error('options.where.attributeTagUuid is obsolete in EavValueTagService.');
     }
 
     return super.getListOptions(options);
@@ -150,19 +81,19 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
   }
 
   /**
-     * Update the tags values for an entity or entities.
-     * @param {object} data An objet with tree properties see below.
-     * @param {object} options Sequelize options with loc property. 
-     * @returns updated rows count.
-     * 
-     * The data object must have the following properties:
-     * - attributeId: the ID of the attribute definition.
-     * - entityId: the ID or ID list of the entity/ies who has the tags.
-     * - value: the tag or tags list.
-     * 
-     * For each entityId the method link the given tags. And only the given tags,
-     * other tags than values will be remove from the entities.
-     */
+   * Update the tags values for an entity or entities.
+   * @param {object} data An objet with tree properties see below.
+   * @param {object} options options with loc property. 
+   * @returns updated rows count.
+   * 
+   * The data object must have the following properties:
+   * - attributeId: the ID of the attribute definition.
+   * - entityId: the ID or ID list of the entity/ies who has the tags.
+   * - value: the tag or tags list.
+   * 
+   * For each entityId the method link the given tags. And only the given tags,
+   * other tags than values will be remove from the entities.
+   */
   async updateValue(data, options) {
     if (!data.attributeId) {
       throw new _Error(loc._f('Cannot update option value because attributeId data is missing or empty'));
@@ -199,7 +130,7 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
 
       const tagsId = [];
       for (const tag of tags) {
-        const tagRow = await conf.eavAttributeTagService.getOrCreate({
+        const tagRow = await this.eavAttributeTagService.getOrCreate({
           attributeId: data.attributeId,
           name: tag,
         });
@@ -230,7 +161,6 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
       throw new Error(loc._cf('eav', 'Delete without where is forbiden.'));
     }
 
-    const Op = this.Sequelize?.Op;
     const filters = [];
 
     if (where.id) {
@@ -278,8 +208,6 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
   async getForEntityId(entityId, options) {
     options = {
       attributes: [],
-      raw: true,
-      nest: true,
       ...options,
       where: {
         ...options?.where,
@@ -287,8 +215,8 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
       },
     };
 
-    if (options.includeTag === undefined) {
-      options.includeTag = true;
+    if (options.include?.Tag === undefined) {
+      options.include = { Tag: true, ...options.include };
     }
 
     delete options.tagAttributes;
@@ -297,7 +225,7 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
   }
 
   async completeForEntities(entities, options) {
-    if (!options.includeTag) {
+    if (!options.include?.Tag) {
       return entities;
     }
 
@@ -318,7 +246,7 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
   }
 
   async getEntityIdForTags(tags, options) {
-    const rows = await this.getForTags(tags, { ...options, attributes: ['entityId'], raw: true, nest: true });
+    const rows = await this.getForTags(tags, { ...options, attributes: ['entityId'] });
     const result = [];
     rows.map(rows => {
       const id = rows[this.entityId];

@@ -2,16 +2,12 @@ import { EavAttributeTypeService } from './attribute_type.js';
 import { EavAttributeCategoryService } from './attribute_category.js';
 import { EavAttributeOptionService } from './attribute_option.js';
 import { EavAttributeTagService } from './attribute_tag.js';
-import { conf } from '../conf.js';
 import { runSequentially, _Error } from 'rf-util';
 import { loc } from 'rf-locale';
 import { ServiceIdUuidNameTitleDescriptionEnabledTranslatable } from 'rf-service';
-import { completeIncludeOptions } from 'sql-util';
 import { ConflictError } from 'http-util';
 
 export class EavAttributeService extends ServiceIdUuidNameTitleDescriptionEnabledTranslatable {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.EavAttribute;
   references = {
     type: 'eavAttributeTypeService',
     category: 'eavAttributeCategoryService',
@@ -21,14 +17,6 @@ export class EavAttributeService extends ServiceIdUuidNameTitleDescriptionEnable
     }
   };
     
-  constructor() {
-    if (!conf?.global?.services?.ModelEntityName?.singleton) {
-      throw new Error('There is no ModelEntityName service. Try adding RH Model Entity Name module to the project.');
-    }
-
-    super();
-  }
-
   init() {
     this.eavAttributeTypeService =     EavAttributeTypeService.    singleton();
     this.eavAttributeCategoryService = EavAttributeCategoryService.singleton();
@@ -99,67 +87,6 @@ export class EavAttributeService extends ServiceIdUuidNameTitleDescriptionEnable
     );
 
     return attribute;
-  }
-
-  async getListOptions(options) {
-    options ||= {};
-
-    if (options.includeAttributeType || options.where?.attributeType) {
-      let attributes = options.includeAttributeType || [];
-      if (attributes === true) {
-        attributes = ['uuid', 'name', 'title', 'isTranslatable'];
-      }
-
-      let where;
-      if (options.isEnabled !== undefined) {
-        where = { isEnabled: options.isEnabled };
-      }
-
-      if (options.where?.attributeType) {
-        where = { ...where, ...options.where.attributeType };
-        delete options.where?.attributeType;
-      }
-
-      completeIncludeOptions(
-        options,
-        'EavAttributeType',
-        {
-          as: 'Type',
-          model: conf.global.models.EavAttributeType,
-          attributes,
-          where,
-        }
-      );
-    }
-
-    if (options.includeModelEntityName || options.where?.modelEntityName) {
-      let attributes = options.includeModelEntityName || [];
-      if (attributes === true) {
-        attributes = ['uuid', 'name'];
-      }
-
-      let where;
-      if (options.isEnabled !== undefined) {
-        where = { isEnabled: options.isEnabled };
-      }
-
-      if (options.where?.modelEntityName) {
-        where = { ...where, ...options.where.modelEntityName };
-        delete options.where?.modelEntityName;
-      }
-
-      completeIncludeOptions(
-        options,
-        'ModelEntityName',
-        {
-          model: conf.global.models.ModelEntityName,
-          attributes,
-          where,
-        }
-      );
-    }
-        
-    return super.getListOptions(options);
   }
 
   async getForEntityName(entityName, options) {

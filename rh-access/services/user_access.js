@@ -115,11 +115,11 @@ export class UserAccessService extends UserSiteRoleService {
   }
     
   async getList(options) {
-    if (!options.includeRoles) {
+    if (!options?.include?.roles) {
       return super.getList(options);
     }
 
-    options ??= {};
+    options = { ...options };
     options.view = true;
     options.attributes ??= [];
     if (!options.attributes.includes('userId')) {
@@ -129,17 +129,12 @@ export class UserAccessService extends UserSiteRoleService {
     if (!options.attributes.includes('siteId')) {
       options.attributes.push('siteId');
     }
-        
-    if (!options.includeUser) {
-      options.includeUser = { attributes: ['uuid'] };
-    }
-        
-    if (!options.includeSite) {
-      options.includeSite = { attributes: ['uuid'] };
-    }
-
-    options.raw = true;
-    options.nest = true;
+    
+    options.include = {
+      User: { attributes: ['uuid'] },
+      Site: { attributes: ['uuid'] },
+      ...options.include,
+    };
 
     options = await this.getListOptions(options);
 
@@ -147,18 +142,18 @@ export class UserAccessService extends UserSiteRoleService {
 
     const roleQueryOptions = {
       view: true,
-      includeUser: { attributes: [] },
-      includeSite: { attributes: [] },
-      includeRole: {},
+      include: {
+        User: { attributes: [] },
+        Site: { attributes: [] },
+        Role: {},
+      },
       attributes: ['isEnabled'],
       where: {},
-      raw: true,
-      nest: true,
       loc: options.loc,
     };
 
-    if (options.includeRolesId) {
-      roleQueryOptions.where = { roleId: options.includeRolesId };
+    if (options.include.RolesId) {
+      roleQueryOptions.where = { roleId: options.include.RolesId };
     }
 
     for (const row of result) {
@@ -168,7 +163,7 @@ export class UserAccessService extends UserSiteRoleService {
       roleQueryOptions.where.siteId = row.siteId;
 
       const userSiteRoles = await this.getList(roleQueryOptions);
-      row.Roles = userSiteRoles.map(userSiteRole => {return { ...userSiteRole.Role, isEnabled: userSiteRole.isEnabled };});
+      row.roles = userSiteRoles.map(userSiteRole => {return { ...userSiteRole.Role, isEnabled: userSiteRole.isEnabled };});
             
       delete row.userId;
       delete row.siteId;

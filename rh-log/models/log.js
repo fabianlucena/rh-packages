@@ -4,7 +4,7 @@ export default (sequelize, DataTypes) => {
   class Log extends sequelize.Sequelize.Model {
     static postAssociate(models) {
       if (models.Session)
-        this.belongsTo(models.Session, { foreignKey: 'sessionId', required: false });
+        this.belongsTo(models.Session, { as: 'session', foreignKey: 'sessionId', required: false });
     }
   }
   Log.init({

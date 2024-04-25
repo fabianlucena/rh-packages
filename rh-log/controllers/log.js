@@ -16,7 +16,7 @@ export class LogController {
       offset: 0,
       orderBy: [['dateTime', 'DESC']],
       loc: req.loc,
-      includeUser: true,
+      include: { User: true },
       searchColumns: [
         'ref',
         'type',

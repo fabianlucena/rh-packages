@@ -1,6 +1,6 @@
 import { conf } from '../conf.js';
 import { ServiceIdUuid } from 'rf-service';
-import { checkViewOptions, getSingle } from 'sql-util';
+import { getSingle } from 'sql-util';
 import { check, } from 'rf-util';
 import { loc } from 'rf-locale';
 import crypto from 'crypto';
@@ -39,10 +39,6 @@ conf.sessionCacheMaintenanceMethod ??= () => {
 conf.init.push(() => conf.sessionCacheMaintenance = setInterval(conf.sessionCacheMaintenanceMethod, conf.sessionCacheMaintenanceInterval));
 
 export class SessionService extends ServiceIdUuid {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.Session;
-  defaultTranslationContext = 'session';
-
   async validateForCreation(data) {
     if (!data.authToken) {
       data.authToken = crypto.randomBytes(64).toString('hex');
@@ -56,11 +52,11 @@ export class SessionService extends ServiceIdUuid {
   }
 
   /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {object} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {t}
-     */
+   * Gets the options for use in the getList and getListAndCount methods.
+   * @param {object} options - options for the @see sequelize.findAll method.
+   *  - view: show visible peoperties.
+   * @returns {t}
+   */
   async getListOptions(options) {
     if (!options) {
       options = {};
@@ -85,27 +81,25 @@ export class SessionService extends ServiceIdUuid {
       }
     }
 
-    options = await checkViewOptions(options);
-
-    return options;
+    return super.getListOptions(options);
   }
 
   /**
-     * Gets a session for its authToken. For many coincidences and for no rows this method fails.
-     * @param {string} authToken - Auth token for the session to get.
-     * @param {object} options - Options for the @ref getList method.
-     * @returns {Promise[Session]}
-     */
+   * Gets a session for its authToken. For many coincidences and for no rows this method fails.
+   * @param {string} authToken - Auth token for the session to get.
+   * @param {object} options - Options for the @ref getList method.
+   * @returns {Promise[Session]}
+   */
   async getForAuthToken(authToken, options) {
     const rows = await this.getList({ ...options, where: { ...options?.where, authToken }, limit: 2 });
     return getSingle(rows, { ...options, params: ['session', ['authToken = %s', authToken], 'Session'] });
   }
 
   /**
-     * Get a session for a given authToken from the cache or from the DB. @see getForAuthToken method.
-     * @param {string} authToken - value for the authToken to get the session.
-     * @returns {Promise[Device]}
-     */
+   * Get a session for a given authToken from the cache or from the DB. @see getForAuthToken method.
+   * @param {string} authToken - value for the authToken to get the session.
+   * @returns {Promise[Device]}
+   */
   async getJSONForAuthTokenCached(authToken) {
     if (conf.sessionCache && conf.sessionCache[authToken]) {
       const sessionData = conf.sessionCache[authToken];
@@ -141,10 +135,10 @@ export class SessionService extends ServiceIdUuid {
   }
 
   /**
-     * Closes a session for a given ID.
-     * @param {number} id - ID for the session o close.
-     * @returns {Promise[Session]}
-     */
+   * Closes a session for a given ID.
+   * @param {number} id - ID for the session o close.
+   * @returns {Promise[Session]}
+   */
   async closeForId(id) {
     check(id, { _message: loc._cf('session', 'There is no id for session') });
 
@@ -158,10 +152,10 @@ export class SessionService extends ServiceIdUuid {
   }
 
   /**
-     * Deletes a session for a given UUID.
-     * @param {string} uuid - UUID for the session o delete.
-     * @returns {Promise[integer]}
-     */
+   * Deletes a session for a given UUID.
+   * @param {string} uuid - UUID for the session o delete.
+   * @returns {Promise[integer]}
+   */
   async deleteForUuid(uuid) {
     const session = await this.getForUuid(uuid, { _noRowsError: loc._cf('session', 'Row for UUID %s does not exist', uuid) });
     if (session) {
@@ -174,11 +168,11 @@ export class SessionService extends ServiceIdUuid {
   }
 
   /**
-     * Gets a session for its autoLoginToken. For many coincidences and for no rows this method fails.
-     * @param {string} autoLoginToken - auto login token for the session to get.
-     * @param {object} options - Options for the @ref getList method.
-     * @returns {Promise[Session]}
-     */
+   * Gets a session for its autoLoginToken. For many coincidences and for no rows this method fails.
+   * @param {string} autoLoginToken - auto login token for the session to get.
+   * @param {object} options - Options for the @ref getList method.
+   * @returns {Promise[Session]}
+   */
   async getForAutoLoginToken(autoLoginToken, options) {
     const rows = await this.getList({ ...options, where: { ...options?.where, autoLoginToken }, limit: 2 });
     return getSingle(rows, { params: ['session', ['autoLoginToken = %s', autoLoginToken], 'Session'], ...options });

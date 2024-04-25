@@ -5,72 +5,6 @@ import { checkParameter, filterVisualItemsByAliasName } from 'rf-util';
 import { loc, defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
 
-/**
- * @swagger
- * definitions:
- *  Issue:
- *      type: object
- *      properties:
- *          isEnabled:
- *              type: boolean
- *          name:
- *              type: string
- *              required: true
- *              example: admin
- *          title:
- *              type: string
- *              required: true
- *              example: Admin
- *          Project:
- *              type: object
- *              properties:
- *                  name:
- *                      type: string
- *                      required: true
- *                      example: admin
- *                  title:
- *                      type: string
- *                      required: true
- *                      example: Admin
- *          Type:
- *              type: object
- *              properties:
- *                  name:
- *                      type: string
- *                      required: true
- *                      example: admin
- *                  title:
- *                      type: string
- *                      required: true
- *                      example: Admin
- *          description:
- *              type: string
- *              required: true
- *              example: Admin
- *          Status:
- *              type: object
- *              properties:
- *                  name:
- *                      type: string
- *                      required: true
- *                      example: admin
- *                  title:
- *                      type: string
- *                      required: true
- *                      example: Admin
- *          Workflow:
- *              type: object
- *              properties:
- *                  name:
- *                      type: string
- *                      required: true
- *                      example: admin
- *                  title:
- *                      type: string
- *                      required: true
- *                      example: Admin
- */
-    
 export class IssueController extends Controller {
   constructor() {
     super();
@@ -119,41 +53,6 @@ export class IssueController extends Controller {
     return { uuid, projectId };
   }
 
-  /**
-     * @swagger
-     * /api/issue:
-     *  post:
-     *      tags:
-     *          - Issue
-     *      summary: Create a issue
-     *      description: Add a new issue to the database
-     *      security:
-     *          - bearerAuth: []
-     *      produces:
-     *          - application/json
-     *      parameters:
-     *          -  name: body
-     *             in: body
-     *             schema:
-     *                $ref: '#/definitions/Issue'
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '400':
-     *              description: Missing parameters
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   async post(req, res) {
     const loc = req.loc ?? defaultLoc;
     checkParameter(req?.body, { name: loc._cf('issue', 'Name'), title: loc._cf('issue', 'Title') });
@@ -166,58 +65,6 @@ export class IssueController extends Controller {
     res.status(204).send();
   }
 
-  /**
-     * @swagger
-     * /api/issue:
-     *  get:
-     *      tags:
-     *          - Issue
-     *      summary: Get issue or a issue list
-     *      description: If the UUID or name params is provided this endpoint returns a single issue otherwise returns a list of issues
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *          -   name: name
-     *              in: query
-     *              type: string
-     *              example: admin
-     *          -   name: limit
-     *              in: query
-     *              type: int
-     *          -   name: offset
-     *              in: query
-     *              type: int
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Issue'
-     *          '204':
-     *              description: Success no issue
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   async get(req, res) {
     if ('$grid' in req.query) {
       return IssueController.getGrid(req, res);
@@ -231,12 +78,14 @@ export class IssueController extends Controller {
       view: true,
       limit: 10,
       offset: 0,
-      includeProject: true,
-      includeType: true,
-      includePriority: true,
-      includeStatus: true,
-      includeWorkflow: true,
-      includeCloseReason: true,
+      include: {
+        Project: true,
+        Type: true,
+        Priority: true,
+        Status: true,
+        Workflow: true,
+        CloseReason: true,
+      },
       loc,
     };
 
@@ -449,45 +298,6 @@ export class IssueController extends Controller {
     res.status(200).send(form);
   }
 
-  /**
-     * @swagger
-     * /api/issue:
-     *  delete:
-     *      tags:
-     *          - Issue
-     *      summary: Delete a issue
-     *      description: Delete a issue from its UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              required: true
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   async delete(req, res) {
     const { uuid } = await this.checkUuid(req);
 
@@ -500,45 +310,6 @@ export class IssueController extends Controller {
     res.sendStatus(204);
   }
 
-  /**
-     * @swagger
-     * /api/issue/enable:
-     *  post:
-     *      tags:
-     *          - Issue
-     *      summary: Enable a issue
-     *      description: Enable a issue from its UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              required: true
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   async enablePost(req, res) {
     const { uuid } = await this.checkUuid(req);
 
@@ -551,45 +322,6 @@ export class IssueController extends Controller {
     res.sendStatus(204);
   }
 
-  /**
-     * @swagger
-     * /api/issue/disable:
-     *  post:
-     *      tags:
-     *          - Issue
-     *      summary: Disable a issue
-     *      description: Disable a issue from its UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              required: true
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   async disablePost(req, res) {
     const { uuid } = await this.checkUuid(req);
 
@@ -602,43 +334,6 @@ export class IssueController extends Controller {
     res.sendStatus(204);
   }
 
-  /**
-     * @swagger
-     * /api/issue:
-     *  patch:
-     *      tags:
-     *          - Issue
-     *      summary: Update a issue
-     *      description: Update a issue from its UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -  name: body
-     *             in: body
-     *             schema:
-     *                $ref: '#/definitions/Issue'
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   async patch(req, res) {
     const { uuid, projectId } = await this.checkUuid(req);
 
@@ -654,58 +349,6 @@ export class IssueController extends Controller {
     res.sendStatus(204);
   }
 
-  /**
-     * @swagger
-     * /api/issue/project:
-     *  get:
-     *      tags:
-     *          - Issue
-     *      summary: Get list of projects available to select in a issue
-     *      description: If the UUID or name params is provided this endpoint returns a single project otherwise returns a list of projects
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *          -   name: name
-     *              in: query
-     *              type: string
-     *              example: admin
-     *          -   name: limit
-     *              in: query
-     *              type: int
-     *          -   name: offset
-     *              in: query
-     *              type: int
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Project'
-     *          '204':
-     *              description: Success no project
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   async getProject(req, res) {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
@@ -722,58 +365,6 @@ export class IssueController extends Controller {
     res.status(200).send(result);
   }
 
-  /**
-     * @swagger
-     * /api/issue/type:
-     *  get:
-     *      tags:
-     *          - Issue
-     *      summary: Get list of types available to select in a issue
-     *      description: If the UUID or name params is provided this endpoint returns a single type otherwise returns a list of types
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *          -   name: name
-     *              in: query
-     *              type: string
-     *              example: admin
-     *          -   name: limit
-     *              in: query
-     *              type: int
-     *          -   name: offset
-     *              in: query
-     *              type: int
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Type'
-     *          '204':
-     *              description: Success no type
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   async getType(req, res) {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
@@ -785,58 +376,6 @@ export class IssueController extends Controller {
     res.status(200).send(result);
   }
 
-  /**
-     * @swagger
-     * /api/issue/priority:
-     *  get:
-     *      tags:
-     *          - Issue
-     *      summary: Get list of priorities available to select in a issue
-     *      description: If the UUID or name params is provided this endpoint returns a single priority otherwise returns a list of priorities
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *          -   name: name
-     *              in: query
-     *              type: string
-     *              example: admin
-     *          -   name: limit
-     *              in: query
-     *              type: int
-     *          -   name: offset
-     *              in: query
-     *              type: int
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Priority'
-     *          '204':
-     *              description: Success no priority
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   async getPriority(req, res) {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
@@ -848,58 +387,6 @@ export class IssueController extends Controller {
     res.status(200).send(result);
   }
 
-  /**
-     * @swagger
-     * /api/issue/close-reason:
-     *  get:
-     *      tags:
-     *          - Issue
-     *      summary: Get list of close reasons available to select in a issue
-     *      description: If the UUID or name params is provided this endpoint returns a single close reason otherwise returns a list of close reasons
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *          -   name: name
-     *              in: query
-     *              type: string
-     *              example: admin
-     *          -   name: limit
-     *              in: query
-     *              type: int
-     *          -   name: offset
-     *              in: query
-     *              type: int
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/CloseReason'
-     *          '204':
-     *              description: Success no close reason
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   async getCloseReason(req, res) {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };

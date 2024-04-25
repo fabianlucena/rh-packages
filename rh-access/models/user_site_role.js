@@ -3,10 +3,10 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class UserSiteRole extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.User,   { foreignKey: 'userId' });
-      this.belongsTo(models.Site,   { foreignKey: 'siteId' });
-      this.belongsTo(models.Role,   { foreignKey: 'roleId' });
-      this.belongsTo(models.Module, { foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true });
+      this.belongsTo(models.User,   { as: 'user',        foreignKey: 'userId' });
+      this.belongsTo(models.Site,   { as: 'site',        foreignKey: 'siteId' });
+      this.belongsTo(models.Role,   { as: 'role',        foreignKey: 'roleId' });
+      this.belongsTo(models.Module, { as: 'ownerModule', foreignKey: 'ownerModuleId' });
     }
 
     static postAssociate(models) {
@@ -35,6 +35,10 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true
+    },
+    ownerModuleId: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
     },
   }, {
     sequelize,

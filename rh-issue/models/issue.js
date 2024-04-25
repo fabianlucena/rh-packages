@@ -7,11 +7,11 @@ export default (sequelize, DataTypes) => {
         throw new Error('There is no Project model. Try adding RH Project module to the project.');
       }
         
-      this.belongsTo(models.Project,          { foreignKey: 'projectId'  });
-      this.belongsTo(models.IssueType,        { as: 'Type',        foreignKey: 'typeId' });
-      this.belongsTo(models.IssuePriority,    { as: 'Priority',    foreignKey: 'priorityId' });
-      this.belongsTo(models.User,             { as: 'Assignee',    foreignKey: 'assigneesId' });
-      this.belongsTo(models.IssueCloseReason, { as: 'CloseReason', foreignKey: 'closeReasonId' });
+      this.belongsTo(models.Project,          { as: 'project',     foreignKey: 'projectId' });
+      this.belongsTo(models.IssueType,        { as: 'type',        foreignKey: 'typeId' });
+      this.belongsTo(models.IssuePriority,    { as: 'priority',    foreignKey: 'priorityId' });
+      this.belongsTo(models.User,             { as: 'assignee',    foreignKey: 'assigneesId' });
+      this.belongsTo(models.IssueCloseReason, { as: 'closeReason', foreignKey: 'closeReasonId' });
     }
   }
   Issue.init({
