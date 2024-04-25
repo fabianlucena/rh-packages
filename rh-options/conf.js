@@ -10,5 +10,4 @@ export const conf = {
   version: '0.1',
   path: dirname,
   controllersPath: dirname + '/controllers',
-  apis: [dirname + '/controllers/*.js'],
 };

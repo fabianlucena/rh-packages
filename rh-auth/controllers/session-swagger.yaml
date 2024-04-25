@@ -1,5 +1,5 @@
 definitions:
-  User:
+  Session:
     type: object
     properties:
       username:
@@ -21,44 +21,12 @@ definitions:
         type: string
         example: Example error
         
-/user-access:
-  post:
-    tags:
-      - User Access
-    summary: Create an user
-    description: Add a new user to the database
-    security:
-      - bearerAuth: []
-    produces:
-      - application/json
-    parameters:
-      - User: body
-        in: body
-        schema:
-          $ref: '#/definitions/User'
-    responses:
-      '200':
-        description: Success
-        schema:
-          $ref: '#/definitions/Error'
-      '400':
-        description: Missing parameters
-        schema:
-          $ref: '#/definitions/Error'
-      '401':
-        description: Unauthorized
-        schema:
-          $ref: '#/definitions/Error'
-      '403':
-        description: Forbidden
-        schema:
-          $ref: '#/definitions/Error'
-
+/session:
   get:
     tags:
-      - User Access
-    summary: Get an user list
-    description: If the UUID or username params is provided this endpoint returns a single user otherwise returns a list of users
+      - Session
+    summary: Get session or a session list
+    description: If the UUID or authToken params is provided this endpoint returns a single session otherwise returns a session list
     security:
       - bearerAuth: []
     produces:
@@ -69,7 +37,7 @@ definitions:
         type: string
         format: UUID
         example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-      - name: username
+      - name: authToken
         in: query
         type: string
         example: admin
@@ -83,9 +51,9 @@ definitions:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/User'
+            $ref: '#/definitions/Session'
       '204':
-        description: Success no user
+        description: Success no session
       '400':
         description: Missing parameters or parameters error
         schema:
@@ -105,9 +73,9 @@ definitions:
 
   delete:
     tags:
-      - User Access
-    summary: Delete an user access
-    description: Delete a user access from the user UUID and site UUID
+      - Session
+    summary: Delete an session
+    description: Delete a session from its UUID
     security:
       - bearerAuth: []
     produces:
@@ -116,9 +84,9 @@ definitions:
       - name: uuid
         in: query
         type: string
-        format: UUID,UUID
+        format: UUID
         required: true
-        example: 0F7B8F7F-D792-405B-8DE0-2E9E04BAC3A4,D781CFDF-CB71-4428-8F49-614387500813
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
     responses:
       '204':
         description: Success

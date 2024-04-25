@@ -1,4 +1,4 @@
-/api/logout:
+/logout:
   post:
     tags:
       - Authorization
@@ -7,9 +7,9 @@
     security:
       - bearerAuth: []
     produces:
-      -  empty
+      - empty
     consumes:
-      -  application/json
+      - application/json
     parameters:
     responses:
       '204':
@@ -22,3 +22,4 @@
         description: Error
         schema:
           $ref: '#/definitions/Error'
+

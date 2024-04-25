@@ -53,21 +53,21 @@
  * - path: is the base path for this controller, can be a empty string.
  * - routes: is a list of objects with the routes see bellow.
  * - cors: is a list of paths and allowed methods for the CORS policies 
- *      definitions.
+ *   definitions.
  * 
  * The routes is a list of objects with the following properties:
  * - httpMethod: HTTP method in lower case,
  * - path: is the path for this endpoint inner the controller's path, 
- *      can be a empty string.
+ *   can be a empty string.
  * - method: the method to call for handled this endpoint.
  * - methodIsStatic: boolean indicator for the method if is static or non 
- *      static.
+ *   static.
  * - permission: permission method or value to check the permission.
  * - permissionIsStatic: boolean indicator for the permission if is static or 
- *      non static.
+ *   non static.
  * - middleware: middleware method to call before call the handler.
  * - middlewareIsStatic: boolean indicator for the middleware if is static or 
- *      non static.
+ *   non static.
  * 
  * The cors is a list of items to be used to CORS policy configuration. 
  * Each item contains:
@@ -80,20 +80,20 @@
  * This parameter is an objet with the following properties:
  * 
  * - skipStatic: [boolean]{default:false} avoid to scan for the static 
- *      methods and properties. 
+ *   methods and properties. 
  * - skipNonStatic: [boolean]{default:false} avoid to scan for the non static 
- *      methods and properties.
+ *   methods and properties.
  * - skipParent: [boolean]{default:false} no scan parent classes, only for 
- *      static methods and properties.
+ *   static methods and properties.
  * - appendHandlers: [array]{default:undefined} add other handlers to extract, 
- *      for example 
- *      [{name: 'getData', httpMethod: 'get', handler: 'defaultGet'}],
- *      will search for getData method name in the controlles class, and will 
- *      generate a route for the HTTP method GET, using the defaultGet method 
- *      as handler: This minds that defaultGet will call to getData. This 
- *      extraction can be combined con subpath, premissions, and middlewares. 
- *      In this case, if you override the get method remember to call 
- *      this.defaultGet after return to properly handle. 
+ *   for example 
+ *   [{name: 'getData', httpMethod: 'get', handler: 'defaultGet'}],
+ *   will search for getData method name in the controlles class, and will 
+ *   generate a route for the HTTP method GET, using the defaultGet method 
+ *   as handler: This minds that defaultGet will call to getData. This 
+ *   extraction can be combined con subpath, premissions, and middlewares. 
+ *   In this case, if you override the get method remember to call 
+ *   this.defaultGet after return to properly handle. 
  */
 export function getRoutes(controllerClass, options) {
   options ??= {};

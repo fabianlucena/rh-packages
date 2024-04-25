@@ -226,7 +226,7 @@ export async function httpUtilConfigure(global, ...modules) {
     await updateData(global);
   }
     
-  configureSwagger(global);
+  await configureSwagger(global);
 }
 
 export function methodNotAllowed(req) {
@@ -866,48 +866,65 @@ export async function updateData(global) {
   await execAsyncMethodList(list, null, global);
 }
 
-export function configureSwagger(global) {
+export async function configureSwagger(global) {
   if (!global.swagger) {
     return;
   }
-        
-  let swaggerJSDoc;
-  import('swagger-jsdoc')
-    .then(module => {
-      swaggerJSDoc = module.default;
-      return import('swagger-ui-express');
-    })
-    .then(swaggerUI => {
-      let apis = [];
-      for (const moduleName in global.modules) {
-        const module = global.modules[moduleName];
-        if (module.apis) {
-          apis.push(...module.apis);
-        }
-      }
+  
+  try {
+    let module = await import('swagger-jsdoc');
+    const swaggerJSDoc = module.default;
 
-      const swaggerDocs = swaggerJSDoc({
-        swaggerDefinition: {
-          info: {
-            title:'Rofa HTTP API',
-            version:'1.0.0',
-            descrition: 'System to use accontable accounts'
-          },
-          securityDefinitions: {
+    const swaggerUI = await import('swagger-ui-express');
+
+    let apis = [];
+    for (const moduleName in global.modules) {
+      const module = global.modules[moduleName];
+      apis.push(
+        ...[module.routesPath, module.controllersPath]
+          .filter(i => i)
+          .map(i => i + '/*'),
+      );
+    }
+
+    const swaggerSpec = swaggerJSDoc({
+      definition: {
+        openapi: '3.0.0',
+        info: {
+          title:'Rofa HTTP API',
+          version:'1.0.0',
+          descrition: 'System to use accontable accounts',
+        },
+        servers: [{ url: '/api' }],
+        components: {
+          securitySchemes: {
             bearerAuth: {
               description: 'Enter token in format (Bearer &lt;token&gt;)',
               type: 'apiKey',
               in: 'header',
               name: 'Authorization',
               scheme: 'bearer',
-            }
-          }
+            },
+          },
         },
-        apis: apis
-      });
-
-      global.app.use('/swagger', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+        security: [{ bearerAuth: [] }],
+      },
+      apis: apis,
     });
+
+    const router = global.router ?? global.app;
+    
+    router.use('/swagger', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+    router.use(
+      '/swagger.json',
+      (req, res) => {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(swaggerSpec);
+      });
+  }
+  catch (err) {
+    console.error(err);
+  }
 }
 
 export function cookies(response, cookieName, cookieProperty) {

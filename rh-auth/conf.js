@@ -15,5 +15,4 @@ export const conf = {
   modelsPath: dirname + '/models',
   servicesPath: dirname + '/services',
   controllersPath: dirname + '/controllers',
-  apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
 };

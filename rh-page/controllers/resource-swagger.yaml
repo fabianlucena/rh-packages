@@ -1,17 +1,30 @@
+definitions:
+  Resource:
+    properties:
+      name:
+        type: string
+      label:
+        type: integer
+  Error:
+    properties:
+      error:
+        name: string
+        example: Example error
+
 /resource:
   get:
-    tags:
-      - Resource
-    summary: Resource
-    description: Get the resource for the given name
-    produces:
-      - application/json
-    responses:
-      '200':
-        description: Success
-        schema:
-          $ref: '#/definitions/Resource'
-      '403':
-        description: No session
-        schema:
-          $ref: '#/definitions/Error'
+     tags:
+         - Resource
+     summary: Resource
+     description: Get the resource for the given name
+     produces:
+         - application/json
+     responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Resource'
+        '403':
+          description: No session
+          schema:
+            $ref: '#/definitions/Error'

@@ -1,4 +1,4 @@
-import { SwitchSiteController } from '../controllers/switch_site.js';
+import { SwitchSiteController } from '../controllers/switch-site.js';
 import { methodNotAllowed, corsSimplePreflight, asyncHandler } from 'http-util';
 
 export default (app, checkPermission) => {

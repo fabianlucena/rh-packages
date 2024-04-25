@@ -1,4 +1,4 @@
-import { SwitchSiteService } from '../services/switch_site.js';
+import { SwitchSiteService } from '../services/switch-site.js';
 import { SessionSiteService } from '../services/session_site.js';
 import { conf } from '../conf.js';
 import { getOptionsFromParamsAndOData, httpErrorHandler } from 'http-util';

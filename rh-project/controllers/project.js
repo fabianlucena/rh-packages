@@ -5,7 +5,7 @@ import { checkParameter, filterVisualItemsByAliasName } from 'rf-util';
 import { loc, defaultLoc } from 'rf-locale';
 
 const projectService = ProjectService.singleton();
-    
+
 export class ProjectController {
   static async checkDataForCompanyId(req, data) {
     if (!conf.filters?.getCurrentCompanyId) {

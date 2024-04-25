@@ -5,20 +5,24 @@ definitions:
       name:
         type: string
         required: true
-        example: admin
       title:
         type: string
         required: true
-        example: Admin
       typeId:
         type: integer
       isEnabled:
         type: boolean
 
+  Error:
+    properties:
+      error:
+        type: string
+        example: Example error
+        
 /company:
   post:
     tags:
-      - Company
+        - Company
     summary: Create a company
     description: Add a new company to the database
     security:
@@ -66,7 +70,7 @@ definitions:
       - name: name
         in: query
         type: string
-        example: admin
+        example: acme
       - name: limit
         in: query
         type: int
@@ -133,21 +137,20 @@ definitions:
         schema:
           $ref: '#/definitions/Error'
 
-
   patch:
     tags:
-      - Company
+        - Company
     summary: Update a company
     description: Update a company from its UUID
     security:
-      - bearerAuth: []
+        - bearerAuth: []
     produces:
-      - application/json
+        - application/json
     parameters:
-      - name: body
-        in: body
-        schema:
-          $ref: '#/definitions/Company'
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/Company'
     responses:
       '204':
         description: Success
@@ -167,7 +170,7 @@ definitions:
         description: Internal server error
         schema:
           $ref: '#/definitions/Error'
-
+            
 /company/enable:
   post:
     tags:

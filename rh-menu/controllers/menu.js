@@ -1,10 +1,11 @@
 import { MenuItemService } from '../services/menu_item.js';
 import { conf } from '../conf.js';
+import { Controller } from 'rh-controller';
 import { runSequentially } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
 
-export class MenuController {
-  static async get(req, res) {
+export class MenuController extends Controller {
+  async get(req, res) {
     const permissions = req?.permissions;
     const options = {
       view: true,

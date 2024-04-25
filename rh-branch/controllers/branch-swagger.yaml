@@ -5,15 +5,28 @@ definitions:
       name:
         type: string
         required: true
-        example: admin
       title:
         type: string
         required: true
-        example: Admin
       typeId:
         type: integer
       isEnabled:
         type: boolean
+
+  Error:
+    properties:
+      error:
+        type: string
+        example: Example error
+
+  Company:
+    properties:
+      uuid:
+        type: string
+        required: true
+      title:
+        type: string
+        required: true
 
 /branch:
   post:
@@ -49,90 +62,89 @@ definitions:
           $ref: '#/definitions/Error'
 
   get:
-      tags:
-        - Branch
-      summary: Get branch or a branch list
-      description: If the UUID or name params is provided this endpoint returns a single branch otherwise returns a list of branches
-      security:
-          - bearerAuth: []
-      produces:
-          - application/json
-      parameters:
-          - name: uuid
-            in: query
-            type: string
-            format: UUID
-            example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-          - name: name
-            in: query
-            type: string
-            example: admin
-          - name: limit
-            in: query
-            type: int
-          - name: offset
-            in: query
-            type: int
-      responses:
-        '200':
-          description: Success
-          schema:
-            $ref: '#/definitions/Branch'
-        '204':
-          description: Success no branch
-        '400':
-          description: Missing parameters or parameters error
-          schema:
-            $ref: '#/definitions/Error'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/Error'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/Error'
-        '500':
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/Error'
-  
+    tags:
+      - Branch
+    summary: Get branch or a branch list
+    description: If the UUID or name params is provided this endpoint returns a single branch otherwise returns a list of branches
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+      - name: name
+        in: query
+        type: string
+      - name: limit
+        in: query
+        type: int
+      - name: offset
+        in: query
+        type: int
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/definitions/Branch'
+      '204':
+        description: Success no branch
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/definitions/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/definitions/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/definitions/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/definitions/Error'
+ 
   delete:
-      tags:
-        - Branch
-      summary: Delete a branch
-      description: Delete a branch from its UUID
-      security:
-        - bearerAuth: []
-      produces:
-        - application/json
-      parameters:
-        - name: uuid
-          in: query
-          type: string
-          format: UUID
-          required: true
-          example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-      responses:
-        '204':
-          description: Success
-        '400':
-          description: Missing parameters or parameters error
-          schema:
-            $ref: '#/definitions/Error'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/Error'
-        '403':
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/Error'
-        '500':
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/Error'
-
+    tags:
+      - Branch
+    summary: Delete a branch
+    description: Delete a branch from its UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        required: true
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+    responses:
+      '204':
+        description: Success
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/definitions/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/definitions/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/definitions/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/definitions/Error'
+ 
   patch:
     tags:
       - Branch
@@ -166,7 +178,6 @@ definitions:
         description: Internal server error
         schema:
           $ref: '#/definitions/Error'
-          
 
 /branch/enable:
   post:
@@ -204,7 +215,7 @@ definitions:
         description: Internal server error
         schema:
           $ref: '#/definitions/Error'
-    
+
 /branch/disable:
   post:
     tags:
@@ -242,7 +253,7 @@ definitions:
         schema:
           $ref: '#/definitions/Error'
 
-/branch/company:
+/api/branch/company:
   get:
     tags:
       - Branch
@@ -261,7 +272,6 @@ definitions:
       - name: name
         in: query
         type: string
-        example: admin
       - name: limit
         in: query
         type: int
@@ -291,3 +301,4 @@ definitions:
         description: Internal server error
         schema:
           $ref: '#/definitions/Error'
+ 
