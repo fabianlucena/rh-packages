@@ -10,8 +10,8 @@ export class ServiceBase {
      * Here are spicifed the references for properties. The referencers have the form proeprtyName: options.
      * {
      *  user: {
-     *      service: conf.global.services.User,
-     *      name: 'username',
+     *   service: conf.global.services.User,
+     *   name: 'username',
      *  },
      *  site: conf.global.services.Site,
      * }

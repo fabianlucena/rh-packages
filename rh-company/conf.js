@@ -13,7 +13,7 @@ export const conf = {
   routesPath: dirname + '/routes',
   modelsPath: dirname + '/models',
   servicesPath: dirname + '/services',
-  apis: [dirname + '/routes/*.js', dirname + '/controllers/*.js'],
+  controllersPath: dirname + '/controllers',
   data: {
     roles: [
       { name: 'companyManager', title: loc._cf('role', 'Company manager'), isTranslatable: true, ownerModule: name },

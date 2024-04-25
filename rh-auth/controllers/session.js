@@ -88,78 +88,6 @@ export class SessionController {
     };
   }
 
-  /**
-     * @swagger
-     * definitions:
-     *  Session:
-     *      type: object
-     *      properties:
-     *          username:
-     *              type: string
-     *              required: true
-     *              example: admin
-     *          displayName:
-     *              type: string
-     *              required: true
-     *              example: Admin
-     *          typeId:
-     *              type: integer
-     *          isEnabled:
-     *              type: boolean
-     */
-        
-  /**
-     * @swagger
-     * /api/session:
-     *  get:
-     *      tags:
-     *          - Session
-     *      summary: Get session or a session list
-     *      description: If the UUID or authToken params is provided this endpoint returns a single session otherwise returns a session list
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *          -   name: authToken
-     *              in: query
-     *              type: string
-     *              example: admin
-     *          -   name: limit
-     *              in: query
-     *              type: int
-     *          -   name: offset
-     *              in: query
-     *              type: int
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Session'
-     *          '204':
-     *              description: Success no session
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async get(req, res) {
     if ('$grid' in req.query) {
       return SessionController.getGrid(req, res);
@@ -224,45 +152,6 @@ export class SessionController {
     });
   }
 
-  /**
-     * @swagger
-     * /api/session:
-     *  delete:
-     *      tags:
-     *          - Session
-     *      summary: Delete an session
-     *      description: Delete a session from its UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              required: true
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async delete(req, res) {
     const loc = req.loc ?? defaultLoc;
     const uuid = checkParameterUuid(req?.query?.uuid, loc._cf('session', 'UUID'));

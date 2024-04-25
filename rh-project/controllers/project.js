@@ -6,26 +6,6 @@ import { loc, defaultLoc } from 'rf-locale';
 
 const projectService = ProjectService.singleton();
 
-/**
- * @swagger
- * definitions:
- *  Project:
- *      type: object
- *      properties:
- *          name:
- *              type: string
- *              required: true
- *              example: admin
- *          title:
- *              type: string
- *              required: true
- *              example: Admin
- *          typeId:
- *              type: integer
- *          isEnabled:
- *              type: boolean
- */
-    
 export class ProjectController {
   static async checkDataForCompanyId(req, data) {
     if (!conf.filters?.getCurrentCompanyId) {
@@ -69,41 +49,6 @@ export class ProjectController {
     return { uuid, companyId };
   }
 
-  /**
-     * @swagger
-     * /api/project:
-     *  post:
-     *      tags:
-     *          - Project
-     *      summary: Create a project
-     *      description: Add a new project to the database
-     *      security:
-     *          - bearerAuth: []
-     *      produces:
-     *          - application/json
-     *      parameters:
-     *          -  name: body
-     *             in: body
-     *             schema:
-     *                $ref: '#/definitions/Project'
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '400':
-     *              description: Missing parameters
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async post(req, res) {
     const loc = req.loc ?? defaultLoc;
     checkParameter(req?.body, { name: loc._cf('project', 'Name'), title: loc._cf('project', 'Title') });
@@ -122,58 +67,6 @@ export class ProjectController {
     res.status(204).send();
   }
 
-  /**
-     * @swagger
-     * /api/project:
-     *  get:
-     *      tags:
-     *          - Project
-     *      summary: Get project or a project list
-     *      description: If the UUID or name params is provided this endpoint returns a single project otherwise returns a list of projects
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *          -   name: name
-     *              in: query
-     *              type: string
-     *              example: admin
-     *          -   name: limit
-     *              in: query
-     *              type: int
-     *          -   name: offset
-     *              in: query
-     *              type: int
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Project'
-     *          '204':
-     *              description: Success no project
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async get(req, res) {
     if ('$grid' in req.query) {
       return ProjectController.getGrid(req, res);
@@ -363,45 +256,6 @@ export class ProjectController {
     res.status(200).send(form);
   }
 
-  /**
-     * @swagger
-     * /api/project:
-     *  delete:
-     *      tags:
-     *          - Project
-     *      summary: Delete a project
-     *      description: Delete a project from its UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              required: true
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async delete(req, res) {
     const { uuid } = await this.checkUuid(req);
 
@@ -413,45 +267,6 @@ export class ProjectController {
     res.sendStatus(204);
   }
 
-  /**
-     * @swagger
-     * /api/project/enable:
-     *  post:
-     *      tags:
-     *          - Project
-     *      summary: Enable a project
-     *      description: Enable a project from its UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              required: true
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async enablePost(req, res) {
     const { uuid } = await this.checkUuid(req);
 
@@ -463,45 +278,6 @@ export class ProjectController {
     res.sendStatus(204);
   }
 
-  /**
-     * @swagger
-     * /api/project/disable:
-     *  post:
-     *      tags:
-     *          - Project
-     *      summary: Disable a project
-     *      description: Disable a project from its UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              required: true
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async disablePost(req, res) {
     const { uuid } = await this.checkUuid(req);
 
@@ -513,43 +289,6 @@ export class ProjectController {
     res.sendStatus(204);
   }
 
-  /**
-     * @swagger
-     * /api/project:
-     *  patch:
-     *      tags:
-     *          - Project
-     *      summary: Update a project
-     *      description: Update a project from its UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -  name: body
-     *             in: body
-     *             schema:
-     *                $ref: '#/definitions/Project'
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async patch(req, res) {
     const { uuid, companyId } = await this.checkUuid(req);
 
@@ -568,58 +307,6 @@ export class ProjectController {
     res.sendStatus(204);
   }
 
-  /**
-     * @swagger
-     * /api/project/company:
-     *  get:
-     *      tags:
-     *          - Project
-     *      summary: Get list of companies available to select in a project
-     *      description: If the UUID or name params is provided this endpoint returns a single company otherwise returns a list of companies
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *          -   name: name
-     *              in: query
-     *              type: string
-     *              example: admin
-     *          -   name: limit
-     *              in: query
-     *              type: int
-     *          -   name: offset
-     *              in: query
-     *              type: int
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Company'
-     *          '204':
-     *              description: Success no company
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async getCompany(req, res) {
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = { view: true, limit: 10, offset: 0 };

@@ -72,7 +72,7 @@
         "source": "Description",
         "language": "es",
         "translation": "Descripción",
-        "ref": "..\\rh-access\\controllers\\switch_site.js [168,54]"
+        "ref": "..\\rh-access\\controllers\\switch-site.js [168,54]"
     },
     {
         "source": "Display name",
@@ -106,7 +106,7 @@
         "source": "Enabled",
         "language": "es",
         "translation": "Habilitado",
-        "ref": "..\\rh-access\\controllers\\switch_site.js [163,50]"
+        "ref": "..\\rh-access\\controllers\\switch-site.js [163,50]"
     },
     {
         "source": "Enabled",
@@ -182,7 +182,7 @@
         "source": "Name",
         "language": "es",
         "translation": "Nombre",
-        "ref": "..\\rh-access\\controllers\\switch_site.js [158,47]"
+        "ref": "..\\rh-access\\controllers\\switch-site.js [158,47]"
     },
     {
         "source": "No current site selected",
@@ -294,7 +294,7 @@
         "source": "Title",
         "language": "es",
         "translation": "Título",
-        "ref": "..\\rh-access\\controllers\\switch_site.js [153,48]"
+        "ref": "..\\rh-access\\controllers\\switch-site.js [153,48]"
     },
     {
         "source": "Type here the new password for member",
@@ -322,7 +322,7 @@
         "language": "es",
         "context": "switchSite",
         "translation": "UUID",
-        "ref": "..\\rh-access\\controllers\\switch_site.js [82,139]"
+        "ref": "..\\rh-access\\controllers\\switch-site.js [82,139]"
     },
     {
         "source": "UUID",
@@ -342,7 +342,7 @@
         "source": "User",
         "language": "es",
         "translation": "Usuario",
-        "ref": "..\\rh-access\\controllers\\user-access.js [212,47]\n..\\rh-access\\controllers\\user-access.js [241,47]\n..\\rh-access\\controllers\\switch_site.js [143,39]"
+        "ref": "..\\rh-access\\controllers\\user-access.js [212,47]\n..\\rh-access\\controllers\\user-access.js [241,47]\n..\\rh-access\\controllers\\switch-site.js [143,39]"
     },
     {
         "source": "User UUID param is missing.",

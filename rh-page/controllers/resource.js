@@ -4,26 +4,6 @@ import { getOptionsFromParamsAndOData, _HttpError } from 'http-util';
 const resource = ResourceService.singleton();
 
 export class ResourceController {
-  /** 
-     * @swagger
-     * /api/resource:
-     *  get:
-     *      tags:
-     *          - Resource
-     *      summary: Resource
-     *      description: Get the resource for the given name
-     *      produces:
-     *          -  application/json
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Resource'
-     *          '403':
-     *              description: No session
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async get(req, res) {
     const definitions = { uuid: 'uuid', name: 'string' };
     const options = await getOptionsFromParamsAndOData(

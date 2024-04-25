@@ -5,26 +5,6 @@ import { checkParameter, checkParameterUuid, filterVisualItemsByAliasName } from
 
 const branchService = BranchService.singleton();
 
-/**
- * @swagger
- * definitions:
- *  Branch:
- *      type: object
- *      properties:
- *          name:
- *              type: string
- *              required: true
- *              example: admin
- *          title:
- *              type: string
- *              required: true
- *              example: Admin
- *          typeId:
- *              type: integer
- *          isEnabled:
- *              type: boolean
- */
-    
 export class BranchController {
   static async checkDataForCompanyId(req, data) {
     if (!conf.filters?.getCurrentCompanyId) {
@@ -63,41 +43,6 @@ export class BranchController {
     return await BranchController.checkDataForCompanyId(req, { companyId: branch.companyId });
   }
 
-  /**
-     * @swagger
-     * /api/branch:
-     *  post:
-     *      tags:
-     *          - Branch
-     *      summary: Create a branch
-     *      description: Add a new branch to the database
-     *      security:
-     *          - bearerAuth: []
-     *      produces:
-     *          - application/json
-     *      parameters:
-     *          -  name: body
-     *             in: body
-     *             schema:
-     *                $ref: '#/definitions/Branch'
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '400':
-     *              description: Missing parameters
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async post(req, res) {
     const loc = req.loc;
     checkParameter(req?.body, { name: loc._cf('branch', 'Name'), title: loc._cf('branch', 'Title') });
@@ -121,58 +66,6 @@ export class BranchController {
     res.status(204).send();
   }
 
-  /**
-     * @swagger
-     * /api/branch:
-     *  get:
-     *      tags:
-     *          - Branch
-     *      summary: Get branch or a branch list
-     *      description: If the UUID or name params is provided this endpoint returns a single branch otherwise returns a list of branches
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *          -   name: name
-     *              in: query
-     *              type: string
-     *              example: admin
-     *          -   name: limit
-     *              in: query
-     *              type: int
-     *          -   name: offset
-     *              in: query
-     *              type: int
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Branch'
-     *          '204':
-     *              description: Success no branch
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async get(req, res) {
     if ('$grid' in req.query) {
       return BranchController.getGrid(req, res);
@@ -330,45 +223,6 @@ export class BranchController {
     res.status(200).send(form);
   }
 
-  /**
-     * @swagger
-     * /api/branch:
-     *  delete:
-     *      tags:
-     *          - Branch
-     *      summary: Delete a branch
-     *      description: Delete a branch from its UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              required: true
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async delete(req, res) {
     const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('branch', 'UUID'));
     await BranchController.checkUuid(req, uuid);
@@ -381,45 +235,6 @@ export class BranchController {
     res.sendStatus(204);
   }
 
-  /**
-     * @swagger
-     * /api/branch/enable:
-     *  post:
-     *      tags:
-     *          - Branch
-     *      summary: Enable a branch
-     *      description: Enable a branch from its UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              required: true
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async enablePost(req, res) {
     const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('branch', 'UUID'));
     await BranchController.checkUuid(req, uuid);
@@ -432,45 +247,6 @@ export class BranchController {
     res.sendStatus(204);
   }
 
-  /**
-     * @swagger
-     * /api/branch/disable:
-     *  post:
-     *      tags:
-     *          - Branch
-     *      summary: Disable a branch
-     *      description: Disable a branch from its UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              required: true
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async disablePost(req, res) {
     const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('branch', 'UUID'));
     await BranchController.checkUuid(req, uuid);
@@ -483,43 +259,6 @@ export class BranchController {
     res.sendStatus(204);
   }
 
-  /**
-     * @swagger
-     * /api/branch:
-     *  patch:
-     *      tags:
-     *          - Branch
-     *      summary: Update a branch
-     *      description: Update a branch from its UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -  name: body
-     *             in: body
-     *             schema:
-     *                $ref: '#/definitions/Branch'
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async patch(req, res) {
     const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('branch', 'UUID'));
     await BranchController.checkUuid(req, uuid);
@@ -532,58 +271,6 @@ export class BranchController {
     res.sendStatus(204);
   }
 
-  /**
-     * @swagger
-     * /api/branch/company:
-     *  get:
-     *      tags:
-     *          - Branch
-     *      summary: Get list of companies available to select in a branch
-     *      description: If the UUID or name params is provided this endpoint returns a single company otherwise returns a list of companies
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *          -   name: name
-     *              in: query
-     *              type: string
-     *              example: admin
-     *          -   name: limit
-     *              in: query
-     *              type: int
-     *          -   name: offset
-     *              in: query
-     *              type: int
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Company'
-     *          '204':
-     *              description: Success no company
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async getCompany(req, res) {
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = { view: true, limit: 10, offset: 0 };

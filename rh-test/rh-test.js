@@ -45,36 +45,36 @@ export const rt = {
      *  trace: true         show partial construction of the tests
      * 
      *  notAllowedMethods:  comma separated strings, list of strings, or object of type {method: options} to check for method not allowed. If the name of the method is prefixed with ! the method is skipped. If this is a string or a list, whis will be cnverted to object: {method: true, ...} or {method: false} if the method name is prefixed with !.
-     *      true            for true values the default values are:
-     *      {
-     *          status: 405,
-     *          empty: true|false,                          true for the head method, undefined for the rest.
-     *          haveProperties = undefined|['error'],       undefined for the head method, ['error'] for the rest.
-     *      }
+     *   true            for true values the default values are:
+     *   {
+     *     status: 405,
+     *     empty: true|false,                          true for the head method, undefined for the rest.
+     *     haveProperties = undefined|['error'],       undefined for the head method, ['error'] for the rest.
+     *   }
      * 
      *  [method]:                       options to check HTTP methods: send, get, post, put, patch, delete, options, head. For the options @see rt.testEndPointMethodSend(test) method. This value can be an array of tests or a object. For array each test is completed with the default root options and the methos name defined. For object the default properties can be overrided.
-     *      For object:
-     *          send:                   list of each test to perform. If this option is not defined a single test is performed. @see rt.testEndPointMethodSend(test) for the options.
-     *          $form:                  perform a get with $form query parameter to get the form. Valid options are:
-     *          {
-     *              status: 200,        expected status @see rt.checkStatus() for the options.
-     *              haveProperties = 'error',
-     *              query: '$form',
-     *              title: 'should get a form usign $form query parameter',
-     *          }
-     *          noParametersError:      test the endpoint for an error on method without parameters
-     *          noQueryError:           test the endpoint for an error on method without query parameters
-     *          {
-     *              status: 400,
-     *              haveProperties: 'error',
-     *              title: 'should get a no parameters error',
-     *          }, 
-     *          missingParameters:      perform a test for missing parameters and expect an error. This is a list of lists. For each item of the master list a test is performed, without the parameters in the child list. For the right behavior the parameters used must exist as parameters in the parameters option in the parent level.
-     *          [
-     *              ['param1', 'param2'],
-     *              ['param1'],
-     *              ['param2']
-     *          ]
+     *   For object:
+     *     send:                   list of each test to perform. If this option is not defined a single test is performed. @see rt.testEndPointMethodSend(test) for the options.
+     *     $form:                  perform a get with $form query parameter to get the form. Valid options are:
+     *     {
+     *       status: 200,        expected status @see rt.checkStatus() for the options.
+     *       haveProperties = 'error',
+     *       query: '$form',
+     *       title: 'should get a form usign $form query parameter',
+     *     }
+     *     noParametersError:      test the endpoint for an error on method without parameters
+     *     noQueryError:           test the endpoint for an error on method without query parameters
+     *     {
+     *       status: 400,
+     *       haveProperties: 'error',
+     *       title: 'should get a no parameters error',
+     *     }, 
+     *     missingParameters:      perform a test for missing parameters and expect an error. This is a list of lists. For each item of the master list a test is performed, without the parameters in the child list. For the right behavior the parameters used must exist as parameters in the parameters option in the parent level.
+     *     [
+     *       ['param1', 'param2'],
+     *       ['param1'],
+     *       ['param2']
+     *     ]
      * }
      * @example
      * {
@@ -82,52 +82,52 @@ export const rt = {
      *   url: '/api/login',                                         // endpoint URL to test
      *   notAllowedMethods: 'PUT,PATCH,DELETE',                     // not allowed methods for this endpoint
      *   get: [                                                     // test for GET HTTP method using array
-     *      'noParametersError',                                    // test for no parameters expect error
-     *      'noQueryError',    
-     *      {                                                       // begin test definition for get form
-     *          $form: true,                                        // test for get form using the $form as query parameter '/api/login?$form'
-     *          haveProperties: ['username', 'password']            // check for the result exists the properties username andpassword
-     *      },
+     *   'noParametersError',                                    // test for no parameters expect error
+     *   'noQueryError',    
+     *   {                                                       // begin test definition for get form
+     *     $form: true,                                        // test for get form using the $form as query parameter '/api/login?$form'
+     *     haveProperties: ['username', 'password']            // check for the result exists the properties username andpassword
+     *   },
      *   ],
      *   post: {                                                    // test for POST HTTP method using object
-     *      parameters: {                                           // default parameters options for the rest of tests
-     *          username: 'admin',
-     *          password: '1234'
-     *      },
-     *      send: [                                                 // test definitions
-     *          'noParametersError',                                // test for no parameters expect error (same as above)
-     *          {                                                   // begin test definition for missingParameters
-     *              missingParameters: [                       
-     *                  ['username', 'password'],                   // test for no parameters body = {}
-     *                  ['username'],                               // test for no parameters username
-     *                  ['password']                                // test for no parameters password
-     *              ]
-     *          },
-     *          {                                                   // begin custom test item for Invalid login
-     *              title: '"Invalid login" login error',           // test title
-     *              parameters: {                                   // override parameters for introduce an error
-     *                  username: 'admin',
-     *                  password: '12345'
-     *              },
-     *              status: 403,                                    // expected status
-     *              haveProperties: 'error',                        // expected property error in the result
-     *              propertyContains: {                             // expected message 'Invalid login' in the property message in the result
-     *                  message: 'Invalid login'
-     *              }
-     *          },
-     *          {                                                                               // begin custom test item for login
-     *              title: 'login should returns a valid session authToken',
-     *              status: 201,                                                                // expected status
-     *              haveProperties: ['authToken', 'index'],                                     // expected properties in the result
-     *              after: res => headers.Authorization = `Bearer ${res.body.authToken}`,       // after succesfull test, store the authToken for reuse as authorization header
-     *          },
-     *          {
-     *              title: 'should returns a distinct valid session authToken',                 // begin custom test item for another login a distinct authToken is espected
-     *              status: 201,
-     *              haveProperties: ['authToken', 'index'],
-     *              after: res => expect(headers.Authorization).to.be.not.equals(`Bearer ${res.body.authToken}`),    // after succesfull test, use a custom check to verify the authToken
-     *          },
-     *      ]
+     *   parameters: {                                           // default parameters options for the rest of tests
+     *     username: 'admin',
+     *     password: '1234'
+     *   },
+     *   send: [                                                 // test definitions
+     *     'noParametersError',                                // test for no parameters expect error (same as above)
+     *     {                                                   // begin test definition for missingParameters
+     *       missingParameters: [                       
+     *         ['username', 'password'],                   // test for no parameters body = {}
+     *         ['username'],                               // test for no parameters username
+     *         ['password']                                // test for no parameters password
+     *       ]
+     *     },
+     *     {                                                   // begin custom test item for Invalid login
+     *       title: '"Invalid login" login error',           // test title
+     *       parameters: {                                   // override parameters for introduce an error
+     *         username: 'admin',
+     *         password: '12345'
+     *       },
+     *       status: 403,                                    // expected status
+     *       haveProperties: 'error',                        // expected property error in the result
+     *       propertyContains: {                             // expected message 'Invalid login' in the property message in the result
+     *         message: 'Invalid login'
+     *       }
+     *     },
+     *     {                                                                               // begin custom test item for login
+     *       title: 'login should returns a valid session authToken',
+     *       status: 201,                                                                // expected status
+     *       haveProperties: ['authToken', 'index'],                                     // expected properties in the result
+     *       after: res => headers.Authorization = `Bearer ${res.body.authToken}`,       // after succesfull test, store the authToken for reuse as authorization header
+     *     },
+     *     {
+     *       title: 'should returns a distinct valid session authToken',                 // begin custom test item for another login a distinct authToken is espected
+     *       status: 201,
+     *       haveProperties: ['authToken', 'index'],
+     *       after: res => expect(headers.Authorization).to.be.not.equals(`Bearer ${res.body.authToken}`),    // after succesfull test, use a custom check to verify the authToken
+     *     },
+     *   ]
      * }
      * 
      * @example of use for before and after
@@ -652,21 +652,21 @@ export const rt = {
      * @param {*} res response
      * @param {*} options options to check the response. Valid options are:
      *  {
-     *      status: 200,                    check the status code if exists except if is undefined or false, @see rt.checkStatus for reference.
-     *      haveCookies: cookies            check the headers response for the given cookies to exists. This option can be a string for a single cookie, a list for multiple cookies, or a object in this case check the cookies value.
-     *      noHaveCookies: cookies          check the headers response for the given cookies to not exists. This option can be a string for a single cookie, a list for multiple cookies, or a object in this case check the cookies to be distinct value.
-     *      empty: true,                    check the response body to be empty.
-     *      json: true,                     check the response body to be a JSON. If this option is not specified but haveProperties or noHaveProperties it is this option will be set to true.
-     *      bodyLengthOf: int               check the response body to have the given items bodyLengthOf.
-     *      checkItem: int|string           search a specific item in the body to check
-     *      lengthOf: int                   check the value to have the given items lengthOf.
-     *      haveProperties: properties,     check the value for the given properties to exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties value.
-     *      noHaveProperties: properties,   check the value for the given properties to not exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties to be distinct value.
-     *      propertyContains: {             check the value to have a property and its value contains the given values.
-     *          propertyName: ['one', 'two']
-     *      },
-     *      after: method                   call the method with response has parameter.
-     *      log: true|string|list           show a console.log of listed items from response. It this is true uses: [status, body]
+     *   status: 200,                    check the status code if exists except if is undefined or false, @see rt.checkStatus for reference.
+     *   haveCookies: cookies            check the headers response for the given cookies to exists. This option can be a string for a single cookie, a list for multiple cookies, or a object in this case check the cookies value.
+     *   noHaveCookies: cookies          check the headers response for the given cookies to not exists. This option can be a string for a single cookie, a list for multiple cookies, or a object in this case check the cookies to be distinct value.
+     *   empty: true,                    check the response body to be empty.
+     *   json: true,                     check the response body to be a JSON. If this option is not specified but haveProperties or noHaveProperties it is this option will be set to true.
+     *   bodyLengthOf: int               check the response body to have the given items bodyLengthOf.
+     *   checkItem: int|string           search a specific item in the body to check
+     *   lengthOf: int                   check the value to have the given items lengthOf.
+     *   haveProperties: properties,     check the value for the given properties to exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties value.
+     *   noHaveProperties: properties,   check the value for the given properties to not exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties to be distinct value.
+     *   propertyContains: {             check the value to have a property and its value contains the given values.
+     *     propertyName: ['one', 'two']
+     *   },
+     *   after: method                   call the method with response has parameter.
+     *   log: true|string|list           show a console.log of listed items from response. It this is true uses: [status, body]
      *  }
      */
   checkReponse(res, options) {
@@ -874,12 +874,12 @@ export const rt = {
      *  negative integer                any number and if the number exists in the response the check is not passed
      *  RegExp                          regular expression to test against the status response
      *  string                          string can be:
-     *      '200'                       a number to check for positive
-     *      '!200'                      a number prefixed with !, to check for negative
-     *      '2xx' | '!2xx'              the "x" represent any number in that place
+     *   '200'                       a number to check for positive
+     *   '!200'                      a number prefixed with !, to check for negative
+     *   '2xx' | '!2xx'              the "x" represent any number in that place
      *  Array                           A list of any prior values. The first match resolve the entire check list for the positive or for the negative way.
      *  Comma separated strings         It is interpreted as Array
-     *      '!2xx,!4xx'
+     *   '!2xx,!4xx'
      * @returns 
      */
   checkStatus(res, options) {
@@ -1082,38 +1082,38 @@ export const rt = {
      * 
      * @example
      *  {
-     *      url: '/user',                                       // URL of the endpoint to check, @see rt.testEndPoint.
-     *      notAllowedMethods: 'PUT,PATCH',                     // Not allowed method, @see rt.testEndPoint.
-     *      parameters: {                                       // Parameters, @see rt.testEndPoint.
-     *          username: 'test1',
-     *          displayName: 'Test 1',
-     *          password: 'abc123',
-     *      },
-     *      missingParameters: [                                // Test for missing parameters, @see rt.testEndPoint.
-     *          ['username'],
-     *          ['displayName'],
-     *          ['username', 'displayName'],
-     *      ],
-     *      id: 'uuid'                                                                      // name for the object id by default is uuid
-     *      forbiddenDoubleCreation: true,                                                  // Test for forbidden double creation of the same object
-     *      getProperties: ['uuid', 'isEnabled', 'username', 'displayName', 'UserType'],    // Properties to check the GET method.
-     *      getCreated: {query:{username:'test1'}},                                         // Options to get the created object to perform the rest of the tests.
-     *      getByQuery: [                                                                   // Test to get objects using the query params, each item is a separated test
-     *          'username', string|CSV|array                                                // Use the values listed in parameters to get objects
-     *          'uuid'
-     *      ],
-     *      getSingleByQuery: [                                                             // Same as above but check single result
-     *          'username',
-     *          'uuid'
-     *      ],
-     *      getByUrl: ['uuid'],                                                             // Same as above the form used is URL/name1/value1/name2/value2, when a test with the id parameter as the only parameter the form URL/idValue is used.
-     *      getSingleByUrl: ['uuid'],                                                       // Same as above but check single result
-     *      patchParameters: [                                                              // Test the HTTP patch method for each element in the list.
-     *          {
-     *              name1: value1,
-     *              name2, value2
-     *          },
-     *      ]
+     *   url: '/user',                                       // URL of the endpoint to check, @see rt.testEndPoint.
+     *   notAllowedMethods: 'PUT,PATCH',                     // Not allowed method, @see rt.testEndPoint.
+     *   parameters: {                                       // Parameters, @see rt.testEndPoint.
+     *     username: 'test1',
+     *     displayName: 'Test 1',
+     *     password: 'abc123',
+     *   },
+     *   missingParameters: [                                // Test for missing parameters, @see rt.testEndPoint.
+     *     ['username'],
+     *     ['displayName'],
+     *     ['username', 'displayName'],
+     *   ],
+     *   id: 'uuid'                                                                      // name for the object id by default is uuid
+     *   forbiddenDoubleCreation: true,                                                  // Test for forbidden double creation of the same object
+     *   getProperties: ['uuid', 'isEnabled', 'username', 'displayName', 'UserType'],    // Properties to check the GET method.
+     *   getCreated: {query:{username:'test1'}},                                         // Options to get the created object to perform the rest of the tests.
+     *   getByQuery: [                                                                   // Test to get objects using the query params, each item is a separated test
+     *     'username', string|CSV|array                                                // Use the values listed in parameters to get objects
+     *     'uuid'
+     *   ],
+     *   getSingleByQuery: [                                                             // Same as above but check single result
+     *     'username',
+     *     'uuid'
+     *   ],
+     *   getByUrl: ['uuid'],                                                             // Same as above the form used is URL/name1/value1/name2/value2, when a test with the id parameter as the only parameter the form URL/idValue is used.
+     *   getSingleByUrl: ['uuid'],                                                       // Same as above but check single result
+     *   patchParameters: [                                                              // Test the HTTP patch method for each element in the list.
+     *     {
+     *       name1: value1,
+     *       name2, value2
+     *     },
+     *   ]
      *  }
      */
   testGeneralBehaviorEndPoint(options) {

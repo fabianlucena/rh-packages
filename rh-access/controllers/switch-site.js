@@ -1,48 +1,10 @@
-import { SwitchSiteService } from '../services/switch_site.js';
+import { SwitchSiteService } from '../services/switch-site.js';
 import { SessionSiteService } from '../services/session_site.js';
 import { conf } from '../conf.js';
 import { getOptionsFromParamsAndOData, httpErrorHandler } from 'http-util';
 import { checkParameter, checkParameterUuid } from 'rf-util';
 
-/**
- * @swagger
- * definitions:
- *  Site:
- *      properties:
- *          name:
- *              type: string
- *          title:
- *              type: integer
- *  Error:
- *      properties:
- *          error:
- *              name: string
- *              example: Example error
- */
-
 export class SwitchSiteController {
-  /** 
-     * @swagger
-     * /api/current-site:
-     *  get:
-     *      tags:
-     *          - Access
-     *      summary: Sites
-     *      description: Get he current site set for the logged user
-     *      produces:
-     *          -  application/json
-     *      responses:
-     *          '200':
-     *              description: The current site
-     *              schema:
-     *                  $ref: '#/definitions/Site'
-     *          '204':
-     *              description: No current site selected
-     *          '403':
-     *              description: No session
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static currentSiteGet(req, res) {
     const siteId = req?.site?.id;
     if (!siteId) {
@@ -58,26 +20,6 @@ export class SwitchSiteController {
       .catch(httpErrorHandler(req, res));
   }
 
-  /** 
-     * @swagger
-     * /api/switch-site:
-     *  post:
-     *      tags:
-     *          - Access
-     *      summary: Sites
-     *      description: Switch the site for the logged user
-     *      produces:
-     *          -  application/json
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Site'
-     *          '403':
-     *              description: No session
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async post(req, res) {
     const siteUuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('switchSite', 'UUID'));
     await SessionSiteService.singleton().createOrUpdate({
@@ -87,26 +29,6 @@ export class SwitchSiteController {
     res.status(204).send();
   }
 
-  /** 
-     * @swagger
-     * /api/site:
-     *  get:
-     *      tags:
-     *          - Access
-     *      summary: Sites
-     *      description: Get sites available for the logged user
-     *      produces:
-     *          -  application/json
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Site'
-     *          '403':
-     *              description: No session
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async get(req, res) {
     if ('$object' in req.query) {
       return SwitchSiteController.getObject(req, res);

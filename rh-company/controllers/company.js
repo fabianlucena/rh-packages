@@ -3,26 +3,6 @@ import { conf } from '../conf.js';
 import { getOptionsFromParamsAndOData, _HttpError, getUuidFromRequest } from 'http-util';
 import { checkParameter } from 'rf-util';
 
-/**
- * @swagger
- * definitions:
- *  Company:
- *      type: object
- *      properties:
- *          name:
- *              type: string
- *              required: true
- *              example: admin
- *          title:
- *              type: string
- *              required: true
- *              example: Admin
- *          typeId:
- *              type: integer
- *          isEnabled:
- *              type: boolean
- */
-
 const companyService = CompanyService.singleton();
 
 export class CompanyController {
@@ -63,41 +43,6 @@ export class CompanyController {
     return { uuid };
   }
 
-  /**
-     * @swagger
-     * /api/company:
-     *  post:
-     *      tags:
-     *          - Company
-     *      summary: Create a company
-     *      description: Add a new company to the database
-     *      security:
-     *          - bearerAuth: []
-     *      produces:
-     *          - application/json
-     *      parameters:
-     *          -  name: body
-     *             in: body
-     *             schema:
-     *                $ref: '#/definitions/Company'
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '400':
-     *              description: Missing parameters
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async post(req, res) {
     const loc = req.loc;
     checkParameter(req?.body, { name: loc._cf('company', 'Name'), title: loc._cf('company', 'Title') });
@@ -115,58 +60,6 @@ export class CompanyController {
     res.status(204).send();
   }
 
-  /**
-     * @swagger
-     * /api/company:
-     *  get:
-     *      tags:
-     *          - Company
-     *      summary: Get company or a company list
-     *      description: If the UUID or name params is provided this endpoint returns a single company otherwise returns a list of companies
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *          -   name: name
-     *              in: query
-     *              type: string
-     *              example: admin
-     *          -   name: limit
-     *              in: query
-     *              type: int
-     *          -   name: offset
-     *              in: query
-     *              type: int
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Company'
-     *          '204':
-     *              description: Success no company
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async get(req, res) {
     if ('$grid' in req.query) {
       return CompanyController.getGrid(req, res);
@@ -291,45 +184,6 @@ export class CompanyController {
     });
   }
 
-  /**
-     * @swagger
-     * /api/company:
-     *  delete:
-     *      tags:
-     *          - Company
-     *      summary: Delete a company
-     *      description: Delete a company from its UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              required: true
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async delete(req, res) {
     const { uuid } = await CompanyController.checkUuid(req);
     const rowsDeleted = await companyService.deleteForUuid(uuid);
@@ -340,45 +194,6 @@ export class CompanyController {
     res.sendStatus(204);
   }
 
-  /**
-     * @swagger
-     * /api/company/enable:
-     *  post:
-     *      tags:
-     *          - Company
-     *      summary: Enable a company
-     *      description: Enable a company from its UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              required: true
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async enablePost(req, res) {
     const { uuid } = await CompanyController.checkUuid(req);
     const rowsUpdated = await companyService.enableForUuid(uuid);
@@ -389,45 +204,6 @@ export class CompanyController {
     res.sendStatus(204);
   }
 
-  /**
-     * @swagger
-     * /api/company/disable:
-     *  post:
-     *      tags:
-     *          - Company
-     *      summary: Disable a company
-     *      description: Disable a company from its UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -   name: uuid
-     *              in: query
-     *              type: string
-     *              format: UUID
-     *              required: true
-     *              example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async disablePost(req, res) {
     const { uuid } = await CompanyController.checkUuid(req);
     const rowsUpdated = await companyService.disableForUuid(uuid);
@@ -438,43 +214,6 @@ export class CompanyController {
     res.sendStatus(204);
   }
 
-  /**
-     * @swagger
-     * /api/company:
-     *  patch:
-     *      tags:
-     *          - Company
-     *      summary: Update a company
-     *      description: Update a company from its UUID
-     *      security:
-     *          -   bearerAuth: []
-     *      produces:
-     *          -   application/json
-     *      parameters:
-     *          -  name: body
-     *             in: body
-     *             schema:
-     *                $ref: '#/definitions/Company'
-     *      responses:
-     *          '204':
-     *              description: Success
-     *          '400':
-     *              description: Missing parameters or parameters error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '401':
-     *              description: Unauthorized
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '403':
-     *              description: Forbidden
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     *          '500':
-     *              description: Internal server error
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
   static async patch(req, res) {
     const { uuid } = await CompanyController.checkUuid(req);
 
