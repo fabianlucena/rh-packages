@@ -1,0 +1,30 @@
+definitions:
+  Site:
+    properties:
+      name:
+        type: string
+      title:
+        type: integer
+  Error:
+    properties:
+      error:
+        name: string
+        example: Example error
+
+/site:
+  get:
+    tags:
+      - Access
+    summary: Sites
+    description: Get sites available for the logged user
+    produces:
+      - application/json
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/definitions/Site'
+      '403':
+        description: No session
+        schema:
+          $ref: '#/definitions/Error'

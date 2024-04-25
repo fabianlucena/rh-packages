@@ -1,0 +1,17 @@
+/resource:
+  get:
+    tags:
+      - Resource
+    summary: Resource
+    description: Get the resource for the given name
+    produces:
+      - application/json
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/definitions/Resource'
+      '403':
+        description: No session
+        schema:
+          $ref: '#/definitions/Error'

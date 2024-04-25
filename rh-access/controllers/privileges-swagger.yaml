@@ -1,0 +1,33 @@
+definitions:
+  Privileges:
+    properties:
+      userId:
+        type: string
+      typeId:
+        type: integer
+      data:
+        type: JSON
+  Error:
+    properties:
+      error:
+        type: string
+        example: Example error
+ 
+/privilege:
+  get:
+    tags:
+      - Access
+    summary: Login
+    description: Get privileges for the logged user
+    produces:
+      -  application/json
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/definitions/Privileges'
+      '403':
+          description: No session
+          schema:
+            $ref: '#/definitions/Error'
+
