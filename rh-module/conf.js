@@ -11,5 +11,4 @@ export const conf = {
   schema: 'syst',
   modelsPath: dirname + '/models',
   servicesPath: dirname + '/services',
-  controllersPath: dirname + '/controllers',
 };
