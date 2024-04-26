@@ -15,10 +15,9 @@ export const ServiceMixinEnabled = Service => class ServiceEnabled extends Servi
       options.where.isEnabled ??= options.isEnabled;
 
       for (const includeName in options.include) {
-        options.include[includeName].where ??= options.isEnabled;
+        options.include[includeName].where ??= {};
+        options.include[includeName].where.isEnabled ??= options.isEnabled;
       }
-
-      delete options.isEnabled;
     }
 
     return super.getListOptions(options);

@@ -24,11 +24,18 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
   }
 
   async getList(options) {
-    if (!options?.include?.ParentAsMenuItem) {
-      return super.getList(options);
+    let menuItems = super.getList({
+      ...options,
+      include: {
+        ...options.include,
+        parentMenuItems: undefined,
+      },
+    });
+    if (!options?.include?.parentMenuItems) {
+      return menuItems;
     }
         
-    const menuItems = await super.getList(options);
+    menuItems = await menuItems;
 
     const menuItemsName = menuItems.map(menuItem => menuItem.name).filter(menuItemName => menuItemName);
     let parentsNameToLoad = [];
@@ -46,8 +53,8 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
       ...options,
     };
 
-    if (parentOptions.include?.ParentAsMenuItem) {
-      delete parentOptions.include?.ParentAsMenuItem;
+    if (parentOptions.include?.parentMenuItems) {
+      delete parentOptions.include?.parentMenuItems;
     }
 
     while (parentsNameToLoad.length) {

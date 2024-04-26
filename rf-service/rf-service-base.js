@@ -448,9 +448,68 @@ export class ServiceBase {
 
     options = { ...options };
 
-    const includeList = options.include;
-    if (includeList) {
-      for (const includeName in includeList) {
+    if (options.where && this.references && Object.keys(this.references).length) {
+      for (const key in options.where) {
+        if (typeof key === 'string') {
+          let include = options.include?.[key];
+          if (include) {
+            if (include === true) {
+              include = {};
+              options.include[key] = include;
+            }
+          } else if (this.references[key]) {
+            include = { attributes: [] };
+            options.include ??= [];
+            options.include[key] = include;
+          }
+
+          if (include) {
+            let value = options.where[key];
+            const reference = this.references[key];
+            if (reference.whereColumn) {
+              if (typeof value === 'string'
+                || Array.isArray(value)
+              ) {
+                value = { [reference.whereColumn]: value };
+              } else if (typeof value === 'object') {
+                const keys = Object.keys(value);
+                if (keys.length === 1 && typeof keys[0] !== 'string') {
+                  value = { [reference.whereColumn]: value };
+                }
+              }
+            }
+
+            if (!include.where) {
+              include.where = value;
+              delete options.where[key];
+            } else {
+              include.where = {
+                [Op.and]: [
+                  include.where,
+                  value,
+                ],
+              };
+            }
+
+            delete options.where[key];
+          }
+        }
+      }
+    }
+
+    const includes = options.include;
+    if (includes) {
+      for (const includeName in includes) {
+        let include = includes[includeName];
+        if (include === undefined || include === null) {
+          delete includes[includeName];
+          continue;
+        } else if (include === true) {
+          include = {};
+        } else if (include === false) {
+          include = { attributes: [] };
+        }
+
         const reference = this.references[includeName];
         if (!reference) {
           throw new Error(
@@ -462,23 +521,19 @@ export class ServiceBase {
           );
         }
 
-        let includeOptions = { ...options[includeName] };
         if (reference?.service) {
-          includeOptions = await reference.service.getListOptions({
-            attributes: reference.attributes,
-            ...includeOptions,
-          });
-        }
-      }
-    }
+          if (include.attributes === false) {
+            include.attributes = [];
+          }
 
-    if (options.where) {
-      const where = options.where;
-      for (const name in this.references) {
-        const reference = this.references[name];
-        if (reference.singleWhereColumn && typeof where[name] === 'string') {
-          where[name] = { [reference.singleWhereColumn]: where[name] };
+          if (!include.attributes && reference.attributes) {
+            include.attributes = reference.attributes;
+          }
+          
+          include = await reference.service.getListOptions({ isEnabled: options.isEnabled, ...include });
         }
+
+        includes[includeName] = include;
       }
     }
 
@@ -486,7 +541,6 @@ export class ServiceBase {
 
     if (options.view) {
       options.attributes = this.viewAttributes ?? [];
-      delete options.view;
     }
 
     if (options.orderBy?.length) {

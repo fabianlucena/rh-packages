@@ -6,7 +6,7 @@ export class WfWorkflowService extends ServiceIdUuidNameTitleDescriptionEnabledO
     modelEntityName: {
       createIfNotExists: true,
       attributes: ['uuid', 'name'],
-      singleWhereColumn: 'name',
+      whereColumn: 'name',
     },
     workflowType:    'wfWorkflowTypeService',
   };

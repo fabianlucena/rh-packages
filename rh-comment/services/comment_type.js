@@ -7,7 +7,7 @@ export class CommentTypeService extends ServiceIdUuidNameTitleDescriptionEnabled
     modelEntityName: {
       createIfNotExists: true,
       attributes: ['uuid', 'name'],
-      singleWhereColumn: 'name',
+      whereColumn: 'name',
     },
   };
 

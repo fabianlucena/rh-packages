@@ -68,64 +68,124 @@ export class ModelSequelize {
     return sanitizedOptions;
   }
 
-  sanitizeOptions(options, service) {
-    options = { ...options };
-    
-    options.raw ??= true;
-    options.nest ??= true;
+  sanitizeOptions(options, service, conf) {
+    const references = service?.references;
+    const sanitizedOptions = {};
+
+    for (const k of ['attributes', 'transaction', ...conf?.moreValidOptions ?? []]) {
+      if (options[k] === undefined) {
+        continue;
+      }
+
+      sanitizedOptions[k] = options[k];
+    }
+
+    // Extract where includes
+    if (options.where) {
+      const where = { ...options.where };
+      sanitizedOptions.where = {};
+
+      if (references && Object.keys(references).length) {
+        for (const key in where) {
+          const value = where[key];
+          if (typeof key === 'string') {
+            let include = options.include?.[key];
+            if (include) {
+              if (include === true) {
+                include = {};
+                options.include[key] = include;
+              }
+            } else if (references[key]) {
+              include = { attributes: [] };
+              options.include ??= [];
+              options.include[key] = include;
+            }
+
+            if (include) {
+              if (!include.where) {
+                include.where = value;
+              } else {
+                include.where = {
+                  [srvOp.and]: [
+                    include.where,
+                    value,
+                  ],
+                };
+              }
+            } else {
+              sanitizedOptions.where[key] = value;
+            }
+          } else {
+            sanitizedOptions.where[key] = value;
+          }
+
+          delete where[key];
+        }
+
+        if (where) {
+          for (const k in where) {
+            sanitizedOptions.where[k] = where[k];
+          }
+        }
+      } else {
+        sanitizedOptions.where = where;
+      }
+    }
 
     if (options.include) {
-      const references = service?.references;
       if (!references) {
-        throw Error('Try to perform include in a service without references.');
+        throw Error(`Try to include in service "${service.constructor.name}" without references.`);
       }
 
       const includes = options.include;
-      options.include = [];
+      sanitizedOptions.include ??= [];
       for (const includeName in includes) {
+        const reference = references[includeName];
+        if (!reference) {
+          throw Error(`Reference does not exist for include "${includeName}" in service "${service.constructor.name}".`);
+        }
+
         let include = includes[includeName];
         if (include === true) {
           include = {};
+        } else if (!include) {
+          include = { attributes: [] };
         }
 
-        include.as ??= includeName;
-        if (!include.model) {
-          include.model = references[includeName]?.service?.model?.model;
-          if (!include.model) {
-            if (!references[includeName]) {
-              throw Error(`Reference for ${includeName} does not exists in ${service.constructor}.`);
-            }
+        const sanitizedInclude = this.sanitizeOptions(include, reference.service, { moreValidOptions: ['as', 'required'] });
 
-            if (!references[includeName].service) {
-              throw Error(`Service for reference ${includeName} does not exists in ${service.constructor}.`);
-            }
-
-            if (!references[includeName].service.model) {
-              throw Error(`Model for reference ${includeName} does not exists in ${service.constructor}.`);
-            }
-
-            throw Error(`Seuqelize model for reference ${includeName} does not exists in ${service.constructor}.`);
+        sanitizedInclude.model = include.model ?? reference.service?.model?.model;
+        if (!sanitizedInclude.model) {
+          if (!references[includeName]) {
+            throw Error(`Reference for "${includeName}" does not exists in service "${service.constructor.name}".`);
           }
+
+          if (!references[includeName].service) {
+            throw Error(`Service for reference "${includeName}" does not exists in service "${service.constructor.name}".`);
+          }
+
+          if (!references[includeName].service.model) {
+            throw Error(`Model for reference "${includeName}" does not exists in service "${service.constructor.name}".`);
+          }
+
+          throw Error(`Sequelize model for reference "${includeName}" does not exists in service "${service.constructor.name}".`);
         }
 
-        if (include.where) {
-          include.where = this.sanitizeWhere(include.where);
+        sanitizedInclude.as ??= includeName;
+
+        if (this.model.associations[includeName].through) {
+          sanitizedInclude.through = { attributes: [] };
         }
 
-        options.include.push(include);
+        sanitizedOptions.include.push(sanitizedInclude);
       }
     }
 
-    if (options.where) {
-      options.where = this.sanitizeWhere(options.where);
-    }
-
     if (options.orderBy) {
-      options.order = this.sanitizeOrder(options.orderBy);
-      delete options.orderBy;
+      sanitizedOptions.order = this.sanitizeOrder(options.orderBy);
     }    
 
-    return options;
+    return sanitizedOptions;
   }
 
   sanitizeWhere(where) {
@@ -178,7 +238,13 @@ export class ModelSequelize {
   }
 
   async get(options, service) {
-    return this.model.findAll(this.getSanitizedOptions(options, service));
+    const sanitizedOptions = this.getSanitizedOptions(options, service);
+    let rows = await this.model.findAll(sanitizedOptions);
+    if (!sanitizedOptions.raw) {
+      rows = rows.map(r => r.toJSON());
+    }
+
+    return rows;
   }
 
   async update(data, options, service) {

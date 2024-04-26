@@ -9,12 +9,12 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
     attribute: {
       service: 'eavAttributeService',
       attributes: ['uuid', 'name', 'description'],
-      singleWhereColumn: 'attribute',
+      whereColumn: 'attribute',
     },
     tag: {
       service: 'eavAttributeTagService',
       attributes: ['uuid', 'name', 'description'],
-      singleWhereColumn: 'tags',
+      whereColumn: 'tags',
     },
   };
   searchColumns = [

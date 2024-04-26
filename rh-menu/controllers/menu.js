@@ -1,26 +1,32 @@
-import { MenuItemService } from '../services/menu_item.js';
 import { conf } from '../conf.js';
 import { Controller } from 'rh-controller';
 import { runSequentially } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
+import dependency from 'rf-dependency';
 
 export class MenuController extends Controller {
+  constructor() {
+    super();
+
+    this.menuItemService = dependency.get('menuItemService');
+  }
+
   async get(req, res) {
     const permissions = req?.permissions;
     const options = {
+      loc: req.loc,
       view: true,
       include: {
-        parent: true,
-        permission: { where: { name: permissions }},
+        parentMenuItems: true,
       },
+      where: { permission: { name: permissions }},
     };
 
-    const rows = await MenuItemService.singleton().getList(options);
+    const rows = await this.menuItemService.getList(options);
     const loc = req.loc ?? defaultLoc;
     let menu = await runSequentially(rows, async mi => {
-      if (mi.Parent) {
-        mi.parent = mi.Parent?.name;
-        delete mi.Parent;
+      if (mi.parent) {
+        mi.parent = mi.parent.name;
       }
 
       if (mi.data) {

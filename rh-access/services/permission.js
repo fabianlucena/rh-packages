@@ -1,10 +1,13 @@
 import { RolePermissionService } from './role_permission.js';
-import { ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable } from 'rf-service';
+import { ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable, Op } from 'rf-service';
 import { runSequentially } from 'rf-util';
 
 export class PermissionService extends ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable {
   references = {
-    roles: 'roleService',
+    roles: {
+      service: 'roleService',
+      whereColumn: 'name',
+    },
   };
   defaultTranslationContext = 'user';
 
@@ -33,14 +36,17 @@ export class PermissionService extends ServiceIdUuidNameTitleDescriptionEnabledO
    * @returns {Promise{Permission}}
    */
   async getForRolesName(rolesName, options) {
-    options = { include: {}, ...options };
-    options.include.roles = {
-      ...options?.include?.roles,
-      where: {
-        ...options?.include?.roles?.where,
-        name: rolesName,
-      },
-    };
+    options = { where: {}, ...options };
+    if (!options.where.roles) {
+      options.where.roles = rolesName;
+    } else {
+      options.where.roles = {
+        [Op.and]: [
+          options.where.roles,
+          rolesName,
+        ]
+      };
+    }
 
     return this.getList(options);
   }
@@ -52,7 +58,14 @@ export class PermissionService extends ServiceIdUuidNameTitleDescriptionEnabledO
    * @returns {Promise{[]string}}
    */
   async getNamesForRolesName(rolesName, options) {
-    const permissionList = await this.getForRolesName(rolesName, { ...options, attributes: ['name'], skipThroughAssociationAttributes: true });
-    return Promise.all(permissionList.map(permission => permission.name));
+    const permissionList = await this.getForRolesName(
+      rolesName,
+      {
+        ...options,
+        attributes: ['name'],
+      },
+    );
+    
+    return permissionList.map(permission => permission.name);
   }
 }

@@ -11,17 +11,17 @@ export const ServiceMixinOwnerModule = Service => class ServiceModule extends Se
 
   async getListOptions(options) {
     if (options?.isEnabled !== undefined) {
-      options = { ...options };
+      options = { include: {}, ...options };
       options.include.ownerModule = {
-        ...options.include.ownerModule,
         required: false,
-        skipAssociationAttributes: true,
+        attributes: [],
         where: {
           [Op.or]: [
             { id: { [Op.eq]: null }},
             { isEnabled: { [Op.eq]: options?.isEnabled ?? true }},
           ],
         },
+        ...options.include.ownerModule,
       };
     }
 
