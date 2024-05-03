@@ -11,7 +11,7 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
 
   async validateForCreation(data) {
     if (!data.parentId && data.parent) {
-      const parentMenuItem = await MenuItemService.singleton().create({
+      const parentMenuItem = await this.create({
         isEnabled: true,
         name: data.parent,
         label: ucfirst(spacialize(data.parent)),

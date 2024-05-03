@@ -2,9 +2,11 @@ import { ServiceIdUuidNameEnabledOwnerModuleTranslatable } from 'rf-service';
 
 export class SiteService extends ServiceIdUuidNameEnabledOwnerModuleTranslatable {
   references = {
-    user: {
-      attributes: [],
+    users: {
+      service: 'userService',
+      whereColumn: 'username',
     },
+    sessions: 'sessionService',
   };
   viewAttributes = ['uuid', 'name', 'title'];
 
@@ -23,7 +25,7 @@ export class SiteService extends ServiceIdUuidNameEnabledOwnerModuleTranslatable
    * @returns {Promise<Site>}
    */
   async getForSessionId(sessionId, options) {
-    return this.getSingleFor({ sessionId }, options);
+    return this.getSingleFor({ sessions: { id: sessionId }}, options);
   }
 
   /**
@@ -55,18 +57,11 @@ export class SiteService extends ServiceIdUuidNameEnabledOwnerModuleTranslatable
    * @returns {Promise{[]Site]}}
    */
   async getForUsername(username, options) {
-    return this.getSingle(
+    return this.getList(
       {
         ...options,
-        include: {
-          ...options?.include,
-          User: {
-            ...options?.include?.User,
-            where: { username },
-          }
-        },
+        users: username,
       },
-      options,
     );
   }
 

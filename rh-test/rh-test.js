@@ -482,7 +482,7 @@ export const rt = {
         }
 
         corsPrefligthTest = {
-          title: 'Pregfligth for ' + test.title,
+          title: 'Preflight for: ' + test.title,
           url: test.url,
           method: 'options',
           status: [204,200],
@@ -504,8 +504,8 @@ export const rt = {
 
         if (test.headers?.Authorization) {
           corsPrefligthTest.headers['Access-Control-Request-Headers'] = 
-                        ((corsPrefligthTest.headers['Access-Control-Request-Headers'] ?? '')
-                        + ' Authorization').trim();
+            ((corsPrefligthTest.headers['Access-Control-Request-Headers'] ?? '')
+            + ' Authorization').trim();
 
           corsPrefligthTest.haveHeaders['Access-Control-Allow-Headers'].push(/\bAuthorization\b/i);
         }
@@ -802,7 +802,17 @@ export const rt = {
 
     let value = res.body;
     if (options.checkItem !== undefined) {
-      value = value[options.checkItem];
+      if (Array.isArray(options.checkItem)) {
+        for (const i of options.checkItem) {
+          if (i in value) {
+            value = value[i];
+          } else {
+            throw new Error(`result does not have ${i} property`);
+          }
+        }
+      } else {
+        value = value[options.checkItem];
+      }
     }
 
     if (options.lengthOf) {
