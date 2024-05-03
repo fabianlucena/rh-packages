@@ -67,7 +67,7 @@ function merge(dst, src) {
     if (Array.isArray(src[k])) {
       dst[k] ??= [];
       dst[k].push(...src[k]);
-    } else if (typeof src[k] === 'object') {
+    } else if (typeof src[k] === 'object' && src[k] !== null) {
       if (!dst[k] || typeof dst[k] === 'boolean') {
         dst[k] = {};
       }
