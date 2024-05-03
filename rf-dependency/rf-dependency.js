@@ -106,8 +106,7 @@ function _getDependency(name, scope, defaultValue) {
   throw new Error(`Error in dependency lifetime definition ${name}.`);
 }
 
-
-export default {
+export const dependency = {
   addStatic,
   addSingleton,
   addScoped,
@@ -116,3 +115,5 @@ export default {
   getDependency,
   getScoped,
 };
+
+export default dependency;
