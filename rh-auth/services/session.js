@@ -39,6 +39,10 @@ conf.sessionCacheMaintenanceMethod ??= () => {
 conf.init.push(() => conf.sessionCacheMaintenance = setInterval(conf.sessionCacheMaintenanceMethod, conf.sessionCacheMaintenanceInterval));
 
 export class SessionService extends ServiceIdUuid {
+  references = {
+    user: true,
+  };
+
   async validateForCreation(data) {
     if (!data.authToken) {
       data.authToken = crypto.randomBytes(64).toString('hex');
@@ -108,7 +112,13 @@ export class SessionService extends ServiceIdUuid {
       return sessionData.session;
     }
 
-    let session = await this.getForAuthToken(authToken, { skipNoRowsError: true, include: [{ model: conf.global.models.User }] });
+    let session = await this.getForAuthToken(
+      authToken,
+      {
+        skipNoRowsError: true,
+        include: { user: true },
+      },
+    );
     if (!session) {
       throw new NoSessionForAuthTokenError();
     }

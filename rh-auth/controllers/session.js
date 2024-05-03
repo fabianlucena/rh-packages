@@ -2,48 +2,27 @@ import { SessionService, SessionClosedError, NoSessionForAuthTokenError } from '
 import { getOptionsFromParamsAndOData, deleteHandler } from 'http-util';
 import { getErrorMessage, checkParameter, checkParameterUuid } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
+import dependency from 'rf-dependency';
 
-function hidePrivateData(data) {
-  if (typeof data !== 'object') {
-    return data;
-  }
-
-  const result = {};
-
-  for (const k in data) {
-    if (/password/.test(k)) {
-      result[k] = '****';
-    } else {
-      result[k] = hidePrivateData(data[k]);
-    }
-  }
-
-  return result;
-}
+const log = dependency.get('log', () => {});
 
 export class SessionController {
   static configureMiddleware() {
     return async (req, res, next) => {
-      let logLine = `${req.method} ${req.path}`;
-      const logOptions = {};
-      if (Object.keys(req.query).length) {
-        logOptions.query = hidePrivateData(req.query);
-      }
-
-      if (Object.keys(req.body).length) {
-        logOptions.body = hidePrivateData(req.body);
-      }
-
       const authorization = req.header('Authorization');
-      if (!authorization || authorization.length < 8 || !authorization.startsWith('Bearer ')) {
-        req.log?.info(logLine, logOptions);
+      if (!authorization || authorization.length < 8 || authorization.slice(0, 7).toLowerCase() !== 'bearer ') {
+        if (!authorization) {
+          log.info('no authorization token');
+        } else if (authorization.length < 8 || authorization.slice(0, 7).toLowerCase() !== 'bearer ') {
+          log.info('invalid authorization token scheme');
+        }
+
         next();
         return;
       }
 
       req.authToken = authorization.substring(7);
       if (!req.authToken) {
-        req.log?.info(logLine, logOptions);
         next();
         return;
       }
@@ -52,8 +31,8 @@ export class SessionController {
       SessionService.singleton().getJSONForAuthTokenCached(req.authToken)
         .then(session => {
           req.session = session;
-          req.user = req.session.User;
-          req.log?.info(logLine, { ...logOptions, session: session.id, username: session.User.username });
+          req.user = req.session.user;
+          log.info({ session: session.id, username: session.user.username });
           next();
         })
         .catch(async err => {
@@ -82,7 +61,7 @@ export class SessionController {
           result.clearBearerAuthorization = true;
           result.redirectTo = '#login';
 
-          req.log.error(logLine, { ...logOptions, error: err, result });
+          log.info({ error: err, result });
           res.status(401).send(result);
         });
     };

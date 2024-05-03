@@ -5,6 +5,7 @@ import { getSingle } from 'sql-util';
 import { _ConflictError } from 'http-util';
 import { checkParameter, _Error } from 'rf-util';
 import { loc } from 'rf-locale';
+import dependency from 'rf-dependency';
 
 export class UserService extends ServiceIdUuidEnabledOwnerModule {
   references = {
@@ -12,11 +13,17 @@ export class UserService extends ServiceIdUuidEnabledOwnerModule {
   };
   searchColumns = ['username', 'displayName'];
 
+  init () {
+    super.init();
+
+    this.userTypeService = dependency.get('userTypeService');
+  }
+
   async validateForCreation(data) {
     data ??= {};
 
-    if (!data.typeId && !data.type) {
-      data.type = 'user';
+    if (!data.typeId) {
+      data.typeId = await this.userTypeService.getIdForName('user');
     }
 
     checkParameter(data, { username: loc._cf('user', 'Username'), displayName: loc._cf('user', 'Display name') });

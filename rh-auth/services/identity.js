@@ -1,12 +1,16 @@
-import { conf } from '../conf.js';
 import { ServiceIdUuidEnabled } from 'rf-service';
-import { checkDataForMissingProperties, MissingPropertyError, completeAssociationOptions, getSingle } from 'sql-util';
+import { checkDataForMissingProperties, MissingPropertyError } from 'sql-util';
 import crypto from 'crypto';
 
 export class IdentityService extends ServiceIdUuidEnabled {
   references = {
-    type: 'identityTypeService',
-    user: true,
+    type: {
+      service: 'identityTypeService',
+      whereColumn: 'name',
+    },
+    user: {
+      whereColumn: 'username',
+    },
   };
 
   /**
@@ -83,15 +87,17 @@ export class IdentityService extends ServiceIdUuidEnabled {
    * @returns {Promise[Identity]}
    */
   async getForUserIdTypeName(userId, typeName, options) {
-    throw new Error('This method needs to be refactor.');
+    options = {
+      limit: 2,
+      ...options,
+      where: {
+        ...options?.where,
+        userId,
+        type: typeName,
+      }
+    };
 
-    /*
-    options = { include: [], limit: 2, ...options, where: { ...options?.where, userId }};
-    options.include.push(completeAssociationOptions({ model: conf.global.models.IdentityType, where: { name: typeName }, required: true }, options));
-
-    const rowList = await this.getList(options);
-    return getSingle(rowList, options);
-    */
+    return this.getSingle(options);
   }
 
   /**
@@ -102,15 +108,17 @@ export class IdentityService extends ServiceIdUuidEnabled {
    * @returns {Promise[Identity]}
    */
   async getForUsernameTypeName(username, typeName, options) {
-    throw new Error('This method needs to be refactor.');
-    /*
-    options = { include: [], limit: 2, ...options };
-    options.include.push(completeAssociationOptions({ model: conf.global.models.IdentityType, where: { name: typeName }, required: true }, options));
-    options.include.push(completeAssociationOptions({ model: conf.global.models.User,         where: { username },       required: true }, options));
+    options = {
+      limit: 2,
+      ...options,
+      where: {
+        ...options?.where,
+        user: username,
+        type: typeName,
+      }
+    };
 
-    const rowList = await this.getList(options);
-    return getSingle(rowList, options);
-    */
+    return this.getSingle(options);
   }
 
   /**

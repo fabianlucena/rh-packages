@@ -21,7 +21,7 @@ describe('Login', () => {
         'noParametersError',
         {
           $form: true,
-          haveProperties: ['action', 'fields']
+          haveProperties: ['action', 'fields'],
         },
       ],
     });

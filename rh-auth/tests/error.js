@@ -12,7 +12,7 @@ describe('HTTP Errors', () => {
   it('HTTP 403 error for empty URL', (done) => {
     let credentials = {};
     rt.getAgent()
-      .get('')
+      .get(rt.base)
       .send(credentials)
       .end((err, res) => {
         expect(res).to.have.status(403);
@@ -22,10 +22,10 @@ describe('HTTP Errors', () => {
       });
   });
     
-  it('HTTP 404 error for URL "/api/not-found"', (done) => {
+  it('HTTP 404 error for URL "/not-found"', (done) => {
     let credentials = {};
     rt.getAgent()
-      .get('/api/not-found')
+      .get(rt.base + '/not-found')
       .send(credentials)
       .end((err, res) => {
         expect(res).to.have.status(404);

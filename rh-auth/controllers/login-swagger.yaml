@@ -7,6 +7,7 @@ definitions:
         type: integer
       data:
         type: object
+
   Login:
     type: object
     properties:
@@ -25,6 +26,7 @@ definitions:
       sessionIndex:
         type: string
         example: null
+
   Auth:
     properties:
       index:
@@ -33,6 +35,7 @@ definitions:
       authToken:
         type: string
         example: adfa9d8fa0s9d8f7a09d8f7a0d7f0a9sf7a...
+
   Error:
     properties:
       error:
@@ -63,11 +66,12 @@ definitions:
       - application/json
     consumes:
       - application/json
-    parameters:
-      - name: body
-        in: body
-        schema:
-          $ref: '#/definitions/Login'
+    requestBody:
+      required: true
+      content: 
+        application/json:
+          schema:
+            $ref: '#/definitions/Login'
     responses:
       '201':
         description: Success
