@@ -21,7 +21,7 @@ export class Controller {
     return routes;
   }
 
-  all(req, res) {
+  static all(req, res) {
     res.status(405).send({ error: 'HTTP method not allowed.' });
   }
 

@@ -113,25 +113,26 @@ export function getRoutes(controllerClass, options) {
 
   handlers.push({ name: 'all' });
 
+  const props = [];
+
   const controllerInstance = new controllerClass;
 
-  const props = [];
+  if (!options.skipNonStatic) {
+    props.push(
+      ...Object.getOwnPropertyNames(controllerInstance),
+      ...Object.getOwnPropertyNames(Object.getPrototypeOf(controllerInstance)),
+    );
+  }
+
   if (!options.skipStatic) {
     props.push(...Object.getOwnPropertyNames(controllerClass));
   }
 
-  if (!options.skipNonStatic) {
-    props.push(
-      ...Object.getOwnPropertyNames(controllerInstance.__proto__),
-      ...Object.getOwnPropertyNames(controllerInstance)
-    );
-  }
-
   if (!options.skipParent) {
-    let parent = controllerClass.__proto__;
+    let parent = Object.getPrototypeOf(controllerClass);
     while (parent && parent.name) {
       props.push(...Object.getOwnPropertyNames(parent));
-      parent = parent.__proto__;
+      parent = Object.getPrototypeOf(parent);
     }
   }
 
