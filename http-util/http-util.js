@@ -211,19 +211,33 @@ export async function httpUtilConfigure(global, ...modules) {
   global.sequelize.Sequelize ??= global.Sequelize ?? global.db?.Sequelize ?? global.config?.db?.Sequelize;
   global.models ||= global.sequelize.models || {};
 
+  const log = global.log;
+  log?.info('.. Before config actions.');
   await beforeConfig(global);
+  log?.info('.. Configuring modules.');
   await configureModules(global, modules);
-  await beforeSync(global);
   if (global.config.db.sync) {
+    log?.info('.. Synchronizing DB.');
+    await beforeSync(global);
     await syncDB(global);
+  } else {
+    log?.info('.. Skip DB sinchronization.');
   }
   if (global.postConfigureModels) {
-    global.postConfigureModels(global.sequelize);
+    log?.info('.. Post configuring modules.');
+    await global.postConfigureModels(global.sequelize);
+  } else {
+    log?.info('.. Skip post configuring modules.');
   }
+  log?.info('.. After sinchronization DB.');
   await afterSync(global);
+  log?.info('.. After config.');
   await afterConfig(global);
   if (global.config.db.updateData) {
+    log?.info('.. Updating data.');
     await updateData(global);
+  } else {
+    log?.info('.. Skip updating data.');
   }
     
   await configureSwagger(global);
@@ -551,6 +565,8 @@ export async function configureModule(global, module) {
   }
 
   if (typeof module === 'string') {
+    global.log?.info('.... Module: ' + module);
+
     const tryModulePath = path.join(process.cwd(), module);
     if (tryModulePath.endsWith('.js') && fs.existsSync(tryModulePath)) {
       module = url.pathToFileURL(tryModulePath).href;
@@ -624,7 +640,6 @@ export async function configureModule(global, module) {
   if (module.controllersPath) {
     await configureControllers(global.controllers, module.controllersPath);
   }
-
   if (module.schema && global.createSchema) {
     await global.createSchema(module.schema);
   }
@@ -688,12 +703,13 @@ export async function configureModules(global, modules) {
     await installModule(global, module);
   }
 
-  filterData(global);
+  await filterData(global);
 }
 
 export function installControllerRoutes(global) {
   for (const controllerName in global.controllers) {
     const controller = global.controllers[controllerName];
+    controller.init && controller.init();
     if (controller.routes) {
       const routes = controller.routes();
 
