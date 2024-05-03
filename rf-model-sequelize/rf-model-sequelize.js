@@ -1,6 +1,6 @@
 import { Op as srvOp } from 'rf-service';
 import { Op, Utils as seqUtils } from 'sequelize';
-import crypto from 'crypto';
+// import crypto from 'crypto';
 
 const opMap = {
   [srvOp.eq]:            Op.eq,
@@ -57,13 +57,15 @@ export class ModelSequelize {
       return;
     }
 
+    /*
+    JSON.stringify does not work because the symbols based keys.
     const mark = crypto.createHash('md5').update(JSON.stringify(options)).digest('hex');
     if (ModelSequelize.cache[mark]) {
       return ModelSequelize.cache[mark];
-    }
+    }*/
 
     const sanitizedOptions = this.sanitizeOptions(options, service);
-    ModelSequelize.cache[mark] = sanitizedOptions;
+    //ModelSequelize.cache[mark] = sanitizedOptions;
 
     return sanitizedOptions;
   }
@@ -87,7 +89,7 @@ export class ModelSequelize {
 
       if (references && Object.keys(references).length) {
         for (const key in where) {
-          const value = where[key];
+          const value = this.sanitizeWhere(where[key]);
           if (typeof key === 'string') {
             let include = options.include?.[key];
             if (include) {
@@ -124,11 +126,11 @@ export class ModelSequelize {
 
         if (where) {
           for (const k in where) {
-            sanitizedOptions.where[k] = where[k];
+            sanitizedOptions.where[k] = this.sanitizeWhere(where[k]);
           }
         }
       } else {
-        sanitizedOptions.where = where;
+        sanitizedOptions.where = this.sanitizeWhere(where);
       }
     }
 
@@ -198,20 +200,21 @@ export class ModelSequelize {
       return v;
     }
 
-    if (typeof where === 'object') {
-      for (let k in where) {
+    if (where && typeof where === 'object') {
+      const symbols = Object.getOwnPropertySymbols(where);
+      for (let k of symbols) {
         let v = where[k];
-        if (typeof k === 'symbol') {
-          delete where[k];
-
-          if (!opMap[k]) {
-            throw Error('Unknown symbol in query.');
-          }
-
-          k = opMap[k];
+        delete where[k];
+        k = opMap[k];
+        if (!k) {
+          throw Error('Unknown symbol in query.');
         }
 
         where[k] = this.sanitizeWhere(v);
+      }
+
+      for (let k in where) {
+        where[k] = this.sanitizeWhere(where[k]);
       }
     }
 
