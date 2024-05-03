@@ -1,9 +1,7 @@
-import { GroupService } from './group.js';
-import { RoleService } from './role.js';
-import { PermissionService } from './permission.js';
 import { conf } from '../conf.js';
 import { ServiceBase } from 'rf-service';
 import { complete, _Error } from 'rf-util';
+import dependency from 'rf-dependency';
 import { loc } from 'rf-locale';
 
 complete(
@@ -39,6 +37,17 @@ conf.init.push(() => conf.privilegesCacheMaintenance = setInterval(conf.privileg
 export class PrivilegesService extends ServiceBase {
   model = false;
 
+  init() {
+    super.init();
+
+    this.siteService =        dependency.get('siteService', null);
+    this.sessionSiteService = dependency.get('sessionSiteService', null);
+    this.roleService =        dependency.get('roleService');
+    this.permissionService =  dependency.get('permissionService');
+    this.groupService =       dependency.get('groupService');
+
+  }
+
   async create() {
     throw new _Error(loc._cf('privileges', 'Cannot create privileges, privileges is a container not an entity.'));
   }
@@ -65,7 +74,7 @@ export class PrivilegesService extends ServiceBase {
     const privileges = {};
 
     if (username) {
-      privileges.sites = await conf.global.services.Site.singleton().getNameForUsername(username, { isEnabled: true });
+      privileges.sites = await this.siteService.getNameForUsername(username, { isEnabled: true });
     } else {
       privileges.sites = [];
     }
@@ -87,14 +96,16 @@ export class PrivilegesService extends ServiceBase {
         rolesSiteName.push('system');
       }
                 
-      privileges.roles = [...privileges.roles, ...await RoleService.singleton().getAllNamesForUsernameAndSiteName(username, rolesSiteName, { isEnabled: true })];
+      privileges.roles.push(
+        ...await this.roleService.getAllNamesForUsernameAndSiteName(username, rolesSiteName, { isEnabled: true })
+      );
     } else {
       privileges.roles.push('anonymous');
     }
 
-    privileges.permissions = await PermissionService.singleton().getNamesForRolesName(privileges.roles, { isEnabled: true });
+    privileges.permissions = await this.permissionService.getNamesForRolesName(privileges.roles, { isEnabled: true });
 
-    privileges.groups = await GroupService.singleton().getAllNamesForUsername(username, { isEnabled: true });
+    privileges.groups = await this.groupService.getAllNamesForUsername(username, { isEnabled: true });
         
     return privileges;
   }
@@ -114,16 +125,31 @@ export class PrivilegesService extends ServiceBase {
         return provilegeData.privileges;
       }
 
-      const siteService = conf.global.services.Site.singleton();
-      site = await siteService.getForSessionId(sessionId, { skipThroughAssociationAttributes: true, skipNoRowsError: true });
-      if (!site) {
-        if (!site && conf.global.data.defaultSite) {
-          site = await siteService.getForName(conf.global.data.defaultSite, { skipThroughAssociationAttributes: true, skipNoRowsError: true });
-        }
+      if (this.siteService) {
+        site = await this.siteService.getForSessionId(
+          sessionId,
+          {
+            skipThroughAssociationAttributes: true,
+            skipNoRowsError: true,
+          },
+        );
+        if (!site) {
+          if (!site && conf.global.data.defaultSite) {
+            site = await this.siteService.getForName(
+              conf.global.data.defaultSite,
+              {
+                skipThroughAssociationAttributes: true,
+                skipNoRowsError: true,
+              },
+            );
+          }
 
-        if (site) {
-          const sessionSiteService = conf.global.services.SessionSite?.singleton();
-          await sessionSiteService.createOrUpdate({ sessionId, siteId: site.id });
+          if (site) {
+            await this.sessionSiteService?.createOrUpdate({
+              sessionId,
+              siteId: site.id,
+            });
+          }
         }
       }
     }

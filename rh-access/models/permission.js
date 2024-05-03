@@ -4,7 +4,7 @@ export default (sequelize, DataTypes) => {
   class Permission extends sequelize.Sequelize.Model {
     static associate(models) {
       this.belongsTo(models.Module,   { as: 'ownerModule', foreignKey: 'ownerModuleId' });
-      this.belongsToMany(models.Role, { as: 'roles',       through: 'RolePermission' });
+      this.belongsToMany(models.Role, { as: 'roles',       through: 'RolePermission', foreignKey: 'permissionId', otherKey: 'roleId' });
     }
   }
   Permission.init({

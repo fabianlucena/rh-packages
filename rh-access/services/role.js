@@ -1,17 +1,18 @@
-import { RoleParentSiteService } from './role_parent_site.js';
-import { conf } from '../conf.js';
-import { ServiceIdUuidNameTitleEnabledOwnerModuleTranslatable } from 'rf-service';
-import { checkDataForMissingProperties, completeAssociationOptions } from 'sql-util';
+import { ServiceIdUuidNameTitleEnabledOwnerModuleTranslatable, Op } from 'rf-service';
+import dependency from 'rf-dependency';
+import { checkDataForMissingProperties } from 'sql-util';
 
 export class RoleService extends ServiceIdUuidNameTitleEnabledOwnerModuleTranslatable {
-  constructor() {
-    if (!conf?.global?.services?.Module?.singleton) {
-      throw new Error('There is no Module service. Try adding RH Module module to the project.');
-    }
+  references = {
+    users: { service: 'userService', whereColumn: 'username' },
+    sites: { service: 'siteService', whereColumn: 'name' },
+  };
+  
+  init() {
+    super.init();
 
-    super();
-
-    this.siteService = conf.global.services.Site.singleton();
+    this.siteService = dependency.get('siteService');
+    this.roleParentSiteService = dependency.get('roleParentSiteService');
   }
 
   async validateForCreation(data) {
@@ -27,19 +28,16 @@ export class RoleService extends ServiceIdUuidNameTitleEnabledOwnerModuleTransla
    * @returns {Promise{RoleList}}
    */
   async getForUsernameAndSiteName(username, siteName, options) {
-    throw new Error('This method needs to be refactor.');
-    /*
-    await checkDataForMissingProperties({ username, siteName }, 'Role', 'username', 'siteName');
-        
-    options ??= {};
-    options.include ??= [];
-    options.include.push(
-      completeAssociationOptions({ model: conf.global.models.User, where: { username }}, options),
-      completeAssociationOptions({ model: conf.global.models.Site, where: { name: siteName }}, options),
-    );
+    options = {
+      ...options,
+      where: {
+        ...options?.where,
+        users: username,
+        sites: siteName,
+      }
+    };
 
-    return this.model.findAll(options);
-    */
+    return this.getList(options);
   }
 
   /**
@@ -62,73 +60,32 @@ export class RoleService extends ServiceIdUuidNameTitleEnabledOwnerModuleTransla
    * @returns {Promise{RoleList}}
    */
   async getAllIdsForUsernameAndSiteName(username, siteName, options) {
-    throw new Error('This method needs to be refactor.');
+    const isEnabled = options?.isEnabled ?? true;
 
-    /*const site = await this.siteService.getForName(siteName, { isEnabled: true });
-    if (!site || (Array.isArray(site) && !site.length)) {
+    const siteId = await this.siteService.getIdForName(siteName, { isEnabled });
+    if (!siteId || (Array.isArray(siteId) && !siteId.length)) {
       return;
     }
 
-    const siteId = Array.isArray(site)?
-      site.map(site => site.id):
-      site.id;
-
-    const isEnabled = options?.isEnabled ?? true;
-    const Op = conf.global.Sequelize.Op;
-    const parentOptions = {
-      ...options,
-      attributes: ['parentId'],
-      include: [
-        {
-          model: this.model,
-          as: 'role',
-          attributes: [],
-          include: [
-            {
-              model: conf.global.models.Module,
-              as: 'ownerModule',
-              required: false,
-              attributes: [],
-              where: {
-                [Op.or]: [
-                  { id: { [Op.eq]: null }},
-                  { isEnabled: { [Op.eq]: isEnabled }},
-                ],
-              },
-            }
-          ],
-          where: { isEnabled },
-        },
-        {
-          model: this.model,
-          as: 'parent',
-          attributes: [],
-          include: [
-            {
-              model: conf.global.models.Module,
-              as: 'ownerModule',
-              required: false,
-              attributes: [],
-              where: {
-                [Op.or]: [
-                  { id: { [Op.eq]: null }},
-                  { isEnabled: { [Op.eq]: isEnabled }},
-                ],
-              },
-            }
-          ],
-          where: { isEnabled },
-        },
-      ],
-      where: { siteId }
-    };
-        
-    let newRoleList = await this.getForUsernameAndSiteName(username, siteName, { attributes: ['id'], skipThroughAssociationAttributes: true });
+    let newRoleList = await this.getForUsernameAndSiteName(
+      username,
+      siteName,
+      {
+        isEnabled,
+        attributes: ['id'],
+        skipThroughAssociationAttributes: true,
+      }
+    );
     let allRoleIdList = await newRoleList.map(role => role.id);
     let newRoleIdList = allRoleIdList;
         
-    const roleParentSiteService = RoleParentSiteService.singleton();
-    while(newRoleList.length) {
+    const roleParentSiteService = this.roleParentSiteService;
+    const parentOptions = {
+      ...options,
+      attributes: ['parentId'],
+      where: { siteId },
+    };
+    while (newRoleList.length) {
       parentOptions.where.roleId = { [Op.in]: newRoleIdList };
       parentOptions.where.parentId = { [Op.notIn]: allRoleIdList };
 
@@ -141,7 +98,7 @@ export class RoleService extends ServiceIdUuidNameTitleEnabledOwnerModuleTransla
       allRoleIdList = [...allRoleIdList, ...newRoleIdList];
     }
 
-    return allRoleIdList;*/
+    return allRoleIdList;
   }
 
   /**

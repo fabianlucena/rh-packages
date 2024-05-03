@@ -13,7 +13,7 @@ definitions:
         type: string
         example: Example error
  
-/privilege:
+/privileges:
   get:
     tags:
       - Access

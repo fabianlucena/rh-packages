@@ -1,15 +1,22 @@
-import { UserGroupService } from './user_group.js';
-import { conf } from '../conf.js';
-import { ServiceIdUuidEnabledOwnerModule } from 'rf-service';
-import { checkDataForMissingProperties, completeAssociationOptions, getSingle } from 'sql-util';
+import { ServiceIdUuidEnabledOwnerModule, Op } from 'rf-service';
+import dependency from 'rf-dependency';
 
 export class GroupService extends ServiceIdUuidEnabledOwnerModule {
   model = 'userModel';
   references = {
     type: 'userTypeService',
+    user: {
+      whereColumn: 'username',
+    },
   };
   searchColumns = ['username', 'displayName'];
   viewAttributes = ['uuid', 'isEnabled', 'username', 'displayName'];
+
+  init() {
+    super.init();
+
+    this.userGroupService = dependency.get('userGroupService');
+  }
 
   async validateForCreation(data) {
     data ??= {};
@@ -41,16 +48,19 @@ export class GroupService extends ServiceIdUuidEnabledOwnerModule {
    * @returns {Promise{Group}}
    */
   async getForUsername(username, options) {
-    options = { ...options, where: { ...options?.where, username }};
+    options = {
+      ...options,
+      where: {
+        ...options?.where,
+        username,
+      },
+    };
 
     if (Array.isArray(username)) {
       return this.getList(options);
     }
 
-    options.limit ??= 2;
-    const rows = await this.getList(options);
-
-    return getSingle(rows, { params: ['groups', ['username = %s', username], 'Group'], ...options });
+    return this.getSingle(options);
   }
 
   /**
@@ -70,45 +80,7 @@ export class GroupService extends ServiceIdUuidEnabledOwnerModule {
    * @returns {Promise{GroupList}}
    */
   async getParentsForUsername(username, options) {
-    throw new Error('This method needs to be refactor.');
-
-    /*await checkDataForMissingProperties({ username }, 'Group', 'username');
-        
-    const isEnabled = options?.isEnabled ?? true;
-    const Op = conf.global.Sequelize.Op;
-    options = { ...options, include: [] };
-    options.include = [
-      {
-        model: conf.global.models.User,
-        as: 'group',
-        attributes: [],
-        include: [
-          {
-            model: conf.global.models.Module,
-            as: 'ownerModule',
-            attributes: [],
-            where: {
-              [Op.or]: [
-                { id: { [Op.eq]: null }},
-                { isEnabled: { [Op.eq]: isEnabled }},
-              ],
-            },
-          }
-        ],
-        where: { isEnabled },
-      },
-    ];
-
-    options.include.push(
-      completeAssociationOptions({
-        model: conf.global.models.User,
-        as: 'user',
-        attributes: [],
-        where: { username }
-      }, options),
-    );
-
-    return conf.global.models.UserGroup.findAll(options);*/
+    return this.userGroupService.getForUsername(username, options);
   }
 
   /**
@@ -129,65 +101,29 @@ export class GroupService extends ServiceIdUuidEnabledOwnerModule {
    * @returns {Promise{GroupList}}
    */
   async getAllIdsForUsername(username, options) {
-    throw new Error('This method needs to be refactor.');
+    const isEnabled = options?.isEnabled ?? true;
 
-    /*const isEnabled = options?.isEnabled ?? true;
-    const Op = conf.global.Sequelize.Op;
     const parentOptions = {
       ...options,
       attributes: ['groupId'],
-      include: [
-        {
-          model: conf.global.models.User,
-          as: 'user',
-          attributes: [],
-          include: [
-            {
-              model: conf.global.models.Module,
-              as: 'ownerModule',
-              attributes: [],
-              where: {
-                [Op.or]: [
-                  { id: { [Op.eq]: null }},
-                  { isEnabled: { [Op.eq]: isEnabled }},
-                ],
-              },
-            }
-          ],
-          where: { isEnabled },
-        },
-        {
-          model: conf.global.models.User,
-          as: 'group',
-          attributes: [],
-          include: [
-            {
-              model: conf.global.models.Module,
-              as: 'ownerModule',
-              attributes: [],
-              where: {
-                [Op.or]: [
-                  { id: { [Op.eq]: null }},
-                  { isEnabled: { [Op.eq]: isEnabled }},
-                ],
-              },
-            }
-          ],
-          where: { isEnabled },
-        },
-      ]
     };
         
-    let newGroupList = await this.getParentsForUsername(username, { attributes: ['groupId'], skipAssociationAttributes: true });
+    let newGroupList = await this.getParentsForUsername(
+      username,
+      {
+        isEnabled,
+        attributes: ['groupId'],
+        skipAssociationAttributes: true,
+      }
+    );
     let allGroupIdList = await newGroupList.map(group => group.id);
     let newGroupIdList = allGroupIdList;
         
-    const userGroupService = UserGroupService.singleton();
-    while(newGroupList.length) {
+    while (newGroupList.length) {
       parentOptions.where.userId = { [Op.in]: newGroupIdList };
       parentOptions.where.groupId = { [Op.notIn]: allGroupIdList };
 
-      newGroupList = await userGroupService.getList(parentOptions);
+      newGroupList = await this.userGroupService.getList(parentOptions);
       if (!newGroupList?.length) {
         break;
       }
@@ -196,7 +132,7 @@ export class GroupService extends ServiceIdUuidEnabledOwnerModule {
       allGroupIdList = [...allGroupIdList, ...newGroupIdList];
     }
 
-    return allGroupIdList; */
+    return allGroupIdList;
   }
 
   /**

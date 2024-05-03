@@ -154,7 +154,7 @@ export class UserSiteRoleService extends ServiceEnabledOwnerModuleTranslatable {
         siteId: data.siteId,
         roleId: data.roleId,
       },
-      include: [],
+      include: {},
       limit: 1
     });
     if (rows?.length) {

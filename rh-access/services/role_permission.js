@@ -28,7 +28,7 @@ export class RolePermissionService extends ServiceOwnerModuleTranslatable {
         roleId: data.roleId,
         permissionId: data.permissionId,
       },
-      include: [],
+      include: {},
       limit: 1,
     };
 
