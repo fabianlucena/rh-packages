@@ -3,7 +3,10 @@ import { Op } from './rf-service-op.js';
 export const ServiceMixinOwnerModule = Service => class ServiceModule extends Service {
   init() {
     if (!this.references.ownerModule) {
-      this.references.ownerModule = 'moduleService';
+      this.references.ownerModule = {
+        service: 'moduleService',
+        createIfNotExists: true,
+      };
     }
 
     super.init();
