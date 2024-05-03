@@ -6,8 +6,9 @@ const expect = chai.expect;
 
 describe('Login', () => {
   before(function () {
-    if (!rt.hasModule('rhAuth'))
+    if (!rt.hasModule('rhAuth')) {
       this.skip();
+    }
 
     rt.headers.Authorization = null;
   });

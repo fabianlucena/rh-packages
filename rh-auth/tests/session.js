@@ -3,11 +3,9 @@ import { rt } from 'rh-test';
 
 describe('Session', () => {
   before(function () {
-    if (!rt.hasModule('rhAuth'))
+    if (!rt.hasModule('rhAuth') || !rt.headers?.Authorization) {
       this.skip();
-
-    if (!rt.headers?.Authorization)
-      this.skip();
+    }
   });
 
   let sessionToDelete;

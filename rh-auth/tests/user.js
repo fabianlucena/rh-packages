@@ -3,8 +3,9 @@ import { rt } from 'rh-test';
 
 describe('User', () => {
   before(function () {
-    if (!rt.hasModule('rhAuth') || !rt.headers?.Authorization)
+    if (!rt.hasModule('rhAuth') || !rt.headers?.Authorization) {
       this.skip();
+    }
   });
 
   rt.autoLogin({ credentials });

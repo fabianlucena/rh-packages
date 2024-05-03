@@ -5,11 +5,18 @@ export const credentials = {
   password: '1234'
 };
 
-describe('Login for Auth module testing', () => {
+describe('Autologin', () => {
   before(function () {
-    if (!rt.hasModule('rhAuth'))
+    if (!rt.hasModule('rhAuth') || !rt.headers?.Authorization)
       this.skip();
   });
 
-  rt.autoLogin({ credentials });
+  describe('Login for Auth module testing', () => {
+    before(function () {
+      if (!rt.hasModule('rhAuth'))
+        this.skip();
+    });
+
+    rt.autoLogin({ credentials });
+  });
 });

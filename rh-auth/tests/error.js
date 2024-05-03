@@ -5,8 +5,9 @@ const expect = chai.expect;
 
 describe('HTTP Errors', () => {
   before(function () {
-    if (!rt.hasModule('rhAuth'))
+    if (!rt.hasModule('rhAuth')) {
       this.skip();
+    }
   });
 
   it('HTTP 403 error for empty URL', (done) => {
