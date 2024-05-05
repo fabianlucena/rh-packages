@@ -16,6 +16,7 @@ describe('Session', () => {
       url: '/session',
       notAllowedMethods: 'POST,PUT,PATCH',
       get: [
+        '$grid',
         {
           title: 'should get a session list',
           checkItem: ['rows', 0],
