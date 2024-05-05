@@ -62,6 +62,13 @@ export const rt = {
    *              query: '$form',
    *              title: 'should get a form usign $form query parameter',
    *          }
+   *          $grid:                  perform a get with $grid query parameter to get the grid. Valid options are:
+   *          {
+   *              status: 200,        expected status @see rt.checkStatus() for the options.
+   *              haveProperties = 'error',
+   *              query: '$grid',
+   *              title: 'should get a form usign $grid query parameter',
+   *          }
    *          noParametersError:      test the endpoint for an error on method without parameters
    *          noQueryError:           test the endpoint for an error on method without query parameters
    *          {
@@ -86,6 +93,7 @@ export const rt = {
    *      'noQueryError',    
    *      {                                                       // begin test definition for get form
    *          $form: true,                                        // test for get form using the $form as query parameter '/api/login?$form'
+   *          $grid: true,                                        // test for get form using the $grid as query parameter '/api/login?$grid'
    *          haveProperties: ['username', 'password']            // check for the result exists the properties username andpassword
    *      },
    *   ],
@@ -396,14 +404,27 @@ export const rt = {
         haveProperties: 'error',
         title: 'should get a no parameters error',
         helperMethod: test => delete test.query,
-      }, 
+      },
       $form: {
         status: 200,
         query: '$form',
         title: 'should get a form usign $form query parameter',
-        haveProperties: ['action', 'fields'],
+        haveProperties: [
+          'action',
+          'fields',
+        ],
         helperMethod: test => delete test['$form'],
-      }
+      },
+      $grid: {
+        status: 200,
+        query: '$grid',
+        title: 'should get a grid usign $grid query parameter',
+        haveProperties: [
+          'actions',
+          'columns',
+        ],
+        helperMethod: test => delete test['$grid'],
+      },
     };
     const defaultMethodsOptions = {
       get: {
@@ -989,7 +1010,11 @@ export const rt = {
   },
 
   /**
-   * Perform a test on an end point to get the form using the $form query get parameter. This method uses the @see rt.testEndPoint with get: {$form: {haveProperties: haveProperties}} options.
+   * Perform a test on an end point to get the form using the $form query get 
+   * parameter. This method uses the @see rt.testEndPoint with get: 
+   * {
+   *  $form: {haveProperties: haveProperties}
+   * } options.
    * @param {*} options options for the method @see rt.testEndPoint method.
    * @param  {...string} haveProperties properties names to check in the result.
    */
@@ -999,6 +1024,30 @@ export const rt = {
       {
         get: {
           $form: {
+            haveProperties,
+          },
+        },
+      },
+    );
+
+    rt.testEndPoint(options);
+  },
+
+  /**
+   * Perform a test on an end point to get the grid using the $grid query get 
+   * parameter. This method uses the @see rt.testEndPoint with get:
+   * {
+   *  $grid: { haveProperties: haveProperties }
+   * } options.
+   * @param {*} options options for the method @see rt.testEndPoint method.
+   * @param  {...string} haveProperties properties names to check in the result.
+   */
+  testGetGrid(options, ...haveProperties) {
+    options = deepMerge(
+      options,
+      {
+        get: {
+          $grid: {
             haveProperties,
           },
         },
