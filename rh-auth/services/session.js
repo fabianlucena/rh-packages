@@ -40,7 +40,12 @@ conf.init.push(() => conf.sessionCacheMaintenance = setInterval(conf.sessionCach
 
 export class SessionService extends ServiceIdUuid {
   references = {
-    user: true,
+    user: {
+      attributes: ['uuid', 'username', 'displayName'],
+    },
+    device: {
+      attributes: ['uuid', 'data'],
+    }
   };
 
   async validateForCreation(data) {
@@ -72,16 +77,10 @@ export class SessionService extends ServiceIdUuid {
       }
             
       if (!options.include) {
-        options.include = [
-          {
-            model: conf.global.models.User,
-            attributes: ['uuid', 'username', 'displayName']
-          },
-          {
-            model: conf.global.models.Device,
-            attributes: ['uuid', 'data']
-          }
-        ];
+        options.include = {
+          user: true,
+          device: true,
+        };
       }
     }
 
@@ -166,15 +165,17 @@ export class SessionService extends ServiceIdUuid {
    * @param {string} uuid - UUID for the session o delete.
    * @returns {Promise[integer]}
    */
-  async deleteForUuid(uuid) {
-    const session = await this.getForUuid(uuid, { _noRowsError: loc._cf('session', 'Row for UUID %s does not exist', uuid) });
-    if (session) {
-      if (conf.sessionCache[session.authToken]) {
-        delete conf.sessionCache[session.authToken];
-      }
-
-      return this.deleteForUuid(uuid);
+  async deleteForUuid(uuid, options) {
+    const session = await this.getForUuid(uuid, options);
+    if (!session) {
+      return 0;
     }
+    
+    if (conf.sessionCache[session.authToken]) {
+      delete conf.sessionCache[session.authToken];
+    }
+
+    return super.deleteForUuid(uuid);
   }
 
   /**

@@ -26,6 +26,9 @@ definitions:
     produces:
       - application/json
     parameters:
+      - name: $grid
+        in: query
+        type: boolean
       - name: uuid
         in: query
         type: string
@@ -77,8 +80,7 @@ definitions:
         in: query
         type: string
         format: UUID
-        required: true
-        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+        required: false
     responses:
       '204':
         description: Success

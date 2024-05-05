@@ -10,6 +10,7 @@ describe('Session', () => {
 
   let sessionToDelete;
 
+  // TODO: Add test for get my own sessions
   describe('General behavior', () => {
     rt.testEndPoint({
       url: '/session',
@@ -18,9 +19,8 @@ describe('Session', () => {
         {
           title: 'should get a session list',
           checkItem: ['rows', 0],
-          haveProperties: ['uuid', 'index', 'open', 'close', 'User', 'Device'],
-          after: res => sessionToDelete = res.body[0].uuid,
-          log: true,
+          haveProperties: ['uuid', 'index', 'open', 'close', 'user', 'device'],
+          after: res => sessionToDelete = res.body.rows[0].uuid,
         },
       ],
       delete: {
@@ -57,10 +57,10 @@ describe('Session', () => {
       send: [
         {
           title: 'should get the current session data',
-          checkItem: 0,
-          haveProperties: ['uuid', 'index', 'open', 'close', 'User', 'Device'],
+          checkItem: ['rows', 0],
+          haveProperties: ['uuid', 'index', 'open', 'close', 'user', 'device'],
           before: test => test.query.authToken = test.headers.Authorization.substring(7),
-          after: res => sessionToDelete = res.body[0].uuid,
+          after: res => sessionToDelete = res.body.rows[0].uuid,
         },
         {
           title: 'delete the current session',
