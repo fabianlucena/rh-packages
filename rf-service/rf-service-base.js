@@ -539,7 +539,7 @@ export class ServiceBase {
 
     options = this.arrangeSearchColumns(options);
 
-    if (options.view) {
+    if (!options.attributes?.length && options.view) {
       options.attributes = this.viewAttributes ?? [];
     }
 
@@ -705,9 +705,12 @@ export class ServiceBase {
 
   async count(options) {
     options = await this.getListOptions(options);
+    options = { ...options, include: { ...options?.include }};
     options.attributes = [];
     if (options.include) {
-      options.include = options.include.map(i => ({ ...i, attributes: [] }));
+      for (var includeName in options.include) {
+        options.include[includeName].attributes = [];
+      }
     }
         
     await this.emit('gettingCount', options?.emitEvent, options);
