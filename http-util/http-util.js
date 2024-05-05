@@ -490,10 +490,27 @@ export async function getOptionsFromParamsAndOData(params, definitions, options)
   return await getWhereOptionsFromParams(params, definitions, options);
 }
 
+export class NoRowsError extends Error {
+  static _message = loc._f('There are no rows.');
+
+  constructor(message) {
+    super();
+    setUpError(
+      this,
+      {
+        message
+      }
+    );
+  }
+}
+
 export async function deleteHandler(req, res, rowCount) {
   const loc = req.loc ?? defaultLoc;
   if (!rowCount) {
-    res.status(200).send({ msg: await loc._('Nothing to delete.') });
+    throw new NoRowsError({
+      statusCode: 404,
+      message: 'There are no rows to delete',
+    });
   } else if (rowCount != 1) {
     res.status(200).send({ msg: await loc._('%s rows deleted.', rowCount) });
   } else {
