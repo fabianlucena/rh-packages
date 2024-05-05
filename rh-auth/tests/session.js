@@ -3,7 +3,7 @@ import { rt } from 'rh-test';
 
 describe('Session', () => {
   before(function () {
-    if (!rt.hasModule('rhAuth') || !rt.headers?.Authorization) {
+    if (!rt.includesModule('rhAuth') || !rt.headers?.Authorization) {
       this.skip();
     }
   });
@@ -17,9 +17,10 @@ describe('Session', () => {
       get: [
         {
           title: 'should get a session list',
-          checkItem: 0,
+          checkItem: ['rows', 0],
           haveProperties: ['uuid', 'index', 'open', 'close', 'User', 'Device'],
           after: res => sessionToDelete = res.body[0].uuid,
+          log: true,
         },
       ],
       delete: {

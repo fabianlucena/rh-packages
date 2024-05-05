@@ -5,7 +5,7 @@ const expect = chai.expect;
 
 describe('Hello', () => {
   before(function () {
-    if (!rt.hasModule('rhHello')) {
+    if (!rt.includesModule('rhHello')) {
       this.skip();
     }
   });

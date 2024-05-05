@@ -145,10 +145,10 @@ definitions:
         type: string
       - name: limit
         in: query
-        type: int
+        type: integer
       - name: offset
         in: query
-        type: int
+        type: integer
     responses:
       '200':
         description: Success
@@ -339,10 +339,10 @@ definitions:
         type: string
       - name: limit
         in: query
-        type: int
+        type: integer
       - name: offset
         in: query
-        type: int
+        type: integer
     responses:
       '200':
         description: Success
@@ -388,10 +388,10 @@ definitions:
         type: string
       - name: limit
         in: query
-        type: int
+        type: integer
       - name: offset
         in: query
-        type: int
+        type: integer
     responses:
       '200':
         description: Success
@@ -437,10 +437,10 @@ definitions:
         type: string
       - name: limit
         in: query
-        type: int
+        type: integer
       - name: offset
         in: query
-        type: int
+        type: integer
     responses:
       '200':
         description: Success
@@ -486,10 +486,10 @@ definitions:
         type: string
       - name: limit
         in: query
-        type: int
+        type: integer
       - name: offset
         in: query
-        type: int
+        type: integer
     responses:
       '200':
         description: Success

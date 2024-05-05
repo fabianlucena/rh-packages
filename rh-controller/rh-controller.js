@@ -113,6 +113,13 @@ export class Controller {
       return;
     }
 
+    if (this.getGrid || this.constructor.getGrid
+      || this.getForm || this.constructor.getForm
+    ) {
+      res.status(400).send({ error: 'Missing parameters.' });
+      return;
+    }
+
     res.status(405).send({ error: 'HTTP method not allowed.' });
   }
 }

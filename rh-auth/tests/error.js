@@ -5,7 +5,7 @@ const expect = chai.expect;
 
 describe('HTTP Errors', () => {
   before(function () {
-    if (!rt.hasModule('rhAuth')) {
+    if (!rt.includesModule('rhAuth')) {
       this.skip();
     }
   });

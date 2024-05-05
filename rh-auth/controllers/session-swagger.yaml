@@ -15,12 +15,6 @@ definitions:
       isEnabled:
         type: boolean
 
-  Error:
-    properties:
-      error:
-        type: string
-        example: Example error
-        
 /session:
   get:
     tags:
@@ -36,22 +30,20 @@ definitions:
         in: query
         type: string
         format: UUID
-        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
       - name: authToken
         in: query
         type: string
-        example: admin
       - name: limit
         in: query
-        type: int
+        type: integer
       - name: offset
         in: query
-        type: int
+        type: integer
     responses:
       '200':
         description: Success
         schema:
-            $ref: '#/definitions/Session'
+          $ref: '#/definitions/Session'
       '204':
         description: Success no session
       '400':

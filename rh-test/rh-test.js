@@ -399,9 +399,10 @@ export const rt = {
       }, 
       $form: {
         status: 200,
-        //haveProperties: 'error',
         query: '$form',
         title: 'should get a form usign $form query parameter',
+        haveProperties: ['action', 'fields'],
+        helperMethod: test => delete test['$form'],
       }
     };
     const defaultMethodsOptions = {
@@ -554,6 +555,13 @@ export const rt = {
       }
     }
 
+    if (this.includesEndpoint
+      && !test.overrideIncludesEndpointCheck
+      && !this.includesEndpoint(test.url)
+    ) {
+      test.test = it.skip;
+    }
+
     if (!test.title) {
       test.title = `${test.method.toUpperCase()} ${test.url}`;
       if (test.status) {
@@ -563,6 +571,10 @@ export const rt = {
             
     if (!test.method) {
       test.method = 'get';
+    }
+
+    if (test.autoLogin) {
+      this.autoLogin(test.autoLogin);
     }
 
     test.test(test.title, done => {
@@ -859,14 +871,12 @@ export const rt = {
 
     if (options.propertyContains) {
       for (const property in options.propertyContains) {
-        const properties = expect(value).to.have.property(property);
+        const values = expect(value).to.have.property(property);
         const contains = options.propertyContains[property];
         if (Array.isArray(contains)) {
-          for (const i in contains) {
-            properties.contains(contains[i]);
-          }
+          values.contains(...contains);
         } else {
-          properties.contains(contains);
+          values.contains(contains);
         }
       }
     }
@@ -1055,8 +1065,17 @@ export const rt = {
     if (rt.headers?.Authorization) {
       return;
     }
+
+    if (options === true) {
+      options = {};
+    }
             
-    options = { headers: { Authorization: null }, after: res => rt.headers.Authorization = `Bearer ${res.body.authToken}`, ...options };
+    options = {
+      headers: { Authorization: null },
+      after: res => rt.headers.Authorization = `Bearer ${res.body.authToken}`,
+      overrideIncludesEndpointCheck: true,
+      ...options,
+    };
     if (!options.agent) {
       rt.getAgent(options.app);
     }

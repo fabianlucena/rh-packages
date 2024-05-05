@@ -6,7 +6,7 @@ const expect = chai.expect;
 
 describe('Login', () => {
   before(function () {
-    if (!rt.hasModule('rhAuth')) {
+    if (!rt.includesModule('rhAuth')) {
       this.skip();
     }
 
@@ -20,10 +20,7 @@ describe('Login', () => {
       headers: { Authorization: null },
       get: [
         'noParametersError',
-        {
-          $form: true,
-          haveProperties: ['action', 'fields'],
-        },
+        '$form',
       ],
     });
   });
@@ -34,7 +31,9 @@ describe('Login', () => {
       post: {
         parameters: credentials,
         send: [
-          'noParametersError',
+          {
+            'noParametersError': true,
+          },
           {
             missingParameters: [
               ['username', 'password'],
@@ -70,13 +69,25 @@ describe('Login', () => {
       }
     });
   });
+        
+  describe('Login check', () => {
+    rt.testEndPoint({
+      url: '/login/check',   
+      notAllowedMethods: 'PUT,POST,DELETE,PATCH',     
+      get: {
+        autoLogin: true,
+        status: [200, 204],
+      },
+    });
+  });
 
   describe('Logout', () => {
     const localHeaders = {};
 
     before(function () {
-      if (!rt.headers?.Authorization)
+      if (!rt.headers?.Authorization) {
         this.skip();
+      }
 
       localHeaders.Authorization = rt.headers.Authorization;
     });

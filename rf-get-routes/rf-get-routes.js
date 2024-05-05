@@ -46,7 +46,8 @@
  *  controller,
  *  path,
  *  routes,
- *  cors
+ *  cors,
+ *  paths,
  * }
  * 
  * - controller: is the name of the class.
@@ -54,11 +55,13 @@
  * - routes: is a list of objects with the routes see bellow.
  * - cors: is a list of paths and allowed methods for the CORS policies 
  *   definitions.
+ * - paths: all of the paths used in routes.
  * 
  * The routes is a list of objects with the following properties:
  * - httpMethod: HTTP method in lower case,
  * - path: is the path for this endpoint inner the controller's path, 
  *   can be a empty string.
+ * - handler: function for handle the request.
  * - method: the method to call for handled this endpoint.
  * - methodIsStatic: boolean indicator for the method if is static or non 
  *   static.
@@ -93,7 +96,10 @@
  *   as handler: This minds that defaultGet will call to getData. This 
  *   extraction can be combined con subpath, premissions, and middlewares. 
  *   In this case, if you override the get method remember to call 
- *   this.defaultGet after return to properly handle. 
+ *   this.defaultGet after return to properly handle.
+ * - skipMethodNotAllowedHandler: [bool]{default:false} after the routes 
+ *   handlers the systems adds handlers for all to handle HTTP 405 error for
+ *   skip this behavior set this option to true.
  */
 export function getRoutes(controllerClass, options) {
   options ??= {};
@@ -136,6 +142,7 @@ export function getRoutes(controllerClass, options) {
     }
   }
 
+  const paths = [];
   const routes = [];
   handlers.forEach(handler => {
     const addToRoutes = [];
@@ -155,6 +162,10 @@ export function getRoutes(controllerClass, options) {
 
       if (addToRoutes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
         return;
+      }
+
+      if (!paths.includes(path)) {
+        paths.push(path);
       }
 
       const route = {
@@ -252,7 +263,22 @@ export function getRoutes(controllerClass, options) {
     }
   }
 
-  return { controller: controllerClass, path, routes, cors };
+  if (!options.skipMethodNotAllowedHandler) {
+    for (const path of paths) {
+      routes.push({
+        httpMethod: 'all',
+        path,
+        handler: methodNotAllowedHandler,
+      });
+    }
+  }
+
+  return { controller: controllerClass, path, routes, cors, paths };
+}
+
+// eslint-disable-next-line no-unused-vars
+function methodNotAllowedHandler(_req, res, _next) {
+  res.status(405).send({ error: 'HTTP method not allowed.' });
 }
 
 function dasherize(text, sep) {

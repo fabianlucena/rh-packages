@@ -18,7 +18,7 @@ export function checkParameter(value, params, ...freeParams) {
   const missing = [];
   for (let name in params) {
     if (value[name] === undefined) {
-      missing.push(params[name]);
+      missing.push(name);
     }
   }
 

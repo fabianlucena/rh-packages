@@ -3,15 +3,14 @@ import { conf } from '../conf.js';
 import { _HttpError } from 'http-util';
 import { checkParameter } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
-import dependency from 'rf-dependency';
+import { Controller } from 'rh-controller';
+import { dependency } from 'rf-dependency';
 
-export class LoginController {
-  static async getForm(req, res) {
-    checkParameter(req.query, '$form');
-
+export class LoginController extends Controller {
+  async getForm(req) {
     let loc = req.loc ?? defaultLoc;
 
-    res.status(200).send({
+    return {
       title: await loc._c('login', 'Login'),
       className: 'small one-per-line',
       action: 'login',
@@ -36,10 +35,10 @@ export class LoginController {
           placeholder: await loc._c('login', 'Type the password here'),
         }
       ]
-    });
+    };
   }
 
-  static async post(req, res) {
+  async post(req, res) {
     const loc = req.loc ?? defaultLoc;
     if (req?.body?.autoLoginToken) {
       checkParameter(req?.body, 'autoLoginToken', 'deviceToken');
@@ -105,11 +104,11 @@ export class LoginController {
     }
   }
 
-  static async getCheck(req, res) {
-    if (req.session.id) {
+  async ['get /check'](req, res) {
+    if (req.session?.id) {
       res.status(204).send();
     } else {
-      res.status(401).send();
+      res.status(401).send({ error: 'invalid credentials' });
     }
   }
 }

@@ -3,8 +3,9 @@ import { rt } from 'rh-test';
 
 describe('Privileges', () => {
   before(function () {
-    if (!rt.hasModule('rhAccess') || !rt.headers?.Authorization)
+    if (!rt.includesModule('rhAccess') || !rt.headers?.Authorization) {
       this.skip();
+    }
   });
 
   describe('General behavior', () => {

@@ -7,14 +7,16 @@ export const credentials = {
 
 describe('Autologin', () => {
   before(function () {
-    if (!rt.hasModule('rhAuth') || !rt.headers?.Authorization)
+    if (!rt.includesModule('rhAuth') || !rt.headers?.Authorization) {
       this.skip();
+    }
   });
 
   describe('Login for Auth module testing', () => {
     before(function () {
-      if (!rt.hasModule('rhAuth'))
+      if (!rt.includesModule('rhAuth')) {
         this.skip();
+      }
     });
 
     rt.autoLogin({ credentials });

@@ -3,7 +3,7 @@ import { rt } from 'rh-test';
 
 describe('User', () => {
   before(function () {
-    if (!rt.hasModule('rhAuth') || !rt.headers?.Authorization) {
+    if (!rt.includesModule('rhAuth') || !rt.headers?.Authorization) {
       this.skip();
     }
   });
