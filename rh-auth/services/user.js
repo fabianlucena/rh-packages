@@ -1,5 +1,4 @@
 import { IdentityService } from '../services/identity.js';
-import { conf } from '../conf.js';
 import { ServiceIdUuidEnabledOwnerModule } from 'rf-service';
 import { getSingle } from 'sql-util';
 import { _ConflictError } from 'http-util';
@@ -9,8 +8,12 @@ import dependency from 'rf-dependency';
 
 export class UserService extends ServiceIdUuidEnabledOwnerModule {
   references = {
-    type: 'userTypeService',
+    type: {
+      service: 'userTypeService',
+      attributes: ['uuid', 'name', 'title'],
+    },
   };
+  viewAttributes = ['uuid', 'isEnabled', 'username', 'displayName'];
   searchColumns = ['username', 'displayName'];
 
   init () {
@@ -57,33 +60,6 @@ export class UserService extends ServiceIdUuidEnabledOwnerModule {
     }
 
     return user;
-  }
-
-  /**
-   * Gets the options for use in the getList and getListAndCount methods.
-   * @param {object} options - options for the @see sequelize.findAll method.
-   *  - view: show visible peoperties.
-   * @returns {object}
-   */
-  async getListOptions(options) {
-    options = { ...options };
-
-    if (options.view) {
-      if (!options.attributes) {
-        options.attributes = ['uuid', 'isEnabled', 'username', 'displayName'];
-      }
-    }
-
-    options.include ??= [];
-
-    if (options.include?.Type) {
-      options.include.push({ 
-        model: conf.global.models.UserType, 
-        attributes: ['uuid', 'name', 'title']
-      });
-    }
-
-    return super.getListOptions(options);
   }
 
   /**
