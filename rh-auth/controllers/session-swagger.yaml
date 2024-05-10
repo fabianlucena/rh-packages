@@ -1,19 +1,86 @@
-definitions:
-  Session:
-    type: object
-    properties:
-      username:
-        type: string
-        required: true
-        example: admin
-      displayName:
-        type: string
-        required: true
-        example: Admin
-      typeId:
-        type: integer
-      isEnabled:
-        type: boolean
+components:
+  schemas:
+    SessionsList:
+      type: array
+      items:
+        type: object
+        properties:
+          uuid:
+            type: string
+            format: uuid
+            required: true
+            example: aa246616-5d6f-4d00-ac0c-f1d740d57d2c
+          index:
+            type: string
+            required: false
+            example: null
+          open:
+            type: string
+            format: date-time
+            required: true
+            example: 2025-05-09T08:30:00Z
+          close:
+            type: string
+            format: date-time
+            required: false
+            example: 2025-05-09T08:30:00Z
+          user:
+            type: object
+            properties:
+              uuid:
+                type: string
+                format: uuid
+                required: true
+                example: f023bdae-632e-455d-8614-fcb2ee8fd7d5
+              username:
+                type: string
+                required: true
+                example: admin
+              displayName:
+                type: string
+                required: true
+                example: Admin
+          device:
+            type: object
+            properties:
+              uuid:
+                type: string
+                format: uuid
+                required: true
+                example: 5629cf1b-2029-422f-804e-1c723ce426c7
+              data:
+                type: string
+                required: false
+                example: ""
+
+  responses:
+    MissingParameters:
+      description: Missing parameters or parameters error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
 
 /session:
   get:
@@ -45,27 +112,22 @@ definitions:
     responses:
       '200':
         description: Success
-        schema:
-          $ref: '#/definitions/Session'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionsList'
       '204':
         description: Success no session
       '400':
-        description: Missing parameters or parameters error
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/MissingParameters'
       '401':
-        description: Unauthorized
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/Unauthorized'
       '403':
-        description: Forbidden
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/Forbidden'
       '500':
-        description: Internal server error
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/InternalServerError'
 
+/session/{uuid}:
   delete:
     tags:
       - Session
@@ -77,26 +139,18 @@ definitions:
       - application/json
     parameters:
       - name: uuid
-        in: query
+        in: path
         type: string
-        format: UUID
-        required: false
+        format: uuid
+        required: true
     responses:
       '204':
         description: Success
       '400':
-        description: Missing parameters or parameters error
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/MissingParameters'
       '401':
-        description: Unauthorized
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/Unauthorized'
       '403':
-        description: Forbidden
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/Forbidden'
       '500':
-        description: Internal server error
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/InternalServerError'

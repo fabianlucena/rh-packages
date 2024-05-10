@@ -17,7 +17,12 @@ export class UserController {
     }
             
     const definitions = { uuid: 'uuid', username: 'string' };
-    let options = { view: true, limit: 10, offset: 0 };
+    let options = {
+      view: true,
+      limit: 10,
+      offset: 0,
+      include: { type: true },
+    };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
     const result = await UserService.singleton().getListAndCount(options);
@@ -103,10 +108,12 @@ export class UserController {
   }
 
   static async delete(req, res) {
-    const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, loc._cf('user', 'UUID'));
+    const allParams = { ...req?.body, ...req?.query, ...req?.params };
+    checkParameter(allParams, 'uuid');
+    const uuid = checkParameterUuid(allParams.uuid, loc._cf('user', 'UUID'));
     const rowsDeleted = await UserService.singleton().deleteForUuid(uuid);
     if (!rowsDeleted) {
-      throw new _HttpError(loc._cf('user', 'User with UUID %s does not exists.'), 403, uuid);
+      throw new _HttpError(loc._cf('user', 'User with UUID %s does not exists.'), 404, uuid);
     }
 
     res.sendStatus(204);

@@ -24,8 +24,9 @@ describe('User', () => {
       ['username', 'displayName'],
     ],
     forbiddenDoubleCreation: true,
-    getProperties: ['uuid', 'isEnabled', 'username', 'displayName', 'UserType'],
-    getCreated: { query:{ username:'test1' }},
+    getProperties: ['uuid', 'isEnabled', 'username', 'displayName', 'type'],
+    getCreated: { query: { username:'test1' }},
+    checkItem: ['rows', 0],
     getSingleByQuery: ['username', 'uuid'],
     getSingleByUrl: ['uuid'],
     patchParameters: {
@@ -51,8 +52,8 @@ describe('User', () => {
       get: {
         title: 'GET should get the recently create objects',
         query: { username: 'test2' },
-        bodyLengthOf: 1,
-        after: res => testUser = res.body[0],
+        checkItem: ['rows', 0],
+        after: (res, value) => testUser = value,
       },
     });
 
@@ -98,7 +99,7 @@ describe('User', () => {
 
     rt.testEndPoint({
       url: '/user',
-      title: 'POST delete the user',
+      title: 'DELETE delete the user',
       delete: {
         before: test => test.url += '/' + testUser.uuid,
       },

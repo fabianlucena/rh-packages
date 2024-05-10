@@ -1,25 +1,99 @@
-definitions:
-  User:
-    type: object
-    properties:
-      username:
-        type: string
-        required: true
-        example: admin
-      displayName:
-        type: string
-        required: true
-        example: Admin
-      typeId:
-        type: integer
-      isEnabled:
-        type: boolean
+components:
+  schemas:
+    UserCreate:
+      type: object
+      properties:
+        username:
+          type: string
+          required: true
+          example: admin
+        displayName:
+          type: string
+          required: true
+          example: Admin
+        typeId:
+          type: integer
+        isEnabled:
+          type: boolean
 
-  Error:
-    properties:
-      error:
-        type: string
-        example: Example error
+    UserUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+        displayName:
+          type: string
+        typeId:
+          type: integer
+        isEnabled:
+          type: boolean
+
+    UsersList:
+      type: array
+      items:
+        type: object
+        properties:
+          uuid:
+            name: string
+            format: uuid
+            example: eba56eb2-e364-4540-af0a-3dcc1c6120d6
+          username:
+            type: string
+            example: admin
+          displayName:
+            type: string
+            example: Admin
+          type:
+            type: object
+            properties:
+              uuid:
+                name: string
+                format: uuid
+                example: eba56eb2-e364-4540-af0a-3dcc1c6120d6
+              name:
+                name: string
+                example: user
+              title:
+                name: string
+                example: User
+          isEnabled:
+            type: boolean
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Example error
+
+  responses:
+    MissingParameters:
+      description: Missing parameters or parameters error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
 
 /user:
   post:
@@ -31,34 +105,27 @@ definitions:
       - bearerAuth: []
     produces:
       - application/json
-    parameters:
-      - name: body
-        in: body
-        schema:
-          $ref: '#/definitions/User'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserCreate'
     responses:
-      '200':
+      '204':
         description: Success
-        schema:
-          $ref: '#/definitions/Error'
       '400':
-        description: Missing parameters
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/MissingParameters'
       '401':
-        description: Unauthorized
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/Unauthorized'
       '403':
-        description: Forbidden
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/Forbidden'
 
   get:
     tags:
       - User
-    summary: Get user or an user list
-    description: If the UUID or username params is provided this endpoint returns a single user otherwise returns a list of users
+    summary: Get a users list
+    description: If the UUID or username params is provided this endpoint returns a list with a single user otherwise returns a list of many users
     security:
       - bearerAuth: []
     produces:
@@ -67,12 +134,10 @@ definitions:
       - name: uuid
         in: query
         type: string
-        format: UUID
-        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+        format: uuid
       - name: username
         in: query
         type: string
-        example: admin
       - name: limit
         in: query
         type: integer
@@ -82,27 +147,20 @@ definitions:
     responses:
       '200':
         description: Success
-        schema:
-          $ref: '#/definitions/User'
-      '204':
-        description: Success no user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsersList'
       '400':
-        description: Missing parameters or parameters error
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/MissingParameters'
       '401':
-        description: Unauthorized
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/Unauthorized'
       '403':
-        description: Forbidden
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/Forbidden'
       '500':
-        description: Internal server error
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/InternalServerError'
 
+/user/{uuid}:
   delete:
     tags:
       - User
@@ -114,30 +172,21 @@ definitions:
       - application/json
     parameters:
       - name: uuid
-        in: query
-        type: string
-        format: UUID
+        in: path
         required: true
-        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+        type: string
+        format: uuid
     responses:
       '204':
         description: Success
       '400':
-        description: Missing parameters or parameters error
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/MissingParameters'
       '401':
-        description: Unauthorized
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/Unauthorized'
       '403':
-        description: Forbidden
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/Forbidden'
       '500':
-        description: Internal server error
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/InternalServerError'
 
   patch:
     tags:
@@ -149,31 +198,30 @@ definitions:
     produces:
       - application/json
     parameters:
-      - name: body
-        in: body
-        schema:
-          $ref: '#/definitions/User'
+      - name: uuid
+        in: path
+        required: true
+        type: string
+        format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserUpdate'
     responses:
       '204':
         description: Success
       '400':
-        description: Missing parameters or parameters error
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/MissingParameters'
       '401':
-        description: Unauthorized
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/Unauthorized'
       '403':
-        description: Forbidden
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/Forbidden'
       '500':
-        description: Internal server error
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/InternalServerError'
                 
-/user/enable:
+/user/enable/{uuid}:
   post:
     tags:
       - User
@@ -185,32 +233,23 @@ definitions:
       - application/json
     parameters:
       - name: uuid
-        in: query
-        type: string
-        format: UUID
+        in: path
         required: true
-        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+        type: string
+        format: uuid
     responses:
       '204':
         description: Success
       '400':
-        description: Missing parameters or parameters error
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/MissingParameters'
       '401':
-        description: Unauthorized
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/Unauthorized'
       '403':
-        description: Forbidden
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/Forbidden'
       '500':
-        description: Internal server error
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/InternalServerError'
 
-/user/disable:
+/user/disable/{uuid}:
   post:
     tags:
       - User
@@ -222,27 +261,18 @@ definitions:
       - application/json
     parameters:
       - name: uuid
-        in: query
-        type: string
-        format: UUID
+        in: path
         required: true
-        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+        type: string
+        format: uuid
     responses:
       '204':
         description: Success
       '400':
-        description: Missing parameters or parameters error
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/MissingParameters'
       '401':
-        description: Unauthorized
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/Unauthorized'
       '403':
-        description: Forbidden
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/Forbidden'
       '500':
-        description: Internal server error
-        schema:
-          $ref: '#/definitions/Error'
+        $ref: '#/components/responses/InternalServerError'

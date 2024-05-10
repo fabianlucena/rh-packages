@@ -1,6 +1,6 @@
 import { SessionService, SessionClosedError, NoSessionForAuthTokenError } from '../services/session.js';
-import { getOptionsFromParamsAndOData, deleteHandler } from 'http-util';
-import { getErrorMessage, checkParameter, checkParameterUuid } from 'rf-util';
+import { getOptionsFromParamsAndOData } from 'http-util';
+import { getErrorMessage, checkParameter } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
 import { Controller } from 'rh-controller';
 import { dependency } from 'rf-dependency';
@@ -71,10 +71,10 @@ export class SessionController extends Controller {
   constructor() {
     super();
 
-    this.sessionService = dependency.get('sessionService');
+    this.service = dependency.get('sessionService');
   }
 
-  'getPermission' = ['ownsession.get', 'session.get'];
+  getPermission = ['ownsession.get', 'session.get'];
   async getData(req) {
     const definitions = { uuid: 'uuid', open: 'date', close: 'date', authToken: 'string', index: 'int' };
     let options = { view: true, limit: 10, offset: 0 };
@@ -90,7 +90,7 @@ export class SessionController extends Controller {
     const strftime = loc.strftime?
       (f, v) => loc.strftime(f, v):
       (f, v) => v;
-    const data = await this.sessionService.getListAndCount(options);
+    const data = await this.service.getListAndCount(options);
     data.rows = await Promise.all(data.rows.map(async row => {
       row.open = await strftime('%x %X', row.open);
       if (row.close) {
@@ -137,12 +137,5 @@ export class SessionController extends Controller {
     return grid;
   }
 
-  'deletePermission' = 'session.delete';
-  async delete(req, res) {
-    const loc = req.loc ?? defaultLoc;
-    checkParameter(req?.query, 'uuid');
-    const uuid = checkParameterUuid(req?.query?.uuid, loc._cf('session', 'UUID'));
-    const rowCount = await this.sessionService.deleteForUuid(uuid, { skipNoRowsError: true });
-    await deleteHandler(req, res, rowCount);
-  }
+  deleteForUuidPermission = 'session.delete';
 }
