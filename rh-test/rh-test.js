@@ -668,7 +668,7 @@ export const rt = {
         .send(test.parameters ?? {})
         .end((err, res) => {
           if (err) {
-            console.log(err);
+            console.error(err);
           } else if (test.check) {
             test.check(res, test);
           } else {
@@ -685,21 +685,22 @@ export const rt = {
    * @param {*} res response
    * @param {*} options options to check the response. Valid options are:
    *  {
-   *      status: 200,                    check the status code if exists except if is undefined or false, @see rt.checkStatus for reference.
-   *      haveCookies: cookies            check the headers response for the given cookies to exists. This option can be a string for a single cookie, a list for multiple cookies, or a object in this case check the cookies value.
-   *      noHaveCookies: cookies          check the headers response for the given cookies to not exists. This option can be a string for a single cookie, a list for multiple cookies, or a object in this case check the cookies to be distinct value.
-   *      empty: true,                    check the response body to be empty.
-   *      json: true,                     check the response body to be a JSON. If this option is not specified but haveProperties or noHaveProperties it is this option will be set to true.
-   *      bodyLengthOf: int               check the response body to have the given items bodyLengthOf.
-   *      checkItem: int|string           search a specific item in the body to check
-   *      lengthOf: int                   check the value to have the given items lengthOf.
-   *      haveProperties: properties,     check the value for the given properties to exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties value.
-   *      noHaveProperties: properties,   check the value for the given properties to not exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties to be distinct value.
-   *      propertyContains: {             check the value to have a property and its value contains the given values.
-   *          propertyName: ['one', 'two']
-   *      },
-   *      after: method                   call the method with response has parameter.
-   *      log: true|string|list           show a console.log of listed items from response. It this is true uses: [status, body]
+   *    status: 200,                    check the status code if exists except if is undefined or false, @see rt.checkStatus for reference.
+   *    haveCookies: cookies            check the headers response for the given cookies to exists. This option can be a string for a single cookie, a list for multiple cookies, or a object in this case check the cookies value.
+   *    noHaveCookies: cookies          check the headers response for the given cookies to not exists. This option can be a string for a single cookie, a list for multiple cookies, or a object in this case check the cookies to be distinct value.
+   *    empty: true,                    check the response body to be empty.
+   *    json: true,                     check the response body to be a JSON. If this option is not specified but haveProperties or noHaveProperties it is this option will be set to true.
+   *    bodyLengthOf: int               check the response body to have the given items bodyLengthOf.
+   *    checkItem: int|string           search a specific item in the body to check
+   *    lengthOf: int                   check the value to have the given items lengthOf.
+   *    lengthOfContainer: int          check the container of checkItem to have the given items lengthOfContainer.
+   *    haveProperties: properties,     check the value for the given properties to exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties value.
+   *    noHaveProperties: properties,   check the value for the given properties to not exist. This option can be a string for a comma separated properties, a list for multiple properties, or a object in this case check the properties to be distinct value.
+   *    propertyContains: {             check the value to have a property and its value contains the given values.
+   *      propertyName: ['one', 'two']
+   *    },
+   *    after: method                   call the method with the parameters: response, value, and container of value.
+   *    log: true|string|list           show a console.log of listed items from response. It this is true uses: [status, body]
    *  }
    */
   checkReponse(res, options) {
@@ -819,7 +820,7 @@ export const rt = {
       expect(res.text).to.be.empty;
     }
 
-    if (options.haveProperties || options.noHaveProperties || options.bodyLengthOf || options.lengthOf) {
+    if (options.haveProperties || options.noHaveProperties || options.bodyLengthOf || options.lengthOf || options.lengthOfContainer) {
       if (options.json === undefined) {
         options.json = true;
       }
@@ -834,22 +835,39 @@ export const rt = {
     }
 
     let value = res.body;
-    if (options.checkItem !== undefined) {
+    let container = res;
+    if (options.checkItem === true) {
+      if (typeof value === 'object' && value.rows) {
+        container = value;
+        value = value.rows;
+        if (Array.isArray(value) && value.length) {
+          container = value;
+          value = value[0];  
+        }
+      }
+    } else if (options.checkItem !== undefined) {
       if (Array.isArray(options.checkItem)) {
         for (const i of options.checkItem) {
+          expect(value).to.have.property(i);
           if (i in value) {
+            container = value;
             value = value[i];
           } else {
             throw new Error(`result does not have ${i} property`);
           }
         }
       } else {
+        container = value;
         value = value[options.checkItem];
       }
     }
 
     if (options.lengthOf) {
       expect(value).to.have.lengthOf(options.lengthOf);
+    }
+
+    if (options.lengthOfContainer) {
+      expect(container).to.have.lengthOf(options.lengthOfContainer);
     }
 
     if (options.haveProperties) {
@@ -903,7 +921,7 @@ export const rt = {
     }
 
     if (options.after) {
-      options.after(res);
+      options.after(res, value, container);
     }
   },
 
@@ -1156,7 +1174,7 @@ export const rt = {
    *  - POST should create a new object again
    *  - GET should get the recently create objects
    *  - PATCH updates the created objets
-   *  - DELETE delete the previously created object by URL
+   *  - DELETE delete the previously created object by path
    * 
    * @example
    *  {
@@ -1195,6 +1213,10 @@ export const rt = {
    *  }
    */
   testGeneralBehaviorEndPoint(options) {
+    if (options.checkItem === undefined) {
+      options.checkItem = true;
+    }
+
     describe('General behavior', () => {
       rt.testEndPoint({
         url: options.url,
@@ -1213,7 +1235,7 @@ export const rt = {
           },
           {
             title: 'GET should get a objects list',
-            checkItem: 0,
+            checkItem: options.checkItem,
             haveProperties: options.getProperties,
           },
         ]
@@ -1234,13 +1256,13 @@ export const rt = {
       if (options.getCreated) {
         rt.testEndPoint({
           url: options.url,
-          checkItem: 0,
+          checkItem: options.checkItem,
           haveProperties: options.getProperties,
           get: {
             title: 'GET should get the recently create objects',
             query: options.getCreated.query,
-            bodyLengthOf: 1,
-            after: res => createdObject = res.body[0],
+            checkItem: options.checkItem,
+            after: (res, val) => createdObject = val,
           },
         });
       }
@@ -1268,9 +1290,12 @@ export const rt = {
         const getOptions = gets[getName];
         const sendOptions = {
           url: options.url,
-          checkItem: 0,
+          checkItem: options.checkItem,
           haveProperties: options.getProperties,
-          get: { query: {}},
+          get: {
+            checkItem: options.checkItem,
+            query: {},
+          },
         };
 
         let getByPropertiesList = options[getName];
@@ -1315,11 +1340,11 @@ export const rt = {
             };
           }
 
-          if (getOptions.single) {
-            sendOptions.get.bodyLengthOf = 1;
-          } else if (sendOptions.get.bodyLengthOf !== undefined) {
-            delete sendOptions.get.bodyLengthOf;
-          }
+          /*if (getOptions.single) {
+            sendOptions.get.rowsLengthOf = 1;
+          } else if (sendOptions.get.rowsLengthOf !== undefined) {
+            delete sendOptions.get.rowsLengthOf;
+          }*/
 
           rt.testEndPoint(sendOptions);
         }
@@ -1356,7 +1381,7 @@ export const rt = {
             patch: {
               title: 'PATCH change data for object',
               parameters: patchParameters[i],
-              before: test => test.parameters[options.id] = createdObject[options.id],
+              before: test => test.url += '/' + createdObject[options.id],
             },
           });
 
@@ -1365,8 +1390,8 @@ export const rt = {
             get: {
               title: 'GET changed data object',
               before: test => test.url += '/' + createdObject[options.id],
-              bodyLengthOf: 1,
-              checkItem: 0,
+              lengthOfContainer: 1,
+              checkItem: true,
               haveProperties: patchParameters[i],
             },
           });
@@ -1407,14 +1432,14 @@ export const rt = {
               {
                 title: 'DELETE trying to delete a second time the same record must return an error',
                 before: test => test.query[options.id] = createdObject[options.id],
-                status: 403,
+                status: 404,
                 haveProperties: 'error,message',
               },
               {
                 title: 'GET trying to get the deleted object',
                 method: 'get',
                 before: test => test.query[options.id] = createdObject[options.id],
-                lengthOf: 0,
+                lengthOfContainer: 0,
               },
             ],
           },
@@ -1431,13 +1456,12 @@ export const rt = {
             {
               title: 'GET should get the recently create objects',
               query: options.getCreated.query,
-              bodyLengthOf: 1,
-              checkItem: 0,
+              checkItem: true,
               haveProperties: options.getProperties,
-              after: res => createdObject = res.body[0],
+              after: (res, val) => createdObject = val,
             },
             {
-              title: 'DELETE delete the previously created object by URL',
+              title: 'DELETE delete the previously created object by path',
               method: 'delete',
               before: test => test.url += '/' + createdObject[options.id],
             },
