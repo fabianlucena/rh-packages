@@ -10,7 +10,7 @@ definitions:
       error:
         name: string
         example: Example error
-        
+
 /current-site:
   get:
     tags:
@@ -30,7 +30,7 @@ definitions:
         description: No session
         schema:
           $ref: '#/definitions/Error'
-              
+
 /switch-site:
   post:
     tags:
