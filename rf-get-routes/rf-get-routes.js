@@ -33,13 +33,13 @@
  * method must be the same as above but with a suffix with the path separated 
  * by a blanck space. For Javascript limitations the name must be in quotes 
  * and square brackets.
- *    static ['post new-path-path'](...) {...}
- *    static ['get /:id'](...) {...}
+ *    static 'post new-path-path'(...) {...}
+ *    static 'get /:id'(...) {...}
  * 
  * Also a middleware and permission can be defined for the special subpath:
- *    static ['postMiddleware special/path'](...) {...}
- *    static ['postPermission special/path'] = 'permission';
- *    static ['post special/path'](...) {...}
+ *    static 'postMiddleware special/path'(...) {...}
+ *    static 'postPermission special/path' = 'permission';
+ *    static 'post special/path'(...) {...}
  * 
  * The result is an object with 4 properties:
  * {
@@ -101,10 +101,10 @@
  *   handlers the systems adds handlers for all to handle HTTP 405 error for
  *   skip this behavior set this option to true.
  */
-export function getRoutes(controllerClass, options) {
-  options ??= {};
 
-  const handlers = [
+export class Routes {
+  controllerClass = null;
+  handlers = [
     { name: 'get' },
     { name: 'post' },
     { name: 'patch' },
@@ -112,60 +112,185 @@ export function getRoutes(controllerClass, options) {
     { name: 'delete' },
     { name: 'options' },
   ];
+  paths = [];
+  routes = [];
 
-  if (options.appendHandlers) {
-    handlers.push(...options.appendHandlers);
-  }
-
-  handlers.push({ name: 'all' });
-
-  const props = [];
-
-  const controllerInstance = new controllerClass;
-
-  if (!options.skipNonStatic) {
-    props.push(
-      ...Object.getOwnPropertyNames(controllerInstance),
-      ...Object.getOwnPropertyNames(Object.getPrototypeOf(controllerInstance)),
-    );
-  }
-
-  if (!options.skipStatic) {
-    props.push(...Object.getOwnPropertyNames(controllerClass));
-  }
-
-  if (!options.skipParent) {
-    let parent = Object.getPrototypeOf(controllerClass);
-    while (parent && parent.name) {
-      props.push(...Object.getOwnPropertyNames(parent));
-      parent = Object.getPrototypeOf(parent);
+  constructor(controllerClass, options) {
+    this.controllerClass = controllerClass;
+    if (options) {
+      this.setOptions(options);
     }
   }
 
-  const paths = [];
-  const routes = [];
-  handlers.forEach(handler => {
-    const addToRoutes = [];
-    props.forEach(prop => {
+  setOptions(options) {
+    for (const k in options) {
+      if (this[k]) {
+        this[k](options[k]);
+      } else {
+        this[k] = options[k];
+      }
+    }
+  }
+
+  appendHandlers(handlers) {
+    this.handlers.push(...handlers);
+  }
+
+  extractProps() {
+    this.props = [];
+    this.controllerInstance = new this.controllerClass;
+
+    if (!this.skipNonStatic) {
+      this.props.push(
+        ...Object.getOwnPropertyNames(this.controllerInstance),
+        ...Object.getOwnPropertyNames(Object.getPrototypeOf(this.controllerInstance)),
+      );
+    }
+
+    if (!this.skipStatic) {
+      this.props.push(...Object.getOwnPropertyNames(this.controllerClass));
+    }
+
+    if (!this.skipParent) {
+      let parent = Object.getPrototypeOf(this.controllerClass);
+      while (parent && parent.name) {
+        this.props.push(...Object.getOwnPropertyNames(parent));
+        parent = Object.getPrototypeOf(parent);
+      }
+    }
+
+    return this.props;
+  }
+
+  extractHandlers() {
+    if (!this.skipAllHttpMethod) {
+      if (!this.handlers.find(h => h.name === 'all')) {
+        this.handlers.push({ name: 'all' });
+      }
+    }
+
+    return this.handlers;
+  }
+
+  extractPath() {
+    if (!this.path && this.path !== '') {
+      this.path = this.controllerInstance.path;
+      if (this.path === undefined) {
+        this.path = this.controllerClass.path;
+
+        if (!this.path && this.path !== '') {
+          this.path = '/{controller}';
+        }
+      }
+    }
+
+    if (this.path.search('{controller}')) {
+      let controller = this.controllerClass.name;
+      if (controller.endsWith('controller') || controller.endsWith('Controller')) {
+        controller = dasherize(controller.substring(0, controller.length - 10));
+      }
+      controller = dasherize(controller);
+
+      this.path = this.path.replace(/\{controller\}/g, controller);
+    }
+
+    if (this.path.search('{{}')) {
+      this.path = this.path.replace(/\{\{\}/g, '{');
+    }
+
+    return this.path;
+  }
+
+  extractCors() {
+    this.cors ||= [];
+
+    for (const route of this.routes) {
+      const httpMethod = route.httpMethod.toUpperCase();
+      if (httpMethod === 'ALL') {
+        continue;
+      }
+
+      const path = route.path;
+      const item = this.cors.find(i => i.path === path);
+      if (!item) {
+        this.cors.push({
+          path,
+          httpMethods: [httpMethod],
+        });
+      } else {
+        if (!item.httpMethods.includes(httpMethod)) {
+          item.httpMethods.push(httpMethod);
+        }
+      }
+    }
+
+    return this.cors;
+  }
+
+  extract() {
+    this.paths = [];
+    this.routes = [];
+
+    this.extractProps();
+    this.extractHandlers();
+    this.extractForHandlers();
+    this.extractPath();
+    this.extractCors();
+
+    if (!this.skipMethodNotAllowedHandler) {
+      for (const path of this.paths) {
+        if (!this.routes.find(r => r.httpMethod.toLowerCase() === 'all' && r.path === path)) {
+          this.routes.push({
+            httpMethod: 'all',
+            path,
+            handler: methodNotAllowedHandler,
+          });
+        }
+      }
+    }
+
+    this.routesData = {
+      controller: this.controllerClass,
+      path: this.path,
+      routes: this.routes,
+      cors: this.cors,
+      paths: this.paths,
+    };
+
+    return this.routesData;
+  }
+
+  extractForHandlers() {
+    this.handlers.forEach(h => this.extractForHandler(h));
+  }
+
+  extractForHandler(handler) {
+    this.props.forEach(prop => {
       const parts = prop.split(' ');
-      const name = parts[0];
+      let name = parts[0];
       if (handler.name !== name) {
-        return;
+        if (handler.handler) {
+          if (name.startsWith(handler.name) && 
+            (name.endsWith('Permission') || name.endsWith('Middleware'))
+          ) {
+            name = name.slice(0, -10);
+          } else {
+            return;
+          }
+        } else {
+          return;
+        }
       }
 
       const path = parts.length > 1?
         parts.slice(1).join(' '):
         '';
-      if (routes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
+      if (this.routes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
         return;
       }
 
-      if (addToRoutes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
-        return;
-      }
-
-      if (!paths.includes(path)) {
-        paths.push(path);
+      if (!this.paths.includes(path)) {
+        this.paths.push(path);
       }
 
       const route = {
@@ -173,16 +298,16 @@ export function getRoutes(controllerClass, options) {
         path,
       };
 
-      if (controllerInstance[handler.handler]) {
+      if (this.controllerInstance[handler.handler]) {
         route.method = handler.handler;
         route.methodIsStatic = false;
-      } else if (controllerClass[handler.handler]) {
+      } else if (this.controllerClass[handler.handler]) {
         route.method = handler.handler;
         route.methodIsStatic = true;
-      } else if (controllerInstance[prop]) {
+      } else if (this.controllerInstance[prop]) {
         route.method = prop;
         route.methodIsStatic = false;
-      } else if (controllerClass[prop]) {
+      } else if (this.controllerClass[prop]) {
         route.method = prop;
         route.methodIsStatic = true;
       }
@@ -192,88 +317,41 @@ export function getRoutes(controllerClass, options) {
         :'';
 
       let withSuffix = name + 'Permission' + pathSuffix;
-      if (controllerInstance[withSuffix]) {
-        route.permission = controllerInstance[withSuffix];
+      if (this.controllerInstance[withSuffix]) {
+        route.permission = this.controllerInstance[withSuffix];
         route.permissionIsStatic = false;
-      } else if (controllerClass[withSuffix]) {
-        route.permission = controllerClass[withSuffix];
+      } else if (this.controllerClass[withSuffix]) {
+        route.permission = this.controllerClass[withSuffix];
         route.permissionIsStatic = true;
       }
 
       withSuffix = name + 'Middleware' + pathSuffix;
-      if (controllerInstance[withSuffix]) {
-        route.middleware = controllerInstance[withSuffix];
+      if (this.controllerInstance[withSuffix]) {
+        route.middleware = this.controllerInstance[withSuffix];
         route.middlewareIsStatic = false;
-      } else if (controllerClass[withSuffix]) {
-        route.middleware = controllerClass[withSuffix];
+      } else if (this.controllerClass[withSuffix]) {
+        route.middleware = this.controllerClass[withSuffix];
         route.middlewareIsStatic = true;
       }
 
-      addToRoutes.push(route);
+      this.routes.push(route);
+
+      if (handler.inPathParam) {
+        const routeWithParam = { ... route };
+        routeWithParam.path += `/:${handler.inPathParam}`;
+        if (this.routes.find(r => r.path === routeWithParam.path && r.httpMethod === handler.httpMethod)) {
+          return;
+        }
+        
+        this.routes.push(routeWithParam);
+      }
     });
-
-    if (addToRoutes.length) {
-      routes.push(...addToRoutes);
-    }
-  });
-
-  let path = controllerInstance.path;
-  if (path === undefined) {
-    path = controllerClass.path;
-
-    if (path === undefined) {
-      path = '/{controller}';
-    }
   }
+}
 
-  if (path) {
-    if (path.search('{controller}')) {
-      let controller = controllerClass.name;
-      if (controller.endsWith('controller') || controller.endsWith('Controller')) {
-        controller = dasherize(controller.substring(0, controller.length - 10));
-      }
-      controller = dasherize(controller);
-
-      path = path.replace(/\{controller\}/g, controller);
-    }
-
-    if (path.search('{{}')) {
-      path = path.replace(/\{\{\}/g, '{');
-    }
-  }
-
-  const cors = [];
-  for (const route of routes) {
-    const httpMethod = route.httpMethod.toUpperCase();
-    if (httpMethod === 'ALL') {
-      continue;
-    }
-
-    const path = route.path;
-    const item = cors.find(i => i.path === path);
-    if (!item) {
-      cors.push({
-        path,
-        httpMethods: [httpMethod],
-      });
-    } else {
-      if (!item.httpMethods.includes(httpMethod)) {
-        item.httpMethods.push(httpMethod);
-      }
-    }
-  }
-
-  if (!options.skipMethodNotAllowedHandler) {
-    for (const path of paths) {
-      routes.push({
-        httpMethod: 'all',
-        path,
-        handler: methodNotAllowedHandler,
-      });
-    }
-  }
-
-  return { controller: controllerClass, path, routes, cors, paths };
+export function getRoutes(controllerClass, options) {
+  return (new Routes(controllerClass, options))
+    .extract();
 }
 
 // eslint-disable-next-line no-unused-vars
