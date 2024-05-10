@@ -113,7 +113,7 @@ definitions:
         schema:
           $ref: '#/definitions/Error'
       '400':
-        description: Missing parameters
+        description: Missing parameters or parameters error
         schema:
           $ref: '#/definitions/Error'
       '401':
