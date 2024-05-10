@@ -932,7 +932,7 @@ export async function configureSwagger(global) {
         components: {
           securitySchemes: {
             bearerAuth: {
-              description: 'Enter token in format (Bearer &lt;token&gt;)',
+              description: 'Enter token with the `Bearer: ` prefix, eg. "Bearer 57bad00fbd50ce1af7c7d2..."',
               type: 'apiKey',
               in: 'header',
               name: 'Authorization',
