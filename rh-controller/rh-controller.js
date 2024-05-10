@@ -1,4 +1,6 @@
 import { getRoutes } from 'rf-get-routes';
+import { checkParameter, checkParameterUuid } from 'rf-util';
+import { deleteHandler } from 'http-util';
 
 /**
  * This is the base class for HTTP controller definitions.
@@ -11,9 +13,10 @@ export class Controller {
       this,
       {
         appendHandlers: [
-          { name: 'getData', httpMethod: 'get', handler: 'defaultGet' },
-          { name: 'getGrid', httpMethod: 'get', handler: 'defaultGet' }, 
-          { name: 'getForm', httpMethod: 'get', handler: 'defaultGet' },
+          { name: 'getData',       httpMethod: 'get',    handler: 'defaultGet' },
+          { name: 'getGrid',       httpMethod: 'get',    handler: 'defaultGet' }, 
+          { name: 'getForm',       httpMethod: 'get',    handler: 'defaultGet' }, 
+          { name: 'deleteForUuid', httpMethod: 'delete', handler: 'defaultDeleteForUuid', inPathParam: 'uuid' },
         ],
       },
     );
@@ -121,5 +124,15 @@ export class Controller {
     }
 
     res.status(405).send({ error: 'HTTP method not allowed.' });
+  }
+
+  async defaultDeleteForUuid(req, res, next) {
+    await this.checkPermissionsFromProperty(req, res, next, 'deleteForUuidPermission');
+
+    const allParams = { ...req?.body, ...req?.query, ...req?.params };
+    checkParameter(allParams, 'uuid');
+    const uuid = checkParameterUuid(allParams.uuid);
+    const rowCount = await this.service.deleteForUuid(uuid, { skipNoRowsError: true });
+    await deleteHandler(req, res, rowCount);
   }
 }
