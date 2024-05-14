@@ -23,7 +23,7 @@ export class BranchService extends ServiceIdUuidNameEnabledOwnerModuleSharedTran
 
   async getListOptions(options) {
     if (options.where?.companyUuid) {
-      throw new Error('options.where.companyUuid is obsolete in BranchService.');
+      throw new Error('options.where.companyUuid is deprecated in BranchService.');
     }
 
     return super.getListOptions(options);

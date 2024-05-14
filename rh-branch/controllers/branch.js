@@ -132,7 +132,7 @@ export class BranchController {
       },
       {
         alias: 'owner',
-        name: 'Collaborators[0].User.displayName',
+        name: 'owner.user.displayName',
         type: 'text',
         label: await loc._cf('branch', 'Owner'),
       },

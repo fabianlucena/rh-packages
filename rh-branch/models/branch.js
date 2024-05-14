@@ -7,7 +7,7 @@ export default (sequelize, DataTypes) => {
     }
 
     static postAssociate(models) {
-      this.hasMany(models.Share, { as: 'collaborators', foreignKey: 'objectId' });
+      this.hasMany(models.Share, { as: 'share', foreignKey: 'objectId' });
     }
   }
   Branch.init({
