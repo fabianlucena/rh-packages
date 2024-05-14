@@ -96,9 +96,7 @@ async function getAttributes(entity, options) {
     const attributes = await conf.eavAttributeService.getForEntityName(
       entity,
       {
-        include: {
-          AttributeType: true,
-        },
+        include: { type: true },
         loc: options.loc,
       }
     );

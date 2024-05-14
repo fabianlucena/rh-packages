@@ -41,11 +41,11 @@ export class EavValueTagService extends ServiceIdUuidTranslatable {
 
   async getListOptions(options) {
     if (options.where?.attributeTagUuid) {
-      throw new Error('options.where.attributeTagUuid is obsolete in EavValueTagService.');
+      throw new Error('options.where.attributeTagUuid is deprecated in EavValueTagService.');
     }
     
     if (options.where?.tagId) {
-      throw new Error('options.where.attributeTagUuid is obsolete in EavValueTagService.');
+      throw new Error('options.where.attributeTagUuid is deprecated in EavValueTagService.');
     }
 
     return super.getListOptions(options);
