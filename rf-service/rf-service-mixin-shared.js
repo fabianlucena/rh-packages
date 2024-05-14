@@ -2,6 +2,18 @@ import { CheckError, _Error } from './rf-service-errors.js';
 import { loc } from 'rf-locale';
 
 export const ServiceMixinShared = Service => class ServiceShared extends Service {
+  prepareReferences() {
+    if (!this.references.owner) {
+      this.references.owner = { service: 'shareService' };
+    }
+
+    if (!this.references.share) {
+      this.references.share = true;
+    }
+
+    super.prepareReferences();
+  }
+
   async validateForCreation(data) {
     if (!data.owner && !data.ownerId && !this.skipNoOwnerCheck) {
       throw new CheckError(loc._f('No owner specified.'));
@@ -81,25 +93,31 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
   }
 
   async getListOptions(options) {
-    if (options?.include?.Owner) {
+    if (options?.include?.owner) {
+      let ownerOptions = options.include.owner;
+      if (ownerOptions === true || typeof options.include.owner !== 'object') {
+        ownerOptions = {};
+      }
 
       options = {
         ...options,
         include: {
           ...options?.include,
-          Collaborators: {
-            ...options?.include?.Collaborators,
+          owner: {
+            attributes: [],
+            ...ownerOptions,
             include: {
-              EntityName: {
+              objectName: {
                 required: false,
                 attributes: [],
                 where: { name: this.shareObject ?? this.name },
               },
-              ShareType: {
+              type: {
                 required: false,
-                attributes: ['name', 'title'],
+                attributes: [],
+                where: { name: 'owner' },
               },
-              User: {
+              user: {
                 required: false,
                 attributes: ['uuid', 'userName', 'displayName'],
               },
@@ -108,21 +126,16 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
         },
       };
 
-      if (options.where?.type !== undefined) {
-        options.include.Collaborators.include.ShareType.where.name = options.where.type;
-        delete options.where.type;
+      if (options.where?.shareType !== undefined) {
+        options.include.owner.include.shareType.where.name = options.where.shareType;
+        delete options.where.shareType;
       }
 
-      if (options.isEnabled !== undefined) {
-        options.where.isEnabled = options.isEnabled;
-        delete options.isEnabled;
-      }
-
-      if (options.where.isEnabled !== undefined) {
-        options.include.Collaborators.include.User.where.name = options.where.isEnabled;
-        options.include.Collaborators.include.ShareType.where.name = options.where.isEnabled;
-        options.include.Collaborators.where.name = options.where.isEnabled;
-        delete options.where.isEnabled;
+      const isEnabled = options.isEnabled ?? options.where?.isEnabled;
+      if (isEnabled !== undefined) {
+        options.include.owner.include.user.where.isEnabled = isEnabled;
+        options.include.owner.include.shareType.where.isEnabled = isEnabled;
+        options.include.owner.where.isEnabled = isEnabled;
       }
     }
 
