@@ -154,7 +154,7 @@ export class ModelSequelize {
           include = { attributes: [] };
         }
 
-        const sanitizedInclude = this.sanitizeOptions(include, reference.service, { moreValidOptions: ['as', 'required'] });
+        const sanitizedInclude = reference.service.model.sanitizeOptions(include, reference.service, { moreValidOptions: ['as', 'required'] });
 
         sanitizedInclude.model = include.model ?? reference.service?.model?.model;
         if (!sanitizedInclude.model) {
