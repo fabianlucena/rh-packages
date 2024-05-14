@@ -3,12 +3,12 @@ import { checkDataForMissingProperties } from 'sql-util';
 
 export class ShareService extends ServiceEnabledOwnerModuleTranslatable {
   references = {
-    ObjectName: {
-      service: 'ModelEntityName',
+    objectName: {
+      service: 'modelEntityNameService',
       createIfNotExists: true,
     },
-    User: true,
-    Type: true,
+    user: true,
+    type: { service: 'shareTypeService' },
   };
     
   async validateForCreation(data) {

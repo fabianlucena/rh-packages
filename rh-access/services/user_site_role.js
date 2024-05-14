@@ -56,15 +56,15 @@ export class UserSiteRoleService extends ServiceEnabledOwnerModuleTranslatable {
 
   async getListOptions(options) {
     if (options.where?.userUuid) {
-      throw new Error('options.where.userUuid is obsolete in UserSiteRoleService.');
+      throw new Error('options.where.userUuid is deprecated in UserSiteRoleService.');
     }
 
     if (options.where?.roleUuid) {
-      throw new Error('options.where.roleUuid is obsolete in UserSiteRoleService.');
+      throw new Error('options.where.roleUuid is deprecated in UserSiteRoleService.');
     }
 
     if (options.where?.siteUuid) {
-      throw new Error('options.where.siteUuid is obsolete in UserSiteRoleService.');
+      throw new Error('options.where.siteUuid is deprecated in UserSiteRoleService.');
     }
        
     options = { ...options };
