@@ -80,7 +80,7 @@ export class ProjectController {
       limit: 10,
       offset: 0,
       loc: req.loc,
-      include: { Owner: true },
+      include: { owner: true },
     };
 
     if (conf.global.models.Company) {
@@ -148,7 +148,7 @@ export class ProjectController {
     columns.push(
       {
         alias: 'owner',
-        name: 'Collaborators[0].User.displayName',
+        name: 'owner.user.displayName',
         type: 'text',
         label: await loc._cf('project', 'Owner'),
       },

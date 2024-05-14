@@ -58,7 +58,7 @@ export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslata
 
   async getListOptions(options) {
     if (options.where?.companyUuid) {
-      throw new Error('Where option companyUuid format is obsolete.');
+      throw new Error('Where option companyUuid format is deprecated.');
     }
 
     return super.getListOptions(options);
