@@ -35,6 +35,42 @@ export class _HttpError extends Error {
   }
 }
 
+export class NotFoundError extends Error {
+  static VisibleProperties = ['message', 'title'];
+
+  statusCode = 404;
+
+  constructor(message, options, ...params) {
+    super();
+    setUpError(
+      this,
+      {
+        message,
+        options,
+        params
+      }
+    );
+  }
+}
+
+export class _NotFoundError extends Error {
+  static VisibleProperties = ['message', 'title', 'redirectTo'];
+
+  statusCode = 404;
+
+  constructor(_message, options, ...params) {
+    super();
+    setUpError(
+      this,
+      {
+        _message,
+        ...options,
+        params
+      }
+    );
+  }
+}
+
 export class UnauthorizedError extends Error {
   static VisibleProperties = ['message', 'title'];
 
@@ -304,16 +340,16 @@ export async function configureControllers(controllers, controllersPath, options
     .filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js' && (!options?.exclude || !options.exclude.test(file)));
 
   for(const file of files) {
-    const modules = await import('file://' + path.join(controllersPath, file));
-    for (const k in modules) {
-      const module = modules[k];
-      let name = k;
+    const module = await import('file://' + path.join(controllersPath, file));
+    for (const controllerName in module) {
+      const controller = module[controllerName];
+      let name = controllerName;
       const l = name.length;
       if (l > 10 && name.endsWith('Controller')) {
         name = name.substring(0, l - 10);
       }
 
-      controllers[name] = module;
+      controllers[name] = controller;
     }
   }
 }
@@ -639,7 +675,7 @@ export async function configureModule(global, module) {
     }
   }
 
-  global.modules[module.name] = module;
+  global.modules.push(module);
   module.global = global;
 
   if (module.configure) {
@@ -702,7 +738,7 @@ export async function installModule(global, module) {
 }
 
 export async function configureModules(global, modules) {
-  global.modules ||= {};
+  global.modules ||= [];
   global.services ||= {};
   global.controllers ||= {};
   global.data ||= {};
@@ -911,8 +947,7 @@ export async function configureSwagger(global) {
     const swaggerUI = await import('swagger-ui-express');
 
     let apis = [];
-    for (const moduleName in global.modules) {
-      const module = global.modules[moduleName];
+    for (const module of global.modules) {
       apis.push(
         ...[module.routesPath, module.controllersPath]
           .filter(i => i)
