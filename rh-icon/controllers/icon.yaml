@@ -1,0 +1,49 @@
+definitions:
+  Error:
+    properties:
+      error:
+        type: string
+        example: Example error
+
+/icon:
+  get:
+    tags:
+      - Icon
+    summary: Get an icon
+    description: Get an icon for the given path name
+    produces:
+      - application/json
+      - image/apng
+      - image/avif
+      - image/gif
+      - image/jpeg
+      - image/png
+      - image/svg+xml
+      - image/webp
+    parameters:
+      - name: name
+        in: path
+        type: string
+    responses:
+      '304':
+        description: Not modified
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/definitions/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/definitions/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/definitions/Error'
+      '404':
+        description: Not found
+        schema:
+          $ref: '#/definitions/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/definitions/Error'
