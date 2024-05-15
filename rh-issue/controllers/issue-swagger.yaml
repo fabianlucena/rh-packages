@@ -61,6 +61,48 @@ definitions:
             required: true
             example: Admin
 
+  Error:
+    properties:
+      error:
+        type: string
+        example: Example error
+
+  Type:
+    properties:
+      uuid:
+        type: string
+        required: true
+      title:
+        type: string
+        required: true
+
+  Project:
+    properties:
+      uuid:
+        type: string
+        required: true
+      title:
+        type: string
+        required: true
+
+  Priority:
+    properties:
+      uuid:
+        type: string
+        required: true
+      title:
+        type: string
+        required: true
+
+  CloseReason:
+    properties:
+      uuid:
+        type: string
+        required: true
+      title:
+        type: string
+        required: true
+
 /issue:
   post:
     tags:
@@ -72,10 +114,10 @@ definitions:
     produces:
       - application/json
     parameters:
-        - name: body
-          in: body
-          schema:
-            $ref: '#/definitions/Issue'
+      - name: body
+        in: body
+        schema:
+          $ref: '#/definitions/Issue'
     responses:
       '200':
         description: Success
@@ -112,7 +154,6 @@ definitions:
       - name: name
         in: query
         type: string
-        example: admin
       - name: limit
         in: query
         type: integer
@@ -151,7 +192,7 @@ definitions:
     security:
       - bearerAuth: []
     produces:
-        - application/json
+      - application/json
     parameters:
       - name: uuid
         in: query
@@ -269,7 +310,7 @@ definitions:
         example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
     responses:
       '204':
-          description: Success
+        description: Success
       '400':
         description: Missing parameters or parameters error
         schema:
@@ -306,7 +347,6 @@ definitions:
       - name: name
         in: query
         type: string
-        example: admin
       - name: limit
         in: query
         type: integer
@@ -356,7 +396,6 @@ definitions:
       - name: name
         in: query
         type: string
-        example: admin
       - name: limit
         in: query
         type: integer
@@ -406,7 +445,6 @@ definitions:
       - name: name
         in: query
         type: string
-        example: admin
       - name: limit
         in: query
         type: integer
@@ -456,7 +494,6 @@ definitions:
       - name: name
         in: query
         type: string
-        example: admin
       - name: limit
         in: query
         type: integer
