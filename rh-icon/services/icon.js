@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import path from 'path';
 import fs from 'fs';
 import { conf } from '../conf.js';
@@ -22,23 +23,34 @@ export class IconService {
     return service;
   }
 
-  getForNameOrNull(name) {
-    if (!IconService.cache[name]) {
-      const { modules } = conf.global;
-      for (const module of modules) {
-        if (module.iconsPath) {
-          const fullPath = path.join(module.iconsPath, name);
-          if (fs.existsSync(fullPath)) {
-            IconService.cache[name] = fullPath;
+  searchIconPathInModulesForName(name) {
+    const ext = path.extname(name);
+    const { modules } = conf.global;
+    for (const module of modules) {
+      if (module.iconsPath) {
+        let fullPath = path.join(module.iconsPath, name);
+        if (fs.existsSync(fullPath)) {
+          return fullPath;
+        } else if (!ext) {
+          for (const iconExt of conf.iconExtensions) {
+            fullPath = path.join(module.iconsPath, `${name}.${iconExt}`);
+            // eslint-disable-next-line max-depth
+            if (fs.existsSync(fullPath)) {
+              return fullPath;
+            }   
           }
         }
       }
-
-      if (!IconService.cache[name]) {
-        return null;
-      }
     }
 
-    return Buffer.from(fs.readFileSync(IconService.cache[name], 'binary'), 'binary');
+    return null;
+  }
+
+  getPathForNameOrNull(name) {
+    if (!IconService.cache[name] && typeof IconService.cache[name] === 'undefined') {
+      IconService.cache[name] = this.searchIconPathInModulesForName(name);
+    }
+
+    return IconService.cache[name];
   }
 }

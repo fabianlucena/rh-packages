@@ -14,4 +14,12 @@ export const conf = {
   iconsPath: `${dirname}/icons`,
   controllersPath: `${dirname}/controllers`,
   servicesPath: `${dirname}/services`,
+  iconExtensions: [
+    'svg',
+    'ico',
+    'png',
+    'gif',
+    'jpg',
+    'jpeg',
+  ],
 };
