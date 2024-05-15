@@ -11,8 +11,9 @@ export const conf = {
   path: dirname,
   schema: 'auth',
   init: [],
-  routesPath: dirname + '/routes',
-  modelsPath: dirname + '/models',
-  servicesPath: dirname + '/services',
-  controllersPath: dirname + '/controllers',
+  routesPath: `${dirname}/routes`,
+  modelsPath: `${dirname}/models`,
+  servicesPath: `${dirname}/services`,
+  controllersPath: `${dirname}/controllers`,
+  iconsPath: `${dirname}/icons`,
 };
