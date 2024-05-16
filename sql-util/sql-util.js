@@ -1,5 +1,5 @@
 import { ModelSequelize } from 'rf-model-sequelize';
-import { setUpError, deepComplete, replace, _Error, format } from 'rf-util';
+import { setUpError, deepComplete, replace, format } from 'rf-util';
 import { loc, defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
 import fs from 'fs';
@@ -98,7 +98,7 @@ export async function configureModels(modelsPath, sequelize) {
         const model = (await import('file://' + path.join(modelsPath, file))).default(sequelize, sequelize.Sequelize.DataTypes);
         if (model.prototype instanceof sequelize.Sequelize.Model) {
           let modelName = model.name[0].toLowerCase() + model.name.slice(1) + 'Model';
-          dependency.addStatic(modelName, new ModelSequelize(model));
+          dependency.addStatic(modelName, new ModelSequelize(model, sequelize));
         }
       })
   );
