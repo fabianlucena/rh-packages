@@ -1,6 +1,6 @@
 /**
- * This function extracts routes from statics and non statics class methods.
- * The class from what the metods are extracted is called the controller.
+ * This class extracts routes from statics and non statics class methods.
+ * The class from the metods are extracted is called the controller.
  * 
  * First of all a base path for all of the endpoints is defined. The path is 
  * taken  from the non static (preferred) or static path property, if no path 
@@ -33,7 +33,7 @@
  * method must be the same as above but with a suffix with the path separated 
  * by a blanck space. For Javascript limitations the name must be in quotes 
  * and square brackets.
- *    static 'post new-path-path'(...) {...}
+ *    static 'post new-path'(...) {...}
  *    static 'get /:id'(...) {...}
  * 
  * Also a middleware and permission can be defined for the special subpath:
@@ -41,7 +41,7 @@
  *    static 'postPermission special/path' = 'permission';
  *    static 'post special/path'(...) {...}
  * 
- * The result is an object with 4 properties:
+ * The result is an object with 5 properties:
  * {
  *  controller,
  *  path,
@@ -79,8 +79,8 @@
  * 
  * 
  * Extraction options:
- * The behavior of this function can be customized using the options parameter. 
- * This parameter is an objet with the following properties:
+ * The behavior of this function can be customized using the member properties. 
+ * This members can be any of the followings:
  * 
  * - skipStatic: [boolean]{default:false} avoid to scan for the static 
  *   methods and properties. 
@@ -90,13 +90,22 @@
  *   static methods and properties.
  * - appendHandlers: [array]{default:undefined} add other handlers to extract, 
  *   for example 
- *   [{name: 'getData', httpMethod: 'get', handler: 'defaultGet'}],
- *   will search for getData method name in the controlles class, and will 
- *   generate a route for the HTTP method GET, using the defaultGet method 
- *   as handler: This minds that defaultGet will call to getData. This 
- *   extraction can be combined con subpath, premissions, and middlewares. 
- *   In this case, if you override the get method remember to call 
- *   this.defaultGet after return to properly handle.
+ *   [
+ *    { name: 'getData',       httpMethod: 'get',  handler: 'defaultGet', },
+ *    { name: 'enableForUuid', httpMethod: 'post', handler: 'defaultEnableForUuid', inPathParam: 'uuid', path: '/enable' },
+ *  ],
+ * 
+ *   The first one will search for getData method name in the controller class, 
+ *    and will generate a route for the HTTP method GET, using the defaultGet 
+ *    method as handler: This minds that defaultGet will call to getData. This 
+ *    extraction can be combined con subpath, premissions, and middlewares. 
+ *    In this case, if you override the get method remember to call 
+ *    this.defaultGet after return to properly handle.
+ *  The second one will search of a enableForUuid or enableForUuidPermission
+ *    and generate a route for  for the HTTP method POST, using the 
+ *    defaultEnableForUuid. If no path defined for enableForUuid method the path
+ *    /enable will be used. And, because the inPathParam property member, a 
+ *    route for UUID in URL parameter will be generated too.
  * - skipMethodNotAllowedHandler: [bool]{default:false} after the routes 
  *   handlers the systems adds handlers for all to handle HTTP 405 error for
  *   skip this behavior set this option to true.

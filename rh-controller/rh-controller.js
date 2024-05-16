@@ -8,6 +8,28 @@ import { _HttpError } from 'http-util';
  * This is the base class for HTTP controller definitions.
  * The controller takes the functions methods static and non static and map to
  * routes. For more information please referer to rf-get-routes library.
+ * 
+ *  This generate the routes from the functions members:
+ *  - get
+ *  - post
+ *  - delete
+ *  - patch
+ *  - put
+ *  - options
+ * 
+ *  Also a get route will generated if any member function is founded:
+ *  - getForm: for GET and using the defaultGet handler
+ *  - getGrid: for GET and using the defaultGet handler
+ *  - getData: for GET and using the defaultGet handler
+ *  - getFormPermission: same as getForm
+ *  - getGridPermission: same as getGrid
+ *  - getDataPermission: same as getData
+ *  - deleteForUuid: for DELETE and using the defaultDeleteForUuid handler
+ *  - enableForUuid:  for POST and using the defaultEnableForUuid handler in path /enable
+ *  - disableForUuid: for POST and using the defaultDisableForUuid handler in path /disable
+ *  - deleteForUuidPermission: same as deleteForUuid
+ *  - enableForUuidPermission: same as enableForUuid
+ *  - disableForUuidPermission: same as disableForUuid
  */
 export class Controller {
   static routes() {
