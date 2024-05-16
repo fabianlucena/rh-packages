@@ -48,8 +48,9 @@ const opMap = {
 export class ModelSequelize {
   static cache = {};
 
-  constructor(model) {
+  constructor(model, sequelize) {
     this.model = model;
+    this.sequelize = sequelize;
   }
 
   getSanitizedOptions(options, service) {
@@ -80,6 +81,10 @@ export class ModelSequelize {
       }
 
       sanitizedOptions[k] = options[k];
+    }
+
+    if (sanitizedOptions.attributes === true) {
+      delete sanitizedOptions.attributes;
     }
 
     // Extract where includes
@@ -263,6 +268,6 @@ export class ModelSequelize {
   }
 
   async createTransaction() {
-    return this.model.transaction();
+    return this.sequelize.transaction();
   }
 }
