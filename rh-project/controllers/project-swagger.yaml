@@ -1,32 +1,31 @@
-definitions:
-  Project:
-    type: object
-    properties:
-      name:
-        type: string
-        required: true
-      title:
-        type: string
-        required: true
-      typeId:
-        type: integer
-      isEnabled:
-        type: boolean
-        
-  Error:
-    properties:
-      error:
-        type: string
-        example: Example error
+components:
+  schemas:
+    Project:
+      type: object
+      properties:
+        name:
+          type: string
+          required: true
+        title:
+          type: string
+          required: true
+        isEnabled:
+          type: boolean
+          
+    Error:
+      properties:
+        error:
+          type: string
+          example: Example error
 
-  Company:
-    properties:
-      uuid:
-        type: string
-        required: true
-      title:
-        type: string
-        required: true
+    Company:
+      properties:
+        uuid:
+          type: string
+          required: true
+        title:
+          type: string
+          required: true
 
 /project:
   post:
@@ -38,28 +37,29 @@ definitions:
       - bearerAuth: []
     produces:
       - application/json
-    parameters:
-      - name: body
-        in: body
-        schema:
-          $ref: '#/definitions/Project'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Project'
     responses:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
   get:
     tags:
@@ -89,25 +89,25 @@ definitions:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/Project'
+          $ref: '#/components/schemas/Project'
       '204':
         description: Success no project
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
   delete:
     tags:
@@ -131,19 +131,19 @@ definitions:
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
   patch:
     tags:
@@ -154,30 +154,31 @@ definitions:
       - bearerAuth: []
     produces:
       - application/json
-    parameters:
-      - name: body
-        in: body
-        schema:
-            $ref: '#/definitions/Project'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Project'
     responses:
       '204':
         description: Success
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
 /project/enable:
   post:
@@ -202,19 +203,19 @@ definitions:
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
 /project/disable:
   post:
@@ -239,19 +240,19 @@ definitions:
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
 /project/company:
   get:
@@ -282,22 +283,22 @@ definitions:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/Company'
+          $ref: '#/components/schemas/Company'
       '204':
         description: Success no company
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'

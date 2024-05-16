@@ -1,14 +1,15 @@
-definitions:
-  projectTag:
-    properties:
-      name:
-        type: string
-  Error:
-    properties:
-      error:
-        name: string
-        example: Example error
+components:
+  schemas:
+    projectTag:
+      properties:
+        name:
+          type: string
 
+    Error:
+      properties:
+        error:
+          name: string
+          example: Example error
 
 /project-tag:
   get:
@@ -22,8 +23,8 @@ definitions:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/projectTag'
+          $ref: '#/components/schemas/projectTag'
       '403':
         description: No session
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'

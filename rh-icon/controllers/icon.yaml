@@ -1,9 +1,10 @@
-definitions:
-  Error:
-    properties:
-      error:
-        type: string
-        example: Example error
+components:
+  schemas:
+    Error:
+      properties:
+        error:
+          type: string
+          example: Example error
 
 /icon:
   get:
@@ -30,20 +31,20 @@ definitions:
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '404':
         description: Not found
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'

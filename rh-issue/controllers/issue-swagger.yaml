@@ -1,107 +1,108 @@
-definitions:
-  Issue:
-    type: object
-    properties:
-      isEnabled:
-        type: boolean
-      name:
-        type: string
-        required: true
-        example: admin
-      title:
-        type: string
-        required: true
-        example: Admin
-      Project:
-        type: object
-        properties:
-          name:
-            type: string
-            required: true
-            example: admin
-          title:
-            type: string
-            required: true
-            example: Admin
-      Type:
-        type: object
-        properties:
-          name:
-            type: string
-            required: true
-            example: admin
-          title:
-            type: string
-            required: true
-            example: Admin
-      description:
-        type: string
-        required: true
-        example: Admin
-      Status:
-        type: object
-        properties:
-          name:
-            type: string
-            required: true
-            example: admin
-          title:
-            type: string
-            required: true
-            example: Admin
-      Workflow:
-        type: object
-        properties:
-          name:
-            type: string
-            required: true
-            example: admin
-          title:
-            type: string
-            required: true
-            example: Admin
+components:
+  schemas:
+    Issue:
+      type: object
+      properties:
+        isEnabled:
+          type: boolean
+        name:
+          type: string
+          required: true
+          example: admin
+        title:
+          type: string
+          required: true
+          example: Admin
+        Project:
+          type: object
+          properties:
+            name:
+              type: string
+              required: true
+              example: admin
+            title:
+              type: string
+              required: true
+              example: Admin
+        Type:
+          type: object
+          properties:
+            name:
+              type: string
+              required: true
+              example: admin
+            title:
+              type: string
+              required: true
+              example: Admin
+        description:
+          type: string
+          required: true
+          example: Admin
+        Status:
+          type: object
+          properties:
+            name:
+              type: string
+              required: true
+              example: admin
+            title:
+              type: string
+              required: true
+              example: Admin
+        Workflow:
+          type: object
+          properties:
+            name:
+              type: string
+              required: true
+              example: admin
+            title:
+              type: string
+              required: true
+              example: Admin
 
-  Error:
-    properties:
-      error:
-        type: string
-        example: Example error
+    Error:
+      properties:
+        error:
+          type: string
+          example: Example error
 
-  Type:
-    properties:
-      uuid:
-        type: string
-        required: true
-      title:
-        type: string
-        required: true
+    Type:
+      properties:
+        uuid:
+          type: string
+          required: true
+        title:
+          type: string
+          required: true
 
-  Project:
-    properties:
-      uuid:
-        type: string
-        required: true
-      title:
-        type: string
-        required: true
+    Project:
+      properties:
+        uuid:
+          type: string
+          required: true
+        title:
+          type: string
+          required: true
 
-  Priority:
-    properties:
-      uuid:
-        type: string
-        required: true
-      title:
-        type: string
-        required: true
+    Priority:
+      properties:
+        uuid:
+          type: string
+          required: true
+        title:
+          type: string
+          required: true
 
-  CloseReason:
-    properties:
-      uuid:
-        type: string
-        required: true
-      title:
-        type: string
-        required: true
+    CloseReason:
+      properties:
+        uuid:
+          type: string
+          required: true
+        title:
+          type: string
+          required: true
 
 /issue:
   post:
@@ -113,28 +114,29 @@ definitions:
       - bearerAuth: []
     produces:
       - application/json
-    parameters:
-      - name: body
-        in: body
-        schema:
-          $ref: '#/definitions/Issue'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Issue'
     responses:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
   get:
     tags:
@@ -164,25 +166,25 @@ definitions:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/Issue'
+          $ref: '#/components/schemas/Issue'
       '204':
         description: Success no issue
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
   delete:
     tags:
@@ -206,19 +208,19 @@ definitions:
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
   patch:
     tags:
@@ -229,30 +231,31 @@ definitions:
       - bearerAuth: []
     produces:
       - application/json
-    parameters:
-      - name: body
-        in: body
-        schema:
-          $ref: '#/definitions/Issue'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Issue'
     responses:
       '204':
         description: Success
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
 /issue/enable:
   post:
@@ -277,19 +280,19 @@ definitions:
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
 /issue/disable:
   post:
@@ -314,19 +317,19 @@ definitions:
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
 /issue/project:
   get:
@@ -357,25 +360,25 @@ definitions:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/Project'
+          $ref: '#/components/schemas/Project'
       '204':
         description: Success no project
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
 /issue/type:
   get:
@@ -406,25 +409,25 @@ definitions:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/Type'
+          $ref: '#/components/schemas/Type'
       '204':
         description: Success no type
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
 /issue/priority:
   get:
@@ -455,25 +458,25 @@ definitions:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/Priority'
+          $ref: '#/components/schemas/Priority'
       '204':
         description: Success no priority
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
 /issue/close-reason:
   get:
@@ -504,22 +507,22 @@ definitions:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/CloseReason'
+          $ref: '#/components/schemas/CloseReason'
       '204':
         description: Success no close reason
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
