@@ -40,12 +40,12 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
     const menuItemsName = menuItems.map(menuItem => menuItem.name).filter(menuItemName => menuItemName);
     let parentsNameToLoad = [];
     for (const menuItem of menuItems) {
-      const parentName = menuItem.Parent?.name;
+      const parentName = menuItem.parent?.name;
       if (!parentName || menuItemsName.includes(parentName) || parentsNameToLoad.includes(parentName)) {
         continue;
       }
 
-      parentsNameToLoad.push(menuItem.Parent.name);
+      parentsNameToLoad.push(menuItem.parent.name);
     }
 
     const parentOptions = {
@@ -69,12 +69,12 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
             
       parentsNameToLoad = [];
       for (const menuItem of menuItems) {
-        const parentName = menuItem.Parent?.name;
+        const parentName = menuItem.parent?.name;
         if (!parentName || menuItemsName.includes(parentName) || parentsNameToLoad.includes(parentName)) {
           continue;
         }
 
-        parentsNameToLoad.push(menuItem.Parent.name);
+        parentsNameToLoad.push(menuItem.parent.name);
       }
     }
 

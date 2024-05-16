@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import path from 'path';
 import fs from 'fs';
 import { conf } from '../conf.js';
@@ -34,7 +33,6 @@ export class IconService {
         } else if (!ext) {
           for (const iconExt of conf.iconExtensions) {
             fullPath = path.join(module.iconsPath, `${name}.${iconExt}`);
-            // eslint-disable-next-line max-depth
             if (fs.existsSync(fullPath)) {
               return fullPath;
             }   
