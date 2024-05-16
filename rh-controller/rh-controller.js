@@ -1,6 +1,8 @@
 import { getRoutes } from 'rf-get-routes';
 import { checkParameter, checkParameterUuid } from 'rf-util';
 import { deleteHandler } from 'http-util';
+import { defaultLoc } from 'rf-locale';
+import { _HttpError } from 'http-util';
 
 /**
  * This is the base class for HTTP controller definitions.
@@ -13,10 +15,12 @@ export class Controller {
       this,
       {
         appendHandlers: [
-          { name: 'getData',       httpMethod: 'get',    handler: 'defaultGet' },
-          { name: 'getGrid',       httpMethod: 'get',    handler: 'defaultGet' }, 
-          { name: 'getForm',       httpMethod: 'get',    handler: 'defaultGet' }, 
-          { name: 'deleteForUuid', httpMethod: 'delete', handler: 'defaultDeleteForUuid', inPathParam: 'uuid' },
+          { name: 'getData',        httpMethod: 'get',    handler: 'defaultGet',  inPathParam: 'uuid' },
+          { name: 'getGrid',        httpMethod: 'get',    handler: 'defaultGet' }, 
+          { name: 'getForm',        httpMethod: 'get',    handler: 'defaultGet' }, 
+          { name: 'deleteForUuid',  httpMethod: 'delete', handler: 'defaultDeleteForUuid',  inPathParam: 'uuid' },
+          { name: 'enableForUuid',  httpMethod: 'post',   handler: 'defaultEnableForUuid',  inPathParam: 'uuid', path: '/enable' },
+          { name: 'disableForUuid', httpMethod: 'post',   handler: 'defaultDisableForUuid', inPathParam: 'uuid', path: '/disable' },
         ],
       },
     );
@@ -132,7 +136,38 @@ export class Controller {
     const allParams = { ...req?.body, ...req?.query, ...req?.params };
     checkParameter(allParams, 'uuid');
     const uuid = checkParameterUuid(allParams.uuid);
+
     const rowCount = await this.service.deleteForUuid(uuid, { skipNoRowsError: true });
     await deleteHandler(req, res, rowCount);
+  }
+
+  async defaultEnableForUuid(req, res, next) {
+    await this.checkPermissionsFromProperty(req, res, next, 'enableForUuidPermission');
+
+    const allParams = { ...req?.body, ...req?.query, ...req?.params };
+    checkParameter(allParams, 'uuid');
+    const uuid = checkParameterUuid(allParams.uuid);
+
+    const rowsUpdated = await this.service.enableForUuid(uuid);
+    if (!rowsUpdated) {
+      throw _HttpError((req.loc ?? defaultLoc)._cf('controller', 'Item with UUID %s does not exists.'), 403, uuid);
+    }
+
+    res.sendStatus(204);
+  }
+
+  async defaultDisableForUuid(req, res, next) {
+    await this.checkPermissionsFromProperty(req, res, next, 'disableForUuidPermission');
+
+    const allParams = { ...req?.body, ...req?.query, ...req?.params };
+    checkParameter(allParams, 'uuid');
+    const uuid = checkParameterUuid(allParams.uuid);
+
+    const rowsUpdated = await this.service.disableForUuid(uuid);
+    if (!rowsUpdated) {
+      throw _HttpError((req.loc ?? defaultLoc)._cf('controller', 'Item with UUID %s does not exists.'), 403, uuid);
+    }
+
+    res.sendStatus(204);
   }
 }
