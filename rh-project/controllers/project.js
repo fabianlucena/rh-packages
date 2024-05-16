@@ -10,6 +10,7 @@ export class ProjectController extends Controller {
     super();
 
     this.service = dependency.get('projectService');
+    this.companyService = dependency.get('companyService', null);
   }
 
   async checkDataForCompanyId(req, data) {
@@ -20,9 +21,9 @@ export class ProjectController extends Controller {
     data ??= {};
     if (!data.companyId) {
       if (data.companyUuid) {
-        data.companyId = await conf.global.services.Company.singleton().getIdForUuid(data.companyUuid);
+        data.companyId = await this.companyService.getIdForUuid(data.companyUuid);
       } else if (data.companyName) {
-        data.companyId = await conf.global.services.Company.singleton().getIdForName(data.companyName);
+        data.companyId = await this.companyService.getIdForName(data.companyName);
       } else {
         data.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
         return data.companyId;
@@ -162,7 +163,7 @@ export class ProjectController extends Controller {
     );
 
     const grid = {
-      title: await loc._('Projects'),
+      title: await loc._c('projects', 'Projects'),
       load: {
         service: 'project',
         method: 'get',
@@ -249,7 +250,7 @@ export class ProjectController extends Controller {
     });
 
     const form = {
-      title: await loc._('Projects'),
+      title: await loc._c('project', 'Projects'),
       action: 'project',
       fields: await filterVisualItemsByAliasName(fields, conf?.project, { loc, entity: 'Project', interface: 'form' }),
     };
@@ -286,7 +287,12 @@ export class ProjectController extends Controller {
   'getPermission /company' = 'project.edit';
   async 'get /company'(req, res) {
     const definitions = { uuid: 'uuid', name: 'string' };
-    let options = { view: true, limit: 10, offset: 0 };
+    let options = {
+      loc: req.loc,
+      view: true,
+      limit: 10,
+      offset: 0,
+    };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
     if (conf.filters?.getCurrentCompanyId) {
@@ -294,18 +300,7 @@ export class ProjectController extends Controller {
       options.where.id = await conf.filters.getCurrentCompanyId(req) ?? null;
     }
 
-    const result = await conf.global.services.Company.singleton().getListAndCount(options);
-
-    const loc = req.loc ?? defaultLoc;
-    result.rows = result.rows.map(row => {
-      if (row.isTranslatable) {
-        row.title = loc._(row.title);
-        row.description = loc._(row.description);
-        delete row.isTranslatable;
-      }
-
-      return row;
-    });
+    const result = await this.companyService.getListAndCount(options);
 
     res.status(200).send(result);
   }

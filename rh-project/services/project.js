@@ -1,5 +1,5 @@
 import { conf } from '../conf.js';
-import { ServiceIdUuidNameTitleEnabledSharedTranslatable, OptionalService } from 'rf-service';
+import { ServiceIdUuidNameTitleEnabledSharedTranslatable, OptionalService, Op } from 'rf-service';
 import { CheckError } from 'rf-util';
 import { loc } from 'rf-locale';
 import { _ConflictError } from 'http-util';
@@ -47,7 +47,7 @@ export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslata
     }
 
     if (where?.uuid) {
-      whereOptions.uuid = { [conf.global.Sequelize.Op.ne]: where.uuid };
+      whereOptions.uuid = { [Op.ne]: where.uuid };
     }
 
     const rows = await this.getFor(whereOptions, { limit: 1 });
