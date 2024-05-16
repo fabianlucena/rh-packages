@@ -22,7 +22,7 @@ export class SessionController extends Controller {
         return;
       }
 
-      req.authToken = authorization.substring(7);
+      req.authToken = authorization.substring(7).trim();
       if (!req.authToken) {
         next();
         return;
@@ -82,7 +82,8 @@ export class SessionController extends Controller {
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
     try {
       await req.checkPermission('session.get');
-    } catch(_) {
+    // eslint-disable-next-line no-unused-vars
+    } catch(e) {
       options.where = { ...options?.where, id: req.session.id };
     }
 

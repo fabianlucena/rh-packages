@@ -115,7 +115,7 @@ export class SessionService extends ServiceIdUuid {
       authToken,
       {
         skipNoRowsError: true,
-        include: { user: true },
+        include: { user: { attributes: true }},
       },
     );
     if (!session) {
