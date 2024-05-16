@@ -81,38 +81,38 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
     return menuItems;
   }
 
-  async override(data, options) {
-    if (!options?.where) {
-      options ??= {};
-
-      if (data.id) {
-        options.where = { id: data.id };
-        data = { ...data, id: undefined };
-      } else if (data.uuid) {
-        options.where = { uuid: data.uuid };
-        data = { ...data, uuid: undefined };
-      } else if (data.name) {
-        options.where = { name: data.name };
-        data = { ...data, name: undefined };
+  async override(data1, options1) {
+    const arrangedOptions = { ...options1, translate: false };
+    const arrangedData = { ...data1 };
+    if (!arrangedOptions.where) {
+      if (arrangedData.id) {
+        arrangedOptions.where = { id: arrangedData.id };
+        delete arrangedData.id;
+      } else if (arrangedData.uuid) {
+        arrangedOptions.where = { uuid: arrangedData.uuid };
+        delete arrangedData.uuid;
+      } else if (arrangedData.name) {
+        arrangedOptions.where = { name: arrangedData.name };
+        delete arrangedData.name;
       }
     }
 
-    const miList = await this.getList({ ...options, translate: false });
+    const miList = await this.getList(arrangedOptions);
 
-    delete options.where;
+    delete arrangedOptions.where;
     let result = 0;
     for (let mi of miList) {
-      const id = mi.id;
+      delete mi.jsonData;
+      const { id } = mi;
       mi = {
         ...mi,
-        jsonData: undefined,
-        ...data,
-        data: { ...mi.data, ...data.data },
-        id: undefined,
-        uuid: undefined,
-        name: undefined,
+        ...arrangedData,
+        data: { ...mi.data, ...arrangedData.data },
       };
-      result += await this.updateForId(mi, id, options);
+      delete mi.id;
+      delete mi.uuid;
+      delete mi.name;
+      result += await this.updateForId(mi, id, arrangedOptions);
     }
 
     return result;

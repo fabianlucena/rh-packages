@@ -17,6 +17,7 @@ export class MenuController extends Controller {
       loc: req.loc,
       view: true,
       include: {
+        parent: true,
         parentMenuItems: true,
       },
       where: { permission: { name: permissions }},
@@ -24,13 +25,17 @@ export class MenuController extends Controller {
 
     const rows = await this.menuItemService.getList(options);
     const loc = req.loc ?? defaultLoc;
-    let menu = await runSequentially(rows, async mi => {
+    const menu = await runSequentially(rows, async menuItem => {
+      let mi = menuItem;
+      
       if (mi.parent) {
         mi.parent = mi.parent.name;
       }
 
       if (mi.data) {
-        mi = { ...mi, data: undefined, ...mi.data };
+        const { data } = mi;
+        delete mi.data;
+        mi = { ...mi, ...data };
       }
 
       if (mi.jsonData) {

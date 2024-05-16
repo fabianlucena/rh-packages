@@ -1,5 +1,3 @@
-/* eslint-disable no-magic-numbers */
-
 import globals from 'globals';
 import mochaPlugin from 'eslint-plugin-mocha';
 import pluginJs from '@eslint/js';
@@ -13,7 +11,7 @@ export default [
       },
     },
   },
-  pluginJs.configs.all,
+  pluginJs.configs.recommended,
   mochaPlugin.configs.flat.all,
   {
     rules: {
@@ -21,8 +19,11 @@ export default [
       'func-style': 'off',
       'indent': ['error', 2],
       'linebreak-style': ['error', 'windows'],
+      'max-lines-per-function': 'off',
+      'max-statements': 'off',
       'no-empty': 'error',
       'no-ternary': 'off',
+      'no-magic-numbers': 'off',
       'no-undef': 'error',
       'no-undef-init': 'error',
       'no-underscore-dangle': 'off',
