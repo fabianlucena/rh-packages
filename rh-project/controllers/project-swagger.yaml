@@ -3,6 +3,9 @@ components:
     Project:
       type: object
       properties:
+        uuid:
+          type: string
+          required: true
         name:
           type: string
           required: true
@@ -12,6 +15,32 @@ components:
         isEnabled:
           type: boolean
           
+    ProjectCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          required: true
+        title:
+          type: string
+          required: true
+        description:
+          type: string
+        isEnabled:
+          type: boolean
+          
+    ProjectUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        isEnabled:
+          type: boolean
+
     Error:
       properties:
         error:
@@ -42,12 +71,12 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Project'
+            $ref: '#/components/schemas/ProjectCreate'
     responses:
       '200':
         description: Success
-        schema:
-          $ref: '#/components/schemas/Error'
+      '204':
+        description: Success
       '400':
         description: Missing parameters or parameters error
         schema:
@@ -75,7 +104,6 @@ components:
         in: query
         type: string
         format: UUID
-        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
       - name: name
         in: query
         type: string
@@ -145,6 +173,7 @@ components:
         schema:
           $ref: '#/components/schemas/Error'
 
+/project/{uuid}:
   patch:
     tags:
       - Project
@@ -154,12 +183,18 @@ components:
       - bearerAuth: []
     produces:
       - application/json
+    parameters:
+      - name: uuid
+        in: path
+        type: string
+        format: UUID
+        required: true
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Project'
+            $ref: '#/components/schemas/ProjectUpdate'
     responses:
       '204':
         description: Success
@@ -180,7 +215,7 @@ components:
         schema:
           $ref: '#/components/schemas/Error'
 
-/project/enable:
+/project/enable/{uuid}:
   post:
     tags:
       - Project
@@ -192,11 +227,10 @@ components:
       - application/json
     parameters:
       - name: uuid
-        in: query
+        in: path
         type: string
         format: UUID
         required: true
-        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
     responses:
       '204':
         description: Success
@@ -217,7 +251,7 @@ components:
         schema:
           $ref: '#/components/schemas/Error'
 
-/project/disable:
+/project/disable/{uuid}:
   post:
     tags:
       - Project
@@ -229,11 +263,10 @@ components:
       - application/json
     parameters:
       - name: uuid
-        in: query
+        in: path
         type: string
         format: UUID
         required: true
-        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
     responses:
       '204':
         description: Success
