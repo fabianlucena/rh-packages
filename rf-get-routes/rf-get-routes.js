@@ -282,9 +282,14 @@ export class Routes {
         }
       }
 
-      const path = parts.length > 1?
-        parts.slice(1).join(' '):
-        '';
+      let path;
+      if (parts.length > 1) {
+        path = parts.slice(1).join(' ');
+      } else if(handler.path) {
+        path = handler.path;
+      } else {
+        path = '';
+      }
       if (this.routes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
         return;
       }
@@ -337,7 +342,7 @@ export class Routes {
       this.routes.push(route);
 
       if (handler.inPathParam) {
-        const routeWithParam = { ... route };
+        const routeWithParam = { ...route };
         routeWithParam.path += `/:${handler.inPathParam}`;
         if (this.routes.find(r => r.path === routeWithParam.path && r.httpMethod === handler.httpMethod)) {
           return;
