@@ -1,7 +1,15 @@
+import { dependency } from 'rf-dependency';
 import { CheckError, _Error } from './rf-service-errors.js';
 import { loc } from 'rf-locale';
 
 export const ServiceMixinShared = Service => class ServiceShared extends Service {
+  init() {
+    super.init();
+
+    this.shareObject ??= this.Name;
+    this.shareService ??= dependency.get('shareService');
+  }
+
   prepareReferences() {
     if (!this.references.owner) {
       this.references.owner = { service: 'shareService' };
@@ -78,11 +86,11 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
    */
   async addCollaborator(data, options) {
     if (!this.shareObject) {
-      throw new _Error(loc._f('No shareObject defined on %s. Try adding "shareObject = %s" to the class.', this.constructor.name, this.constructor.name));
+      throw new _Error(loc._f('No shareObject defined in %s.', this.constructor.name));
     }
 
     if (!this.shareService) {
-      throw new _Error(loc._f('No shareService defined on %s. Try adding "shareService = conf.global.services.Share.singleton()" to the class.', this.constructor.name));
+      throw new _Error(loc._f('No shareService defined in %s.', this.constructor.name));
     }
 
     if (!data.userId && !data.user) {

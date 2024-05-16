@@ -78,15 +78,19 @@ export class ServiceBase {
   }
 
   init() {
-    let Name = this.constructor.name;
-    if (Name.endsWith('Service')) {
-      Name = Name.substring(0, Name.length - 7);
+    if (typeof this.Name === 'undefined') {
+      this.Name = this.constructor.name;
+      if (this.Name.endsWith('Service')) {
+        this.Name = this.Name.substring(0, this.Name.length - 7);
+      }
     }
 
-    const name = Name[0].toLowerCase() + Name.slice(1);
+    if (typeof this.name === 'undefined') {
+      this.name = this.Name[0].toLowerCase() + this.Name.slice(1);
+    }
 
-    if (this.model === undefined) {
-      this.model = name + 'Model';
+    if (typeof this.model === 'undefined') {
+      this.model = this.name + 'Model';
     }
 
     if (typeof this.model === 'string') {
@@ -94,9 +98,8 @@ export class ServiceBase {
     }
 
     this.hiddenColumns ??= ['id'];
-    this.shareObject ??= Name;
-    this.defaultTranslationContext ??= name;
-    this.eventName ??= Name;
+    this.defaultTranslationContext ??= this.name;
+    this.eventName ??= this.Name;
 
     this.prepareReferences();
   }
