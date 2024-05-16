@@ -21,6 +21,7 @@ export class MenuController extends Controller {
         parentMenuItems: true,
       },
       where: { permission: { name: permissions }},
+      skipDeleteIsTranslatable: true,
     };
 
     const rows = await this.menuItemService.getList(options);
