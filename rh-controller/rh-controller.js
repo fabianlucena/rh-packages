@@ -38,6 +38,7 @@ export class Controller {
           { name: 'getData',        httpMethod: 'get',    handler: 'defaultGet',  inPathParam: 'uuid' },
           { name: 'getGrid',        httpMethod: 'get',    handler: 'defaultGet' }, 
           { name: 'getForm',        httpMethod: 'get',    handler: 'defaultGet' }, 
+          { name: 'getObject',      httpMethod: 'get',    handler: 'defaultGet' }, 
           { name: 'post',           httpMethod: 'post',   handler: 'defaultPost' }, 
           { name: 'deleteForUuid',  httpMethod: 'delete', handler: 'defaultDeleteForUuid',  inPathParam: 'uuid' },
           { name: 'patchForUuid',   httpMethod: 'patch',  handler: 'defaultPatchForUuid',   inPathParam: 'uuid' },
@@ -121,6 +122,23 @@ export class Controller {
         await this.checkPermissionsFromProperty(req, res, next, 'getForm');
 
         const result = await instance.getForm(req, res, next);
+        res.status(200).json(result);
+        return;
+      }
+    }
+        
+    if ('$object' in req.query) {
+      let instance;
+      if (this.getObject) {
+        instance = this;
+      } else if (this.constructor.getObject) {
+        instance = this.constructor;
+      }
+
+      if (instance) {
+        await this.checkPermissionsFromProperty(req, res, next, 'getObject');
+
+        const result = await instance.getObject(req, res, next);
         res.status(200).json(result);
         return;
       }
