@@ -1,6 +1,5 @@
 import { getRoutes } from 'rf-get-routes';
-import { checkParameter, checkParameterUuid } from 'rf-util';
-import { deleteHandler, getUuidFromRequest, _HttpError } from 'http-util';
+import { deleteHandler, getUuidFromRequest, _HttpError, enableHandler, disableHandler, patchHandler } from 'http-util';
 import { defaultLoc } from 'rf-locale';
 
 /**
@@ -39,6 +38,7 @@ export class Controller {
           { name: 'getData',        httpMethod: 'get',    handler: 'defaultGet',  inPathParam: 'uuid' },
           { name: 'getGrid',        httpMethod: 'get',    handler: 'defaultGet' }, 
           { name: 'getForm',        httpMethod: 'get',    handler: 'defaultGet' }, 
+          { name: 'post',           httpMethod: 'post',   handler: 'defaultPost' }, 
           { name: 'deleteForUuid',  httpMethod: 'delete', handler: 'defaultDeleteForUuid',  inPathParam: 'uuid' },
           { name: 'patchForUuid',   httpMethod: 'patch',  handler: 'defaultPatchForUuid',   inPathParam: 'uuid' },
           { name: 'enableForUuid',  httpMethod: 'post',   handler: 'defaultEnableForUuid',  inPathParam: 'uuid', path: '/enable' },
@@ -152,47 +152,6 @@ export class Controller {
     res.status(405).send({ error: 'HTTP method not allowed.' });
   }
 
-  async defaultDeleteForUuid(req, res, next) {
-    await this.checkPermissionsFromProperty(req, res, next, 'deleteForUuidPermission');
-
-    const allParams = { ...req?.body, ...req?.query, ...req?.params };
-    checkParameter(allParams, 'uuid');
-    const uuid = checkParameterUuid(allParams.uuid);
-
-    const rowCount = await this.service.deleteForUuid(uuid, { skipNoRowsError: true });
-    await deleteHandler(req, res, rowCount);
-  }
-
-  async defaultEnableForUuid(req, res, next) {
-    await this.checkPermissionsFromProperty(req, res, next, 'enableForUuidPermission');
-
-    const allParams = { ...req?.body, ...req?.query, ...req?.params };
-    checkParameter(allParams, 'uuid');
-    const uuid = checkParameterUuid(allParams.uuid);
-
-    const rowsUpdated = await this.service.enableForUuid(uuid);
-    if (!rowsUpdated) {
-      throw _HttpError((req.loc ?? defaultLoc)._cf('controller', 'Item with UUID %s does not exists.'), 403, uuid);
-    }
-
-    res.sendStatus(204);
-  }
-
-  async defaultDisableForUuid(req, res, next) {
-    await this.checkPermissionsFromProperty(req, res, next, 'disableForUuidPermission');
-
-    const allParams = { ...req?.body, ...req?.query, ...req?.params };
-    checkParameter(allParams, 'uuid');
-    const uuid = checkParameterUuid(allParams.uuid);
-
-    const rowsUpdated = await this.service.disableForUuid(uuid);
-    if (!rowsUpdated) {
-      throw _HttpError((req.loc ?? defaultLoc)._cf('controller', 'Item with UUID %s does not exists.'), 403, uuid);
-    }
-
-    res.sendStatus(204);
-  }
-
   async checkUuid(req) {
     const loc = req.loc ?? defaultLoc;
     const uuid = await getUuidFromRequest(req);
@@ -204,21 +163,51 @@ export class Controller {
     return { uuid };
   }
 
+  async getPostParams(req) {
+    return { ...req?.body };
+  }
+
+  async defaultPost(req, res, next) {
+    await this.checkPermissionsFromProperty(req, res, next, 'postPermission');
+
+    const data = await this.getPostParams(req, res);
+    await this.service.create(data);
+
+    res.status(204).send();
+  }
+
+  async defaultDeleteForUuid(req, res, next) {
+    await this.checkPermissionsFromProperty(req, res, next, 'deleteForUuidPermission');
+
+    const { uuid } = await this.checkUuid(req);
+    const rowCount = await this.service.deleteForUuid(uuid, { skipNoRowsError: true });
+    await deleteHandler(req, res, rowCount);
+  }
+
+  async defaultEnableForUuid(req, res, next) {
+    await this.checkPermissionsFromProperty(req, res, next, 'enableForUuidPermission');
+
+    const { uuid } = await this.checkUuid(req);
+    const rowsUpdated = await this.service.enableForUuid(uuid);
+    await enableHandler(req, res, rowsUpdated);
+  }
+
+  async defaultDisableForUuid(req, res, next) {
+    await this.checkPermissionsFromProperty(req, res, next, 'disableForUuidPermission');
+
+    const { uuid } = await this.checkUuid(req);
+    const rowsUpdated = await this.service.disableForUuid(uuid);
+    await disableHandler(req, res, rowsUpdated);
+  }
+
   async defaultPatchForUuid(req, res, next) {
     await this.checkPermissionsFromProperty(req, res, next, 'patchForUuidPermission');
 
-    const uuid = await this.checkUuid(req);
-
-    const data = { ...req.body, uuid: undefined };
+    const { uuid } = await this.checkUuid(req);
+    const { uuid: _, ...data } = { ...req.body };
     const where = { uuid };
 
     const rowsUpdated = await this.service.updateFor(data, where);
-    if (!rowsUpdated) {
-      const loc = req.loc ?? defaultLoc;
-      throw new _HttpError(loc._cf('controller', 'The item with UUID %s does not exists.'), 403, uuid);
-    }
-
-    res.sendStatus(204);
+    await patchHandler(req, res, rowsUpdated);
   }
-
 }
