@@ -1,0 +1,165 @@
+[
+    {
+        "source": "%s items deleted.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "%s elementos eliminados.",
+        "ref": "..\\http-util\\http-util.js [551,43]"
+    },
+    {
+        "source": "%s items disabled.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "%s elementos deshabilitados.",
+        "ref": "..\\http-util\\http-util.js [593,43]"
+    },
+    {
+        "source": "%s items enabled.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "%s elementos habilitados.",
+        "ref": "..\\http-util\\http-util.js [579,43]"
+    },
+    {
+        "source": "%s items update.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "%s elementos actualizados.",
+        "ref": "..\\http-util\\http-util.js [565,43]"
+    },
+    {
+        "source": "Conflict.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "Conflicto.",
+        "ref": "..\\http-util\\http-util.js [179,25]\n..\\http-util\\http-util.js [191,25]"
+    },
+    {
+        "source": "Error in method definition.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "Error en la definición del método.",
+        "ref": "..\\http-util\\http-util.js [383,36]"
+    },
+    {
+        "source": "Error to compile filter in part \"%s\", only the \"eq\" operator is supported.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "Error al compilar el filtro en la parte \"%s\", unicamente el operador \"eq\" está soportado.",
+        "ref": "..\\http-util\\http-util.js [465,34]"
+    },
+    {
+        "source": "Error to compile filter in part \"%s\".",
+        "language": "es",
+        "isDraft": false,
+        "translation": "Error al compilar el filtro en la parte \"%s\".",
+        "ref": "..\\http-util\\http-util.js [461,34]"
+    },
+    {
+        "source": "Error to convert $skip = \"%s\" parameter value to a integer number.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "Error al convertir el parámetro $skip = \"%s\" a un número entero.",
+        "ref": "..\\http-util\\http-util.js [441,32]"
+    },
+    {
+        "source": "Error to convert $top = \"%s\" parameter value to a integer number.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "Error al convertir el parámetro $top = \"%s\" a un número entero.",
+        "ref": "..\\http-util\\http-util.js [416,32]"
+    },
+    {
+        "source": "Method \"%s\" not allowed.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "Método \"%s\" no permitido.",
+        "ref": "..\\http-util\\http-util.js [141,25]"
+    },
+    {
+        "source": "No method defined.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "No hay un método definido.",
+        "ref": "..\\http-util\\http-util.js [374,34]"
+    },
+    {
+        "source": "Spanish",
+        "language": "es",
+        "isDraft": false,
+        "translation": "Castellano",
+        "ref": "http-util-es.js [18,20]"
+    },
+    {
+        "source": "Spanish language.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "Idioma castellano.",
+        "ref": "http-util-es.js [19,26]"
+    },
+    {
+        "source": "The \"%s\" parameter is not a valid UUID.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "El parámetro \"%s\" no es un UUID válido.",
+        "ref": "..\\http-util\\http-util.js [166,25]"
+    },
+    {
+        "source": "The $skip param cannot be negative.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "El parámetro $skip no puede ser negativo.",
+        "ref": "..\\http-util\\http-util.js [445,32]"
+    },
+    {
+        "source": "The $top parameter cannot be negative.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "El parámetro $top no puede ser negativo.",
+        "ref": "..\\http-util\\http-util.js [428,32]"
+    },
+    {
+        "source": "There are no rows.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "No hay filas.",
+        "ref": "..\\http-util\\http-util.js [530,25]"
+    },
+    {
+        "source": "Too many rows to return, please select a lower number (at most %s) for $top parameter.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "Demasiadas filas para devolver, por favor seleccione un número menor para el parámetro $top (como máximo %s).",
+        "ref": "..\\http-util\\http-util.js [420,32]\n..\\http-util\\http-util.js [424,32]"
+    },
+    {
+        "source": "UUID",
+        "language": "es",
+        "isDraft": false,
+        "translation": "UUID",
+        "ref": "..\\http-util\\http-util.js [1205,39]"
+    },
+    {
+        "source": "UUID inconsistence. Many UUIDs were received but they are different.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "Inconsistencia de UUID. Se recibieron muchos UUID pero son diferentes.",
+        "ref": "..\\http-util\\http-util.js [1185,32]\n..\\http-util\\http-util.js [1193,32]\n..\\http-util\\http-util.js [1201,32]"
+    },
+    {
+        "source": "You do not have permission.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "Usted no tiene permiso.",
+        "ref": "..\\http-util\\http-util.js [113,29]"
+    },
+    {
+        "source": "[null,\"You do not have permission: \\\"%s\\\"\",\"You do not have any of permissions: \\\"%s\\\".\"]",
+        "isPlural": true,
+        "language": "es",
+        "isJson": true,
+        "isDraft": false,
+        "translation": "[null,\"Usted no tiene el permiso: \\\"%s\\\"\",\"Usted no tiene ninguno de los permisos: \\\"%s\\\".\"]",
+        "ref": "..\\http-util\\http-util.js [114,25]"
+    }
+]
