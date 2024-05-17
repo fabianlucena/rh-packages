@@ -27,7 +27,7 @@ export default [
       'no-undef': 'error',
       'no-undef-init': 'error',
       'no-underscore-dangle': 'off',
-      'no-unused-vars': 'error',
+      'no-unused-vars': ['error', { 'varsIgnorePattern': '_'  }],
       'object-curly-spacing': ['error', 'always', { 'objectsInObjects': false }],
       'one-var': 'off',
       'quotes': ['error', 'single', { 'avoidEscape': true }],

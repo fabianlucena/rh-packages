@@ -1,0 +1,22 @@
+[
+    {
+        "source": "Spanish",
+        "language": "es",
+        "translation": "Español",
+        "ref": "rh-controller-es.js [18,20]"
+    },
+    {
+        "source": "Spanish language.",
+        "language": "es",
+        "translation": "Idioma español.",
+        "ref": "rh-controller-es.js [19,26]"
+    },
+    {
+        "source": "The item with UUID %s does not exists.",
+        "language": "es",
+        "context": "controller",
+        "isDraft": false,
+        "translation": "El elemento con el UUID %s no existe.",
+        "ref": "..\\rh-controller\\rh-controller.js [160,32]"
+    }
+]

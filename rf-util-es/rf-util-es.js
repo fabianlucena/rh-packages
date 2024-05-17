@@ -3,14 +3,14 @@ import { loc } from 'rf-locale';
 import url from 'url';
 import path from 'path';
 
-const name = 'rfServiceEs';
+const name = 'rfUtilEs';
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export const conf = {
   name,
-  title: 'RF Service es',
+  title: 'RF Util es',
   version: '0.1',
-  translationsFilename: '/translations_es.json',
+  translationsFilename: './translations_es.json',
   data: {
     languages: [
       {
