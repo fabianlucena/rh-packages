@@ -47,6 +47,17 @@ export class IconService {
   getPathForNameOrNull(name) {
     if (!IconService.cache[name] && typeof IconService.cache[name] === 'undefined') {
       IconService.cache[name] = this.searchIconPathInModulesForName(name);
+      if (!IconService.cache[name]) {
+        const dashName = name
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .split(/([^a-zA-Z0-9]|(?<=[a-z])(?=[A-Z0-9])|(?<=[A-Z])(?=[0-9])|(?<=[0-9])(?=[a-zA-Z]))/)
+          .map(t => t.trim().toLowerCase())
+          .filter(t => t && t.match(/[a-zA-Z0-9]/))
+          .join('-')
+          .trim();
+        IconService.cache[name] = this.searchIconPathInModulesForName(dashName);
+      }
     }
 
     return IconService.cache[name];
