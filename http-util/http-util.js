@@ -545,10 +545,52 @@ export async function deleteHandler(req, res, rowCount) {
   if (!rowCount) {
     throw new NoRowsError({
       statusCode: 404,
-      message: 'There are no rows to delete',
+      message: 'There are no items to delete',
     });
   } else if (rowCount != 1) {
-    res.status(200).send({ msg: await loc._('%s rows deleted.', rowCount) });
+    res.status(200).send({ msg: await loc._('%s items deleted.', rowCount) });
+  } else {
+    res.sendStatus(204);
+  }
+}
+
+export async function patchHandler(req, res, rowCount) {
+  const loc = req.loc ?? defaultLoc;
+  if (!rowCount) {
+    throw new NoRowsError({
+      statusCode: 404,
+      message: 'There are no items to update',
+    });
+  } else if (rowCount != 1) {
+    res.status(200).send({ msg: await loc._('%s items update.', rowCount) });
+  } else {
+    res.sendStatus(204);
+  }
+}
+
+export async function enableHandler(req, res, rowCount) {
+  const loc = req.loc ?? defaultLoc;
+  if (!rowCount) {
+    throw new NoRowsError({
+      statusCode: 404,
+      message: 'There are no items to enable',
+    });
+  } else if (rowCount != 1) {
+    res.status(200).send({ msg: await loc._('%s items enabled.', rowCount) });
+  } else {
+    res.sendStatus(204);
+  }
+}
+
+export async function disableHandler(req, res, rowCount) {
+  const loc = req.loc ?? defaultLoc;
+  if (!rowCount) {
+    throw new NoRowsError({
+      statusCode: 404,
+      message: 'There are no items to disable',
+    });
+  } else if (rowCount != 1) {
+    res.status(200).send({ msg: await loc._('%s items disabled.', rowCount) });
   } else {
     res.sendStatus(204);
   }
@@ -618,14 +660,20 @@ export async function configureModule(global, module) {
   }
 
   if (typeof module === 'string') {
-    global.log?.info('.... Module: ' + module);
+    const moduleName = module;
+    global.log?.info('.... Module: ' + moduleName);
 
+    let modulePath = moduleName;
     const tryModulePath = path.join(process.cwd(), module);
     if (tryModulePath.endsWith('.js') && fs.existsSync(tryModulePath)) {
-      module = url.pathToFileURL(tryModulePath).href;
+      modulePath = url.pathToFileURL(tryModulePath).href;
     }
 
-    module = (await import(module)).conf;
+    if (!modulePath) {
+      throw new Error(`Can't find module: "${moduleName}".`);
+    }
+
+    module = (await import(modulePath)).conf;
   }
 
   if (!module.name) {
