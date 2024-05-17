@@ -1,8 +1,7 @@
 import { getRoutes } from 'rf-get-routes';
 import { checkParameter, checkParameterUuid } from 'rf-util';
-import { deleteHandler } from 'http-util';
+import { deleteHandler, getUuidFromRequest, _HttpError } from 'http-util';
 import { defaultLoc } from 'rf-locale';
-import { _HttpError } from 'http-util';
 
 /**
  * This is the base class for HTTP controller definitions.
@@ -41,6 +40,7 @@ export class Controller {
           { name: 'getGrid',        httpMethod: 'get',    handler: 'defaultGet' }, 
           { name: 'getForm',        httpMethod: 'get',    handler: 'defaultGet' }, 
           { name: 'deleteForUuid',  httpMethod: 'delete', handler: 'defaultDeleteForUuid',  inPathParam: 'uuid' },
+          { name: 'patchForUuid',   httpMethod: 'patch',  handler: 'defaultPatchForUuid',   inPathParam: 'uuid' },
           { name: 'enableForUuid',  httpMethod: 'post',   handler: 'defaultEnableForUuid',  inPathParam: 'uuid', path: '/enable' },
           { name: 'disableForUuid', httpMethod: 'post',   handler: 'defaultDisableForUuid', inPathParam: 'uuid', path: '/disable' },
         ],
@@ -192,4 +192,33 @@ export class Controller {
 
     res.sendStatus(204);
   }
+
+  async checkUuid(req) {
+    const loc = req.loc ?? defaultLoc;
+    const uuid = await getUuidFromRequest(req);
+    const item = await this.service.getForUuid(uuid, { skipNoRowsError: true, loc });
+    if (!item) {
+      throw new _HttpError(loc._cf('controller', 'The item with UUID %s does not exists.'), 404, uuid);
+    }
+
+    return { uuid };
+  }
+
+  async defaultPatchForUuid(req, res, next) {
+    await this.checkPermissionsFromProperty(req, res, next, 'patchForUuidPermission');
+
+    const uuid = await this.checkUuid(req);
+
+    const data = { ...req.body, uuid: undefined };
+    const where = { uuid };
+
+    const rowsUpdated = await this.service.updateFor(data, where);
+    if (!rowsUpdated) {
+      const loc = req.loc ?? defaultLoc;
+      throw new _HttpError(loc._cf('controller', 'The item with UUID %s does not exists.'), 403, uuid);
+    }
+
+    res.sendStatus(204);
+  }
+
 }
