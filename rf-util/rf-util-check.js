@@ -129,14 +129,14 @@ export function checkParameterStringNotNullOrEmpty(value, options) {
     value,
     {
       statusCode: 400,
-      _message: [loc._f('"%s" parameter is missing, null, or empty'), options?.paramTitle ?? 'value'],
+      _message: [loc._f('"%s" parameter is missing, null, or empty.'), options?.paramTitle ?? 'value'],
       ...options,
     }
   ) && checkString(
     value,
     {
       statusCode: 400,
-      _message: [loc._f('"%s" parameter is not a string'), options?.paramTitle ?? 'value'],
+      _message: [loc._f('"%s" parameter is not a string.'), options?.paramTitle ?? 'value'],
       ...options,
     }
   ) ;
