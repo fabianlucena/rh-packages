@@ -10,7 +10,6 @@ export const conf = {
   version: '0.1',
   path: dirname,
   schema: 'project',
-  routesPath: `${dirname}/routes`,
-  servicesPath: `${dirname}/services`,
+  controllersPath: `${dirname}/controllers`,
   iconsPath: `${dirname}/icons`,
 };

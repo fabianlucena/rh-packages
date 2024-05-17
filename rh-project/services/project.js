@@ -63,13 +63,4 @@ export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslata
 
     return super.getListOptions(options);
   }
-
-  async getForCompanyId(companyId, options) {
-    return this.getList({ ...options, where: { companyId }});
-  }
-
-  async getIdForCompanyId(companyId, options) {
-    const rows = await this.getForCompanyId(companyId, { ...options, attributes:['id'] });
-    return rows.map(row => row.id);
-  }
 }
