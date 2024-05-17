@@ -1,3 +1,4 @@
+import { Op } from './rf-service.js';
 import { checkParameterStringNotNullOrEmpty, checkParameterStringUndefinedOrNotNullAndNotEmpty, trim } from 'rf-util';
 import { loc } from 'rf-locale';
 import { ConflictError } from 'http-util';
@@ -19,9 +20,14 @@ export const ServiceMixinTitle = Service => class extends Service {
     return super.validateForCreation(data);
   }
 
-  async checkTitleForConflict(title) {
-    const rows = await this.getFor({ title }, { limit: 1 });
-    if (rows?.length) {
+  async checkTitleForConflict(title, data, where) {
+    const forOption = { title };
+    if (where) {
+      forOption[Op.not] = where;
+    }
+
+    const rowsCount = await this.countFor(forOption);
+    if (rowsCount) {
       throw new ConflictError(loc._f(`Exists another row with title %s in ${this.constructor.name}.`, title));
     }
   }
@@ -29,6 +35,15 @@ export const ServiceMixinTitle = Service => class extends Service {
   async validateForUpdate(data, where) {
     checkParameterStringUndefinedOrNotNullAndNotEmpty(data.title, loc._f('Title'));
     if (data.title) {
+      if (!where) {
+        throw new ConflictError(loc._f('Title update without where clause is forbiden.'));
+      }
+
+      const rowsCount = await this.countFor(where);
+      if (rowsCount > 1) {
+        throw new ConflictError(loc._f('Title update for many rows is forbiden.'));
+      }
+
       await this.checkTitleForConflict(data.title, data, where);
     }
 
