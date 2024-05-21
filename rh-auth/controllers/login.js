@@ -1,4 +1,3 @@
-import { LoginService } from '../services/login.js';
 import { conf } from '../conf.js';
 import { _HttpError } from 'http-util';
 import { checkParameter } from 'rf-util';
@@ -7,6 +6,12 @@ import { Controller } from 'rh-controller';
 import { dependency } from 'rf-dependency';
 
 export class LoginController extends Controller {
+  constructor() {
+    super();
+
+    this.service = dependency.get('loginService');
+  }
+
   async getForm(req) {
     let loc = req.loc ?? defaultLoc;
 
@@ -40,20 +45,20 @@ export class LoginController extends Controller {
 
   async post(req, res) {
     const loc = req.loc ?? defaultLoc;
+    let data;
     if (req?.body?.autoLoginToken) {
-      checkParameter(req?.body, 'autoLoginToken', 'deviceToken');
+      data = checkParameter(req?.body, 'autoLoginToken', 'deviceToken');
     } else {
-      checkParameter(req?.body, { username: loc._cf('login', 'Username'), password: loc._cf('login', 'Password') });
+      data = checkParameter(req?.body, { username: loc._cf('login', 'Username'), password: loc._cf('login', 'Password') });
     }
 
     try {
-      const loginService = LoginService.singleton();
       let session;
-      if (req.body.autoLoginToken) {
-        session = await loginService.forAutoLoginTokenAndSessionIndex(req.body.autoLoginToken, req.body.deviceToken, req.body?.sessionIndex ?? req.body.index, loc);
-        req.log?.info('Auto logged by autoLoginToken.', { autoLoginToken: req.body.autoLoginToken, session });
+      if (data.autoLoginToken) {
+        session = await this.service.forAutoLoginTokenAndSessionIndex(data.autoLoginToken, data.deviceToken, req.body?.sessionIndex ?? req.body.index, loc);
+        req.log?.info('Auto logged by autoLoginToken.', { autoLoginToken: data.autoLoginToken, session });
       } else {
-        let deviceToken = req.body.deviceToken;
+        let deviceToken = data.deviceToken;
         const deviceService = dependency.get('deviceService');
         if (deviceService) {
           if (deviceToken) {
@@ -69,7 +74,7 @@ export class LoginController extends Controller {
           }
         }
 
-        session = await loginService.forUsernamePasswordDeviceTokenAndSessionIndex(req.body.username, req.body.password, deviceToken, req.body.sessionIndex ?? req.body.index, loc);
+        session = await this.service.forUsernamePasswordDeviceTokenAndSessionIndex(req.body.username, req.body.password, deviceToken, req.body.sessionIndex ?? req.body.index, loc);
         req.log?.info(`User ${req.body.username} successfully logged with username and password.`, { session });
       }
             
