@@ -250,21 +250,26 @@ export class ServiceBase {
     const getIdForUuid = reference.getIdForUuid;
     const getIdForName = reference.getIdForName;
     if (!data[idPropertyName]) {
-      if (data[uuidPropertyName] && service[getIdForUuid]) {
+      if (data[name]?.id) {
+        data[idPropertyName] = data[name].id;
+      } else if (data[uuidPropertyName] && service[getIdForUuid]) {
         data[idPropertyName] = await service[getIdForUuid](data[uuidPropertyName]);
+      } else if (data[name]?.uuid && service[getIdForUuid]) {
+        data[idPropertyName] = await service[getIdForUuid](data[name].uuid);
       } else if (data[namePropertyName] && service[getIdForName]) {
         data[idPropertyName] = await service[getIdForName](data[uuidPropertyName]);
+      } else if (data[name]?.name && service[getIdForName]) {
+        data[idPropertyName] = await service[getIdForName](data[name].name);
       } else if (typeof data[name] === 'string' && data[name] && service[getIdForName]) {
         data[idPropertyName] = await service[getIdForName](data[name], { skipNoRowsError: true });
-      } else {
-        if (data[Name] && typeof data[Name] === 'object') {
-          if (data[Name].id) {
-            data[idPropertyName] = data[Name].id;
-          } else if (data[Name].uuid && service[getIdForUuid]) {
-            data[idPropertyName] = await service[getIdForUuid](data[Name].uuid);
-          } else if (data[Name].name && service[getIdForName]) {
-            data[idPropertyName] = await service[getIdForName](data[Name].name);
-          }
+      } else if (data[name] && typeof data[name] === 'object') {
+        const childData = data[name];
+        if (childData.id) {
+          data[idPropertyName] = childData.id;
+        } else if (childData.uuid && service[getIdForUuid]) {
+          data[idPropertyName] = await service[getIdForUuid](childData.uuid);
+        } else if (childData.name && service[getIdForName]) {
+          data[idPropertyName] = await service[getIdForName](childData.name);
         }
       }
 
@@ -275,12 +280,14 @@ export class ServiceBase {
 
         if (!data[idPropertyName] && reference.createIfNotExists) {
           let object;
-          if (typeof data[Name] === 'object' && data[Name]) {
+          if (typeof data[name] === 'object' && data[name]) {
+            object = await service[reference.createIfNotExists](data[Name]);
+          } else if (typeof data[name] === 'string' && data[name]) {
+            object = await service[reference.createIfNotExists]({ name: data[name] });
+          } else if (typeof data[Name] === 'object' && data[Name]) {
             object = await service[reference.createIfNotExists](data[Name]);
           } else if (typeof data[Name] === 'string' && data[Name]) {
             object = await service[reference.createIfNotExists]({ name: data[Name] });
-          } else if (typeof data[name] === 'string' && data[name]) {
-            object = await service[reference.createIfNotExists]({ name: data[name] });
           } else if (typeof data[otherName] === 'string' && data[otherName]) {
             object = await service[reference.createIfNotExists]({ name: data[otherName] });
           }
