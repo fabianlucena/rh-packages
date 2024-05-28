@@ -456,26 +456,32 @@ export function arrangeSearchColumns(options, entity) {
     throw new _Error(loc._f('No sequalize.col defined on %s. Try adding "sequelize = conf.global.sequelize;" to the class.', entity.constructor.name));
   }
 
-  const Op = entity.Sequelize.Op;
-  const q = `%${options.q}%`;
-  const qColumns = [];
-  for (let searchColumn of searchColumns) {
-    if (typeof searchColumn === 'string'
-            && searchColumn.includes('.')
-            && isIncludedColumn(entity, searchColumn)
-    ) {
-      searchColumn = '$' + searchColumn + '$';
+  const qValues = Array.isArray(options.q)?
+    options.q:
+    options.q.split(/[\s,]/);
+
+  for (const qValue of qValues) {
+    const q = `%${qValue}%`;
+    const Op = entity.Sequelize.Op;
+    const qColumns = [];
+    for (let searchColumn of searchColumns) {
+      if (typeof searchColumn === 'string'
+        && searchColumn.includes('.')
+        && isIncludedColumn(entity, searchColumn)
+      ) {
+        searchColumn = '$' + searchColumn + '$';
+      }
+
+      qColumns.push({ [searchColumn]: { [Op.like]: q }});
     }
 
-    qColumns?.push({ [searchColumn]: { [Op.like]: q }});
-  }
-
-  if (qColumns.length) {
-    const qWhere = { [Op.or]: qColumns };
-    if (options.where) {
-      options.where = { [Op.and]: [options.where, qWhere] };
-    } else {
-      options.where = qWhere;
+    if (qColumns.length) {
+      const qWhere = { [Op.or]: qColumns };
+      if (options.where) {
+        options.where = { [Op.and]: [options.where, qWhere] };
+      } else {
+        options.where = qWhere;
+      }
     }
   }
 
