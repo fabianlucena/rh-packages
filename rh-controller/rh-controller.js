@@ -156,7 +156,12 @@ export class Controller {
       await this.checkPermissionsFromProperty(req, res, next, 'get');
 
       const result = await instance.getData(req, res, next);
-      res.status(200).json(result);
+      if (result) {
+        res.send(result);
+      } else if (!res.headersSent && res.statusCode === 200) {
+        res.status(204).end();
+      }
+
       return;
     }
 
