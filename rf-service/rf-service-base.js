@@ -549,8 +549,8 @@ export class ServiceBase {
 
     options = this.arrangeSearchColumns(options);
 
-    if (!options.attributes?.length && options.view) {
-      options.attributes = this.viewAttributes ?? [];
+    if (options.view && !options.attributes?.length && this.viewAttributes?.length) {
+      options.attributes = this.viewAttributes;
     }
 
     if (options.orderBy?.length) {
