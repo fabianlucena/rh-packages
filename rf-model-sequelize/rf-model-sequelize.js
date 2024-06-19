@@ -94,49 +94,42 @@ export class ModelSequelize {
 
       if (references && Object.keys(references).length) {
         for (const key in where) {
-          const value = this.sanitizeWhere(where[key]);
-          if (typeof key === 'string') {
-            let include = options.include?.[key];
-            if (include) {
-              if (include === true) {
-                include = {};
-                options.include[key] = include;
-              }
-            } else if (references[key]) {
-              include = { attributes: [] };
-              options.include ??= [];
+          if (typeof key !== 'string') {
+            continue;
+          }
+
+          let include = options.include?.[key];
+          if (include) {
+            if (include === true) {
+              include = {};
               options.include[key] = include;
             }
+          } else if (references[key]) {
+            include = { attributes: [] };
+            options.include ??= [];
+            options.include[key] = include;
+          }
 
-            if (include) {
-              if (!include.where) {
-                include.where = value;
-              } else {
-                include.where = {
-                  [srvOp.and]: [
-                    include.where,
-                    value,
-                  ],
-                };
-              }
-            } else {
-              sanitizedOptions.where[key] = value;
-            }
+          if (!include) {
+            continue;
+          }
+
+          if (!include.where) {
+            include.where = where[key];
           } else {
-            sanitizedOptions.where[key] = value;
+            include.where = {
+              [srvOp.and]: [
+                include.where,
+                where[key],
+              ],
+            };
           }
 
           delete where[key];
         }
-
-        if (where) {
-          for (const k in where) {
-            sanitizedOptions.where[k] = this.sanitizeWhere(where[k]);
-          }
-        }
-      } else {
-        sanitizedOptions.where = this.sanitizeWhere(where);
       }
+      
+      sanitizedOptions.where = this.sanitizeWhere(where);
     }
 
     if (options.include) {
@@ -197,15 +190,16 @@ export class ModelSequelize {
 
   sanitizeWhere(where) {
     if (Array.isArray(where)) {
-      const v = [];
+      const newList = [];
       for (let i of where) {
-        v.push(this.sanitizeWhere(i));
+        newList.push(this.sanitizeWhere(i));
       }
 
-      return v;
+      return newList;
     }
 
     if (where && typeof where === 'object') {
+      const newWhere = {};
       const symbols = Object.getOwnPropertySymbols(where);
       for (let k of symbols) {
         let v = where[k];
@@ -215,12 +209,14 @@ export class ModelSequelize {
           throw Error('Unknown symbol in query.');
         }
 
-        where[k] = this.sanitizeWhere(v);
+        newWhere[k] = this.sanitizeWhere(v);
       }
 
       for (let k in where) {
-        where[k] = this.sanitizeWhere(where[k]);
+        newWhere[k] = this.sanitizeWhere(where[k]);
       }
+
+      return newWhere;
     }
 
     return where;
@@ -269,5 +265,9 @@ export class ModelSequelize {
 
   async createTransaction() {
     return this.sequelize.transaction();
+  }
+
+  async query(query) {
+    return this.sequelize.query(query);
   }
 }
