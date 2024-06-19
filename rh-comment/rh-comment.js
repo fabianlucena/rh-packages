@@ -49,7 +49,7 @@ async function clearCache() {
   conf.modelEntityNameCache = {};
   conf.fieldsCache = {};
   conf.columnsCache = {};
-  conf.detailsCache = {};    
+  conf.detailsCache = {};
 }
 
 async function checkClearCache(entity) {

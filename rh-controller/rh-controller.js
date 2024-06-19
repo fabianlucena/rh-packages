@@ -21,6 +21,15 @@ export class Controller {
     return routes;
   }
 
+  getName() {
+    let name = this.constructor.name;
+    if (name.startsWith('Controller')) {
+      name = name.substring(10);
+    }
+
+    return name;
+  }
+
   all(req, res) {
     res.status(405).send({ error: 'HTTP method not allowed.' });
   }
@@ -91,8 +100,17 @@ export class Controller {
       if (instance) {
         await this.checkPermissionsFromProperty(req, res, next, 'getForm');
 
-        const result = await instance.getForm(req, res, next);
-        res.status(200).json(result);
+        const form = await instance.getForm(req, res, next);
+        
+        if (this.eventBus) {
+          const loc = req.loc;
+          const entity = this.getName();
+
+          await this.eventBus.$emit('interface.form.get', form, { loc, entity });
+          await this.eventBus.$emit(`${entity}.interface.form.get`, form, { loc });
+        }
+
+        res.status(200).json(form);
         return;
       }
     }
