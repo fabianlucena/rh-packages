@@ -1,5 +1,4 @@
-import { conf } from '../conf.js';
-import { ServiceEnabledOwnerModuleTranslatable } from 'rf-service';
+import { ServiceEnabledOwnerModuleTranslatable, Op } from 'rf-service';
 import { MissingPropertyError, checkDataForMissingProperties } from 'sql-util';
 import dependency from 'rf-dependency';
 
@@ -169,7 +168,6 @@ export class UserSiteRoleService extends ServiceEnabledOwnerModuleTranslatable {
 
     const where = options.where;
     if (where?.notRoleId) {
-      const Op = conf.global.Sequelize.Op;
       const condition = { [Op.notIn]: where.notRoleId };
       if (where.roleId) {
         where.roleId = { [Op.and]: [where.roleId, condition] };

@@ -1,4 +1,4 @@
-import { ServiceIdUuidTranslatable } from 'rf-service';
+import { ServiceIdUuidTranslatable, Op } from 'rf-service';
 import { _Error } from 'rf-util';
 import { loc } from 'rf-locale';
 
@@ -15,11 +15,6 @@ export class EavValueOptionService extends ServiceIdUuidTranslatable {
     }
 
     if (options.where.notId) {
-      if (!this.Sequelize?.Op) {
-        throw new _Error(loc._f('No Sequalize.Op defined on %s. Try adding "Sequelize = conf.global.Sequelize" to the class.', this.constructor.name));
-      }
-
-      const Op = this.Sequelize.Op;
       const where = options.where;
       const filters = where[Op.and] ??= [];
 
