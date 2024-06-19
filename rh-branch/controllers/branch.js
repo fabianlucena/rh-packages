@@ -225,8 +225,9 @@ export class BranchController {
       fields: await filterVisualItemsByAliasName(fields, conf?.branch, { loc, entity: 'Branch', translationContext: 'branch', interface: 'form' }),
     };
 
+    await conf.global.eventBus?.$emit('interface.form.get', form, { loc, entity: 'Branch' });
     await conf.global.eventBus?.$emit('Branch.interface.form.get', form, { loc });
-        
+
     res.status(200).send(form);
   }
 

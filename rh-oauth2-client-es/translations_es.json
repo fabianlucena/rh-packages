@@ -1,0 +1,85 @@
+[
+    {
+        "source": "Content",
+        "language": "es",
+        "context": "page",
+        "translation": "Contenido",
+        "ref": "..\\rh-page\\services\\page.js [28,84]"
+    },
+    {
+        "source": "Content",
+        "language": "es",
+        "context": "resource",
+        "translation": "Contenido",
+        "ref": "..\\rh-page\\services\\resource.js [28,89]"
+    },
+    {
+        "source": "Error: No page name.",
+        "language": "es",
+        "context": "page",
+        "translation": "Error: sin nombre de página.",
+        "ref": "..\\rh-page\\translations.js [5,40]"
+    },
+    {
+        "source": "Format",
+        "language": "es",
+        "context": "pageFormat",
+        "translation": "Formato",
+        "ref": "..\\rh-page\\conf_data.js [8,63]"
+    },
+    {
+        "source": "PNG image",
+        "language": "es",
+        "context": "resourceType",
+        "translation": "Imagen PNG",
+        "ref": "..\\rh-page\\conf_data.js [12,76]"
+    },
+    {
+        "source": "Page not found.",
+        "language": "es",
+        "context": "page",
+        "translation": "Página no encontrada.",
+        "ref": "..\\rh-page\\controllers\\page.js [71,72]"
+    },
+    {
+        "source": "Plain",
+        "language": "es",
+        "context": "pageFormat",
+        "translation": "Plano",
+        "ref": "..\\rh-page\\conf_data.js [7,62]"
+    },
+    {
+        "source": "Resource not found.",
+        "language": "es",
+        "context": "resource",
+        "translation": "Recurso no encontrado.",
+        "ref": "..\\rh-page\\controllers\\resource.js [42,80]"
+    },
+    {
+        "source": "SVG image",
+        "language": "es",
+        "context": "resourceType",
+        "isDraft": false,
+        "translation": "Imagen SVG",
+        "ref": "..\\rh-page\\conf_data.js [13,76]"
+    },
+    {
+        "source": "Spanish",
+        "language": "es",
+        "translation": "Español",
+        "ref": "rh-page-es.js [18,41]"
+    },
+    {
+        "source": "Spanish language.",
+        "language": "es",
+        "translation": "Idioma español.",
+        "ref": "rh-page-es.js [19,57]"
+    },
+    {
+        "source": "There are many resources for that criteria.",
+        "language": "es",
+        "context": "resource",
+        "translation": "Hay mucho recursos para ese criterio.",
+        "ref": "..\\rh-page\\controllers\\resource.js [46,104]"
+    }
+]
