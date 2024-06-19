@@ -8,7 +8,7 @@ export const conf = {
   name,
   title: 'RH OAuth 2 Client',
   version: '0.1',
-  schema: 'menu',
+  schema: 'oauth2',
   modelsPath: dirname + '/models',
   servicesPath: dirname + '/services',
   controllersPath: dirname + '/controllers',

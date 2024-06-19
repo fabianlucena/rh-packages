@@ -1,8 +1,10 @@
+import dependency from 'rf-dependency';
 import { conf as localConf } from './conf.js';
 
 export const conf = localConf;
 
 conf.configure = configure;
+conf.init = init;
 conf.fieldsCache = {};
 conf.oauth2ClientsCache = {};
 
@@ -15,6 +17,10 @@ async function configure(global, options) {
   global.eventBus?.$on('OAuth2Client.created', clearCache);
   global.eventBus?.$on('OAuth2Client.updated', clearCache);
   global.eventBus?.$on('OAuth2Client.deleted', clearCache);
+}
+
+async function init() {
+  conf.oAuth2ClientService = dependency.get('oAuth2ClientService');
 }
 
 async function loginInterfaceFormGet(form, options) {
@@ -54,7 +60,7 @@ async function getOauth2Clients(options) {
   if (conf.oauth2ClientsCache[language] === undefined) {
     conf.oauth2ClientsCache[language] = {};
         
-    conf.oauth2ClientsCache[language] = await conf.oauth2ClientsService.getList({ loc: options?.loc });
+    conf.oauth2ClientsCache[language] = await conf.oAuth2ClientService.getList({ loc: options?.loc });
   }
 
   return conf.oauth2ClientsCache[language];
