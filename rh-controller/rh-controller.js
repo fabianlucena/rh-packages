@@ -1,6 +1,7 @@
 import { getRoutes } from 'rf-get-routes';
 import { deleteHandler, getUuidFromRequest, _HttpError, enableHandler, disableHandler, patchHandler } from 'http-util';
 import { defaultLoc } from 'rf-locale';
+import { dependency } from 'rf-dependency';
 
 /**
  * This is the base class for HTTP controller definitions.
@@ -51,17 +52,21 @@ export class Controller {
     return routes;
   }
 
+  static all(req, res) {
+    res.status(405).send({ error: 'HTTP method not allowed.' });
+  }
+
+  constructor() {
+    this.eventBus = dependency.get('eventBus', null);
+  }
+
   getName() {
     let name = this.constructor.name;
-    if (name.startsWith('Controller')) {
-      name = name.substring(10);
+    if (name.endsWith('Controller')) {
+      name = name.substring(0, name.length - 10);
     }
 
     return name;
-  }
-
-  static all(req, res) {
-    res.status(405).send({ error: 'HTTP method not allowed.' });
   }
 
   async checkPermissionsFromProperty(req, res, next, property) {
@@ -245,6 +250,7 @@ export class Controller {
     await this.checkPermissionsFromProperty(req, res, next, 'patchForUuidPermission');
 
     const { uuid } = await this.checkUuid(req);
+    // eslint-disable-next-line no-unused-vars
     const { uuid: _, ...data } = { ...req.body };
     const where = { uuid };
 
