@@ -75,7 +75,7 @@ export class ModelSequelize {
     const references = service?.references;
     const sanitizedOptions = {};
 
-    for (const k of ['attributes', 'transaction', ...conf?.moreValidOptions ?? []]) {
+    for (const k of ['attributes', 'transaction', 'limit', 'offset', ...conf?.moreValidOptions ?? []]) {
       if (options[k] === undefined) {
         continue;
       }
