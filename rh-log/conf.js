@@ -16,4 +16,5 @@ export const conf = {
   routesPath: dirname + '/routes',
   servicesPath: dirname + '/services',
   controllersPath: dirname + '/controllers',
+  iconsPath: dirname + '/icons',
 };
