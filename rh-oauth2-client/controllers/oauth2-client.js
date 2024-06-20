@@ -51,6 +51,7 @@ export class OAuth2ClientController extends Controller {
         label: await loc._c('oauth2Client', 'Name'),
         placeholder: await loc._c('oauth2Client', 'Name'),
         autocomplete: 'off',
+        spellcheck: false,
         disabled: {
           create: false,
           defaultValue: true,
@@ -72,6 +73,7 @@ export class OAuth2ClientController extends Controller {
         label: await loc._c('oauth2Client', 'Project ID'),
         placeholder: await loc._c('oauth2Client', 'Project ID'),
         autocomplete: 'off',
+        spellcheck: false,
       },
       {
         name: 'clientId',
@@ -81,6 +83,7 @@ export class OAuth2ClientController extends Controller {
         label: await loc._c('oauth2Client', 'Client ID'),
         placeholder: await loc._c('oauth2Client', 'Client ID'),
         autocomplete: 'off',
+        spellcheck: false,
       },
       {
         name: 'clientSecret',
@@ -90,6 +93,7 @@ export class OAuth2ClientController extends Controller {
         label: await loc._c('oauth2Client', 'Client secret'),
         placeholder: await loc._c('oauth2Client', 'Client secret'),
         autocomplete: 'off',
+        spellcheck: false,
       },
       {
         name: 'requestUrl',
@@ -97,17 +101,11 @@ export class OAuth2ClientController extends Controller {
         isField: true,
         isDetail: true,
         label: await loc._c('oauth2Client', 'Request URL'),
+        detail: await loc._c('oauth2Client', 'Use enter and whites spaces for formatting, they will be removed to send the request.'),
         placeholder: await loc._c('oauth2Client', 'Request URL'),
+        className: 'pre',
         autocomplete: 'off',
-      },
-      {
-        name: 'requestParams',
-        type: 'textArea',
-        isField: true,
-        isDetail: true,
-        label: await loc._c('oauth2Client', 'Request parameters'),
-        placeholder: await loc._c('oauth2Client', 'Request parameters'),
-        autocomplete: 'off',
+        spellcheck: false,
       },
     ];
 

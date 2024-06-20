@@ -52,10 +52,6 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    requestParams: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
   }, {
     sequelize,
     timestamps: true,
