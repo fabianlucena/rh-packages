@@ -24,7 +24,7 @@ async function init() {
 }
 
 async function loginInterfaceFormGet(form, options) {
-  const oauth2Clients = await getOauth2Clients();
+  const oauth2Clients = await getOAuth2Clients();
   if (!oauth2Clients?.length) {
     return;
   }
@@ -55,11 +55,9 @@ async function clearCache() {
   conf.oauth2ClientsCache = {};
 }
 
-async function getOauth2Clients(options) {
+async function getOAuth2Clients(options) {
   const language = options?.loc?.language;
   if (conf.oauth2ClientsCache[language] === undefined) {
-    conf.oauth2ClientsCache[language] = {};
-        
     conf.oauth2ClientsCache[language] = await conf.oAuth2ClientService.getList({ loc: options?.loc });
   }
 
