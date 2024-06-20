@@ -47,7 +47,7 @@ export class UserController {
         service: 'user',
         method: 'get',
       },
-      actions: actions,
+      actions,
       columns: [
         {
           name: 'displayName',
