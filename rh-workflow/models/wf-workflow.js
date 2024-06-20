@@ -9,7 +9,7 @@ export default (sequelize, DataTypes) => {
       }
 
       this.belongsTo(models.Module,          { as: 'ownerModule',     foreignKey: 'ownerModuleId' });
-      this.belongsTo(models.WfWorkflowType,  { as: 'workflowType',    foreignKey: 'workflowTypeId' });
+      this.belongsTo(models.WfWorkflowType,  { as: 'type',            foreignKey: 'workflowTypeId' });
       this.belongsTo(models.ModelEntityName, { as: 'modelEntityName', foreignKey: 'modelEntityNameId' });
     }
   }

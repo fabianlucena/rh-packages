@@ -1,4 +1,3 @@
-import { conf } from '../conf.js';
 import { ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable } from 'rf-service';
 
 export class WfWorkflowService extends ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable {
@@ -8,7 +7,7 @@ export class WfWorkflowService extends ServiceIdUuidNameTitleDescriptionEnabledO
       attributes: ['uuid', 'name'],
       whereColumn: 'name',
     },
-    workflowType:    'wfWorkflowTypeService',
+    type: 'wfWorkflowTypeService',
   };
   defaultTranslationContext = 'workflow';
   translatableColumns = [
@@ -19,44 +18,36 @@ export class WfWorkflowService extends ServiceIdUuidNameTitleDescriptionEnabledO
     'workflowTitle',
   ];
 
-  constructor() {
-    if (!conf.global.services.ModelEntityName?.singleton) {
-      throw new Error('There is no ModelEntityName service. Try adding RH Model Entity Name module to the project.');
-    }
-
-    super();
-  }
-
   async getListOptions(options) {
     options = { ...options };
 
-    if (options.include?.ModelEntityName
+    if (options.include?.modelEntityName
       || options.where?.modelEntityName
     ) {
-      if (options.include?.ModelEntityName) {
-        if (options.include.ModelEntityName === true) {
-          options.include.ModelEntityName = {};
+      if (options.include?.modelEntityName) {
+        if (options.include.modelEntityName === true) {
+          options.include.modelEntityName = {};
         }
 
-        if (!options.include.ModelEntityName.attributes) {
-          options.include.ModelEntityName.attributes = ['uuid', 'name'];
+        if (!options.include.modelEntityName.attributes) {
+          options.include.modelEntityName.attributes = ['uuid', 'name'];
         }
       } else {
         options.include ??= {};
-        options.include.ModelEntityName = {};
+        options.include.modelEntityName = {};
       }
 
       if (options.isEnabled !== undefined) {
-        options.include.ModelEntityName.where = {
+        options.include.modelEntityName.where = {
           isEnabled: options.isEnabled,
-          ...options.include.ModelEntityName.where,
+          ...options.include.modelEntityName.where,
         };
       }
 
       if (options.where?.modelEntityName) {
-        options.include.ModelEntityName.where = {
-          isEnabled: options.isEnabled,
+        options.include.modelEntityName.where = {
           ...options.where.modelEntityName,
+          ...options.include.modelEntityName.where,
         };
         delete options.where?.modelEntityName;
       }

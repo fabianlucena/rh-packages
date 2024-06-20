@@ -135,7 +135,7 @@ async function getWorkflowsForEntity(entity, options) {
     const workflows = await conf.wfWorkflowService.getForEntityName(
       entity,
       {
-        include: { WorkflowType: true },
+        include: { type: true },
         loc: options.loc,
       }
     );
