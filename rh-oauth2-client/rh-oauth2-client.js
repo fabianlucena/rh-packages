@@ -40,8 +40,10 @@ async function loginInterfaceFormGet(form, options) {
 
       const field = {
         name: oauth2Client.name,
-        label: oauth2Client.title,
-        type: 'button',
+        innerHTML: oauth2Client.title,
+        innerIcon: oauth2Client.icon,
+        href: oauth2Client.requestUrl.replace(/\s/g, ''),
+        type: 'link',
       };
       conf.fieldsCache[language].push(field);
     }

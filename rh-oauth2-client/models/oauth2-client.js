@@ -31,6 +31,10 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
     },
+    icon: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     isTranslatable: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
