@@ -107,6 +107,14 @@ export class _UnauthorizedError extends Error {
   }
 }
 
+export class ForbiddenError extends Error {
+  statusCode = 403;
+
+  constructor(message) {
+    super(message);
+  }
+}
+
 export class NoPermissionError extends Error {
   static NoObjectValues = ['permissions'];
   static VisibleProperties = ['message', 'title', 'permissions', 'redirectTo'];

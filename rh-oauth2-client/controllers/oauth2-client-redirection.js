@@ -6,12 +6,10 @@ export class OAuth2ClientRedirectionController extends Controller {
 
   constructor() {
     super();
-    this.service = dependency.get('oAuth2ClientService');
+    this.service = dependency.get('oAuth2ClientRedirectionService');
   }
 
   async get(req) {
-    console.log(req.query);
-    
-    return 'Hola Mundo! 04';
+    return this.service.loginFromCode(req.query, { loc: req.loc });
   }
 }

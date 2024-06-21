@@ -52,13 +52,38 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    requestUrl: {
+    requestURL: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    requestUrlReplacements: {
+    getTokenURL: {
       type: DataTypes.TEXT,
       allowNull: true,
+    },
+    getTokenBody: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    authorizationBearerProperty: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    getUserInfoURL: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    userInfoUsernameProperty: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    userInfoDisplayNameProperty: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    createUserIfNotExists: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
   }, {
     sequelize,

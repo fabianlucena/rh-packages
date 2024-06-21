@@ -706,7 +706,11 @@ export class ServiceBase {
    * @returns {Promise[row]}
    */
   async getSingleOrNullFor(where, options) {
-    return this.getSingle({ ...options, where: { ...options?.where, ...where }, skipNoRowsError: true, nullOnManyRowsError: true });
+    return this.getSingleOrNull({ ...options, where: { ...options?.where, ...where }});
+  }
+
+  async getSingleOrNull(options) {
+    return this.getSingle({ ...options, skipNoRowsError: true, nullOnManyRowsError: true });
   }
 
   async getFirstOrNullFor(where, options) {

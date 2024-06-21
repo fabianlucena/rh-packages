@@ -59,22 +59,21 @@ export class LoginController extends Controller {
         req.log?.info('Auto logged by autoLoginToken.', { autoLoginToken: data.autoLoginToken, session });
       } else {
         let deviceToken = data.deviceToken;
-        const deviceService = dependency.get('deviceService');
+        const deviceService = dependency.get('deviceService', null);
         if (deviceService) {
-          if (deviceToken) {
-            const device = await deviceService.getForTokenOrNull(deviceToken);
-            if (!device) {
-              deviceToken = null;
-            }
-          }
-
-          if (!deviceToken) {
-            const device = await deviceService.create({ data: '' });
+          const device = await deviceService.getForTokenOrCreateNew(deviceToken);
+          if (device) {
             deviceToken = device.token;
           }
         }
 
-        session = await this.service.forUsernamePasswordDeviceTokenAndSessionIndex(req.body.username, req.body.password, deviceToken, req.body.sessionIndex ?? req.body.index, loc);
+        session = await this.service.forUsernamePasswordDeviceTokenAndSessionIndex(
+          req.body.username,
+          req.body.password,
+          deviceToken,
+          req.body.sessionIndex ?? req.body.index,
+          loc
+        );
         req.log?.info(`User ${req.body.username} successfully logged with username and password.`, { session });
       }
             

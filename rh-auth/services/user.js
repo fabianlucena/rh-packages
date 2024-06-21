@@ -68,6 +68,22 @@ export class UserService extends ServiceIdUuidEnabledOwnerModule {
    * @param {Options} options - Options for the @ref getList method.
    * @returns {Promise{User}}
    */
+  async getForUsernameOrNull(username, options) {
+    options = { ...options, where: { ...options?.where, username }};
+
+    if (Array.isArray(username)) {
+      return this.getList(options);
+    }
+
+    return this.getSingleOrNull(options);
+  }
+
+  /**
+   * Gets an user for its username. For many coincidences and for no rows this method fails.
+   * @param {string} username - username for the user to get.
+   * @param {Options} options - Options for the @ref getList method.
+   * @returns {Promise{User}}
+   */
   async getForUsername(username, options) {
     options = { ...options, where: { ...options?.where, username }};
 
@@ -75,10 +91,7 @@ export class UserService extends ServiceIdUuidEnabledOwnerModule {
       return this.getList(options);
     }
 
-    options.limit ??= 2;
-    const rows = await this.getList(options);
-
-    return getSingle(rows, { params: ['user', ['username = %s', username], 'User'], ...options });
+    return this.getSingle(options);
   }
 
   /**

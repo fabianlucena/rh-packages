@@ -25,44 +25,48 @@ async function init() {
 }
 
 async function loginInterfaceFormGet(form, options) {
-  const oauth2Clients = await getOAuth2Clients();
-  if (!oauth2Clients?.length) {
-    return;
-  }
-
-  const language = options?.loc?.language;
-  if (conf.fieldsCache[language] === undefined) {
-    conf.fieldsCache[language] = [];
-
-    for (const oauth2Client of oauth2Clients) {
-      if (!oauth2Client.isEnabled) {
-        continue;
-      }
-
-      const urlReplacements = JSON.parse(oauth2Client.requestUrlReplacements);
-      let state = Object.keys(urlReplacements).join(',');
-      if (state) {
-        state += ',';
-      }
-
-      const field = {
-        name: oauth2Client.name,
-        type: 'link',
-        innerHTML: oauth2Client.title,
-        innerIcon: oauth2Client.icon,
-        href: oauth2Client.requestUrl.replace(/\s/g, '') + '&state=' + state,
-        urlReplacements,
-      };
-      conf.fieldsCache[language].push({ client: oauth2Client, field, state });
-    }
-  }
-
-  const items = conf.fieldsCache[language];
+  const items = await getFieldsFromCache(options?.loc?.language);
   for (const item of items) {
     const clientState = await conf.oAuth2StateService.create({ oAuth2ClientId: item.client.id });
     form.fields.push({ ...item.field, href: item.field.href + clientState.state });
   }
+}
 
+async function getFieldsFromCache(language) {
+  if (conf.fieldsCache[language]) {
+    return conf.fieldsCache[language];
+  }
+    
+  conf.fieldsCache[language] = [];
+
+  const oauth2Clients = await getOAuth2Clients();
+  if (!oauth2Clients?.length) {
+    return conf.fieldsCache[language];
+  }
+
+  for (const oauth2Client of oauth2Clients) {
+    if (!oauth2Client.isEnabled) {
+      continue;
+    }
+
+    const urlReplacements = {
+      '{sessionIndex}': '{sessionIndex}',
+      '{deviceToken}':  '{deviceToken}',
+    };
+    let state = Object.keys(urlReplacements).join(',') + ',';
+
+    const field = {
+      name: oauth2Client.name,
+      type: 'link',
+      innerHTML: oauth2Client.title,
+      innerIcon: oauth2Client.icon,
+      href: oauth2Client.requestURL.replace(/\s/g, '') + '&state=' + state,
+      urlReplacements,
+    };
+    conf.fieldsCache[language].push({ client: oauth2Client, field, state });
+  }
+
+  return conf.fieldsCache[language];
 }
 
 async function clearCache() {
