@@ -10,11 +10,6 @@ export class OAuth2ClientController extends Controller {
     this.service = dependency.get('oAuth2ClientService');
   }
 
-  static routes() {
-    const routes = super.routes();
-    return routes;
-  }
-
   getPermission =            'oauth2Client.get';
   postPermission =           'oauth2Client.create';
   patchPermission =          'oauth2Client.edit';
@@ -103,6 +98,18 @@ export class OAuth2ClientController extends Controller {
         label: await loc._c('oauth2Client', 'Request URL'),
         detail: await loc._c('oauth2Client', 'Use enter and whites spaces for formatting, they will be removed to send the request.'),
         placeholder: await loc._c('oauth2Client', 'Request URL'),
+        className: 'pre',
+        autocomplete: 'off',
+        spellcheck: false,
+      },
+      {
+        name: 'requestUrlReplacements',
+        type: 'textArea',
+        isField: true,
+        isDetail: true,
+        label: await loc._c('oauth2Client', 'Request URL replacements'),
+        detail: await loc._c('oauth2Client', 'Use JSON format.'),
+        placeholder: await loc._c('oauth2Client', 'Request URL replacements'),
         className: 'pre',
         autocomplete: 'off',
         spellcheck: false,

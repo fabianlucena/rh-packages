@@ -37,7 +37,9 @@ conf.init.push(() => conf.deviceCacheMaintenance = setInterval(conf.deviceCacheM
 export class DeviceService extends ServiceIdUuid {
   async validateForCreation(data) {
     data ??= {};
-    data.token ||= crypto.randomBytes(64).toString('hex');
+    data.token ||= crypto.randomBytes(64)
+      .toString('base64')
+      .replaceAll('=', '');
 
     return super.validateForCreation(data);
   }

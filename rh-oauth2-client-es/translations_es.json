@@ -4,14 +4,14 @@
         "language": "es",
         "context": "oauth2Client",
         "translation": "ID de cliente",
-        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [81,26]\n..\\rh-oauth2-client\\controllers\\oauth2-client.js [82,32]"
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [78,26]\n..\\rh-oauth2-client\\controllers\\oauth2-client.js [79,32]"
     },
     {
         "source": "Client secret",
         "language": "es",
         "context": "oauth2Client",
         "translation": "Secreto de cliente",
-        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [90,26]\n..\\rh-oauth2-client\\controllers\\oauth2-client.js [91,32]"
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [88,26]\n..\\rh-oauth2-client\\controllers\\oauth2-client.js [89,32]"
     },
     {
         "source": "Create OAuth2 client",
@@ -39,7 +39,7 @@
         "language": "es",
         "context": "oauth2Client",
         "translation": "Habilitar",
-        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [63,26]\n..\\rh-oauth2-client\\controllers\\oauth2-client.js [64,32]"
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [59,26]\n..\\rh-oauth2-client\\controllers\\oauth2-client.js [60,32]"
     },
     {
         "source": "Get OAuth2 client(s)",
@@ -53,7 +53,7 @@
         "language": "es",
         "context": "oauth2Client",
         "translation": "Nombre",
-        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [51,26]\n..\\rh-oauth2-client\\controllers\\oauth2-client.js [52,32]"
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [46,26]\n..\\rh-oauth2-client\\controllers\\oauth2-client.js [47,32]"
     },
     {
         "source": "OAuth2 Client",
@@ -67,7 +67,7 @@
         "language": "es",
         "context": "oauth2Client",
         "translation": "Cliente OAuth2",
-        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [108,24]"
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [120,24]"
     },
     {
         "source": "OAuth2 client manager",
@@ -81,14 +81,22 @@
         "language": "es",
         "context": "oauth2Client",
         "translation": "ID de proyecto",
-        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [72,26]\n..\\rh-oauth2-client\\controllers\\oauth2-client.js [73,32]"
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [68,26]\n..\\rh-oauth2-client\\controllers\\oauth2-client.js [69,32]"
     },
     {
         "source": "Request URL",
         "language": "es",
         "context": "oauth2Client",
         "translation": "URL de requerimiento",
-        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [99,26]\n..\\rh-oauth2-client\\controllers\\oauth2-client.js [101,32]"
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [98,26]\n..\\rh-oauth2-client\\controllers\\oauth2-client.js [100,32]"
+    },
+    {
+        "source": "Request URL replacements",
+        "language": "es",
+        "context": "oauth2Client",
+        "isDraft": false,
+        "translation": "Reemplazos para el requerimiento URL",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [110,26]\n..\\rh-oauth2-client\\controllers\\oauth2-client.js [112,32]"
     },
     {
         "source": "Spanish",
@@ -107,14 +115,21 @@
         "language": "es",
         "context": "oauth2Client",
         "translation": "Título",
-        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [42,26]\n..\\rh-oauth2-client\\controllers\\oauth2-client.js [43,32]"
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [37,26]\n..\\rh-oauth2-client\\controllers\\oauth2-client.js [38,32]"
+    },
+    {
+        "source": "Use JSON format.",
+        "language": "es",
+        "context": "oauth2Client",
+        "isDraft": false,
+        "translation": "Utilice del formato JSON.",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [111,27]"
     },
     {
         "source": "Use enter and whites spaces for formatting, they will be removed to send the request.",
         "language": "es",
         "context": "oauth2Client",
-        "isDraft": false,
         "translation": "Use enter y espacios en blanco para formato, serán removidos para enviar el requerimiento.",
-        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [100,27]"
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [99,27]"
     }
 ]

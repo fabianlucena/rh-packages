@@ -20,13 +20,15 @@ export class IdentityService extends ServiceIdUuidEnabled {
    */
   async hashPassword(password) {
     return new Promise((resolve, reject) => {
-      const salt = crypto.randomBytes(8).toString('hex');
+      const salt = crypto.randomBytes(8)
+        .toString('base64')
+        .replaceAll('=', '');
       crypto.scrypt(password, salt, 64, (err, derivedKey) => {
         if (err) {
           return reject(err);
         }
 
-        resolve(salt + ':' + derivedKey.toString('hex'));
+        resolve(salt + ':' + derivedKey.toString('base64').replaceAll('=', ''));
       });
     });
   }
@@ -184,7 +186,7 @@ export class IdentityService extends ServiceIdUuidEnabled {
           resolve(err);
         }
                 
-        resolve(key == derivedKey.toString('hex'));
+        resolve(key == derivedKey.toString('base64').replaceAll('=', ''));
       });
     });
   }

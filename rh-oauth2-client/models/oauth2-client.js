@@ -42,11 +42,11 @@ export default (sequelize, DataTypes) => {
     },
     projectId: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
     clientId: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
     clientSecret: {
       type: DataTypes.TEXT,
@@ -55,6 +55,10 @@ export default (sequelize, DataTypes) => {
     requestUrl: {
       type: DataTypes.TEXT,
       allowNull: false,
+    },
+    requestUrlReplacements: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
   }, {
     sequelize,

@@ -21,6 +21,7 @@ async function configure(global, options) {
 
 async function init() {
   conf.oAuth2ClientService = dependency.get('oAuth2ClientService');
+  conf.oAuth2StateService =  dependency.get('oAuth2StateService');
 }
 
 async function loginInterfaceFormGet(form, options) {
@@ -38,18 +39,30 @@ async function loginInterfaceFormGet(form, options) {
         continue;
       }
 
+      const urlReplacements = JSON.parse(oauth2Client.requestUrlReplacements);
+      let state = Object.keys(urlReplacements).join(',');
+      if (state) {
+        state += ',';
+      }
+
       const field = {
         name: oauth2Client.name,
+        type: 'link',
         innerHTML: oauth2Client.title,
         innerIcon: oauth2Client.icon,
-        href: oauth2Client.requestUrl.replace(/\s/g, ''),
-        type: 'link',
+        href: oauth2Client.requestUrl.replace(/\s/g, '') + '&state=' + state,
+        urlReplacements,
       };
-      conf.fieldsCache[language].push(field);
+      conf.fieldsCache[language].push({ client: oauth2Client, field, state });
     }
   }
 
-  form.fields.push(...conf.fieldsCache[language]);
+  const items = conf.fieldsCache[language];
+  for (const item of items) {
+    const clientState = await conf.oAuth2StateService.create({ oAuth2ClientId: item.client.id });
+    form.fields.push({ ...item.field, href: item.field.href + clientState.state });
+  }
+
 }
 
 async function clearCache() {

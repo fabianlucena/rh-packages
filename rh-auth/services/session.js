@@ -50,11 +50,13 @@ export class SessionService extends ServiceIdUuid {
 
   async validateForCreation(data) {
     if (!data.authToken) {
-      data.authToken = crypto.randomBytes(64).toString('hex');
+      data.authToken = crypto.randomBytes(64).toString('base64')
+        .replaceAll('=', '');
     }
 
     if (!data.autoLoginToken) {
-      data.autoLoginToken = crypto.randomBytes(64).toString('hex');
+      data.autoLoginToken = crypto.randomBytes(64).toString('base64')
+        .replaceAll('=', '');
     }
         
     return super.validateForCreation(data);
