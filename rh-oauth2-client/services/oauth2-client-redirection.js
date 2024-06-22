@@ -129,6 +129,8 @@ export class OAuth2ClientRedirectionService {
       throw new MissingParameterError('name');
     }
 
+    throw new MissingParameterError('name');
+
     const loc = options.loc ?? defaultLoc;
     data = { ...data, loc };
     const oAuth2Client = await this.getOAuth2ClientForData(data);

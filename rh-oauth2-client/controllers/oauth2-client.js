@@ -109,7 +109,7 @@ export class OAuth2ClientController extends Controller {
         isField: true,
         isDetail: true,
         label: await loc._c('oauth2Client', 'Get token body'),
-        detail: await loc._c('oauth2Client', 'In JSON format with place holders.'),
+        detail: await loc._c('oauth2Client', 'In JSON format with placeholders.'),
         placeholder: '{\n  "code": "{code}",\n  "client_id": "{clientId}",\n  "client_secret": "{clientSecret}",\n  "redirect_uri": "http://localhost:8081/redirection/oauth2/google",\n  "grant_type": "authorization_code"\n}',
         className: 'pre',
         autocomplete: 'off',
