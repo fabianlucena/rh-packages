@@ -184,9 +184,20 @@ export class IdentityService extends ServiceIdUuidEnabled {
       crypto.scrypt(rawPassword, salt, 64, (err, derivedKey) => {
         if (err) {
           resolve(err);
+          return;
         }
-                
-        resolve(key == derivedKey.toString('base64').replaceAll('=', ''));
+        
+        if (key == derivedKey.toString('hex')) {
+          resolve(true);
+          return;
+        }
+
+        if (key == derivedKey.toString('hex').replaceAll('=', '')) {
+          resolve(true);
+          return;
+        }
+
+        resolve(false);
       });
     });
   }
