@@ -1,7 +1,7 @@
-import { ServiceIdUuidEnabledOwnerModule, Op } from 'rf-service';
+import { Service, Op } from 'rf-service';
 import dependency from 'rf-dependency';
 
-export class GroupService extends ServiceIdUuidEnabledOwnerModule {
+export class GroupService extends Service.IdUuidEnableOwnerModule {
   model = 'userModel';
   references = {
     type: 'userTypeService',

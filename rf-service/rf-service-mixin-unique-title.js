@@ -3,7 +3,7 @@ import { checkParameterStringNotNullOrEmpty, checkParameterStringUndefinedOrNotN
 import { loc } from 'rf-locale';
 import { ConflictError } from 'http-util';
 
-export const ServiceMixinTitle = Service => class extends Service {
+export const ServiceMixinUniqueTitle = Service => class extends Service {
   constructor() {
     super();
 

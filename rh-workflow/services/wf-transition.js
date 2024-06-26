@@ -1,9 +1,9 @@
-import { ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 import { CheckError } from 'rf-util';
 import { loc } from 'rf-locale';
 import { ConflictError } from 'http-util';
 
-export class WfTransitionService extends ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable {
+export class WfTransitionService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleDescriptionTranslatable {
   references = {
     workflowType: 'wfWorkflowTypeService',
     from:         'wfStatusService',

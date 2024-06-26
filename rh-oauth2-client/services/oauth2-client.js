@@ -1,5 +1,5 @@
-import { ServiceIdUuidNameTitleEnabledTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class OAuth2ClientService extends ServiceIdUuidNameTitleEnabledTranslatable {
+export class OAuth2ClientService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleTranslatable {
   defaultTranslationContext = 'oauth2Client';
 }

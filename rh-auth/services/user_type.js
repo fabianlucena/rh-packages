@@ -1,4 +1,4 @@
-import { ServiceIdUuidNameTitleEnabledOwnerModuleTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class UserTypeService extends ServiceIdUuidNameTitleEnabledOwnerModuleTranslatable {
+export class UserTypeService extends (Service.IdUuidEnableNameUniqueTitleOwnerModuleTranslatable) {
 }

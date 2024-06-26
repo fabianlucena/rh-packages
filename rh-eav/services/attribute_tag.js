@@ -1,9 +1,9 @@
-import { ServiceIdUuidNameEnabledOwnerModuleTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 import { checkParameterNotNullOrEmpty } from 'rf-util';
 import { loc } from 'rf-locale';
 import { _ConflictError } from 'http-util';
 
-export class EavAttributeTagService extends ServiceIdUuidNameEnabledOwnerModuleTranslatable {
+export class EavAttributeTagService extends Service.IdUuidEnableNameOwnerModuleTranslatable {
   references = {
     attribute: 'eavAttributeService',
   };

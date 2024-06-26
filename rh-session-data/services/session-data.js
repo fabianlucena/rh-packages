@@ -1,9 +1,9 @@
-import { ServiceBase } from 'rf-service';
+import { Service } from 'rf-service';
 import { checkDataForMissingProperties, getSingle } from 'sql-util';
 import { deepMerge } from 'rf-util';
 import { loc } from 'rf-locale';
 
-export class SessionDataService extends ServiceBase {
+export class SessionDataService extends Service.Base {
   references = {
     session: true,
   };

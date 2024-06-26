@@ -1,6 +1,6 @@
-import { ServiceBase } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class WfCaseService extends ServiceBase {
+export class WfCaseService extends Service.Base {
   references = {
     workflow: 'wfWorkflowService',
     case:     'wfStatusService',

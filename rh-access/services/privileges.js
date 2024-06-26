@@ -1,5 +1,5 @@
 import { conf } from '../conf.js';
-import { ServiceBase } from 'rf-service';
+import { Service } from 'rf-service';
 import { complete, _Error } from 'rf-util';
 import dependency from 'rf-dependency';
 import { loc } from 'rf-locale';
@@ -34,7 +34,7 @@ complete(
 
 conf.init.push(() => conf.privilegesCacheMaintenance = setInterval(conf.privilegesCacheMaintenanceMethod, conf.privilegesCacheMaintenanceInterval));
 
-export class PrivilegesService extends ServiceBase {
+export class PrivilegesService extends Service.Base {
   model = false;
 
   init() {

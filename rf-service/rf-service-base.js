@@ -458,7 +458,12 @@ export class ServiceBase {
 
     options = { ...options };
 
+    if (options.include) {
+      options.include = { ...options.include };
+    }
+
     if (options.where && this.references && Object.keys(this.references).length) {
+      options.where = { ...options.where };
       for (const key in options.where) {
         if (typeof key === 'string') {
           let include = options.include?.[key];
@@ -491,7 +496,6 @@ export class ServiceBase {
 
             if (!include.where) {
               include.where = value;
-              delete options.where[key];
             } else {
               include.where = {
                 [Op.and]: [
@@ -728,7 +732,7 @@ export class ServiceBase {
     }
         
     await this.emit('gettingCount', options?.emitEvent, options);
-    const result = this.model.count(options, this);
+    const result = await this.model.count(options, this);
     await this.emit('gettingCount', options?.emitEvent, result, options);
 
     return result;

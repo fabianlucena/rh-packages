@@ -1,8 +1,8 @@
 import { RolePermissionService } from './role_permission.js';
-import { ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable, Op } from 'rf-service';
+import { Service, Op } from 'rf-service';
 import { runSequentially } from 'rf-util';
 
-export class PermissionService extends ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable {
+export class PermissionService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleDescriptionTranslatable {
   references = {
     roles: {
       service: 'roleService',

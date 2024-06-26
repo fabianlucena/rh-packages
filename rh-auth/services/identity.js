@@ -1,11 +1,12 @@
-import { ServiceIdUuidEnabled } from 'rf-service';
+import { Service } from 'rf-service';
 import { checkDataForMissingProperties, MissingPropertyError } from 'sql-util';
 import crypto from 'crypto';
 
-export class IdentityService extends ServiceIdUuidEnabled {
+export class IdentityService extends Service.IdUuidEnable {
   references = {
     type: {
       service: 'identityTypeService',
+      createIfNotExists: true,
       whereColumn: 'name',
     },
     user: {
@@ -60,10 +61,6 @@ export class IdentityService extends ServiceIdUuidEnabled {
   async validateForCreation(data) {
     await this.completeDataFromPassword(data);
 
-    if (!data.data) {
-      throw new MissingPropertyError('Identity', 'password');
-    }
-
     checkDataForMissingProperties(data, 'Identity', 'typeId', 'userId');
 
     return super.validateForCreation(data);
@@ -76,8 +73,13 @@ export class IdentityService extends ServiceIdUuidEnabled {
    * @returns {Promise[data]}
    */
   async createLocal(data, options) {
+    if (!data.data) {
+      throw new MissingPropertyError('Identity', 'password');
+    }
+    
     delete data.typeId;
     data.type = 'local';
+    
     return this.create(data, options);
   }
 
@@ -88,7 +90,7 @@ export class IdentityService extends ServiceIdUuidEnabled {
    * @param {OptionsObject} options - For valid options see: sqlUtil.completeAssociationOptions method, and sqlUtil.getSingle.
    * @returns {Promise[Identity]}
    */
-  async getForUserIdTypeName(userId, typeName, options) {
+  async getForUserIdAndTypeName(userId, typeName, options) {
     options = {
       limit: 2,
       ...options,
@@ -103,13 +105,16 @@ export class IdentityService extends ServiceIdUuidEnabled {
   }
 
   /**
-   * Get the identity for a given username and type name. If not exists or exist many cohincidences the method fails. If the isEnabled value is not defined this value is setted to true.
+   * Get the identity for a given username and type name. If not exists or 
+   * exist many cohincidences the method fails. If the isEnabled value is not 
+   * defined this value is setted to true.
    * @param {string} username - the username to search.
    * @param {string} typeName - the typename to search.
-   * @param {OptionsObject} options - For valid options see: sqlUtil.completeAssociationOptions method, and sqlUtil.getSingle.
+   * @param {OptionsObject} options - For valid options see: 
+   * sqlUtil.completeAssociationOptions method, and sqlUtil.getSingle.
    * @returns {Promise[Identity]}
    */
-  async getForUsernameTypeName(username, typeName, options) {
+  async getForUsernameAndTypeName(username, typeName, options) {
     options = {
       limit: 2,
       ...options,
@@ -124,23 +129,75 @@ export class IdentityService extends ServiceIdUuidEnabled {
   }
 
   /**
-   * Get the 'local' type identity for a given user ID. See getForUserIdTypeName for more details.
-   * @param {string} userId - the user ID to search. 
-   * @param {object} options - For valid options see: sqlUtil.getForUserIdTypeName method.
+   * Get the identity for a given username in identity and type name. If not 
+   * exists or if exist many cohincidences the method fails. If the isEnabled 
+   * value is not defined this value is setted to true.
+   * @param {string} username - the username in identity to search.
+   * @param {string} typeName - the typename to search.
+   * @param {OptionsObject} options - For valid options see: 
+   * sqlUtil.completeAssociationOptions method, and sqlUtil.getSingle.
    * @returns {Promise[Identity]}
    */
-  async getLocalForUserId(userId, options) {
-    return this.getForUserIdTypeName(userId, 'local', options);
+  async getForUsernameIdentityAndTypeName(usernameIdentity, typeName, options) {
+    options = {
+      ...options,
+      where: {
+        ...options?.where,
+        user: usernameIdentity,
+        type: typeName,
+        data: `"username":"${usernameIdentity}"`
+      }
+    };
+
+    return this.getSingle(options);
   }
 
   /**
-   * Get the 'local' type identity for a given username. See getForUsernameTypeName for more details.
+   * Get the identity for a given username in identity and type name or null. 
+   * If not exists returns null. If exist many cohincidences the method fails. 
+   * If the isEnabled value is not defined this value is setted to true.
+   * @param {string} username - the username in identity to search.
+   * @param {string} typeName - the typename to search.
+   * @param {OptionsObject} options - For valid options see: 
+   * sqlUtil.completeAssociationOptions method, and sqlUtil.getSingle.
+   * @returns {Promise[Identity]}
+   */
+  async getForUsernameIdentityAndTypeNameOrNull(usernameIdentity, typeName, options) {
+    options = {
+      ...options,
+      where: {
+        ...options?.where,
+        user: usernameIdentity,
+        type: typeName,
+        data: `"username":"${usernameIdentity}"`
+      }
+    };
+
+    return this.getSingleOrNull(options);
+  }
+
+  /**
+   * Get the 'local' type identity for a given user ID. See 
+   * getForUserIdAndTypeName for more details.
+   * @param {string} userId - the user ID to search. 
+   * @param {object} options - For valid options see: 
+   * sqlUtil.getForUserIdAndTypeName method.
+   * @returns {Promise[Identity]}
+   */
+  async getLocalForUserId(userId, options) {
+    return this.getForUserIdAndTypeName(userId, 'local', options);
+  }
+
+  /**
+   * Get the 'local' type identity for a given username. See 
+   * getForUsernameAndTypeName for more details.
    * @param {string} username - the username to search. 
-   * @param {OptionsObject} options - For valid options see: sqlUtil.getForUsernameTypeName method.
+   * @param {OptionsObject} options - For valid options see: 
+   * sqlUtil.getForUsernameAndTypeName method.
    * @returns {Promise[Identity]}
    */
   async getLocalForUsername(username, options) {
-    return this.getForUsernameTypeName(username, 'local', options);
+    return this.getForUsernameAndTypeName(username, 'local', options);
   }
 
   /**
@@ -208,7 +265,15 @@ export class IdentityService extends ServiceIdUuidEnabled {
    * @returns {Promise[Identity]}
    */
   async createIfNotExists(data, options) {
-    const row = this.getForUsernameTypeName(data.username, data.type, { attributes: ['id'], skipNoRowsError: true, ...options });
+    const row = this.getForUsernameAndTypeName(
+      data.username,
+      data.type,
+      {
+        attributes: ['id'],
+        skipNoRowsError: true,
+        ...options,
+      },
+    );
     if (row) {
       return row;
     }

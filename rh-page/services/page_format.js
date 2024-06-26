@@ -1,4 +1,4 @@
-import { ServiceIdUuidNameEnabledTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class PageFormatService extends ServiceIdUuidNameEnabledTranslatable {
+export class PageFormatService extends Service.IdUuidEnableNameTranslatable {
 }

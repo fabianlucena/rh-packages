@@ -1,8 +1,8 @@
-import { ServiceIdUuidNameTitleEnabledOwnerModuleTranslatable, Op } from 'rf-service';
+import { Service, Op } from 'rf-service';
 import dependency from 'rf-dependency';
 import { checkDataForMissingProperties } from 'sql-util';
 
-export class RoleService extends ServiceIdUuidNameTitleEnabledOwnerModuleTranslatable {
+export class RoleService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleTranslatable {
   references = {
     users: { service: 'userService', whereColumn: 'username' },
     sites: { service: 'siteService', whereColumn: 'name' },

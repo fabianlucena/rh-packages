@@ -1,9 +1,9 @@
 import { PageFormatService } from './page_format.js';
-import { ServiceIdUuidNameTitleEnabledOwnerModuleSharedTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 import { checkParameterStringNotNullOrEmpty } from 'rf-util';
 import { loc } from 'rf-locale';
 
-export class PageService extends ServiceIdUuidNameTitleEnabledOwnerModuleSharedTranslatable {
+export class PageService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleSharedTranslatable {
   references = {
     format: {
       service: 'pageFormatService',

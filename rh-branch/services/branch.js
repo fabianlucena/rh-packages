@@ -1,9 +1,9 @@
 import { conf } from '../conf.js';
-import { ServiceIdUuidNameEnabledOwnerModuleSharedTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 import { CheckError } from 'rf-util';
 import { loc } from 'rf-locale';
 
-export class BranchService extends ServiceIdUuidNameEnabledOwnerModuleSharedTranslatable {
+export class BranchService extends Service.IdUuidNameEnabledOwnerModuleSharedTranslatable {
   references = {
     company: {
       attributes: ['uuid', 'name', 'title'],

@@ -1,5 +1,5 @@
-import { ServiceIdUuidNameTitleEnabledSharedTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class CompanyService extends ServiceIdUuidNameTitleEnabledSharedTranslatable {
+export class CompanyService extends Service.IdUuidEnableNameUniqueTitleSharedTranslatable {
   viewAttributes = ['uuid', 'isEnabled', 'name', 'title', 'description'];
 }

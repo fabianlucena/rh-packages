@@ -1,6 +1,6 @@
-import { ServiceIdUuidNameTitleDescriptionTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class EavAttributeOptionService extends ServiceIdUuidNameTitleDescriptionTranslatable {
+export class EavAttributeOptionService extends Service.IdUuidNameUniqueTitleDescriptionTranslatable {
   references = {
     attribute: 'eavAttributeService',
   };

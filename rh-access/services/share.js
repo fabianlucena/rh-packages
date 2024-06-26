@@ -1,7 +1,7 @@
-import { ServiceEnabledOwnerModuleTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 import { checkDataForMissingProperties } from 'sql-util';
 
-export class ShareService extends ServiceEnabledOwnerModuleTranslatable {
+export class ShareService extends Service.EnableOwnerModuleTranslatable {
   references = {
     objectName: {
       service: 'modelEntityNameService',

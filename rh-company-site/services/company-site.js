@@ -1,5 +1,5 @@
 import { conf } from '../conf.js';
-import { ServiceOwnerModule } from 'rf-service';
+import { Service } from 'rf-service';
 import { checkDataForMissingProperties } from 'sql-util';
 
 export class CompanySiteService extends ServiceOwnerModule {

@@ -1,0 +1,45 @@
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Example error
+
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+/logout:
+  post:
+    tags:
+      - Authorization
+    summary: Logout
+    description: Ends a session in the system
+    security:
+      - bearerAuth: []
+    produces:
+      - empty
+    consumes:
+      - application/json
+    parameters:
+    responses:
+      '204':
+        description: Success
+      '403':
+        $ref: '#/components/responses/Unauthorized'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+

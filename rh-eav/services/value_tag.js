@@ -1,10 +1,10 @@
-import { ServiceIdUuidTranslatable, Op } from 'rf-service';
+import { Service, Op } from 'rf-service';
 import { checkParameterNotNullOrEmpty, _Error } from 'rf-util';
 import { loc } from 'rf-locale';
 import { _ConflictError } from 'http-util';
 import dependency from 'rf-dependency';
 
-export class EavValueTagService extends ServiceIdUuidTranslatable {
+export class EavValueTagService extends Service.IdUuidTranslatable {
   references = {
     attribute: {
       service: 'eavAttributeService',

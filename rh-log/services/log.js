@@ -1,6 +1,6 @@
-import { ServiceId } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class LogService extends ServiceId {
+export class LogService extends Service.Id {
   references = {
     session: { attributes: ['id'] },
     user: { attributes: ['username', 'displayName'] },

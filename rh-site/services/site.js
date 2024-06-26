@@ -1,6 +1,6 @@
-import { ServiceIdUuidNameEnabledOwnerModuleTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class SiteService extends ServiceIdUuidNameEnabledOwnerModuleTranslatable {
+export class SiteService extends Service.IdUuidEnableNameOwnerModuleTranslatable {
   references = {
     users: {
       service: 'userService',

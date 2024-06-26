@@ -1,6 +1,6 @@
 import { NoRowError, DisabledRowError } from './rf-service-errors.js';
 
-export const ServiceMixinEnabled = Service => class ServiceEnabled extends Service {
+export const ServiceMixinEnable = Service => class ServiceEnable extends Service {
   /**
    * Gets the options to use in getList methos.
    * @param {object} options - options for the getList method.

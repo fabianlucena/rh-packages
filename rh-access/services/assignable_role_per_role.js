@@ -1,7 +1,7 @@
-import { ServiceOwnerModule } from 'rf-service';
+import { Service } from 'rf-service';
 import { checkDataForMissingProperties } from 'sql-util';
 
-export class AssignableRolePerRoleService extends ServiceOwnerModule {
+export class AssignableRolePerRoleService extends Service.OwnerModule {
   references = {
     role: true,
     assignableRole: 'roleService',

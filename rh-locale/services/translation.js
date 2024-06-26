@@ -1,5 +1,5 @@
 import { conf } from '../conf.js';
-import { ServiceIdUuidEnabled } from 'rf-service';
+import { Service } from 'rf-service';
 import { SourceService } from './source.js';
 import { LanguageService } from './language.js';
 import { ContextService } from './context.js';
@@ -7,7 +7,7 @@ import { DomainService } from './domain.js';
 import { checkDataForMissingProperties, getSingle } from 'sql-util';
 import { deepComplete } from 'rf-util';
 
-export class TranslationService extends ServiceIdUuidEnabled {
+export class TranslationService extends Service.IdUuidEnable {
   references = {
     source: {
       createIfNotExists: true,

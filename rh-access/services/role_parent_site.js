@@ -1,7 +1,7 @@
-import { ServiceOwnerModuleTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 import { checkDataForMissingProperties } from 'sql-util';
 
-export class RoleParentSiteService extends ServiceOwnerModuleTranslatable {
+export class RoleParentSiteService extends Service.OwnerModuleTranslatable {
   references = {
     role:   true,
     parent: 'roleService',

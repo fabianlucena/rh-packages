@@ -183,7 +183,11 @@ export class ModelSequelize {
 
     if (options.orderBy) {
       sanitizedOptions.order = this.sanitizeOrder(options.orderBy);
-    }    
+    }
+
+    if (options.groupBy) {
+      sanitizedOptions.group = this.sanitizeGroup(options.groupBy);
+    }
 
     return sanitizedOptions;
   }
@@ -203,7 +207,6 @@ export class ModelSequelize {
       const symbols = Object.getOwnPropertySymbols(where);
       for (let k of symbols) {
         let v = where[k];
-        delete where[k];
         k = opMap[k];
         if (!k) {
           throw Error('Unknown symbol in query.');
@@ -222,19 +225,36 @@ export class ModelSequelize {
     return where;
   }
 
-  sanitizeOrder(options) {
-    if (options.orderBy?.length) {
-      options.orderBy = options.orderBy.map(orderBy => {
-        let col = orderBy[0];
-        const sort = orderBy[1];
-        if (!(col instanceof seqUtils.Col)) {
-          col = this.model.sequelize.col(col);
-        }
-        return [col, sort];
-      });
+  sanitizeOrder(orderBy) {
+    if (!orderBy?.length) {
+      return;
     }
 
-    return options;
+    const order = orderBy.map(item => {
+      let col = item[0];
+      const sort = item[1];
+      if (!(col instanceof seqUtils.Col)) {
+        col = this.model.sequelize.col(col);
+      }
+      return [col, sort];
+    });
+  
+    return order;
+  }
+
+  sanitizeGroup(groupBy) {
+    if (!groupBy?.length) {
+      return;
+    }
+
+    const group = groupBy.map(col => {
+      if (!(col instanceof seqUtils.Col)) {
+        col = this.model.sequelize.col(col);
+      }
+      return col;
+    });
+  
+    return group;
   }
 
   async create(data, options, service) {

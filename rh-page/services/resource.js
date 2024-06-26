@@ -1,9 +1,9 @@
 import { ResourceTypeService } from './resource_type.js';
-import { ServiceIdUuidNameEnabledTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 import { checkNotNullNotEmptyAndNotUndefined } from 'rf-util';
 import { loc } from 'rf-locale';
 
-export class ResourceService extends ServiceIdUuidNameEnabledTranslatable {
+export class ResourceService extends Service.IdUuidEnableNameTranslatable {
   references = {
     type: {
       service: 'resourceTypeService',

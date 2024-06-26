@@ -1,0 +1,278 @@
+components:
+  schemas:
+    UserCreate:
+      type: object
+      properties:
+        username:
+          type: string
+          required: true
+          example: admin
+        displayName:
+          type: string
+          required: true
+          example: Admin
+        typeId:
+          type: integer
+        isEnabled:
+          type: boolean
+
+    UserUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+        displayName:
+          type: string
+        typeId:
+          type: integer
+        isEnabled:
+          type: boolean
+
+    UsersList:
+      type: array
+      items:
+        type: object
+        properties:
+          uuid:
+            name: string
+            format: uuid
+            example: eba56eb2-e364-4540-af0a-3dcc1c6120d6
+          username:
+            type: string
+            example: admin
+          displayName:
+            type: string
+            example: Admin
+          type:
+            type: object
+            properties:
+              uuid:
+                name: string
+                format: uuid
+                example: eba56eb2-e364-4540-af0a-3dcc1c6120d6
+              name:
+                name: string
+                example: user
+              title:
+                name: string
+                example: User
+          isEnabled:
+            type: boolean
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Example error
+
+  responses:
+    MissingParameters:
+      description: Missing parameters or parameters error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+/user:
+  post:
+    tags:
+      - User
+    summary: Create an user
+    description: Add a new user to the database
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserCreate'
+    responses:
+      '204':
+        description: Success
+      '400':
+        $ref: '#/components/responses/MissingParameters'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+
+  get:
+    tags:
+      - User
+    summary: Get a users list
+    description: If the UUID or username params is provided this endpoint returns a list with a single user otherwise returns a list of many users
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: uuid
+      - name: username
+        in: query
+        type: string
+      - name: limit
+        in: query
+        type: integer
+      - name: offset
+        in: query
+        type: integer
+    responses:
+      '200':
+        description: Success
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsersList'
+      '400':
+        $ref: '#/components/responses/MissingParameters'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+
+/user/{uuid}:
+  delete:
+    tags:
+      - User
+    summary: Delete an user
+    description: Delete an user from its UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: path
+        required: true
+        type: string
+        format: uuid
+    responses:
+      '204':
+        description: Success
+      '400':
+        $ref: '#/components/responses/MissingParameters'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+
+  patch:
+    tags:
+      - User
+    summary: Update an user
+    description: Update an user from its UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: path
+        required: true
+        type: string
+        format: uuid
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserUpdate'
+    responses:
+      '204':
+        description: Success
+      '400':
+        $ref: '#/components/responses/MissingParameters'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+                
+/user/enable/{uuid}:
+  post:
+    tags:
+      - User
+    summary: Enable an user
+    description: Enable an user from its UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: path
+        required: true
+        type: string
+        format: uuid
+    responses:
+      '204':
+        description: Success
+      '400':
+        $ref: '#/components/responses/MissingParameters'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+      '500':
+        $ref: '#/components/responses/InternalServerError'
+
+/user/disable/{uuid}:
+  post:
+    tags:
+      - User
+    summary: Disable an user
+    description: Disable an user from its UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: path
+        required: true
+        type: string
+        format: uuid
+    responses:
+      '204':
+        description: Success
+      '400':
+        $ref: '#/components/responses/MissingParameters'
+      '401':
+        $ref: '#/components/responses/Unauthorized'
+      '403':
+        $ref: '#/components/responses/Forbidden'
+      '500':
+        $ref: '#/components/responses/InternalServerError'

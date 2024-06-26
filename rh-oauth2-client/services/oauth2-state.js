@@ -1,7 +1,7 @@
-import { ServiceIdUuid } from 'rf-service';
+import { Service } from 'rf-service';
 import crypto from 'crypto';
 
-export class OAuth2StateService extends ServiceIdUuid {
+export class OAuth2StateService extends Service.IdUuid {
   async validateForCreation(data) {
     data = { ...data };
 

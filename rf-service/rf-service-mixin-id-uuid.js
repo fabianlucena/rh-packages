@@ -1,4 +1,4 @@
-export const ServiceMixinIdUuid = Service => class ServiceIdUuid extends Service {
+export const ServiceMixinIdUuid = Service => class ServiceIdUUID extends Service {
   /**
    * Gets a row ID for its UUID. For many coincidences and for no rows this 
    * function fails.
@@ -9,7 +9,7 @@ export const ServiceMixinIdUuid = Service => class ServiceIdUuid extends Service
    * If the uuid parammeter is a string return a single ID or throw an exception.
    * But if the name parameter is a array can return a ID list.
    * 
-   * This function uses @ref getForUuid function so the options for getForUuid
+   * This function uses @ref getForUUID function so the options for getForUUID
    * function can be specified.
    */
   async getIdForUuid(name, options) {

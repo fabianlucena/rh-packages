@@ -4,10 +4,10 @@ import { EavAttributeOptionService } from './attribute_option.js';
 import { EavAttributeTagService } from './attribute_tag.js';
 import { runSequentially, _Error } from 'rf-util';
 import { loc } from 'rf-locale';
-import { ServiceIdUuidNameTitleDescriptionEnabledTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 import { ConflictError } from 'http-util';
 
-export class EavAttributeService extends ServiceIdUuidNameTitleDescriptionEnabledTranslatable {
+export class EavAttributeService extends Service.IdUuidEnableNameUniqueTitleDescriptionTranslatable {
   references = {
     type: 'eavAttributeTypeService',
     category: 'eavAttributeCategoryService',

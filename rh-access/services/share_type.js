@@ -1,4 +1,4 @@
-import { ServiceIdUuidNameTitleTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class ShareTypeService extends ServiceIdUuidNameTitleTranslatable {
+export class ShareTypeService extends Service.IdUuidNameUniqueTitleTranslatable {
 }

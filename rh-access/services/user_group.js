@@ -1,7 +1,7 @@
-import { ServiceOwnerModuleTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 import { checkDataForMissingProperties } from 'sql-util';
 
-export class UserGroupService extends ServiceOwnerModuleTranslatable {
+export class UserGroupService extends Service.OwnerModuleTranslatable {
   references = {
     user:  { whereColumn: 'username' },
     group: { whereColumn: 'username' },

@@ -1,6 +1,6 @@
-import { ServiceIdUuid } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class CommentService extends ServiceIdUuid {
+export class CommentService extends Service.IdUuid {
   references = {
     modelEntityName: true,
     commentType: true,

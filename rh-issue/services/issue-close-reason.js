@@ -1,6 +1,6 @@
-import { ServiceIdUuidNameTitleDescriptionEnabledTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class IssueCloseReasonService extends ServiceIdUuidNameTitleDescriptionEnabledTranslatable {
+export class IssueCloseReasonService extends Service.IdUuidEnableNameUniqueTitleDescriptionTranslatable {
   defaultTranslationContext = 'issue';
   viewAttributes = ['uuid', 'isEnabled', 'name', 'title', 'isTranslatable', 'isClosed', 'description'];
 }

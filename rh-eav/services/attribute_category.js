@@ -1,6 +1,6 @@
-import { ServiceIdUuidNameTitleDescriptionTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class EavAttributeCategoryService extends ServiceIdUuidNameTitleDescriptionTranslatable {
+export class EavAttributeCategoryService extends Service.IdUuidNameUniqueTitleDescriptionTranslatable {
   async checkTitleForConflict() {
   }
 }

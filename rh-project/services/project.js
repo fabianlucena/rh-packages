@@ -1,10 +1,10 @@
 import { conf } from '../conf.js';
-import { ServiceIdUuidNameTitleEnabledSharedTranslatable, OptionalService, Op } from 'rf-service';
+import { Service, OptionalService, Op } from 'rf-service';
 import { CheckError } from 'rf-util';
 import { loc } from 'rf-locale';
 import { _ConflictError } from 'http-util';
 
-export class ProjectService extends ServiceIdUuidNameTitleEnabledSharedTranslatable {
+export class ProjectService extends Service.IdUuidEnableNameUniqueTitleSharedTranslatable {
   references = {
     company: OptionalService({
       attribute: ['uuid', 'name', 'title'],

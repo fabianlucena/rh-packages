@@ -1,9 +1,9 @@
 import { conf } from '../conf.js';
-import { ServiceIdUuid } from 'rf-service';
+import { Service } from 'rf-service';
 import { _Error } from 'rf-util';
 import { loc } from 'rf-locale';
 
-export class EavValueTextService extends ServiceIdUuid {
+export class EavValueTextService extends Service.IdUuid {
   references = {
     attribute: 'eavAttributeService',
     modelEntityName: true,

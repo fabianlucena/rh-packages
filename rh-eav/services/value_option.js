@@ -1,8 +1,8 @@
-import { ServiceIdUuidTranslatable, Op } from 'rf-service';
+import { Service, Op } from 'rf-service';
 import { _Error } from 'rf-util';
 import { loc } from 'rf-locale';
 
-export class EavValueOptionService extends ServiceIdUuidTranslatable {
+export class EavValueOptionService extends Service.IdUuidTranslatable {
   references = {
     attribute: 'eavAttributeService',
     option: 'eavAttributeOptionService',

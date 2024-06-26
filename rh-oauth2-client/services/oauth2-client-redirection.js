@@ -23,6 +23,7 @@ export class OAuth2ClientRedirectionService {
   constructor() {
     this.oAuth2ClientService = dependency.get('oAuth2ClientService');
     this.oAuth2StateService =  dependency.get('oAuth2StateService');
+    this.identityService =     dependency.get('identityService');
     this.userService =         dependency.get('userService');
     this.deviceService =       dependency.get('deviceService', null);
     this.sessionService =      dependency.get('sessionService');
@@ -99,21 +100,39 @@ export class OAuth2ClientRedirectionService {
 
   async getOrCreateUserForOAuth2ClientAndUserInfoData(oAuth2Client, userInfoData) {
     const username = userInfoData[oAuth2Client.userInfoUsernameProperty];
-    const user = await this.userService.getForUsernameOrNull(username);
-    if (user) {
+    let identity = await this.identityService.getForUsernameIdentityAndTypeNameOrNull(
+      username,
+      oAuth2Client.name,
+    );
+    if (!identity) {
+      if (!oAuth2Client.createUserIfNotExists) {
+        return;
+      }
+
+      let user = await this.userService.getForUsernameOrNull(username);
+      if (!user) {
+        const displayName = userInfoData[oAuth2Client.userInfoDisplayNameProperty];
+        user = await this.userService.create({
+          username,
+          displayName,
+          type: 'user',
+        });
+      }
+
+      identity = await this.identityService.create({
+        userId: user.id,
+        type: oAuth2Client.name,
+        data: `{"username":"${username}"}`,
+      });
+
+      if (!identity) {
+        return;
+      }
+      
       return user;
     }
 
-    if (!oAuth2Client.createUserIfNotExists) {
-      return;
-    }
-
-    const displayName = userInfoData[oAuth2Client.userInfoDisplayNameProperty];
-    return this.userService.create({
-      username,
-      displayName,
-      type: 'user',
-    });
+    return await this.userService.getForId(identity.userId);
   }
 
   async loginFromCode(data, options) {

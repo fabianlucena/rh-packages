@@ -1,9 +1,9 @@
-import { ServiceIdUuidNameEnabledTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 import { checkDataForMissingProperties } from 'sql-util';
 import { _ConflictError } from 'http-util';
 import { loc } from 'rf-locale';
 
-export class LanguageService extends ServiceIdUuidNameEnabledTranslatable {
+export class LanguageService extends Service.IdUuidEnableNameTranslatable {
   references = {
     parent: 'languageService',
   };

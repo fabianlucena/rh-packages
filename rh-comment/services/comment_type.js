@@ -1,8 +1,8 @@
 import { conf } from '../conf.js';
 import { runSequentially } from 'rf-util';
-import { ServiceIdUuidNameTitleDescriptionEnabledTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class CommentTypeService extends ServiceIdUuidNameTitleDescriptionEnabledTranslatable {
+export class CommentTypeService extends Service.IdUuidEnableNameUniqueTitleDescriptionTranslatable {
   references = {
     modelEntityName: {
       createIfNotExists: true,

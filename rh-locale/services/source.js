@@ -1,7 +1,7 @@
-import { ServiceIdUuidEnabled } from 'rf-service';
+import { Service } from 'rf-service';
 import { checkDataForMissingProperties } from 'sql-util';
 
-export class SourceService extends ServiceIdUuidEnabled {
+export class SourceService extends Service.IdUuidEnable {
   async sanitizeText(text) {
     return text.trim().replace(/\r/g, '\\r').replace(/\n/g, '\\n');
   }

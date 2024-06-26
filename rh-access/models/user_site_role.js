@@ -9,11 +9,11 @@ export default (sequelize, DataTypes) => {
       this.belongsTo(models.Module, { as: 'ownerModule', foreignKey: 'ownerModuleId' });
     }
 
-    static postAssociate(models) {
+    /* static postAssociate(models) {
       models.Site.belongsToMany(models.User, { through: models.UserSiteRole, foreignKey: 'siteId', otherKey: 'userId', unique: 'unop' });
       models.User.belongsToMany(models.Site, { through: models.UserSiteRole, foreignKey: 'userId', otherKey: 'siteId', unique: 'unop' });
-      models.Site.belongsToMany(models.Role, { through: models.UserSiteRole, foreignKey: 'siteId', otherKey: 'roleId', unique: 'unop' });
-    }
+      models.Role.belongsToMany(models.Role, { through: models.UserSiteRole, foreignKey: 'siteId', otherKey: 'roleId', unique: 'unop' });
+    } */
   }
   UserSiteRole.init({
     userId: {

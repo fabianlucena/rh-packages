@@ -1,8 +1,8 @@
-import { ServiceEnabledOwnerModuleTranslatable, Op } from 'rf-service';
+import { Service, Op } from 'rf-service';
 import { MissingPropertyError, checkDataForMissingProperties } from 'sql-util';
 import dependency from 'rf-dependency';
 
-export class UserSiteRoleService extends ServiceEnabledOwnerModuleTranslatable {
+export class UserSiteRoleService extends Service.EnableOwnerModuleTranslatable {
   references = {
     user: {
       getIdForName: 'getIdForUsername',
@@ -68,31 +68,31 @@ export class UserSiteRoleService extends ServiceEnabledOwnerModuleTranslatable {
        
     options = { ...options };
 
-    if (!options.include.Role && !options.where?.user) {
+    if (!options.include?.role && !options.where?.user && options.attributes) {
       let autoGroup = [];
 
       if (!options.attributes.includes('userId')) {
-        autoGroup.push('userSiteRole.userId');
+        autoGroup.push('UserSiteRole.userId');
       }
 
-      options.attributes.forEach(column => autoGroup.push('userSiteRole.' + column));
+      options.attributes.forEach(column => autoGroup.push('UserSiteRole.' + column));
 
-      if (options.include?.User || options.where?.user?.uuid) {
-        if (!options.include.user.attributes.includes('id')) {
+      if (options.include?.user || options.where?.user?.uuid) {
+        if (!options.include?.user?.attributes?.includes('id')) {
           autoGroup.push('user.id');
         }
 
-        options.include.user.attributes.forEach(
+        options.include?.user?.attributes?.forEach(
           column => autoGroup.push('user.' + column)
         );
       }
 
-      if (options.include?.Site || options.where?.site?.uuid) {
-        if (!options.include.site.attributes.includes('id')) {
+      if (options.include?.site || options.where?.site?.uuid) {
+        if (!options.include?.site?.attributes?.includes('id')) {
           autoGroup.push('site.id');
         }
                 
-        options.include.site.attributes.forEach(
+        options.include?.site?.attributes?.forEach(
           column => autoGroup.push('site.' + column)
         );
       }
@@ -102,7 +102,7 @@ export class UserSiteRoleService extends ServiceEnabledOwnerModuleTranslatable {
       }
     }
         
-    if (!options.orderBy && options.include.user) {
+    if (!options.orderBy && options.include?.user) {
       options.orderBy ??= [];
       options.orderBy.push(['user.username', 'ASC']);
     }
@@ -178,6 +178,6 @@ export class UserSiteRoleService extends ServiceEnabledOwnerModuleTranslatable {
       delete where.notRoleId;
     }
 
-    return this.model.destroy(options);
+    return this.model.delete(options);
   }
 }

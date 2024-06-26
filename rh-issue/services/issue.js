@@ -1,10 +1,10 @@
 import { conf } from '../conf.js';
-import { ServiceIdUuidNameTitleDescriptionEnabledTranslatable, Op } from 'rf-service';
+import { Service, Op } from 'rf-service';
 import { CheckError } from 'rf-util';
 import { loc } from 'rf-locale';
 import { _ConflictError } from 'http-util';
 
-export class IssueService extends ServiceIdUuidNameTitleDescriptionEnabledTranslatable {
+export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescriptionTranslatable {
   references = {
     project: true,
     type: 'issueTypeService',

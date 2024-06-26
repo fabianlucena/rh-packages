@@ -1,6 +1,6 @@
-import { ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class WfWorkflowTypeService extends ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable {
+export class WfWorkflowTypeService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleDescriptionTranslatable {
   references = {
     modelEntityName: { createIfNotExists: true },
   };

@@ -1,7 +1,7 @@
-import { ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 import dependency from 'rf-dependency';
 
-export class WfStatusService extends ServiceIdUuidNameTitleDescriptionEnabledOwnerModuleTranslatable {
+export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleDescriptionTranslatable {
   references = {
     workflowType: 'wfWorkflowTypeService',
   };

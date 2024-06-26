@@ -1,7 +1,7 @@
-import { ServiceBase } from 'rf-service';
+import { Service } from 'rf-service';
 import { checkDataForMissingProperties } from 'sql-util';
 
-export class SessionSiteService extends ServiceBase {
+export class SessionSiteService extends Service.Base {
   references = {
     Session: true,
     Site: true,

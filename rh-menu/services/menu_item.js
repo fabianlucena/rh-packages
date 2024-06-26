@@ -1,7 +1,7 @@
-import { ServiceIdUuidNameEnabledTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 import { spacialize, ucfirst } from 'rf-util';
 
-export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
+export class MenuItemService extends Service.IdUuidEnableNameTranslatable {
   references = {
     permission: true,
     parent: 'menuItemService',
@@ -24,18 +24,17 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
   }
 
   async getList(options) {
-    let menuItems = super.getList({
+    if (!options?.include?.parentMenuItems) {
+      return super.getList(options);
+    }
+
+    let menuItems = await super.getList({
       ...options,
       include: {
         ...options.include,
         parentMenuItems: undefined,
       },
     });
-    if (!options?.include?.parentMenuItems) {
-      return menuItems;
-    }
-        
-    menuItems = await menuItems;
 
     const menuItemsName = menuItems.map(menuItem => menuItem.name).filter(menuItemName => menuItemName);
     let parentsNameToLoad = [];
@@ -49,13 +48,10 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
     }
 
     const parentOptions = {
-      where: {},
       ...options,
+      where: {},
     };
-
-    if (parentOptions.include?.parentMenuItems) {
-      delete parentOptions.include?.parentMenuItems;
-    }
+    delete parentOptions.include?.parentMenuItems;
 
     while (parentsNameToLoad.length) {
       parentOptions.where.name = parentsNameToLoad;

@@ -1,6 +1,6 @@
-import { ServiceBase } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class WfStatusIsInitialService extends ServiceBase {
+export class WfStatusIsInitialService extends Service.Base {
   references = {
     status: 'wfStatusService',
   };
