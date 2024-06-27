@@ -93,6 +93,30 @@ export class ModelSequelize {
       sanitizedOptions.where = {};
 
       if (references && Object.keys(references).length) {
+        for (const referenceName in references) {
+          for (const key in where) {
+            if (references[key]) {
+              continue;
+            }
+
+            if (key.startsWith(referenceName + '.')) {
+              const newKey = key.substring(referenceName.length + 1);
+              if (where[referenceName]) {
+                where[referenceName] = {
+                  [Op.and]: [
+                    where[referenceName],
+                    { [newKey]: where[key] },
+                  ],
+                };
+              } else {
+                where[referenceName] = { [newKey]: where[key] };                
+              }
+
+              delete where[key];
+            }
+          }
+        }
+
         for (const key in where) {
           if (typeof key !== 'string') {
             continue;
