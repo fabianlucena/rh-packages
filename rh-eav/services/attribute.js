@@ -30,6 +30,8 @@ export class EavAttributeService extends ServiceIdUuidNameTitleDescriptionEnable
     }
 
     init() {
+        super.init();
+        
         this.eavAttributeTypeService =     EavAttributeTypeService.    singleton();
         this.eavAttributeCategoryService = EavAttributeCategoryService.singleton();
         this.eavAttributeOptionService =   EavAttributeOptionService.  singleton();

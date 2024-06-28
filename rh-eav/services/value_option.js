@@ -23,6 +23,12 @@ export class EavValueOptionService extends ServiceIdUuidTranslatable {
         super();
     }
 
+    init() {
+        super.init();
+
+        this.eavAttributeOptionService = EavAttributeOptionService.singleton();
+    }
+
     async getListOptions(options) {
         options ||= {};
 
@@ -62,18 +68,44 @@ export class EavValueOptionService extends ServiceIdUuidTranslatable {
             throw new Error(loc._cf('eav', 'Delete without where is forbiden.'));
         }
 
-        if (options.where.notId) {
+        const where = options.where;
+        if (where.optionUuid !== undefined) {
+            if (where.optionUuid) {
+                let optionsId = this.eavAttributeOptionService.getIdForUuid(where.optionUuid);
+                if (where.optionId) {
+                    if (where.optionId !== optionsId) {
+                        if (!Array.isArray(where.optionId)) {
+                            where.optionId = [where.optionId];
+                        }
+
+                        if (!Array.isArray(optionsId)) {
+                            optionsId = [optionsId];
+                        }
+
+                        where.optionId.push(
+                            ...optionsId
+                                .filter(i => !where.optionId.includes(i))
+                        );
+                    }
+                } else {
+                    where.optionId = optionsId;
+                }
+            }
+
+            delete where.optionUuid;
+        }
+
+        if (where.notId) {
             if (!this.Sequelize?.Op) {
                 throw new _Error(loc._f('No Sequalize.Op defined on %s. Try adding "Sequelize = conf.global.Sequelize" to the class.', this.constructor.name));
             }
 
             const Op = this.Sequelize.Op;
-            const where = options.where;
             const filters = where[Op.and] ??= [];
 
             if (where.id) {
-                filters.push({id: options.where.id});
-                delete options.where.id;
+                filters.push({id: where.id});
+                delete where.id;
             }
 
             if (where.notId) {
@@ -83,12 +115,11 @@ export class EavValueOptionService extends ServiceIdUuidTranslatable {
                 }
 
                 filters.push({id: {[Op.notIn]: notId}});
-                delete options.where.notId;
+                delete where.notId;
             }
 
             if (filters.length) {
-                options.where ||= {};
-                options.where[Op.and] = filters;
+                where[Op.and] = filters;
             }
         }
 

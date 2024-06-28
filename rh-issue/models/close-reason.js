@@ -1,9 +1,9 @@
 import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-    class IssueType extends sequelize.Sequelize.Model {
+    class IssueCloseReason extends sequelize.Sequelize.Model {
     }
-    IssueType.init({
+    IssueCloseReason.init({
         id: {
             type: DataTypes.BIGINT,
             autoIncrement: true,
@@ -29,10 +29,19 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
+        isClosed: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
         isTranslatable: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: false
+        },
+        translationContext: {
+            type: DataTypes.TEXT,
+            allowNull: true,
         },
         description: {
             type: DataTypes.TEXT,
@@ -41,8 +50,8 @@ export default (sequelize, DataTypes) => {
     }, {
         sequelize,
         timestamps: true,
-        freezeTableName: true,
+        tableName: 'CloseReason',
         schema: conf.schema,
     });
-    return IssueType;
+    return IssueCloseReason;
 };

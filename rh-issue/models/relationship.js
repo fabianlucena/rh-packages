@@ -1,9 +1,9 @@
 import {conf} from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-    class IssuePriority extends sequelize.Sequelize.Model {
+    class IssueRelationship extends sequelize.Sequelize.Model {
     }
-    IssuePriority.init({
+    IssueRelationship.init({
         id: {
             type: DataTypes.BIGINT,
             autoIncrement: true,
@@ -34,6 +34,10 @@ export default (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: false
         },
+        translationContext: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
         description: {
             type: DataTypes.TEXT,
             allowNull: true,
@@ -41,8 +45,8 @@ export default (sequelize, DataTypes) => {
     }, {
         sequelize,
         timestamps: true,
-        freezeTableName: true,
+        tableName: 'Relationship',
         schema: conf.schema,
     });
-    return IssuePriority;
+    return IssueRelationship;
 };
