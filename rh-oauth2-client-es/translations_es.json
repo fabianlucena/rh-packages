@@ -1,85 +1,211 @@
 [
     {
-        "source": "Content",
+        "source": "Client %s not found",
         "language": "es",
-        "context": "page",
-        "translation": "Contenido",
-        "ref": "..\\rh-page\\services\\page.js [28,84]"
+        "context": "oauth2Client",
+        "translation": "Cliente %s no encontrado",
+        "ref": "..\\rh-oauth2-client\\services\\oauth2-client-redirection.js [34,40]"
     },
     {
-        "source": "Content",
+        "source": "Client ID",
         "language": "es",
-        "context": "resource",
-        "translation": "Contenido",
-        "ref": "..\\rh-page\\services\\resource.js [28,89]"
+        "context": "oauth2Client",
+        "translation": "ID de cliente",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [68,26]"
     },
     {
-        "source": "Error: No page name.",
+        "source": "Client secret",
         "language": "es",
-        "context": "page",
-        "translation": "Error: sin nombre de página.",
-        "ref": "..\\rh-page\\translations.js [5,40]"
+        "context": "oauth2Client",
+        "translation": "Secreto de cliente",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [78,26]"
     },
     {
-        "source": "Format",
+        "source": "Create OAuth2 client",
         "language": "es",
-        "context": "pageFormat",
-        "translation": "Formato",
-        "ref": "..\\rh-page\\conf_data.js [8,63]"
+        "context": "premission",
+        "translation": "Crear cliente OAuth2",
+        "ref": "..\\rh-oauth2-client\\conf_data.js [16,47]"
     },
     {
-        "source": "PNG image",
+        "source": "Create user if not exists",
         "language": "es",
-        "context": "resourceType",
-        "translation": "Imagen PNG",
-        "ref": "..\\rh-page\\conf_data.js [12,76]"
+        "context": "oauth2Client",
+        "translation": "Crear usuario si no existe",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [167,26]"
     },
     {
-        "source": "Page not found.",
+        "source": "Delete OAuth2 client",
         "language": "es",
-        "context": "page",
-        "translation": "Página no encontrada.",
-        "ref": "..\\rh-page\\controllers\\page.js [71,72]"
+        "context": "premission",
+        "translation": "Eliminar cliente OAuth2",
+        "ref": "..\\rh-oauth2-client\\conf_data.js [18,47]"
     },
     {
-        "source": "Plain",
+        "source": "Edit OAuth2 client",
         "language": "es",
-        "context": "pageFormat",
-        "translation": "Plano",
-        "ref": "..\\rh-page\\conf_data.js [7,62]"
+        "context": "premission",
+        "translation": "Modificar cliente OAuth2",
+        "ref": "..\\rh-oauth2-client\\conf_data.js [17,47]"
     },
     {
-        "source": "Resource not found.",
+        "source": "Enabled",
         "language": "es",
-        "context": "resource",
-        "translation": "Recurso no encontrado.",
-        "ref": "..\\rh-page\\controllers\\resource.js [42,80]"
+        "context": "oauth2Client",
+        "translation": "Habilitar",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [59,26]\n..\\rh-oauth2-client\\controllers\\oauth2-client.js [60,32]"
     },
     {
-        "source": "SVG image",
+        "source": "Get OAuth2 client(s)",
         "language": "es",
-        "context": "resourceType",
+        "context": "premission",
+        "translation": "Obtener cliente(s) OAuth2",
+        "ref": "..\\rh-oauth2-client\\conf_data.js [15,47]"
+    },
+    {
+        "source": "Get token URL",
+        "language": "es",
+        "context": "oauth2Client",
+        "translation": "URL para obtener el token",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [100,26]"
+    },
+    {
+        "source": "Get token body",
+        "language": "es",
+        "context": "oauth2Client",
+        "translation": "Body para obtener el token",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [111,26]"
+    },
+    {
+        "source": "Get user info URL",
+        "language": "es",
+        "context": "oauth2Client",
+        "translation": "URL para obtener la información de usuario",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [134,26]"
+    },
+    {
+        "source": "In JSON format with placeholders.",
+        "language": "es",
+        "context": "oauth2Client",
         "isDraft": false,
-        "translation": "Imagen SVG",
-        "ref": "..\\rh-page\\conf_data.js [13,76]"
+        "translation": "En formato JSON con placeholders.",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [112,27]"
+    },
+    {
+        "source": "Name",
+        "language": "es",
+        "context": "oauth2Client",
+        "translation": "Nombre",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [46,26]"
+    },
+    {
+        "source": "Name for display name property in user info result",
+        "language": "es",
+        "context": "oauth2Client",
+        "translation": "Nombre de la propiedad del nombre mostrado en el resultado de la información de usuario",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [156,26]"
+    },
+    {
+        "source": "Name for username property in user info result",
+        "language": "es",
+        "context": "oauth2Client",
+        "translation": "Nombre de la propiedad del nombre de usuario en el resultado de la información de usuario",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [145,26]"
+    },
+    {
+        "source": "OAuth2 Client",
+        "language": "es",
+        "context": "menu",
+        "translation": "Cliente OAuth2",
+        "ref": "..\\rh-oauth2-client\\conf_data.js [15,184]"
+    },
+    {
+        "source": "OAuth2 client",
+        "language": "es",
+        "context": "oauth2Client",
+        "translation": "Cliente OAuth2",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [173,24]"
+    },
+    {
+        "source": "OAuth2 client manager",
+        "language": "es",
+        "context": "role",
+        "translation": "Administrador de clientes OAuth2",
+        "ref": "..\\rh-oauth2-client\\conf_data.js [7,47]"
+    },
+    {
+        "source": "Property for use in authorization bearer header",
+        "language": "es",
+        "context": "oauth2Client",
+        "translation": "Propiedad para usar en la cabecera de autorización de portador (bearer)",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [123,26]"
+    },
+    {
+        "source": "Put here the OAuth2 client name",
+        "language": "es",
+        "context": "oauth2Client",
+        "translation": "Coloque aquí el nombre del cliente OAuth2",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [47,32]"
+    },
+    {
+        "source": "Put here the client ID",
+        "language": "es",
+        "context": "oauth2Client",
+        "translation": "Coloque aquí el ID del cliente",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [69,32]"
+    },
+    {
+        "source": "Put here the client secret",
+        "language": "es",
+        "context": "oauth2Client",
+        "translation": "Coloque aquí el secreto del cliente",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [79,32]"
+    },
+    {
+        "source": "Request URL",
+        "language": "es",
+        "context": "oauth2Client",
+        "translation": "URL de requerimiento",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [88,26]"
     },
     {
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-page-es.js [18,41]"
+        "ref": "rh-oauth2-client-es.js [18,20]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-page-es.js [19,57]"
+        "ref": "rh-oauth2-client-es.js [19,26]"
     },
     {
-        "source": "There are many resources for that criteria.",
+        "source": "State %s does not exis in client",
         "language": "es",
-        "context": "resource",
-        "translation": "Hay mucho recursos para ese criterio.",
-        "ref": "..\\rh-page\\controllers\\resource.js [46,104]"
+        "context": "oauth2Client",
+        "translation": "El estado %s no existe en el cliente",
+        "ref": "..\\rh-oauth2-client\\services\\oauth2-client-redirection.js [60,40]"
+    },
+    {
+        "source": "Title",
+        "language": "es",
+        "context": "oauth2Client",
+        "translation": "Título",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [37,26]\n..\\rh-oauth2-client\\controllers\\oauth2-client.js [38,32]"
+    },
+    {
+        "source": "Use enter and whites spaces for formatting, they will be removed to send the request.",
+        "language": "es",
+        "context": "oauth2Client",
+        "translation": "Use enter y espacios en blanco para formato, serán removidos para enviar el requerimiento.",
+        "ref": "..\\rh-oauth2-client\\controllers\\oauth2-client.js [89,27]"
+    },
+    {
+        "source": "Wrong state format must be 3 values comma separated.",
+        "language": "es",
+        "context": "oauth2Client",
+        "translation": "Error en el formato de estado debe tener 3 valores separados por coma.",
+        "ref": "..\\rh-oauth2-client\\services\\oauth2-client-redirection.js [44,36]"
     }
 ]

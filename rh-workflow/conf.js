@@ -10,6 +10,7 @@ export const conf = {
   version: '0.1',
   path: dirname,
   schema: 'workflow',
-  modelsPath: dirname + '/models',
-  servicesPath: dirname + '/services',
+  modelsPath: `${dirname}/models`,
+  servicesPath: `${dirname}/services`,
+  iconsPath: `${dirname}/icons`,
 };

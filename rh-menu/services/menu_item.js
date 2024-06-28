@@ -1,20 +1,17 @@
-import { conf } from '../conf.js';
-import { ServiceIdUuidNameEnabledTranslatable } from 'rf-service';
-import { completeIncludeOptions, checkViewOptions } from 'sql-util';
+import { Service } from 'rf-service';
 import { spacialize, ucfirst } from 'rf-util';
 
-export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.MenuItem;
+export class MenuItemService extends Service.IdUuidEnableNameTranslatable {
   references = {
-    permission: conf.global.services.Permission,
-    parent: conf.global.services.MenuItem,
+    permission: true,
+    parent: 'menuItemService',
   };
   defaultTranslationContext = 'menu';
+  viewAttributes = ['uuid', 'name', 'jsonData', 'isTranslatable', 'data'];
 
   async validateForCreation(data) {
     if (!data.parentId && data.parent) {
-      const parentMenuItem = await MenuItemService.singleton().create({
+      const parentMenuItem = await this.create({
         isEnabled: true,
         name: data.parent,
         label: ucfirst(spacialize(data.parent)),
@@ -26,67 +23,35 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
     return super.validateForCreation(data);
   }
 
-  /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {options}
-     */
-  async getListOptions(options) {
-    if (options?.view) {
-      if (!options.attributes) {
-        options.attributes = ['uuid', 'name', 'jsonData', 'isTranslatable', 'data'];
-      }
-            
-      completeIncludeOptions(
-        options,
-        'Parent',
-        {
-          model: conf.global.models.MenuItem,
-          as: 'Parent',
-          required: false,
-          attributes: ['name'],
-          where: { isEnabled: true }}
-      );
-
-      checkViewOptions(options);
-    }
-
-    return super.getListOptions(options);
-  }
-
   async getList(options) {
-    if (!options.includeParentAsMenuItem) {
+    if (!options?.include?.parentMenuItems) {
       return super.getList(options);
     }
-        
-    const menuItems = await super.getList(options);
+
+    let menuItems = await super.getList({
+      ...options,
+      include: {
+        ...options.include,
+        parentMenuItems: undefined,
+      },
+    });
 
     const menuItemsName = menuItems.map(menuItem => menuItem.name).filter(menuItemName => menuItemName);
     let parentsNameToLoad = [];
     for (const menuItem of menuItems) {
-      const parentName = menuItem.Parent?.name;
+      const parentName = menuItem.parent?.name;
       if (!parentName || menuItemsName.includes(parentName) || parentsNameToLoad.includes(parentName)) {
         continue;
       }
 
-      parentsNameToLoad.push(menuItem.Parent.name);
+      parentsNameToLoad.push(menuItem.parent.name);
     }
 
-    completeIncludeOptions(
-      options,
-      'Permission',
-      {
-        model: conf.global.models.Permission,
-        required: false,
-      }
-    );
-
     const parentOptions = {
-      where: {},
       ...options,
-      includeParentAsMenuItem: undefined
+      where: {},
     };
+    delete parentOptions.include?.parentMenuItems;
 
     while (parentsNameToLoad.length) {
       parentOptions.where.name = parentsNameToLoad;
@@ -100,50 +65,50 @@ export class MenuItemService extends ServiceIdUuidNameEnabledTranslatable {
             
       parentsNameToLoad = [];
       for (const menuItem of menuItems) {
-        const parentName = menuItem.Parent?.name;
+        const parentName = menuItem.parent?.name;
         if (!parentName || menuItemsName.includes(parentName) || parentsNameToLoad.includes(parentName)) {
           continue;
         }
 
-        parentsNameToLoad.push(menuItem.Parent.name);
+        parentsNameToLoad.push(menuItem.parent.name);
       }
     }
 
     return menuItems;
   }
 
-  async override(data, options) {
-    if (!options?.where) {
-      options ??= {};
-
-      if (data.id) {
-        options.where = { id: data.id };
-        data = { ...data, id: undefined };
-      } else if (data.uuid) {
-        options.where = { uuid: data.uuid };
-        data = { ...data, uuid: undefined };
-      } else if (data.name) {
-        options.where = { name: data.name };
-        data = { ...data, name: undefined };
+  async override(data1, options1) {
+    const arrangedOptions = { ...options1, translate: false };
+    const arrangedData = { ...data1 };
+    if (!arrangedOptions.where) {
+      if (arrangedData.id) {
+        arrangedOptions.where = { id: arrangedData.id };
+        delete arrangedData.id;
+      } else if (arrangedData.uuid) {
+        arrangedOptions.where = { uuid: arrangedData.uuid };
+        delete arrangedData.uuid;
+      } else if (arrangedData.name) {
+        arrangedOptions.where = { name: arrangedData.name };
+        delete arrangedData.name;
       }
     }
 
-    const miList = await this.getList({ ...options, translate: false });
+    const miList = await this.getList(arrangedOptions);
 
-    delete options.where;
+    delete arrangedOptions.where;
     let result = 0;
     for (let mi of miList) {
-      const id = mi.id;
+      delete mi.jsonData;
+      const { id } = mi;
       mi = {
         ...mi,
-        jsonData: undefined,
-        ...data,
-        data: { ...mi.data, ...data.data },
-        id: undefined,
-        uuid: undefined,
-        name: undefined,
+        ...arrangedData,
+        data: { ...mi.data, ...arrangedData.data },
       };
-      result += await this.updateForId(mi, id, options);
+      delete mi.id;
+      delete mi.uuid;
+      delete mi.name;
+      result += await this.updateForId(mi, id, arrangedOptions);
     }
 
     return result;

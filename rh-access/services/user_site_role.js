@@ -1,22 +1,23 @@
-import { conf } from '../conf.js';
-import { ServiceModuleTranslatable } from 'rf-service';
-import { MissingPropertyError, addEnabledOwnerModuleFilter, checkDataForMissingProperties, completeIncludeOptions, getIncludedModelOptions } from 'sql-util';
+import { Service, Op } from 'rf-service';
+import { MissingPropertyError, checkDataForMissingProperties } from 'sql-util';
 import dependency from 'rf-dependency';
 
-export class UserSiteRoleService extends ServiceModuleTranslatable {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.UserSiteRole;
+export class UserSiteRoleService extends Service.EnableOwnerModuleTranslatable {
   references = {
     user: {
       getIdForName: 'getIdForUsername',
       otherName: 'username',
+      attributes: ['uuid', 'username', 'displayName', 'isTranslatable', 'isEnabled'],
     },
     site: {
       createIfNotExists: true,
+      attributes: ['uuid', 'name', 'title', 'isTranslatable', 'isEnabled'],
     },
-    role: true,
+    role: {
+      attributes: ['uuid', 'name', 'title', 'isTranslatable', 'isEnabled'],
+    },
   };
-  defaultTranslationContext = 'userSiteRole';
+  viewAttributes = ['isEnabled'];
 
   init() {
     if (!dependency.get('siteService', null))  {
@@ -53,130 +54,57 @@ export class UserSiteRoleService extends ServiceModuleTranslatable {
   }
 
   async getListOptions(options) {
-    if (options.isEnabled !== undefined) {
-      options = addEnabledOwnerModuleFilter(options, conf.global.models.Module);
-      options.where ??= {};
-      options.where.isEnabled = options.isEnabled;
+    if (options.where?.userUuid) {
+      throw new Error('options.where.userUuid is deprecated in UserSiteRoleService.');
     }
 
-    if (!options.attributes) {
-      if (options.view) {
-        options.attributes = ['isEnabled'];
-      }
-    }
-        
-    let autoGroup;
-    if (options.includeRole || options.where?.userUuid) {
-      const attributes = options.includeRole?.attributes ??
-                options.includeRole?
-        ['uuid', 'name', 'title', 'isTranslatable', 'isEnabled']:
-        [];
-            
-      let where;
-      if (options.where?.roleUuid) {
-        where = { uuid: options.where.roleUuid };
-        delete options.where.roleUuid;
-      }
-
-      completeIncludeOptions(
-        options,
-        'Role',
-        options.includeRole,
-        {
-          model: conf.global.models.Role,
-          attributes,
-          where,
-        }
-      );
-
-      delete options.includeRole;
-    } else if (!getIncludedModelOptions(options, conf.global.models.Role)) {
-      autoGroup = [];
+    if (options.where?.roleUuid) {
+      throw new Error('options.where.roleUuid is deprecated in UserSiteRoleService.');
     }
 
-    if (autoGroup) {
+    if (options.where?.siteUuid) {
+      throw new Error('options.where.siteUuid is deprecated in UserSiteRoleService.');
+    }
+       
+    options = { ...options };
+
+    if (!options.include?.role && !options.where?.user && options.attributes) {
+      let autoGroup = [];
+
       if (!options.attributes.includes('userId')) {
         autoGroup.push('UserSiteRole.userId');
       }
 
       options.attributes.forEach(column => autoGroup.push('UserSiteRole.' + column));
-    }
 
-    if (options.includeUser || options.where?.userUuid) {
-      const attributes = options.includeUser?.attributes ??
-                options.includeUser?
-        ['uuid', 'username', 'displayName', 'isTranslatable', 'isEnabled']:
-        [];
-            
-      let where;
-      if (options.where?.userUuid) {
-        where = { uuid: options.where.userUuid };
-        delete options.where.userUuid;
-      }
-
-      completeIncludeOptions(
-        options,
-        'User',
-        options.includeUser,
-        {
-          model: conf.global.models.User,
-          attributes,
-          where,
-        }
-      );
-
-      delete options.includeUser;
-
-      if (autoGroup) {
-        if (!attributes.includes('id')) {
-          autoGroup.push('User.id');
+      if (options.include?.user || options.where?.user?.uuid) {
+        if (!options.include?.user?.attributes?.includes('id')) {
+          autoGroup.push('user.id');
         }
 
-        attributes.forEach(column => autoGroup.push('User.' + column));
-      }
-    }
-
-    if (options.includeSite || options.where?.siteUuid) {
-      const attributes = options.includeUser?.attributes ??
-                options.includeSite?
-        ['uuid', 'name', 'title', 'isTranslatable']:
-        [];
-                
-      let where;
-      if (options.where?.siteUuid) {
-        where = { uuid: options.where.siteUuid };
-        delete options.where.siteUuid;
+        options.include?.user?.attributes?.forEach(
+          column => autoGroup.push('user.' + column)
+        );
       }
 
-      completeIncludeOptions(
-        options,
-        'Site',
-        options.includeSite,
-        {
-          model: conf.global.models.Site,
-          attributes,
-          where,
-        }
-      );
-
-      delete options.includeSite;
-
-      if (autoGroup) {
-        if (!attributes.includes('id')) {
-          autoGroup.push('Site.id');
+      if (options.include?.site || options.where?.site?.uuid) {
+        if (!options.include?.site?.attributes?.includes('id')) {
+          autoGroup.push('site.id');
         }
                 
-        attributes.forEach(column => autoGroup.push('Site.' + column));
+        options.include?.site?.attributes?.forEach(
+          column => autoGroup.push('site.' + column)
+        );
       }
-    }
 
-    if (autoGroup?.length) {
-      options.group = [...new Set((options.group ?? []).concat(autoGroup))];
+      if (autoGroup?.length) {
+        options.groupBy = [...new Set((options.groupBy ?? []).concat(autoGroup))];
+      }
     }
         
-    if (!options.orderBy && getIncludedModelOptions(options, conf.global.models.User)) {
+    if (!options.orderBy && options.include?.user) {
       options.orderBy ??= [];
-      options.orderBy.push(['User.username', 'ASC']);
+      options.orderBy.push(['user.username', 'ASC']);
     }
 
     return super.getListOptions(options);
@@ -188,30 +116,30 @@ export class UserSiteRoleService extends ServiceModuleTranslatable {
   }
 
   /**
-     * Enables a row for a given site ID and user ID.
-     * @param {string} siteId - ID for the site to enable.
-     * @param {string} userId - ID for the user to enable.
-     * @returns {Promise[integer]} enabled rows count.
-     */
+   * Enables a row for a given site ID and user ID.
+   * @param {string} siteId - ID for the site to enable.
+   * @param {string} userId - ID for the user to enable.
+   * @returns {Promise[integer]} enabled rows count.
+   */
   async enableForSiteIdAndUserId(siteId, userId, options) {
     return await this.updateFor({ isEnabled: true }, { siteId, userId }, options);
   }
 
   /**
-     * Disables a row for a given site ID and user ID.
-     * @param {string} siteId - ID for the site to disable.
-     * @param {string} userId - ID for the user to disable.
-     * @returns {Promise[integer]} disabled rows count.
-     */
+   * Disables a row for a given site ID and user ID.
+   * @param {string} siteId - ID for the site to disable.
+   * @param {string} userId - ID for the user to disable.
+   * @returns {Promise[integer]} disabled rows count.
+   */
   async disableForSiteIdAndUserId(siteId, userId, options) {
     return await this.updateFor({ isEnabled: false }, { siteId, userId }, options);
   }
 
   /**
-     * Creates a new UserSiteRole row into DB if not exists.
-     * @param {data} data - data for the new UserSiteRole.
-     * @returns {Promise{UserSiteRole}}
-     */
+   * Creates a new UserSiteRole row into DB if not exists.
+   * @param {data} data - data for the new UserSiteRole.
+   * @returns {Promise{UserSiteRole}}
+   */
   async createIfNotExists(data, options) {
     await this.completeReferences(data);
     await checkDataForMissingProperties(data, 'UserSiteRole', 'userId', 'siteId', 'roleId');
@@ -225,7 +153,7 @@ export class UserSiteRoleService extends ServiceModuleTranslatable {
         siteId: data.siteId,
         roleId: data.roleId,
       },
-      include: [],
+      include: {},
       limit: 1
     });
     if (rows?.length) {
@@ -240,7 +168,6 @@ export class UserSiteRoleService extends ServiceModuleTranslatable {
 
     const where = options.where;
     if (where?.notRoleId) {
-      const Op = conf.global.Sequelize.Op;
       const condition = { [Op.notIn]: where.notRoleId };
       if (where.roleId) {
         where.roleId = { [Op.and]: [where.roleId, condition] };
@@ -251,6 +178,6 @@ export class UserSiteRoleService extends ServiceModuleTranslatable {
       delete where.notRoleId;
     }
 
-    return this.model.destroy(options);
+    return this.model.delete(options);
   }
 }

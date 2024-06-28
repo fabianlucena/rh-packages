@@ -10,7 +10,7 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
 
     const loc = options.loc;
     if (loc) {
-      result = await this.translateRows(await result, loc);
+      result = await this.translateRows(await result, loc, options);
     } else if (options.translate) {
       console.warn('Cannot translate because no localization (loc) defined.');
     }

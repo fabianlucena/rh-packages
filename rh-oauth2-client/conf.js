@@ -1,15 +1,17 @@
 import url from 'url';
 import path from 'path';
 
-const name = 'rhOauthClient';
+const name = 'rhOAuth2Client';
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export const conf = {
   name,
-  title: 'RH OAuth 2 Client',
+  title: 'RH OAuth2 Client',
   version: '0.1',
-  schema: 'menu',
+  path: dirname,
+  schema: 'oauth2',
   modelsPath: dirname + '/models',
   servicesPath: dirname + '/services',
   controllersPath: dirname + '/controllers',
+  iconsPath: `${dirname}/icons`,
 };

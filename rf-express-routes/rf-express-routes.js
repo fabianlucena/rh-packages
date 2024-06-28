@@ -28,7 +28,6 @@ export function installRoutes(masterRouter, routes, options) {
   return router;
 }
 
-
 function getHandler(route, routes) {
   if (route.handler) {
     if (typeof route.handler !== 'function') {

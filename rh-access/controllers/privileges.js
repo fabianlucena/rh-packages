@@ -1,14 +1,17 @@
-import { PrivilegesService } from '../services/privileges.js';
 import { errorHandler } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
+import { Controller } from 'rh-controller';
+import { dependency } from 'rf-dependency';
 
-const privilegesService = PrivilegesService.singleton();
+export class PrivilegesController extends Controller {
+  static init() {
+    this.privilegesService = dependency.get('privilegesService');
+  }
 
-export class PrivilegesController {
   static middleware() {
     return (req, res, next) => {
       const loc = req.loc ?? defaultLoc;
-      privilegesService.getJSONForUsernameAndSessionIdCached(req?.user?.username, req?.session?.id)
+      this.privilegesService.getJSONForUsernameAndSessionIdCached(req?.user?.username, req?.session?.id)
         .then(privileges => {
           if (privileges) {
             req.sites = privileges.sites;
@@ -27,7 +30,7 @@ export class PrivilegesController {
     };
   }
   
-  static async get(req, res) {
+  async get(req, res) {
     let result;
 
     if (req) {

@@ -3,7 +3,7 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class Language extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Language, { as: 'Parent', foreignKey: 'parentId', allowNull: true, onUpdate: 'NO ACTION', onDelete: 'NO ACTION' });
+      this.belongsTo(models.Language, { as: 'parent', foreignKey: 'parentId', allowNull: true, onUpdate: 'NO ACTION', onDelete: 'NO ACTION' });
     }
   }
   Language.init({

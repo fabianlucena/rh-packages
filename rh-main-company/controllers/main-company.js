@@ -29,11 +29,13 @@ export class MainCompanyController {
       limit: 10,
       offset: 0,
       view: true,
-      includeProject: true,
-      includeOwner: true,
+      include: {
+        project: true,
+        owner: true,
+        company: true,
+      },
       where: {},
       loc: req.loc,
-      includeCompany: true,
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);

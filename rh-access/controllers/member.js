@@ -29,9 +29,11 @@ export class MemberController {
       view: true,
       where: {},
       loc: req.loc,
-      includeUser: true,
-      includeRoles: true,
-      includeRolesId: assignableRolesId,
+      include: {
+        user: true,
+        roles: true,
+        rolesId: assignableRolesId,
+      },
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
@@ -50,10 +52,10 @@ export class MemberController {
 
     const result = await dependency.get('memberService').getListAndCount(options);
     result.rows.map(row => {
-      if (row.Roles?.length) {
-        if (row.Roles.every(role => role.isEnabled)) { // all are true
+      if (row.roles?.length) {
+        if (row.roles.every(role => role.isEnabled)) { // all are true
           row.isEnabled = true;
-        } else if (row.Roles.every(role => role.isEnabled === false)) { // all are folse
+        } else if (row.roles.every(role => role.isEnabled === false)) { // all are folse
           row.isEnabled = false;
         }
       }
@@ -151,7 +153,7 @@ export class MemberController {
           value: true,
         },
         {
-          name: 'Roles',
+          name: 'roles',
           type: 'select',
           multiple: true,
           big: true,
@@ -186,7 +188,6 @@ export class MemberController {
       offset: 0,
       attributes: ['uuid', 'name', 'title', 'description', 'isTranslatable'],
       isEnabled: true,
-      raw: true,
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
@@ -217,7 +218,7 @@ export class MemberController {
     const data = {
       ...req.body,
       siteId: req.site.id,
-      rolesUuid: await checkParameterUuidList(req.body.Roles, loc._cf('member', 'Roles')),
+      rolesUuid: await checkParameterUuidList(req.body.roles, loc._cf('member', 'Roles')),
     };
     if (!req.roles.includes('admin'))
       data.assignableRolesId = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);

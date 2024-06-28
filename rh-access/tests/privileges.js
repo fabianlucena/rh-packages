@@ -3,8 +3,9 @@ import { rt } from 'rh-test';
 
 describe('Privileges', () => {
   before(function () {
-    if (!rt.hasModule('rhAccess') || !rt.headers?.Authorization)
+    if (!rt.includesModule('rhAccess') || !rt.headers?.Authorization) {
       this.skip();
+    }
   });
 
   describe('General behavior', () => {
@@ -13,9 +14,10 @@ describe('Privileges', () => {
       notAllowedMethods: 'POST,PUT,PATCH,DELETE',
       get: [
         {
-          title: 'musth return the user\'s privileges',
+          title: 'must return the user\'s privileges',
           status: 200,
-          haveProperties: ['sites', 'site', 'roles', 'permissions'],
+          checkItem: ['rows', 0],
+          haveProperties: ['sites', 'site', 'roles', 'permissions', 'groups', 'username', 'displayName'],
         },
       ],
     });

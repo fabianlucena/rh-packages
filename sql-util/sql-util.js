@@ -1,9 +1,9 @@
-import { setUpError, deepComplete, replace, _Error, format } from 'rf-util';
+import { ModelSequelize } from 'rf-model-sequelize';
+import { setUpError, deepComplete, replace, format } from 'rf-util';
 import { loc, defaultLoc } from 'rf-locale';
+import dependency from 'rf-dependency';
 import fs from 'fs';
 import path from 'path';
-import { Op, Utils } from 'sequelize';
-import dependency from 'rf-dependency';
 
 export class NoRowsError extends Error {
   static _message = loc._f('There are no "%s" for "%s" in "%s"');
@@ -96,7 +96,10 @@ export async function configureModels(modelsPath, sequelize) {
       .filter(file => (file.indexOf('.') !== 0) && (file.slice(-3) === '.js'))
       .map(async file => {
         const model = (await import('file://' + path.join(modelsPath, file))).default(sequelize, sequelize.Sequelize.DataTypes);
-        dependency.addStatic(model.name + 'Model', model);
+        if (model.prototype instanceof sequelize.Sequelize.Model) {
+          let modelName = model.name[0].toLowerCase() + model.name.slice(1) + 'Model';
+          dependency.addStatic(modelName, new ModelSequelize(model, sequelize));
+        }
       })
   );
 }
@@ -218,24 +221,6 @@ export async function checkDataForMissingProperties(data, objectName, ...propert
   return true;
 }
 
-export async function checkViewOptions(options) {
-  if (!options?.view) {
-    return options;
-  }
-
-  if (options.include) {
-    options.include = await options.include.map(include => {
-      if (!include.attributes) {
-        include.attributes = [];
-      }
-
-      return include;
-    });
-  }
-
-  return options;
-}
-
 /**
  * Get the included (JOIN) from a sequelize query.
  * @param {*} options - Original options
@@ -299,190 +284,6 @@ export function completeIncludeOptions(options, name, includeOptions, includeDef
 
   if (options?.foreign) {
     replace(includedOptions, options?.foreign[name]);
-  }
-
-  return options;
-}
-
-export function addEnabledFilter(options) {
-  options = { ...options };
-  options.where = { ...options.where };
-  options.where.isEnabled = options.isEnabled ?? true;
-
-  return options;
-}
-
-export function addEnabledOwnerModuleFilter(options, ownerModule, ownerModuleAlias) {
-  completeIncludeOptions(
-    options,
-    'ownerModuleId',
-    {
-      model: ownerModule,
-      as: ownerModuleAlias ?? 'OwnerModule',
-      where: {
-        [Op.or]: [
-          { id: { [Op.eq]: null }},
-          { isEnabled: { [Op.eq]: options?.isEnabled ?? true }},
-        ],
-      },
-      required: false,
-      skipAssociationAttributes: true,
-    }
-  );
-    
-  return options;
-}
-
-export function addEnabledWithOnerModuleFilter(options, ownerModule) {
-  options = addEnabledFilter(options);
-  options = addEnabledOwnerModuleFilter(options, ownerModule);
-
-  return options;
-}
-
-/**
- * Completes the include (JOIN) of a sequelize query with the references of collaborators using the share table.
- * @param {object} options - Original options
- * @param {string} object - [mandatory] name of the object for filter in the share table
- * @param {object} models - [mandatory] models to take the ModelEntityName, ShareType and User sequelize models
- * @param {string|array} type - type of collabortion can be one or a list of: owner, editor, viewer, or others.
- * @return {Options}
- */
-export function includeCollaborators(options, object, models, collaboratorOptions) {
-  collaboratorOptions ??= {};
-
-  if (!models?.ModelEntityName) {
-    if (!models) {
-      throw new _Error(loc._f('No models defined on %s. Try adding "models = conf.global.models;" to the class.', this.constructor.name));
-    }
-        
-    throw new _Error(loc._f('No models.ModelEntityName defined on %s. Try adding the RH Model Entity Name to the project.', this.constructor.name));
-  }
-
-  const objectName = {
-    model: models.ModelEntityName,
-    required: false,
-    attributes: [],
-    where: { name: object },
-  };
-    
-  const shareType = {
-    model: models.ShareType,
-    required: false,
-    attributes: ['name', 'title'],
-  };
-
-  if (collaboratorOptions.typeFilter !== undefined) {
-    user.where = { name: collaboratorOptions.typeFilter };
-  }
-
-  const user = {
-    model: models.User,
-    required: false,
-    attributes: ['uuid', 'userName', 'displayName'],
-  };
-
-  if (collaboratorOptions.isEnabled !== undefined) {
-    user.where = { isEnabled: collaboratorOptions.isEnabled };
-  }
-
-  return completeIncludeOptions(
-    options,
-    'Collaborators',
-    {
-      model: models.Share,
-      as: 'Collaborators',
-      required: false,
-      attributes: ['isEnabled'], // A column is needed because a Sequelize bug
-      // where, // Cannot use this where because a Sequelize bug
-      include: [objectName, shareType, user],
-    }
-  );
-}
-
-export function arrangeOptions(options, sequelize) {
-  if (options.orderBy?.length) {
-    options.orderBy = options.orderBy.map(orderBy => {
-      let col = orderBy[0];
-      const sort = orderBy[1];
-      if (!(col instanceof Utils.Col)) {
-        col = sequelize.col(col);
-      }
-      return [col, sort];
-    });
-  }
-
-  return options;
-}
-
-export function isIncludedColumn(entity, columnName) {
-  if (typeof columnName !== 'string' || !columnName.includes('.')) {
-    return true;
-  }
-
-  const columnNameParts = columnName.split('.');
-  const tableName = columnNameParts[0];
-  const reference = entity.references[tableName];
-  if (!reference) {
-    return false;
-  }
-
-  if (columnNameParts.length === 2) {
-    return true;
-  }
-
-  const includedColumnName = columnNameParts.slice(1).join('.');
-
-  return isIncludedColumn(reference.service, includedColumnName);
-}
-
-export function arrangeSearchColumns(options, entity) {
-  options = { ...options };
-
-  if (!options.q) {
-    return options;
-  }
-
-  const searchColumns = options.searchColumns ?? entity.searchColumns;    
-  if (!searchColumns) {
-    return options;
-  }
-
-  if (!entity.Sequelize?.Op) {
-    throw new _Error(loc._f('No Sequalize.Op defined on %s. Try adding "Sequelize = conf.global.Sequelize;" to the class.', entity.constructor.name));
-  }
-
-  if (!entity.sequelize?.col) {
-    throw new _Error(loc._f('No sequalize.col defined on %s. Try adding "sequelize = conf.global.sequelize;" to the class.', entity.constructor.name));
-  }
-
-  const qValues = Array.isArray(options.q)?
-    options.q:
-    options.q.split(/[\s,]/);
-
-  for (const qValue of qValues) {
-    const q = `%${qValue}%`;
-    const Op = entity.Sequelize.Op;
-    const qColumns = [];
-    for (let searchColumn of searchColumns) {
-      if (typeof searchColumn === 'string'
-        && searchColumn.includes('.')
-        && isIncludedColumn(entity, searchColumn)
-      ) {
-        searchColumn = '$' + searchColumn + '$';
-      }
-
-      qColumns.push({ [searchColumn]: { [Op.like]: q }});
-    }
-
-    if (qColumns.length) {
-      const qWhere = { [Op.or]: qColumns };
-      if (options.where) {
-        options.where = { [Op.and]: [options.where, qWhere] };
-      } else {
-        options.where = qWhere;
-      }
-    }
   }
 
   return options;

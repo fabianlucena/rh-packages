@@ -74,7 +74,14 @@ export class BranchController {
     }
 
     const definitions = { uuid: 'uuid', name: 'string' };
-    let options = { view: true, limit: 10, offset: 0, includeCompany: true };
+    let options = {
+      view: true,
+      limit: 10,
+      offset: 0,
+      include: {
+        company: true,
+      },
+    };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
     if (conf.filters?.getCurrentCompanyId) {
@@ -87,7 +94,7 @@ export class BranchController {
     const result = await branchService.getListAndCount(options);
 
     result.rows = result.rows.map(row => {
-      row.companyUuid = row.Company.uuid;
+      row.companyUuid = row.company.uuid;
       return row;
     });
 
@@ -119,13 +126,13 @@ export class BranchController {
       },
       {
         alias: 'company',
-        name: 'Company.title',
+        name: 'company.title',
         type: 'text',
         label: await loc._cf('branch', 'Company'),
       },
       {
         alias: 'owner',
-        name: 'Collaborators[0].User.displayName',
+        name: 'owner.user.displayName',
         type: 'text',
         label: await loc._cf('branch', 'Owner'),
       },

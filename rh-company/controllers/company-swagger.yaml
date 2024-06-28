@@ -1,23 +1,24 @@
-definitions:
-  Company:
-    type: object
-    properties:
-      name:
-        type: string
-        required: true
-      title:
-        type: string
-        required: true
-      typeId:
-        type: integer
-      isEnabled:
-        type: boolean
+components:
+  schemas:
+    Company:
+      type: object
+      properties:
+        name:
+          type: string
+          required: true
+        title:
+          type: string
+          required: true
+        typeId:
+          type: integer
+        isEnabled:
+          type: boolean
 
-  Error:
-    properties:
-      error:
-        type: string
-        example: Example error
+    Error:
+      properties:
+        error:
+          type: string
+          example: Example error
         
 /company:
   post:
@@ -29,28 +30,29 @@ definitions:
       - bearerAuth: []
     produces:
       - application/json
-    parameters:
-      - name: body
-        in: body
-        schema:
-          $ref: '#/definitions/Company'
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Company'
     responses:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '400':
-        description: Missing parameters
+        description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
   get:
     tags:
@@ -73,33 +75,33 @@ definitions:
         example: acme
       - name: limit
         in: query
-        type: int
+        type: integer
       - name: offset
         in: query
-        type: int
+        type: integer
     responses:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/Company'
+          $ref: '#/components/schemas/Company'
       '204':
         description: Success no company
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
   delete:
     tags:
@@ -123,19 +125,19 @@ definitions:
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
   patch:
     tags:
@@ -146,30 +148,31 @@ definitions:
         - bearerAuth: []
     produces:
         - application/json
-    parameters:
-        - name: body
-          in: body
+    requestBody:
+      required: true
+      content:
+        application/json:
           schema:
-            $ref: '#/definitions/Company'
+            $ref: '#/components/schemas/Company'
     responses:
       '204':
         description: Success
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
             
 /company/enable:
   post:
@@ -194,19 +197,19 @@ definitions:
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
 /company/disable:
   post:
@@ -231,16 +234,16 @@ definitions:
       '400':
         description: Missing parameters or parameters error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '401':
         description: Unauthorized
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '403':
         description: Forbidden
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
       '500':
         description: Internal server error
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'

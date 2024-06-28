@@ -8,9 +8,9 @@ export default (sequelize, DataTypes) => {
         throw new Error('There is no ModelEntityName model. Try adding RH Model Entity Name module to the project.');
       }
 
-      this.belongsTo(models.Module,          { foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true });
-      this.belongsTo(models.WfWorkflowType,  { foreignKey: 'workflowTypeId' });
-      this.belongsTo(models.ModelEntityName, { foreignKey: 'modelEntityNameId' });
+      this.belongsTo(models.Module,          { as: 'ownerModule',     foreignKey: 'ownerModuleId' });
+      this.belongsTo(models.WfWorkflowType,  { as: 'type',            foreignKey: 'workflowTypeId' });
+      this.belongsTo(models.ModelEntityName, { as: 'modelEntityName', foreignKey: 'modelEntityNameId' });
     }
   }
   WfWorkflow.init({
@@ -50,6 +50,10 @@ export default (sequelize, DataTypes) => {
     },
     description: {
       type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    ownerModuleId: {
+      type: DataTypes.BIGINT,
       allowNull: true,
     },
     modelEntityNameId: {

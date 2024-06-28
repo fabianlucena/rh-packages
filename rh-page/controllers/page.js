@@ -9,13 +9,15 @@ export class PageController {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
     const options = await getOptionsFromParamsAndOData(
-      { ...req.query, ...req.params },
+      {
+        ...req.query,
+        ...req.params,
+      },
       definitions,
       {
         view: true,
         limit: 10,
         offset: 0,
-        includeCompany: true,
       },
     );
 

@@ -3,67 +3,75 @@
         "source": "\"%s\" is not a string",
         "language": "es",
         "translation": "\"%s\" no es una cadena de texto",
-        "ref": "..\\rf-util\\rf-util-check.js [119,50]"
+        "ref": "..\\rf-util\\rf-util-check.js [119,20]"
     },
     {
         "source": "\"%s\" is not a valid UUID value",
         "language": "es",
         "translation": "\"%s\" no es un valor UUID válido",
-        "ref": "..\\rf-util\\rf-util-check.js [168,60]\n..\\rf-util\\rf-util-check.js [183,60]\n..\\rf-util\\rf-util-check.js [194,60]\n..\\rf-util\\rf-util-check.js [225,60]"
+        "ref": "..\\rf-util\\rf-util-check.js [168,20]\n..\\rf-util\\rf-util-check.js [183,20]\n..\\rf-util\\rf-util-check.js [194,20]\n..\\rf-util\\rf-util-check.js [225,20]"
     },
     {
         "source": "\"%s\" is null or empty",
         "language": "es",
         "translation": "\"%s\" es nulo o vacío",
-        "ref": "..\\rf-util\\rf-util-check.js [85,51]\n..\\rf-util\\rf-util-check.js [96,51]"
+        "ref": "..\\rf-util\\rf-util-check.js [85,20]\n..\\rf-util\\rf-util-check.js [96,20]"
     },
     {
-        "source": "\"%s\" parameter is missing, null, or empty",
+        "source": "\"%s\" parameter is missing, null, or empty.",
         "language": "es",
-        "translation": "El parámetro \"%s\" no existe, es nulo o vacío",
-        "ref": "..\\rf-util\\rf-util-check.js [132,75]"
+        "isDraft": false,
+        "translation": "El parámetro \"%s\" no existe, es nulo o vacío.",
+        "ref": "..\\rf-util\\rf-util-check.js [132,22]"
     },
     {
         "source": "\"%s\" parameter is not a string",
         "language": "es",
         "translation": "El parámetro \"%s\" no es una cadena de texto",
-        "ref": "..\\rf-util\\rf-util-check.js [139,64]\n..\\rf-util\\rf-util-check.js [158,64]"
+        "ref": "..\\rf-util\\rf-util-check.js [158,22]"
+    },
+    {
+        "source": "\"%s\" parameter is not a string.",
+        "language": "es",
+        "isDraft": false,
+        "translation": "El parámetro \"%s\" no es una cadena de texto.",
+        "ref": "..\\rf-util\\rf-util-check.js [139,22]"
     },
     {
         "source": "\"%s\" parameter is not a valid UUID list value",
         "language": "es",
         "translation": "El parámetro \"%s\" no es un valor válido de lista de UUID",
-        "ref": "..\\rf-util\\rf-util-check.js [242,79]"
+        "ref": "..\\rf-util\\rf-util-check.js [242,22]"
     },
     {
         "source": "\"%s\" parameter is not a valid UUID value",
         "language": "es",
         "translation": "El parámetro \"%s\" no es un valor UUID válido",
-        "ref": "..\\rf-util\\rf-util-check.js [207,74]"
+        "ref": "..\\rf-util\\rf-util-check.js [207,22]"
     },
     {
         "source": "\"%s\" parameter is null or empty",
         "language": "es",
         "translation": "El parámetro \"%s\" es nulo o vacío.",
-        "ref": "..\\rf-util\\rf-util-check.js [151,65]"
+        "ref": "..\\rf-util\\rf-util-check.js [151,22]"
     },
     {
         "source": "\"%s\" parameter is undefined, null or empty",
         "language": "es",
         "translation": "El parámetro \"%s\" es indefinido, nulo o vacío.",
-        "ref": "..\\rf-util\\rf-util-check.js [109,76]"
+        "ref": "..\\rf-util\\rf-util-check.js [109,22]"
     },
     {
         "source": "Cannot merge into \"%s\" from \"%s\".",
         "language": "es",
         "translation": "No se puede fusionar en \"%s\" desde \"%s\".",
-        "ref": "..\\rf-util\\rf-util-error.js [83,66]"
+        "ref": "..\\rf-util\\rf-util-error.js [91,25]"
     },
     {
         "source": "Missing parameters.",
         "language": "es",
         "translation": "Faltan parámetros.",
-        "ref": "..\\rf-util\\rf-util-error.js [57,56]"
+        "ref": "..\\rf-util\\rf-util-error.js [65,29]"
     },
     {
         "source": "[null,\"Missing parameter: \\\"%s\\\".\",\"Missing parameters: \\\"%s\\\".\"]",
@@ -71,6 +79,6 @@
         "language": "es",
         "isJson": true,
         "translation": "[null,\"Falta el parámetro: \\\"%s\\\".\",\"Faltan los parámetros: \\\"%s\\\".\"]",
-        "ref": "..\\rf-util\\rf-util-error.js [58,90]"
+        "ref": "..\\rf-util\\rf-util-error.js [66,25]"
     }
 ]

@@ -3,14 +3,14 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class Resource extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.ResourceType, { as: 'Type', foreignKey: 'typeId',   allowNull: false });
+      this.belongsTo(models.ResourceType, { as: 'type', foreignKey: 'typeId',   allowNull: false });
       if (models.Language) {
-        this.belongsTo(models.Language,   { foreignKey: 'languageId', allowNull: true });
+        this.belongsTo(models.Language,   { as: 'language', foreignKey: 'languageId', allowNull: true });
       }
     }
 
     static postAssociate(models) {
-      this.hasMany(models.Share, { as: 'Collaborators', foreignKey: 'objectId' });
+      this.hasMany(models.Share, { as: 'share', foreignKey: 'objectId' });
     }
   }
   Resource.init({

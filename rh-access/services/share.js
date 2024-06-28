@@ -1,28 +1,15 @@
-import { ServiceEnabledModuleTranslatable } from 'rf-service';
-import { conf } from '../conf.js';
+import { Service } from 'rf-service';
 import { checkDataForMissingProperties } from 'sql-util';
 
-export class ShareService extends ServiceEnabledModuleTranslatable {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.Share;
-  moduleModel = conf.global.models.Module;
+export class ShareService extends Service.EnableOwnerModuleTranslatable {
   references = {
     objectName: {
-      service: conf.global.services.ModelEntityName?.singleton(),
+      service: 'modelEntityNameService',
       createIfNotExists: true,
     },
-    user: conf.global.services.User.singleton(),
-    type: conf.global.services.ShareType.singleton(),
+    user: true,
+    type: { service: 'shareTypeService' },
   };
-  defaultTranslationContext = 'share';
-
-  constructor() {
-    if (!conf.global.services.ModelEntityName) {
-      throw new Error('There is no ModelEntityName service. Try adding RH Model Entity Name module to the project.');
-    }
-
-    super();
-  }
     
   async validateForCreation(data) {
     await checkDataForMissingProperties(data, 'Share', 'objectNameId', 'objectId', 'userId', 'typeId');
@@ -30,10 +17,10 @@ export class ShareService extends ServiceEnabledModuleTranslatable {
   }
 
   /**
-     * Creates a new share type row into DB if not exists.
-     * @param {data} data - data for the new share type @see create.
-     * @returns {Promise{ShareType}}
-     */
+   * Creates a new share type row into DB if not exists.
+   * @param {data} data - data for the new share type @see create.
+   * @returns {Promise{ShareType}}
+   */
   async createIfNotExists(data, options) {
     this.completeReferences(data);
     await checkDataForMissingProperties(data, 'Share', 'objectNameId', 'objectId', 'userId', 'typeId');
@@ -61,7 +48,7 @@ export class ShareService extends ServiceEnabledModuleTranslatable {
   }
 
   async deleteForModelEntityNameAndId(modelEntityName, objectId) {
-    const objectNameId = await conf.global.services.ModelEntityName.singleton().getIdForName(modelEntityName);
+    const objectNameId = await this.references.ObjectName.getIdForName(modelEntityName);
     return this.deleteFor({ objectNameId, objectId });
   }
 }

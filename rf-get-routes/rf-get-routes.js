@@ -1,6 +1,6 @@
 /**
- * This function extracts routes from statics and non statics class methods.
- * The class from what the metods are extracted is called the controller.
+ * This class extracts routes from statics and non statics class methods.
+ * The class from the metods are extracted is called the controller.
  * 
  * First of all a base path for all of the endpoints is defined. The path is 
  * taken  from the non static (preferred) or static path property, if no path 
@@ -33,20 +33,21 @@
  * method must be the same as above but with a suffix with the path separated 
  * by a blanck space. For Javascript limitations the name must be in quotes 
  * and square brackets.
- *    static ['post new-path-path'](...) {...}
- *    static ['get /:id'](...) {...}
+ *    static 'post new-path'(...) {...}
+ *    static 'get /:id'(...) {...}
  * 
  * Also a middleware and permission can be defined for the special subpath:
- *    static ['postMiddleware special/path'](...) {...}
- *    static ['postPermission special/path'] = 'permission';
- *    static ['post special/path'](...) {...}
+ *    static 'postMiddleware special/path'(...) {...}
+ *    static 'postPermission special/path' = 'permission';
+ *    static 'post special/path'(...) {...}
  * 
- * The result is an object with 4 properties:
+ * The result is an object with 5 properties:
  * {
  *  controller,
  *  path,
  *  routes,
- *  cors
+ *  cors,
+ *  paths,
  * }
  * 
  * - controller: is the name of the class.
@@ -54,11 +55,13 @@
  * - routes: is a list of objects with the routes see bellow.
  * - cors: is a list of paths and allowed methods for the CORS policies 
  *   definitions.
+ * - paths: all of the paths used in routes.
  * 
  * The routes is a list of objects with the following properties:
  * - httpMethod: HTTP method in lower case,
  * - path: is the path for this endpoint inner the controller's path, 
  *   can be a empty string.
+ * - handler: function for handle the request.
  * - method: the method to call for handled this endpoint.
  * - methodIsStatic: boolean indicator for the method if is static or non 
  *   static.
@@ -76,8 +79,8 @@
  * 
  * 
  * Extraction options:
- * The behavior of this function can be customized using the options parameter. 
- * This parameter is an objet with the following properties:
+ * The behavior of this function can be customized using the member properties. 
+ * This members can be any of the followings:
  * 
  * - skipStatic: [boolean]{default:false} avoid to scan for the static 
  *   methods and properties. 
@@ -87,18 +90,30 @@
  *   static methods and properties.
  * - appendHandlers: [array]{default:undefined} add other handlers to extract, 
  *   for example 
- *   [{name: 'getData', httpMethod: 'get', handler: 'defaultGet'}],
- *   will search for getData method name in the controlles class, and will 
- *   generate a route for the HTTP method GET, using the defaultGet method 
- *   as handler: This minds that defaultGet will call to getData. This 
- *   extraction can be combined con subpath, premissions, and middlewares. 
- *   In this case, if you override the get method remember to call 
- *   this.defaultGet after return to properly handle. 
+ *   [
+ *    { name: 'getData',       httpMethod: 'get',  handler: 'defaultGet', },
+ *    { name: 'enableForUuid', httpMethod: 'post', handler: 'defaultEnableForUuid', inPathParam: 'uuid', path: '/enable' },
+ *  ],
+ * 
+ *   The first one will search for getData method name in the controller class, 
+ *    and will generate a route for the HTTP method GET, using the defaultGet 
+ *    method as handler: This minds that defaultGet will call to getData. This 
+ *    extraction can be combined con subpath, premissions, and middlewares. 
+ *    In this case, if you override the get method remember to call 
+ *    this.defaultGet after return to properly handle.
+ *  The second one will search of a enableForUuid or enableForUuidPermission
+ *    and generate a route for  for the HTTP method POST, using the 
+ *    defaultEnableForUuid. If no path defined for enableForUuid method the path
+ *    /enable will be used. And, because the inPathParam property member, a 
+ *    route for UUID in URL parameter will be generated too.
+ * - skipMethodNotAllowedHandler: [bool]{default:false} after the routes 
+ *   handlers the systems adds handlers for all to handle HTTP 405 error for
+ *   skip this behavior set this option to true.
  */
-export function getRoutes(controllerClass, options) {
-  options ??= {};
 
-  const handlers = [
+export class Routes {
+  controllerClass = null;
+  handlers = [
     { name: 'get' },
     { name: 'post' },
     { name: 'patch' },
@@ -106,54 +121,190 @@ export function getRoutes(controllerClass, options) {
     { name: 'delete' },
     { name: 'options' },
   ];
+  paths = [];
+  routes = [];
 
-  if (options.appendHandlers) {
-    handlers.push(...options.appendHandlers);
-  }
-
-  handlers.push({ name: 'all' });
-
-  const controllerInstance = new controllerClass;
-
-  const props = [];
-  if (!options.skipStatic) {
-    props.push(...Object.getOwnPropertyNames(controllerClass));
-  }
-
-  if (!options.skipNonStatic) {
-    props.push(
-      ...Object.getOwnPropertyNames(controllerInstance.__proto__),
-      ...Object.getOwnPropertyNames(controllerInstance)
-    );
-  }
-
-  if (!options.skipParent) {
-    let parent = controllerClass.__proto__;
-    while (parent && parent.name) {
-      props.push(...Object.getOwnPropertyNames(parent));
-      parent = parent.__proto__;
+  constructor(controllerClass, options) {
+    this.controllerClass = controllerClass;
+    if (options) {
+      this.setOptions(options);
     }
   }
 
-  const routes = [];
-  handlers.forEach(handler => {
-    const addToRoutes = [];
-    props.forEach(prop => {
+  setOptions(options) {
+    for (const k in options) {
+      if (this[k]) {
+        this[k](options[k]);
+      } else {
+        this[k] = options[k];
+      }
+    }
+  }
+
+  appendHandlers(handlers) {
+    this.handlers.push(...handlers);
+  }
+
+  extractProps() {
+    this.props = [];
+    this.controllerInstance = new this.controllerClass;
+
+    if (!this.skipNonStatic) {
+      this.props.push(
+        ...Object.getOwnPropertyNames(this.controllerInstance),
+        ...Object.getOwnPropertyNames(Object.getPrototypeOf(this.controllerInstance)),
+      );
+    }
+
+    if (!this.skipStatic) {
+      this.props.push(...Object.getOwnPropertyNames(this.controllerClass));
+    }
+
+    if (!this.skipParent) {
+      let parent = Object.getPrototypeOf(this.controllerClass);
+      while (parent && parent.name) {
+        this.props.push(...Object.getOwnPropertyNames(parent));
+        parent = Object.getPrototypeOf(parent);
+      }
+    }
+
+    return this.props;
+  }
+
+  extractHandlers() {
+    if (!this.skipAllHttpMethod) {
+      if (!this.handlers.find(h => h.name === 'all')) {
+        this.handlers.push({ name: 'all' });
+      }
+    }
+
+    return this.handlers;
+  }
+
+  extractPath() {
+    if (!this.path && this.path !== '') {
+      this.path = this.controllerInstance.path;
+      if (this.path === undefined) {
+        this.path = this.controllerClass.path;
+
+        if (!this.path && this.path !== '') {
+          this.path = '/{controller}';
+        }
+      }
+    }
+
+    if (this.path.search('{controller}')) {
+      let controller = this.controllerClass.name;
+      if (controller.endsWith('controller') || controller.endsWith('Controller')) {
+        controller = dasherize(controller.substring(0, controller.length - 10));
+      }
+      controller = dasherize(controller);
+
+      this.path = this.path.replace(/\{controller\}/g, controller);
+    }
+
+    if (this.path.search('{{}')) {
+      this.path = this.path.replace(/\{\{\}/g, '{');
+    }
+
+    return this.path;
+  }
+
+  extractCors() {
+    this.cors ||= [];
+
+    for (const route of this.routes) {
+      const httpMethod = route.httpMethod.toUpperCase();
+      if (httpMethod === 'ALL') {
+        continue;
+      }
+
+      const path = route.path;
+      const item = this.cors.find(i => i.path === path);
+      if (!item) {
+        this.cors.push({
+          path,
+          httpMethods: [httpMethod],
+        });
+      } else {
+        if (!item.httpMethods.includes(httpMethod)) {
+          item.httpMethods.push(httpMethod);
+        }
+      }
+    }
+
+    return this.cors;
+  }
+
+  extract() {
+    this.paths = [];
+    this.routes = [];
+
+    this.extractProps();
+    this.extractHandlers();
+    this.extractForHandlers();
+    this.extractPath();
+    this.extractCors();
+
+    if (!this.skipMethodNotAllowedHandler) {
+      for (const path of this.paths) {
+        if (!this.routes.find(r => r.httpMethod.toLowerCase() === 'all' && r.path === path)) {
+          this.routes.push({
+            httpMethod: 'all',
+            path,
+            handler: methodNotAllowedHandler,
+          });
+        }
+      }
+    }
+
+    this.routesData = {
+      controller: this.controllerClass,
+      path: this.path,
+      routes: this.routes,
+      cors: this.cors,
+      paths: this.paths,
+    };
+
+    return this.routesData;
+  }
+
+  extractForHandlers() {
+    this.handlers.forEach(h => this.extractForHandler(h));
+  }
+
+  extractForHandler(handler) {
+    this.props.forEach(prop => {
       const parts = prop.split(' ');
-      const name = parts[0];
+      let name = parts[0];
       if (handler.name !== name) {
+        if (handler.handler) {
+          if (name.startsWith(handler.name) && 
+            (name.endsWith('Permission') || name.endsWith('Middleware'))
+          ) {
+            name = name.slice(0, -10);
+          } else {
+            return;
+          }
+        } else {
+          return;
+        }
+      }
+
+      let path;
+      if (parts.length > 1) {
+        path = parts.slice(1).join(' ');
+      } else if(handler.path) {
+        path = handler.path;
+      } else {
+        path = '';
+      }
+      if (this.routes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
         return;
       }
 
-      const path = parts.length > 1?
-        parts.slice(1).join(' '):
-        '';
-      if (routes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
-        return;
-      }
-
-      if (addToRoutes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
-        return;
+      if (!this.paths.includes(path)) {
+        this.paths.push(path);
       }
 
       const route = {
@@ -161,16 +312,16 @@ export function getRoutes(controllerClass, options) {
         path,
       };
 
-      if (controllerInstance[handler.handler]) {
+      if (this.controllerInstance[handler.handler]) {
         route.method = handler.handler;
         route.methodIsStatic = false;
-      } else if (controllerClass[handler.handler]) {
+      } else if (this.controllerClass[handler.handler]) {
         route.method = handler.handler;
         route.methodIsStatic = true;
-      } else if (controllerInstance[prop]) {
+      } else if (this.controllerInstance[prop]) {
         route.method = prop;
         route.methodIsStatic = false;
-      } else if (controllerClass[prop]) {
+      } else if (this.controllerClass[prop]) {
         route.method = prop;
         route.methodIsStatic = true;
       }
@@ -180,78 +331,46 @@ export function getRoutes(controllerClass, options) {
         :'';
 
       let withSuffix = name + 'Permission' + pathSuffix;
-      if (controllerInstance[withSuffix]) {
-        route.permission = controllerInstance[withSuffix];
+      if (this.controllerInstance[withSuffix]) {
+        route.permission = this.controllerInstance[withSuffix];
         route.permissionIsStatic = false;
-      } else if (controllerClass[withSuffix]) {
-        route.permission = controllerClass[withSuffix];
+      } else if (this.controllerClass[withSuffix]) {
+        route.permission = this.controllerClass[withSuffix];
         route.permissionIsStatic = true;
       }
 
       withSuffix = name + 'Middleware' + pathSuffix;
-      if (controllerInstance[withSuffix]) {
-        route.middleware = controllerInstance[withSuffix];
+      if (this.controllerInstance[withSuffix]) {
+        route.middleware = this.controllerInstance[withSuffix];
         route.middlewareIsStatic = false;
-      } else if (controllerClass[withSuffix]) {
-        route.middleware = controllerClass[withSuffix];
+      } else if (this.controllerClass[withSuffix]) {
+        route.middleware = this.controllerClass[withSuffix];
         route.middlewareIsStatic = true;
       }
 
-      addToRoutes.push(route);
+      this.routes.push(route);
+
+      if (handler.inPathParam) {
+        const routeWithParam = { ...route };
+        routeWithParam.path += `/:${handler.inPathParam}`;
+        if (this.routes.find(r => r.path === routeWithParam.path && r.httpMethod === handler.httpMethod)) {
+          return;
+        }
+        
+        this.routes.push(routeWithParam);
+      }
     });
-
-    if (addToRoutes.length) {
-      routes.push(...addToRoutes);
-    }
-  });
-
-  let path = controllerInstance.path;
-  if (path === undefined) {
-    path = controllerClass.path;
-
-    if (path === undefined) {
-      path = '/{controller}';
-    }
   }
+}
 
-  if (path) {
-    if (path.search('{controller}')) {
-      let controller = controllerClass.name;
-      if (controller.endsWith('controller') || controller.endsWith('Controller')) {
-        controller = dasherize(controller.substring(0, controller.length - 10));
-      }
-      controller = dasherize(controller);
+export function getRoutes(controllerClass, options) {
+  return (new Routes(controllerClass, options))
+    .extract();
+}
 
-      path = path.replace(/\{controller\}/g, controller);
-    }
-
-    if (path.search('{{}')) {
-      path = path.replace(/\{\{\}/g, '{');
-    }
-  }
-
-  const cors = [];
-  for (const route of routes) {
-    const httpMethod = route.httpMethod.toUpperCase();
-    if (httpMethod === 'ALL') {
-      continue;
-    }
-
-    const path = route.path;
-    const item = cors.find(i => i.path === path);
-    if (!item) {
-      cors.push({
-        path,
-        httpMethods: [httpMethod],
-      });
-    } else {
-      if (!item.httpMethods.includes(httpMethod)) {
-        item.httpMethods.push(httpMethod);
-      }
-    }
-  }
-
-  return { controller: controllerClass, path, routes, cors };
+// eslint-disable-next-line no-unused-vars
+function methodNotAllowedHandler(_req, res, _next) {
+  res.status(405).send({ error: 'HTTP method not allowed.' });
 }
 
 function dasherize(text, sep) {

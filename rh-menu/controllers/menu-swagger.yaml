@@ -1,15 +1,16 @@
-definitions:
-  Menu:
-    properties:
-      name:
-        type: string
-      label:
-        type: integer
-  Error:
-    properties:
-      error:
-        name: string
-        example: Example error
+components:
+  schemas:
+    Menu:
+      properties:
+        name:
+          type: string
+        label:
+          type: integer
+    Error:
+      properties:
+        error:
+          name: string
+          example: Example error
 
 /menu:
   get:
@@ -23,8 +24,8 @@ definitions:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/Menu'
+          $ref: '#/components/schemas/Menu'
       '403':
         description: No session
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'

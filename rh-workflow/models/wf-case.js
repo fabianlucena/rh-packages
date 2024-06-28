@@ -3,11 +3,11 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class WfCase extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.WfWorkflow,  { foreignKey: 'workflowId' });
+      this.belongsTo(models.WfWorkflow,  { as: 'workflow', foreignKey: 'workflowId' });
     }
 
     static postAssociate(models) {
-      this.hasOne(models.WfCurrentStatus, { as: 'CurrentStatus', foreignKey: 'caseId' });
+      this.hasOne(models.WfCurrentStatus, { as: 'currentStatus', foreignKey: 'caseId' });
     }
   }
   WfCase.init({

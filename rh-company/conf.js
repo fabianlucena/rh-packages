@@ -10,10 +10,11 @@ export const conf = {
   title: 'RH Company',
   version: '0.1',
   schema: 'company',
-  routesPath: dirname + '/routes',
-  modelsPath: dirname + '/models',
-  servicesPath: dirname + '/services',
-  controllersPath: dirname + '/controllers',
+  routesPath: `${dirname}/routes`,
+  modelsPath: `${dirname}/models`,
+  servicesPath: `${dirname}/services`,
+  controllersPath: `${dirname}/controllers`,
+  iconsPath: `${dirname}/icons`,
   data: {
     roles: [
       { name: 'companyManager', title: loc._cf('role', 'Company manager'), isTranslatable: true, ownerModule: name },

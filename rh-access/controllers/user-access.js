@@ -8,13 +8,26 @@ export class UserAccessController {
   static async post(req, res) {
     const loc = req.loc ?? defaultLoc;
     const data = {
-      userUuid: checkParameterUuid(req.body.User, loc._cf('userAccess', 'User')),
-      siteUuid: checkParameterUuid(req.body.Site, loc._cf('userAccess', 'Site')),
-      rolesUuid: await checkParameterUuidList(req.body.Roles, loc._cf('userAccess', 'Roles')),
+      userUuid: req.body.user,
+      siteUuid: req.body.site,
+      rolesUuid: await checkParameterUuidList(req.body.roles, loc._cf('userAccess', 'Roles')),
     };
 
-    if (req.body.Site) {
-      const siteUuid = checkParameterUuid(req.body.Site, loc._cf('userAccess', 'Site'));
+    if (req.body.uuid) {
+      if (!data.userUuid) {
+        data.userUuid = req.body.uuid.split(',')[0];
+      }
+
+      if (!data.siteUuid) {
+        data.siteUuid = req.body.uuid.split(',')[1];
+      }
+    }
+
+    checkParameterUuid(data.userUuid, loc._cf('userAccess', 'User'));
+    checkParameterUuid(data.siteUuid, loc._cf('userAccess', 'Site'));
+
+    if (req.body.site) {
+      const siteUuid = data.siteUuid;
       if (siteUuid) {
         data.siteUuid = siteUuid;
       } else if (!req.site?.id) {
@@ -46,9 +59,11 @@ export class UserAccessController {
       view: true,
       where: {},
       loc,
-      includeUser: true,
-      includeSite: true,
-      includeRoles: true,
+      include: {
+        user: {},
+        site: {},
+        roles: { attributes: ['title'] },
+      },
     };
 
     const definitions = { uuid: 'string', username: 'string' };
@@ -61,15 +76,21 @@ export class UserAccessController {
 
     if (!req.roles.includes('admin')) {
       const assignableRolesId = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
-      options.includeRolesId = assignableRolesId;
+      options.include.role = {
+        ...options.include.role,
+        where: {
+          ...options.include.role.where,
+          id: assignableRolesId,
+        },
+      };
     }
 
     if (options.where?.uuid) {
       const uuid = options.where.uuid.split(',');
       delete options.where.uuid;
 
-      options.includeUser = { ...options.includeUser, where: { ...options.includeUser.where, uuid: uuid[0] }};
-      options.includeSite = { ...options.includeSite, where: { ...options.includeSite.where, uuid: uuid[1] }};
+      options.include.user = { ...options.include.user, where: { ...options.include.user.where, uuid: uuid[0] }};
+      options.include.site = { ...options.include.aite, where: { ...options.include.site.where, uuid: uuid[1] }};
     }
 
     const result = await dependency.get('userAccessService').getListAndCount(options);
@@ -97,17 +118,17 @@ export class UserAccessController {
       actions: actions,
       columns: [
         {
-          name: 'User.displayName',
+          name: 'user.displayName',
           type: 'text',
           label: await loc._('User'),
         },
         {
-          name: 'Site.title',
+          name: 'site.title',
           type: 'text',
           label: await loc._('Site'),
         },
         {
-          name: 'Roles',
+          name: 'roles',
           type: 'list',
           label: await loc._('Roles'),
           singleProperty: 'title',
@@ -126,7 +147,7 @@ export class UserAccessController {
       method: 'POST',
       fields: [
         {
-          name: 'User',
+          name: 'user',
           type: 'select',
           label: await loc._('User'),
           loadOptionsFrom: {
@@ -141,7 +162,7 @@ export class UserAccessController {
           },
         },
         {
-          name: 'Site',
+          name: 'site',
           type: 'select',
           label: await loc._('Sites'),
           loadOptionsFrom: {
@@ -156,7 +177,7 @@ export class UserAccessController {
           },
         },
         {
-          name: 'Roles',
+          name: 'roles',
           type: 'select',
           multiple: true,
           big: true,
@@ -174,11 +195,17 @@ export class UserAccessController {
 
   static async getUsers(req, res) {
     const definitions = { uuid: 'uuid', title: 'string' };
-    let options = { view: true, limit: 100, offset: 0, attributes: ['uuid', 'username', 'displayName'], isEnabled: true };
+    let options = {
+      view: true,
+      limit: 100,
+      offset: 0,
+      attributes: ['uuid', 'username', 'displayName'],
+      isEnabled: true,
+    };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
 
-    const userService = conf.global.services.User.singleton();
+    const userService = await dependency.get('userService');
     const result = await userService.getListAndCount(options);
 
     res.status(200).send(result);
@@ -204,7 +231,6 @@ export class UserAccessController {
       offset: 0,
       attributes: ['uuid', 'name', 'title', 'description', 'isTranslatable'],
       isEnabled: true,
-      raw: true,
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);

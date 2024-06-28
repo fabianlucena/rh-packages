@@ -9,7 +9,8 @@ export const conf = {
   title: 'RH Menu',
   version: '0.1',
   schema: 'menu',
-  modelsPath: dirname + '/models',
-  servicesPath: dirname + '/services',
-  controllersPath: dirname + '/controllers',
+  modelsPath: `${dirname}/models`,
+  servicesPath: `${dirname}/services`,
+  controllersPath: `${dirname}/controllers`,
+  iconsPath: `${dirname}/icons`,
 };

@@ -1,27 +1,29 @@
-definitions:
-  Page:
-    properties:
-      uuid:
-        type: UUID
-      isEnabled:
-        type: boolean
-      name:
-        type: string
-      label:
-        type: integer
-      isTranslatable:
-        type: boolean
-      translationContext:
-        type: string
-      title:
-        type: string
-      content:
-        type: string
-  Error:
-    properties:
-      error:
-        name: string
-        example: Example error
+components:
+  schemas:
+    Page:
+      properties:
+        uuid:
+          type: UUID
+        isEnabled:
+          type: boolean
+        name:
+          type: string
+        label:
+          type: integer
+        isTranslatable:
+          type: boolean
+        translationContext:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+
+    Error:
+      properties:
+        error:
+          name: string
+          example: Example error
 
 /page:
   get:
@@ -35,8 +37,8 @@ definitions:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/Page'
+          $ref: '#/components/schemas/Page'
       '403':
         description: No session
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'

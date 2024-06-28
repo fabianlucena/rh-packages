@@ -1,0 +1,528 @@
+components:
+  schemas:
+    Issue:
+      type: object
+      properties:
+        isEnabled:
+          type: boolean
+        name:
+          type: string
+          required: true
+          example: admin
+        title:
+          type: string
+          required: true
+          example: Admin
+        Project:
+          type: object
+          properties:
+            name:
+              type: string
+              required: true
+              example: admin
+            title:
+              type: string
+              required: true
+              example: Admin
+        Type:
+          type: object
+          properties:
+            name:
+              type: string
+              required: true
+              example: admin
+            title:
+              type: string
+              required: true
+              example: Admin
+        description:
+          type: string
+          required: true
+          example: Admin
+        Status:
+          type: object
+          properties:
+            name:
+              type: string
+              required: true
+              example: admin
+            title:
+              type: string
+              required: true
+              example: Admin
+        Workflow:
+          type: object
+          properties:
+            name:
+              type: string
+              required: true
+              example: admin
+            title:
+              type: string
+              required: true
+              example: Admin
+
+    Error:
+      properties:
+        error:
+          type: string
+          example: Example error
+
+    Type:
+      properties:
+        uuid:
+          type: string
+          required: true
+        title:
+          type: string
+          required: true
+
+    Project:
+      properties:
+        uuid:
+          type: string
+          required: true
+        title:
+          type: string
+          required: true
+
+    Priority:
+      properties:
+        uuid:
+          type: string
+          required: true
+        title:
+          type: string
+          required: true
+
+    CloseReason:
+      properties:
+        uuid:
+          type: string
+          required: true
+        title:
+          type: string
+          required: true
+
+/issue:
+  post:
+    tags:
+      - Issue
+    summary: Create a issue
+    description: Add a new issue to the database
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Issue'
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/components/schemas/Error'
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+
+  get:
+    tags:
+      - Issue
+    summary: Get issue or a issue list
+    description: If the UUID or name params is provided this endpoint returns a single issue otherwise returns a list of issues
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+      - name: name
+        in: query
+        type: string
+      - name: limit
+        in: query
+        type: integer
+      - name: offset
+        in: query
+        type: integer
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/components/schemas/Issue'
+      '204':
+        description: Success no issue
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+  delete:
+    tags:
+      - Issue
+    summary: Delete a issue
+    description: Delete a issue from its UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        required: true
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+    responses:
+      '204':
+        description: Success
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+  patch:
+    tags:
+      - Issue
+    summary: Update a issue
+    description: Update a issue from its UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Issue'
+    responses:
+      '204':
+        description: Success
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+/issue/enable:
+  post:
+    tags:
+      - Issue
+    summary: Enable a issue
+    description: Enable a issue from its UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        required: true
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+    responses:
+      '204':
+        description: Success
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+/issue/disable:
+  post:
+    tags:
+      - Issue
+    summary: Disable a issue
+    description: Disable a issue from its UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        required: true
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+    responses:
+      '204':
+        description: Success
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+/issue/project:
+  get:
+    tags:
+      - Issue
+    summary: Get list of projects available to select in a issue
+    description: If the UUID or name params is provided this endpoint returns a single project otherwise returns a list of projects
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+      - name: name
+        in: query
+        type: string
+      - name: limit
+        in: query
+        type: integer
+      - name: offset
+        in: query
+        type: integer
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/components/schemas/Project'
+      '204':
+        description: Success no project
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+/issue/type:
+  get:
+    tags:
+      - Issue
+    summary: Get list of types available to select in a issue
+    description: If the UUID or name params is provided this endpoint returns a single type otherwise returns a list of types
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+      - name: name
+        in: query
+        type: string
+      - name: limit
+        in: query
+        type: integer
+      - name: offset
+        in: query
+        type: integer
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/components/schemas/Type'
+      '204':
+        description: Success no type
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+/issue/priority:
+  get:
+    tags:
+      - Issue
+    summary: Get list of priorities available to select in a issue
+    description: If the UUID or name params is provided this endpoint returns a single priority otherwise returns a list of priorities
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+      - name: name
+        in: query
+        type: string
+      - name: limit
+        in: query
+        type: integer
+      - name: offset
+        in: query
+        type: integer
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/components/schemas/Priority'
+      '204':
+        description: Success no priority
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+/issue/close-reason:
+  get:
+    tags:
+      - Issue
+    summary: Get list of close reasons available to select in a issue
+    description: If the UUID or name params is provided this endpoint returns a single close reason otherwise returns a list of close reasons
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+      - name: name
+        in: query
+        type: string
+      - name: limit
+        in: query
+        type: integer
+      - name: offset
+        in: query
+        type: integer
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/components/schemas/CloseReason'
+      '204':
+        description: Success no close reason
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'

@@ -28,8 +28,8 @@ export class MainCompanyService {
         
     result.rows = result.rows.map(row => {
       const result = row.Company;
-      if (row.Collaborators?.length) {
-        result.ownerDisplayName = row.Collaborators[0]?.User?.displayName;
+      if (row.share?.length) {
+        result.ownerDisplayName = row.share[0]?.User?.displayName;
       }
             
       return result;

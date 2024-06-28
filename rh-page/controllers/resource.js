@@ -13,7 +13,7 @@ export class ResourceController {
         view: true,
         limit: 10,
         offset: 0,
-        includeCompany: true,
+        include: { company: true },
       },
     );
 

@@ -3,6 +3,8 @@ import { MissingPropertyError, checkDataForMissingProperties } from 'sql-util';
 import dependency from 'rf-dependency';
 
 export class UserAccessService extends UserSiteRoleService {
+  model = 'userSiteRoleModel';
+
   init () {
     super.init();
 
@@ -113,15 +115,33 @@ export class UserAccessService extends UserSiteRoleService {
 
     return rolesId;
   }
+
+  async getListOptions(options) {
+    if (!options?.include?.roles) {
+      return super.getListOptions(options);
+    }
+
+    const roles = options.include.roles;
+    delete options.include.roles;
+    options = await super.getListOptions(options);
+    options.include.roles = roles;
+    return options;
+  }
     
   async getList(options) {
-    if (!options.includeRoles) {
+    if (!options?.include?.roles) {
       return super.getList(options);
     }
 
-    options ??= {};
+    options = { ...options };
     options.view = true;
     options.attributes ??= [];
+    options.include ??= {};
+    options.include.user ??= {};
+    options.include.site ??= {};
+    options.include.user.attributes ??= [];
+    options.include.site.attributes ??= [];
+
     if (!options.attributes.includes('userId')) {
       options.attributes.push('userId');
     }
@@ -129,46 +149,47 @@ export class UserAccessService extends UserSiteRoleService {
     if (!options.attributes.includes('siteId')) {
       options.attributes.push('siteId');
     }
-        
-    if (!options.includeUser) {
-      options.includeUser = { attributes: ['uuid'] };
-    }
-        
-    if (!options.includeSite) {
-      options.includeSite = { attributes: ['uuid'] };
+
+    if (!options.include.user.attributes.includes('uuid')) {
+      options.include.user.attributes.push('uuid');
     }
 
-    options.raw = true;
-    options.nest = true;
+    if (!options.include.site.attributes.includes('uuid')) {
+      options.include.site.attributes.push('uuid');
+    }
 
+    const rolesOptions = options.include.roles;
+    delete options.include.roles;
     options = await this.getListOptions(options);
-
     const result = await super.getList(options);
 
     const roleQueryOptions = {
       view: true,
-      includeUser: { attributes: [] },
-      includeSite: { attributes: [] },
-      includeRole: {},
+      include: {
+        user: { attributes: [] },
+        site: { attributes: [] },
+        role: rolesOptions,
+      },
       attributes: ['isEnabled'],
-      where: {},
-      raw: true,
-      nest: true,
+      where: {
+        user: {},
+        site: {},
+      },
       loc: options.loc,
     };
 
-    if (options.includeRolesId) {
-      roleQueryOptions.where = { roleId: options.includeRolesId };
+    if (options.include?.role?.id) {
+      roleQueryOptions.where = { role: { id: options.include.role.id }};
     }
 
     for (const row of result) {
-      row.uuid = row.User.uuid + ',' + row.Site.uuid;
+      row.uuid = row.user.uuid + ',' + row.site.uuid;
 
-      roleQueryOptions.where.userId = row.userId;
-      roleQueryOptions.where.siteId = row.siteId;
+      roleQueryOptions.where.user.id = row.userId;
+      roleQueryOptions.where.site.id = row.siteId;
 
       const userSiteRoles = await this.getList(roleQueryOptions);
-      row.Roles = userSiteRoles.map(userSiteRole => {return { ...userSiteRole.Role, isEnabled: userSiteRole.isEnabled };});
+      row.roles = userSiteRoles.map(userSiteRole => {return { ...userSiteRole.role, isEnabled: userSiteRole.isEnabled };});
             
       delete row.userId;
       delete row.siteId;

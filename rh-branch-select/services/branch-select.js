@@ -1,4 +1,4 @@
-import { ServiceBase } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class BranchSelectService extends ServiceBase {
+export class BranchSelectService extends Service.Base {
 }

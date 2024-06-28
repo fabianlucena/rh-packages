@@ -1,8 +1,8 @@
 {
-  "name": "rh-util-es",
+  "name": "rf-util-es",
   "version": "1.0.0",
-  "description": "Translation to Spanish for package rh-util.",
-  "main": "rh-util-es.js",
+  "description": "Translation to Spanish for package rf-util.",
+  "main": "rf-util-es.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

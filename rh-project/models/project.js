@@ -4,12 +4,13 @@ export default (sequelize, DataTypes) => {
   class Project extends sequelize.Sequelize.Model {
     static associate(models) {
       if (models.Company) {
-        this.belongsTo(models.Company, { foreignKey: 'companyId' });
+        this.belongsTo(models.Company, { as: 'company', foreignKey: 'companyId' });
       }
     }
 
     static postAssociate(models) {
-      this.hasMany(models.Share, { as: 'Collaborators', foreignKey: 'objectId' });
+      this.hasMany(models.Share, { as: 'share', foreignKey: 'objectId' });
+      this.hasOne (models.Share, { as: 'owner', foreignKey: 'objectId' });
     }
   }
   Project.init({

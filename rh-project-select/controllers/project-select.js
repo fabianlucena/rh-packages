@@ -1,20 +1,30 @@
+import { dependency } from 'rf-dependency';
 import { conf } from '../conf.js';
 import { getOptionsFromParamsAndOData, _HttpError } from 'http-util';
+import { defaultLoc } from 'rf-locale';
 import { checkParameter, MissingParameterError } from 'rf-util';
+import { Controller } from 'rh-controller';
+import { getFiltersFromRequest } from '../rh-project-select.js';
 
-const projectService = conf.global.services.Project.singleton();
+export class ProjectSelectController extends Controller {
+  constructor() {
+    super();
+    this.eventBus = dependency.get('eventBus', null);
+    this.projectService =     dependency.get('projectService');
+    this.sessionDataService = dependency.get('sessionDataService', null);
+  }
 
-export class ProjectSelectController {
-  static async post(req, res) {
-    const loc = req.loc;
+  postPermission = 'project-select.switch';
+  async post(req) {
+    const loc = req.loc ?? defaultLoc;
 
     const projectUuid = req.query?.projectUuid ?? req.params?.projectUuid ?? req.body?.projectUuid;
     if (!projectUuid) {
       throw new MissingParameterError(loc._cf('projectSelect', 'Project UUID'));
     }
 
-    const options = { skipNoRowsError: true };
-    let project = await projectService.getForUuid(projectUuid, options);
+    const options = { skipNoRowsError: true, loc };
+    let project = await this.projectService.getForUuid(projectUuid, options);
     if (!project) {
       throw new _HttpError(loc._cf('projectSelect', 'The selected project does not exist or you do not have permission to access it.'), 400);
     }
@@ -23,30 +33,11 @@ export class ProjectSelectController {
       throw new _HttpError(loc._cf('projectSelect', 'The selected project is disabled.'), 403);
     }
 
-    const sessionDataService = conf.global.services.SessionData.singleton();
-    if (!sessionDataService) {
-      throw new _HttpError(loc._cf('projectSelect', 'You do not have permission to select this project.'), 400);
-    }
-
-    const sessionId = req.session.id;
-
-    if (!req.roles.includes('admin')) {
-      let companyId;
-      if (conf.filters?.getCurrentCompanyId) {
-        companyId = await conf.filters.getCurrentCompanyId(req);
-      }
-
-      if (companyId != project.companyId) {
+    if (conf.checkFunction) {
+      if (!conf.checkFunction(project, req)) {
         throw new _HttpError(loc._cf('projectSelect', 'You do not have permission to select this project.'), 400);
       }
     }
-
-    if (project.isTranslatable) {
-      project.title = await loc._(project.title);
-      project.description = await loc._(project.description);
-    }
-
-    delete project.isTranslatable;
 
     const menuItem = {
       name: 'project-select',
@@ -58,7 +49,7 @@ export class ProjectSelectController {
     };
     const data = {
       count: 1,
-      rows: project,
+      rows: [await this.projectService.sanitizeRow(project)],
       api: {
         data: {
           projectUuid: project.uuid,
@@ -67,56 +58,65 @@ export class ProjectSelectController {
       menu: [menuItem],
     };
 
-    const sessionData = await sessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
+    const sessionId = req.session.id;
+    if (this.sessionDataService) {
+      const sessionData = await this.sessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
 
-    sessionData.api ??= {};
-    sessionData.api.data ??= {};
-    sessionData.api.data.projectUuid = project.uuid;
+      sessionData.project = project;
+      sessionData.projectId = project.id;
+      sessionData.api ??= {};
+      sessionData.api.data ??= {};
+      sessionData.api.data.projectUuid = project.uuid;
 
-    sessionData.menu ??= [];
-    sessionData.menu = sessionData.menu.filter(item => item.name != 'project-select');
-    sessionData.menu.push(menuItem);
+      sessionData.menu ??= [];
+      sessionData.menu = sessionData.menu.filter(item => item.name != 'project-select');
+      sessionData.menu.push(menuItem);
 
-    await sessionDataService.setData(sessionId, sessionData);
+      await this.sessionDataService.setData(sessionId, sessionData);
+    }
 
-    await conf.global.eventBus?.$emit('projectSwitch', data, { sessionId });
-    await conf.global.eventBus?.$emit('sessionUpdated', sessionId);
+    if (this.eventBus) {
+      await this.eventBus.$emit('projectSwitch', data, { sessionId });
+      await this.eventBus.$emit('sessionUpdated', sessionId);
+    }
 
     req.log?.info(`Project switched to: ${project.title}.`, { sessionId, projectName: project.name });
 
-    res.status(200).send(data);
+    return data;
   }
 
-  static async get(req, res) {
-    if ('$object' in req.query) {
-      return ProjectSelectController.getObject(req, res);
+  getPermission = 'project-select.switch';
+  async getData(req) {
+    const definitions = {
+      uuid: 'uuid',
+      name: 'string',
+    };
+    if (conf.queryParams) {
+      Object.keys(conf.queryParams)
+        .forEach(k => definitions[k] = 'string');
     }
+    let options = {
+      view: true,
+      limit: 10,
+      offset: 0,
+      where: getFiltersFromRequest(req),
+    };
 
-    const definitions = { uuid: 'uuid', name: 'string' };
-    let options = { view: true, limit: 10, offset: 0 };
+    options = await getOptionsFromParamsAndOData(
+      req?.query,
+      definitions,
+      options,
+    );
 
-    options = await getOptionsFromParamsAndOData(req?.query, definitions, options);
+    const result = await this.projectService.getListAndCount(options);
 
-    const companyUuid = req.query?.companyUuid ?? req.params?.companyUuid ?? req.body?.companyUuid;
-    if (companyUuid) {
-      options.where ??= {};
-      options.where.companyUuid = companyUuid;
-    }
-        
-    if (conf.filters?.getCurrentCompanyId) {
-      options.where ??= {};
-      options.where.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
-    }
-
-    options.includeCompany = true;
-
-    const result = await projectService.getListAndCount(options);
-        
-    res.status(200).send(result);
+    return result;
   }
 
-  static async getObject(req, res) {
+  async getObject(req) {
     checkParameter(req.query, '$object');
+
+    const loc = req.loc ?? defaultLoc;
 
     const actions = [
       {
@@ -130,35 +130,40 @@ export class ProjectSelectController {
       },
     ];
 
-    let loc = req.loc;
+    const properties = [
+      {
+        name: 'title',
+        type: 'text',
+        label: await loc._('Title'),
+      },
+      {
+        name: 'name',
+        type: 'text',
+        label: await loc._('Name'),
+      },
+      {
+        name: 'description',
+        type: 'text',
+        label: await loc._('Description'),
+      },
+    ];
 
-    res.status(200).send({
+    let queryParams;
+    if (conf.queryParams) {
+      queryParams = conf.queryParams;
+    }
+
+    const object = {
       title: await loc._('Select project'),
       load: {
         service: 'project-select',
         method: 'get',
-        queryParams: {
-          companyUuid: 'companyUuid',
-        },
+        queryParams,
       },
-      actions: actions,
-      properties: [
-        {
-          name: 'title',
-          type: 'text',
-          label: await loc._('Title'),
-        },
-        {
-          name: 'name',
-          type: 'text',
-          label: await loc._('Name'),
-        },
-        {
-          name: 'description',
-          type: 'text',
-          label: await loc._('Description'),
-        },
-      ]
-    });
+      actions,
+      properties,
+    };
+
+    return object;
   }
 }

@@ -3,7 +3,8 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class Permission extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Module, { foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true });
+      this.belongsTo(models.Module,   { as: 'ownerModule', foreignKey: 'ownerModuleId' });
+      this.belongsToMany(models.Role, { as: 'roles',       through: 'RolePermission', foreignKey: 'permissionId', otherKey: 'roleId' });
     }
   }
   Permission.init({
@@ -41,6 +42,10 @@ export default (sequelize, DataTypes) => {
     },
     description: {
       type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    ownerModuleId: {
+      type: DataTypes.BIGINT,
       allowNull: true,
     },
   }, {

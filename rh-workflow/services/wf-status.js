@@ -1,20 +1,15 @@
-import { WfStatusIsInitialService } from './wf-status-is-initial.js';
-import { WfStatusIsFinalService } from './wf-status-is-final.js';
-import { conf } from '../conf.js';
-import { ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
+import dependency from 'rf-dependency';
 
-export class WfStatusService extends ServiceIdUuidNameTitleDescriptionEnabledModuleTranslatable {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.WfStatus;
+export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleDescriptionTranslatable {
   references = {
-    ownerModule: 'moduleService',
     workflowType: 'wfWorkflowTypeService',
   };
   defaultTranslationContext = 'workflow';
 
   init() {
-    this.wfStatusIsInitialService = WfStatusIsInitialService.singleton();
-    this.wfStatusIsFinalService =   WfStatusIsFinalService.singleton();
+    this.wfStatusIsInitialService = dependency.get('wfStatusIsInitialService');
+    this.wfStatusIsFinalService =   dependency.get('wfStatusIsFinalService');
 
     super.init();
   }
@@ -54,7 +49,7 @@ export class WfStatusService extends ServiceIdUuidNameTitleDescriptionEnabledMod
     const result = super.update(data, options);
 
     if (isInitial !== undefined || isFinal !== undefined) {
-      const rows = this.getList({ ...options, attributes: ['id'], raw: true });
+      const rows = this.getList({ ...options, attributes: ['id'] });
       const idList = rows.map(r => r.id);
 
       if (isInitial !== undefined) {
@@ -82,7 +77,7 @@ export class WfStatusService extends ServiceIdUuidNameTitleDescriptionEnabledMod
   }
 
   async delete(options) {
-    const rows = this.getList({ ...options, attributes: ['id'], raw: true });
+    const rows = this.getList({ ...options, attributes: ['id'] });
     const idList = rows.map(r => r.id);
 
     await this.wfStatusIsInitialService.deleteFor({ statusId: idList }, options);

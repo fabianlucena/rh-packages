@@ -7,7 +7,7 @@ export const credentials = {
 
 describe('Login for Access module testing', () => {
   before(function () {
-    if (!rt.hasModule('rhAccess'))
+    if (!rt.includesModule('rhAccess'))
       this.skip();
   });
 

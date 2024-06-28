@@ -1,16 +1,17 @@
-definitions:
-  Site:
-    properties:
-      name:
-        type: string
-      title:
-        type: integer
-  Error:
-    properties:
-      error:
-        name: string
-        example: Example error
-        
+components:
+  schemas:
+    Site:
+      properties:
+        name:
+          type: string
+        title:
+          type: integer
+    Error:
+      properties:
+        error:
+          name: string
+          example: Example error
+
 /current-site:
   get:
     tags:
@@ -23,14 +24,14 @@ definitions:
       '200':
         description: The current site
         schema:
-          $ref: '#/definitions/Site'
+          $ref: '#/components/schemas/Site'
       '204':
         description: No current site selected
       '403':
         description: No session
         schema:
-          $ref: '#/definitions/Error'
-              
+          $ref: '#/components/schemas/Error'
+
 /switch-site:
   post:
     tags:
@@ -43,11 +44,11 @@ definitions:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/Site'
+          $ref: '#/components/schemas/Site'
       '403':
         description: No session
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'
 
 /site:
   get:
@@ -61,8 +62,8 @@ definitions:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/Site'
+          $ref: '#/components/schemas/Site'
       '403':
         description: No session
         schema:
-          $ref: '#/definitions/Error'
+          $ref: '#/components/schemas/Error'

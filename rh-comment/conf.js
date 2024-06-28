@@ -13,4 +13,5 @@ export const conf = {
   routesPath: dirname + '/routes',
   modelsPath: dirname + '/models',
   servicesPath: dirname + '/services',
+  controllersPath: dirname + '/controllers',
 };

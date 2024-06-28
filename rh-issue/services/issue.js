@@ -1,22 +1,18 @@
 import { conf } from '../conf.js';
-import { ServiceIdUuidNameTitleDescriptionEnabledTranslatable } from 'rf-service';
-import { completeIncludeOptions } from 'sql-util';
+import { Service, Op } from 'rf-service';
 import { CheckError } from 'rf-util';
 import { loc } from 'rf-locale';
 import { _ConflictError } from 'http-util';
 
-export class IssueService extends ServiceIdUuidNameTitleDescriptionEnabledTranslatable {
-  Sequelize = conf.global.Sequelize;
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.Issue;
+export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescriptionTranslatable {
   references = {
-    project: conf.global.services.Project.singleton(),
-    type: conf.global.services.IssueType.singleton(),
-    priority: conf.global.services.IssuePriority.singleton(),
-    assignee: conf.global.services.User.singleton(),
-    closeReason: conf.global.services.IssueCloseReason.singleton(),
+    project: true,
+    type: 'issueTypeService',
+    priority: 'issuePriorityService',
+    assignee: 'userService',
+    closeReason: 'issueCloseReasonService',
   };
-  defaultTranslationContext = 'issue';
+  viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'isTranslatable', 'description'];
   eventBus = conf.global.eventBus;
 
   async validateForCreation(data) {
@@ -38,7 +34,7 @@ export class IssueService extends ServiceIdUuidNameTitleDescriptionEnabledTransl
     const whereOptions = { title };
     const projectId = where?.projectId ?? data?.projectId;
     if (projectId) {whereOptions.projectId = projectId;}
-    if (where?.uuid) {whereOptions.uuid = { [conf.global.Sequelize.Op.ne]: where.uuid };}
+    if (where?.uuid) {whereOptions.uuid = { [Op.ne]: where.uuid };}
     const rows = await this.getFor(whereOptions, { limit: 1 });
     if (rows?.length) {
       throw new _ConflictError(loc._cf('issue', 'Exists another issue with that title in this project.'));
@@ -46,166 +42,121 @@ export class IssueService extends ServiceIdUuidNameTitleDescriptionEnabledTransl
   }
 
   async getListOptions(options) {
-    options ??= {};
+    options = { ...options };
 
-    if (options.view) {
-      if (!options.attributes) {
-        options.attributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'isTranslatable', 'description'];
-      }
-    }
-
-    if (options.includeProject || options.where?.projectUuid !== undefined) {
-      let where;
-
+    if (options.include?.Project || options.where?.projectUuid !== undefined) {
+      options.include ??= {};
+      options.include.Project ??= {
+        attributes: ['uuid', 'name', 'title', 'isTranslatable'],
+        ...options.include.Project.attributes,
+      };
+      
       if (options.isEnabled !== undefined) {
-        where = { isEnabled: options.isEnabled };
+        options.include.Project.where = {
+          isEnabled: options.isEnabled,
+          ...options.include.Project.where,
+        };
       }
 
       if (options.where?.projectUuid !== undefined) {
-        where ??= {};
-        where.uuid = options.where.projectUuid;
+        options.include.Project.where = {
+          uuid: options.where.projectUuid,
+          ...options.include.Project?.where,
+        };
         delete options.where.projectUuid;
       }
-
-      const attributes = options.includeProject?
-        ['uuid', 'name', 'title', 'isTranslatable']:
-        [];
-
-      completeIncludeOptions(
-        options,
-        'Project',
-        {
-          model: conf.global.models.Project,
-          attributes,
-          where,
-        }
-      );
-
-      delete options.includeProject;
     }
 
-    if (options.includeType || options.where?.typeUuid !== undefined) {
-      let where;
+    if (options.include?.Type || options.where?.typeUuid !== undefined) {
+      options.include ??= {};
+      options.include.Type ??= {
+        attributes: ['uuid', 'name', 'title', 'isTranslatable'],
+        ...options.include.Type?.attributes,
+      };
 
       if (options.isEnabled !== undefined) {
-        where = { isEnabled: options.isEnabled };
+        options.include.Type.where = {
+          isEnabled: options.isEnabled,
+          ...options.include.Type.where,
+        };
       }
 
       if (options.where?.typeUuid !== undefined) {
-        where ??= {};
-        where.uuid = options.where.typeUuid;
+        options.include.Type.where = {
+          uuid: options.where.typeUuid,
+          ...options.include.Type?.where,
+        };
         delete options.where.typeUuid;
       }
-
-      const attributes = options.includeType?
-        ['uuid', 'name', 'title', 'isTranslatable']:
-        [];
-
-      completeIncludeOptions(
-        options,
-        'Type',
-        {
-          as: 'Type',
-          model: conf.global.models.IssueType,
-          attributes,
-          where,
-        }
-      );
-
-      delete options.includeType;
     }
 
-    if (options.includePriority || options.where?.priorityUuid !== undefined) {
-      let where;
+    if (options.include?.Priority || options.where?.priorityUuid !== undefined) {
+      options.include ??= {};
+      options.include.Priority ??= {
+        attributes: ['uuid', 'name', 'title', 'isTranslatable'],
+        ...options.include.Priority?.attributes,
+      };
 
       if (options.isEnabled !== undefined) {
-        where = { isEnabled: options.isEnabled };
+        options.include.Priority.where = {
+          isEnabled: options.isEnabled,
+          ...options.include.Priority.where,
+        };
       }
 
       if (options.where?.priorityUuid !== undefined) {
-        where ??= {};
-        where.uuid = options.where.priorityUuid;
+        options.include.Priority.where = {
+          uuid: options.where.priorityUuid,
+          ...options.include.Priority?.where,
+        };
         delete options.where.priorityUuid;
       }
-
-      const attributes = options.includePriority?
-        ['uuid', 'name', 'title', 'isTranslatable']:
-        [];
-
-      completeIncludeOptions(
-        options,
-        'Priority',
-        {
-          as: 'Priority',
-          model: conf.global.models.IssuePriority,
-          attributes,
-          where,
-        }
-      );
-
-      delete options.includePriority;
     }
 
-    if (options.includeAssignee || options.where?.assigneeUuid !== undefined) {
-      let where;
+    if (options.include?.Assignee || options.where?.assigneeUuid !== undefined) {
+      options.include ??= {};
+      options.include.Assignee ??= {
+        attributes: ['uuid', 'name', 'title', 'isTranslatable'],
+        ...options.include.Assignee?.attributes,
+      };
 
       if (options.isEnabled !== undefined) {
-        where = { isEnabled: options.isEnabled };
+        options.include.Assignee.where = {
+          isEnabled: options.isEnabled,
+          ...options.include.Assignee.where,
+        };
       }
 
       if (options.where?.assigneeUuid !== undefined) {
-        where ??= {};
-        where.uuid = options.where.assigneeUuid;
+        options.include.Assignee.where = {
+          uuid: options.where.assigneeUuid,
+          ...options.include.Assignee?.where,
+        };
         delete options.where.assigneeUuid;
       }
-
-      const attributes = options.includeAssignee?
-        ['uuid', 'name', 'title', 'isTranslatable']:
-        [];
-
-      completeIncludeOptions(
-        options,
-        'Assignee',
-        {
-          as: 'Assignee',
-          model: conf.global.models.User,
-          attributes,
-          where,
-        }
-      );
-
-      delete options.includeAssignee;
     }
 
-    if (options.includeCloseReason || options.where?.closeReasonUuid !== undefined) {
-      let where;
+    if (options.include?.CloseReason || options.where?.closeReasonUuid !== undefined) {
+      options.include ??= {};
+      options.include.closeReasonUuid ??= {
+        attributes: ['uuid', 'name', 'title', 'isTranslatable'],
+        ...options.include.closeReasonUuid?.attributes,
+      };
 
       if (options.isEnabled !== undefined) {
-        where = { isEnabled: options.isEnabled };
+        options.include.closeReasonUuid.where = {
+          isEnabled: options.isEnabled,
+          ...options.include.closeReasonUuid.where,
+        };
       }
 
       if (options.where?.closeReasonUuid !== undefined) {
-        where ??= {};
-        where.uuid = options.where.closeReasonUuid;
+        options.include.closeReasonUuid.where = {
+          uuid: options.where.closeReasonUuid,
+          ...options.include.closeReasonUuid?.where,
+        };
         delete options.where.closeReasonUuid;
       }
-
-      const attributes = options.includeCloseReason?
-        ['uuid', 'name', 'title', 'isTranslatable']:
-        [];
-
-      completeIncludeOptions(
-        options,
-        'CloseReason',
-        {
-          as: 'CloseReason',
-          model: conf.global.models.IssueCloseReason,
-          attributes,
-          where,
-        }
-      );
-
-      delete options.includeCloseReason;
     }
 
     return super.getListOptions(options);

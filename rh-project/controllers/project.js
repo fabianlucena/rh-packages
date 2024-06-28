@@ -1,13 +1,19 @@
-import { ProjectService } from '../services/project.js';
 import { conf } from '../conf.js';
 import { getOptionsFromParamsAndOData, _HttpError, getUuidFromRequest } from 'http-util';
 import { checkParameter, filterVisualItemsByAliasName } from 'rf-util';
 import { loc, defaultLoc } from 'rf-locale';
+import { Controller } from 'rh-controller';
+import { dependency } from 'rf-dependency';
 
-const projectService = ProjectService.singleton();
+export class ProjectController extends Controller {
+  constructor() {
+    super();
 
-export class ProjectController {
-  static async checkDataForCompanyId(req, data) {
+    this.service = dependency.get('projectService');
+    this.companyService = dependency.get('companyService', null);
+  }
+
+  async checkDataForCompanyId(req, data) {
     if (!conf.filters?.getCurrentCompanyId) {
       return;
     }
@@ -15,9 +21,9 @@ export class ProjectController {
     data ??= {};
     if (!data.companyId) {
       if (data.companyUuid) {
-        data.companyId = await conf.global.services.Company.singleton().getIdForUuid(data.companyUuid);
+        data.companyId = await this.companyService.getIdForUuid(data.companyUuid);
       } else if (data.companyName) {
-        data.companyId = await conf.global.services.Company.singleton().getIdForName(data.companyName);
+        data.companyId = await this.companyService.getIdForName(data.companyName);
       } else {
         data.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
         return data.companyId;
@@ -36,25 +42,26 @@ export class ProjectController {
     return data.companyId;
   }
 
-  static async checkUuid(req) {
+  async checkUuid(req) {
     const loc = req.loc ?? defaultLoc;
     const uuid = await getUuidFromRequest(req);
-    const project = await projectService.getForUuid(uuid, { skipNoRowsError: true, loc });
+    const project = await this.service.getForUuid(uuid, { skipNoRowsError: true, loc });
     if (!project) {
       throw new _HttpError(loc._cf('project', 'The project with UUID %s does not exists.'), 404, uuid);
     }
 
-    const companyId = await ProjectController.checkDataForCompanyId(req, { companyId: project.companyId });
+    const companyId = await this.checkDataForCompanyId(req, { companyId: project.companyId });
 
     return { uuid, companyId };
   }
 
-  static async post(req, res) {
+  postPermission = 'project.create';
+  async post(req, res) {
     const loc = req.loc ?? defaultLoc;
     checkParameter(req?.body, { name: loc._cf('project', 'Name'), title: loc._cf('project', 'Title') });
         
     const data = { ...req.body };
-    await ProjectController.checkDataForCompanyId(req, data);
+    await this.checkDataForCompanyId(req, data);
     if (!data.owner && !data.ownerId) {
       data.ownerId = req.user.id;
       if (!data.ownerId) {
@@ -62,29 +69,27 @@ export class ProjectController {
       }
     }
 
-    await projectService.create(data);
+    await this.service.create(data);
 
     res.status(204).send();
   }
 
-  static async get(req, res) {
-    if ('$grid' in req.query) {
-      return ProjectController.getGrid(req, res);
-    } else if ('$form' in req.query) {
-      return ProjectController.getForm(req, res);
-    }
-
+  getPermission = 'project.get';
+  async getData(req, res) {
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = {
       view: true,
       limit: 10,
       offset: 0,
       loc: req.loc,
-      includeOwner: true,
+      include: { owner: true },
     };
 
     if (conf.global.models.Company) {
-      options.includeCompany = true;
+      options.include = {
+        company: true,
+        ...options.include,
+      };
     }
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
@@ -95,11 +100,11 @@ export class ProjectController {
 
     await conf.global.eventBus?.$emit('Project.response.getting', options);
 
-    const result = await projectService.getListAndCount(options);
+    const result = await this.service.getListAndCount(options);
 
     if (conf.global.models.Company) {
       result.rows = result.rows.map(row => {
-        row.companyUuid = row.Company.uuid;
+        row.companyUuid = row.company.uuid;
 
         return row;
       });
@@ -110,7 +115,7 @@ export class ProjectController {
     res.status(200).send(result);
   }
 
-  static async getGrid(req, res) {
+  async getGrid(req, res) {
     checkParameter(req.query, '$grid');
 
     const actions = [];
@@ -136,7 +141,7 @@ export class ProjectController {
     if (conf.global.models.Company) {
       columns.push({
         alias: 'company',
-        name: 'Company.title',
+        name: 'company.title',
         type: 'text',
         label: await loc._cf('project', 'Company'),
       });
@@ -145,7 +150,7 @@ export class ProjectController {
     columns.push(
       {
         alias: 'owner',
-        name: 'Collaborators[0].User.displayName',
+        name: 'owner.user.displayName',
         type: 'text',
         label: await loc._cf('project', 'Owner'),
       },
@@ -158,7 +163,7 @@ export class ProjectController {
     );
 
     const grid = {
-      title: await loc._('Projects'),
+      title: await loc._c('projects', 'Projects'),
       load: {
         service: 'project',
         method: 'get',
@@ -173,7 +178,7 @@ export class ProjectController {
     res.status(200).send(grid);
   }
 
-  static async getForm(req, res) {
+  async getForm(req, res) {
     checkParameter(req.query, '$form');
 
     const loc = req.loc ?? defaultLoc;
@@ -245,7 +250,7 @@ export class ProjectController {
     });
 
     const form = {
-      title: await loc._('Projects'),
+      title: await loc._c('project', 'Projects'),
       action: 'project',
       fields: await filterVisualItemsByAliasName(fields, conf?.project, { loc, entity: 'Project', interface: 'form' }),
     };
@@ -256,40 +261,12 @@ export class ProjectController {
     res.status(200).send(form);
   }
 
-  static async delete(req, res) {
-    const { uuid } = await this.checkUuid(req);
+  deleteForUuidPermission = 'project.delete';
+  enableForUuidPermission = 'project.edit';
+  disableForUuidPermission = 'project.edit';
 
-    const rowsDeleted = await projectService.deleteForUuid(uuid);
-    if (!rowsDeleted) {
-      throw new _HttpError(loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
-    }
-
-    res.sendStatus(204);
-  }
-
-  static async enablePost(req, res) {
-    const { uuid } = await this.checkUuid(req);
-
-    const rowsUpdated = await projectService.enableForUuid(uuid);
-    if (!rowsUpdated) {
-      throw new _HttpError(loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
-    }
-
-    res.sendStatus(204);
-  }
-
-  static async disablePost(req, res) {
-    const { uuid } = await this.checkUuid(req);
-
-    const rowsUpdated = await projectService.disableForUuid(uuid);
-    if (!rowsUpdated) {
-      throw new _HttpError(loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
-    }
-
-    res.sendStatus(204);
-  }
-
-  static async patch(req, res) {
+  'patchPermission /:uuid' = 'project.edit';
+  async 'patch /:uuid'(req, res) {
     const { uuid, companyId } = await this.checkUuid(req);
 
     const data = { ...req.body, uuid: undefined };
@@ -299,7 +276,7 @@ export class ProjectController {
       where.companyId = companyId;
     }
 
-    const rowsUpdated = await projectService.updateFor(data, where);
+    const rowsUpdated = await this.service.updateFor(data, where);
     if (!rowsUpdated) {
       throw new _HttpError(loc._cf('project', 'Project with UUID %s does not exists.'), 403, uuid);
     }
@@ -307,9 +284,15 @@ export class ProjectController {
     res.sendStatus(204);
   }
 
-  static async getCompany(req, res) {
+  'getPermission /company' = 'project.edit';
+  async 'get /company'(req, res) {
     const definitions = { uuid: 'uuid', name: 'string' };
-    let options = { view: true, limit: 10, offset: 0 };
+    let options = {
+      loc: req.loc,
+      view: true,
+      limit: 10,
+      offset: 0,
+    };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
     if (conf.filters?.getCurrentCompanyId) {
@@ -317,18 +300,7 @@ export class ProjectController {
       options.where.id = await conf.filters.getCurrentCompanyId(req) ?? null;
     }
 
-    const result = await conf.global.services.Company.singleton().getListAndCount(options);
-
-    const loc = req.loc ?? defaultLoc;
-    result.rows = result.rows.map(row => {
-      if (row.isTranslatable) {
-        row.title = loc._(row.title);
-        row.description = loc._(row.description);
-        delete row.isTranslatable;
-      }
-
-      return row;
-    });
+    const result = await this.companyService.getListAndCount(options);
 
     res.status(200).send(result);
   }

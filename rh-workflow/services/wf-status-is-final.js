@@ -1,12 +1,8 @@
-import { WfStatusService } from './wf-status.js';
-import { conf } from '../conf.js';
-import { ServiceBase } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class WfStatusIsFinalService extends ServiceBase {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.WfStatusIsFinal;
+export class WfStatusIsFinalService extends Service.Base {
   references = {
-    status: WfStatusService.singleton(),
+    status: 'wfStatusService',
   };
   defaultTranslationContext = 'workflow';
 }

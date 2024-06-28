@@ -68,7 +68,14 @@ export class CompanyController {
     }
             
     const definitions = { uuid: 'uuid', name: 'string' };
-    let options = { view: true, limit: 10, offset: 0, includeOwner: true };
+    let options = {
+      view: true,
+      limit: 10,
+      offset: 0,
+      include: {
+        Owner: true,
+      },
+    };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
     if (!req.roles.includes('admin') && conf.filters?.getCurrentCompanyId) {
@@ -79,8 +86,8 @@ export class CompanyController {
     const result = await companyService.getListAndCount(options);
 
     result.rows = result.rows.map(row => {
-      if (row.Collaborators) {
-        row.ownerDisplayName = row.Collaborators[0]?.User?.displayName;
+      if (row.share) {
+        row.ownerDisplayName = row.share[0]?.User?.displayName;
       }
                 
       return row;

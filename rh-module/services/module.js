@@ -1,8 +1,8 @@
-import { conf } from '../conf.js';
-import { ServiceIdUuidNameTitleEnabledTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class ModuleService extends ServiceIdUuidNameTitleEnabledTranslatable {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.Module;
-  defaultTranslationContext = 'module';
+export class ModuleService extends Service.IdUuidEnableNameUniqueTitleTranslatable {
+  async validateForCreation(data) {
+    data.title ??= data.name;
+    return super.validateForCreation(data);
+  }
 }

@@ -3,11 +3,11 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class Branch extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Company, { foreignKey: 'companyId' });
+      this.belongsTo(models.Company, { as: 'company', foreignKey: 'companyId' });
     }
 
     static postAssociate(models) {
-      this.hasMany(models.Share, { as: 'Collaborators', foreignKey: 'objectId' });
+      this.hasMany(models.Share, { as: 'share', foreignKey: 'objectId' });
     }
   }
   Branch.init({

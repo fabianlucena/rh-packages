@@ -1,39 +1,23 @@
 import { conf } from '../conf.js';
-import { ServiceBase } from 'rf-service';
-import { checkDataForMissingProperties, completeIncludeOptions, getSingle } from 'sql-util';
+import { Service } from 'rf-service';
+import { checkDataForMissingProperties } from 'sql-util';
 
-export class CompanySiteService extends ServiceBase {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.CompanySite;
+export class CompanySiteService extends ServiceOwnerModule {
   references = {
-    company: {
-      service: conf.global.services.Company.singleton(),
-      otherName: 'name',
-    },
-    site: {
-      service: conf.global.services.Site.singleton(),
-      otherName: 'name',
-    },
-    ownerModule: conf.global.services.Module,
+    company: { otherName: 'name' },
+    site: { otherName: 'name' },
   };
-  defaultTranslationContext = 'companySite';
-
-  constructor() {
-    super();
-
-    this.companyService = conf.global.services.Company.singleton();
-  }
 
   /**
-     * Creates a new user CompanySite row into DB.
-     * @param {{
-     *  company: string,
-     *  companyId: int,
-     *  site: string,
-     *  siteId: int,
-     * }} data - data for the new CompanySite.
-     * @returns {Promise[CompanySite]}
-     */
+   * Creates a new user CompanySite row into DB.
+   * @param {{
+   *  company: string,
+   *  companyId: int,
+   *  site: string,
+   *  siteId: int,
+   * }} data - data for the new CompanySite.
+   * @returns {Promise[CompanySite]}
+   */
   async create(data) {
     await this.completeReferences(data);
 
@@ -74,107 +58,10 @@ export class CompanySiteService extends ServiceBase {
   }
 
   /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {Promise[options]}
-     */
-  async getListOptions(options) {
-    options ??= {};
-
-    if (options.view) {
-      if (!options.attributes) {
-        options.attributes = [];
-      }
-    }
-
-    if (options.includeCompany || 
-            options.where?.companyName || 
-            options.where?.companyUuid
-    ) {
-      let where;
-      if (options.isEnabled !== undefined) {
-        where = { isEnabled: options.isEnabled };
-      }
-
-      if (options.where) {
-        if (options.where.companyName) {
-          where ??= {};
-          where.name = options.where.companyName;
-          delete options.where.companyName;
-        }
-
-        if (options.where.companyUuid) {
-          where ??= {};
-          where.uuid = options.where.companyUuid;
-          delete options.where.companyUuid;
-        }
-      }
-
-      let attributes;
-      if (options.includeCompany) {
-        attributes = ['uuid', 'name', 'title', 'description', 'isTranslatable', 'isEnabled'];
-        delete options.includeCompany;
-      } else {
-        attributes = [];
-      }
-
-      completeIncludeOptions(
-        options,
-        'Company',
-        {
-          model: conf.global.models.Company,
-          attributes,
-          where,
-        }
-      );
-    }
-
-    if (options.includeSite || options.where?.siteName || options.where?.siteUuid) {
-      let where;
-      if (options.isEnabled !== undefined) {
-        where = { isEnabled: options.isEnabled };
-      }
-
-      if (options.where.siteName) {
-        where ??= {};
-        where.name = options.where.siteName;
-        delete options.where.siteName;
-      }
-
-      if (options.where.siteUuid) {
-        where ??= {};
-        where.uuid = options.where.siteUuid;
-        delete options.where.siteUuid;
-      }
-
-      let attributes;
-      if (options.includeSite) {
-        attributes = ['uuid', 'name', 'title', 'isTranslatable', 'isEnabled'];
-        delete options.includeSite;
-      } else {
-        attributes = [];
-      }
-
-      completeIncludeOptions(
-        options,
-        'Site',
-        {
-          model: conf.global.models.Site,
-          attributes,
-          where,
-        }
-      );
-    }
-
-    return options;
-  }
-
-  /**
-     * Creates a new user CompanySite row into DB if not exists.
-     * @param {data} data - data for the new CompanySite @see create.
-     * @returns {Promise[CompanySite]}
-     */
+   * Creates a new user CompanySite row into DB if not exists.
+   * @param {data} data - data for the new CompanySite @see create.
+   * @returns {Promise[CompanySite]}
+   */
   async createIfNotExists(data, options) {
     await this.completeReferences(data);
         
@@ -206,8 +93,7 @@ export class CompanySiteService extends ServiceBase {
   }
 
   async getForSiteId(siteId, options) {
-    const rows = await this.getList({ ...options, where: { ...options?.where, siteId }, limit: 2 });
-    return getSingle(rows, { params: ['company site', ['site ID = %s', siteId], 'CompanySite'], ...options });
+    return this.getSingleFor({ siteId }, options);
   }
 
   async getCompanyIdForSiteId(siteId, options) {

@@ -93,7 +93,11 @@ export class BranchSelectController {
     }
 
     const definitions = { uuid: 'uuid', name: 'string' };
-    let options = { view: true, limit: 10, offset: 0 };
+    let options = {
+      view: true,
+      limit: 10,
+      offset: 0,
+    };
 
     options = await getOptionsFromParamsAndOData(req?.query, definitions, options);
 
@@ -108,7 +112,10 @@ export class BranchSelectController {
       options.where.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
     }
 
-    options.includeCompany = true;
+    options.include = {
+      company: true,
+      ...options.include,
+    };
 
     const result = await branchService.getListAndCount(options);
         

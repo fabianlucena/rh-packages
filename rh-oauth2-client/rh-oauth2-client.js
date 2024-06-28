@@ -1,8 +1,10 @@
+import dependency from 'rf-dependency';
 import { conf as localConf } from './conf.js';
 
 export const conf = localConf;
 
 conf.configure = configure;
+conf.init = init;
 conf.fieldsCache = {};
 conf.oauth2ClientsCache = {};
 
@@ -17,31 +19,54 @@ async function configure(global, options) {
   global.eventBus?.$on('OAuth2Client.deleted', clearCache);
 }
 
+async function init() {
+  conf.oAuth2ClientService = dependency.get('oAuth2ClientService');
+  conf.oAuth2StateService =  dependency.get('oAuth2StateService');
+}
+
 async function loginInterfaceFormGet(form, options) {
-  const oauth2Clients = await getOauth2Clients();
+  const items = await getFieldsFromCache(options?.loc?.language);
+  for (const item of items) {
+    const clientState = await conf.oAuth2StateService.create({ oAuth2ClientId: item.client.id });
+    form.fields.push({ ...item.field, href: item.field.href + clientState.state });
+  }
+}
+
+async function getFieldsFromCache(language) {
+  if (conf.fieldsCache[language]) {
+    return conf.fieldsCache[language];
+  }
+    
+  conf.fieldsCache[language] = [];
+
+  const oauth2Clients = await getOAuth2Clients();
   if (!oauth2Clients?.length) {
-    return;
+    return conf.fieldsCache[language];
   }
 
-  const language = options?.loc?.language;
-  if (conf.fieldsCache[language] === undefined) {
-    conf.fieldsCache[language] = [];
-
-    for (const oauth2Client of oauth2Clients) {
-      if (!oauth2Client.isEnabled) {
-        continue;
-      }
-
-      const field = {
-        name: oauth2Client.name,
-        label: oauth2Client.title,
-        type: 'button',
-      };
-      conf.fieldsCache[language].push(field);
+  for (const oauth2Client of oauth2Clients) {
+    if (!oauth2Client.isEnabled) {
+      continue;
     }
+
+    const urlReplacements = {
+      '{sessionIndex}': '{sessionIndex}',
+      '{deviceToken}':  '{deviceToken}',
+    };
+    let state = Object.keys(urlReplacements).join(',') + ',';
+
+    const field = {
+      name: oauth2Client.name,
+      type: 'link',
+      innerHTML: oauth2Client.title,
+      innerIcon: oauth2Client.icon,
+      href: oauth2Client.requestURL.replace(/\s/g, '') + '&state=' + state,
+      urlReplacements,
+    };
+    conf.fieldsCache[language].push({ client: oauth2Client, field, state });
   }
 
-  form.fields.push(...conf.fieldsCache[language]);
+  return conf.fieldsCache[language];
 }
 
 async function clearCache() {
@@ -49,12 +74,10 @@ async function clearCache() {
   conf.oauth2ClientsCache = {};
 }
 
-async function getOauth2Clients(options) {
+async function getOAuth2Clients(options) {
   const language = options?.loc?.language;
   if (conf.oauth2ClientsCache[language] === undefined) {
-    conf.oauth2ClientsCache[language] = {};
-        
-    conf.oauth2ClientsCache[language] = await conf.oauth2ClientsService.getList({ loc: options?.loc });
+    conf.oauth2ClientsCache[language] = await conf.oAuth2ClientService.getList({ loc: options?.loc });
   }
 
   return conf.oauth2ClientsCache[language];

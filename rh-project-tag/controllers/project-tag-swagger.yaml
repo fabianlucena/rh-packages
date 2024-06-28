@@ -1,0 +1,30 @@
+components:
+  schemas:
+    projectTag:
+      properties:
+        name:
+          type: string
+
+    Error:
+      properties:
+        error:
+          name: string
+          example: Example error
+
+/project-tag:
+  get:
+    tags:
+      - projectTag
+    summary: projectTag
+    description: Get the tags for the gfiven criteria
+    produces:
+      - application/json
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/components/schemas/projectTag'
+      '403':
+        description: No session
+        schema:
+          $ref: '#/components/schemas/Error'

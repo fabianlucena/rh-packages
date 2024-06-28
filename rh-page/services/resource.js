@@ -1,26 +1,21 @@
 import { ResourceTypeService } from './resource_type.js';
-import { conf } from '../conf.js';
-import { ServiceIdUuidNameEnabledTranslatable } from 'rf-service';
-import { completeIncludeOptions, checkViewOptions } from 'sql-util';
+import { Service } from 'rf-service';
 import { checkNotNullNotEmptyAndNotUndefined } from 'rf-util';
 import { loc } from 'rf-locale';
 
-export class ResourceService extends ServiceIdUuidNameEnabledTranslatable {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.Resource;
-  shareObject = 'Resource';
-  shareService = conf.global.services.Share.singleton();
+export class ResourceService extends Service.IdUuidEnableNameTranslatable {
   references = {
     type: {
-      service: conf.global.services.ResourceType,
+      service: 'resourceTypeService',
       otherName: 'resourceType',
     },
-    language: conf.global.services.Language,
+    language: true,
   };
-  defaultTranslationContext = 'resource';
+  viewAttributes = ['uuid', 'name', 'title', 'content'];
+  
+  init() {
+    super.init();
 
-  constructor() {
-    super();
     this.resourceTypeService = ResourceTypeService.singleton();
   }
 
@@ -31,33 +26,5 @@ export class ResourceService extends ServiceIdUuidNameEnabledTranslatable {
     }
 
     return super.validateForCreation(data);
-  }
-
-  /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - view: show visible peoperties.
-     * @returns {options}
-     */
-  async getListOptions(options) {
-    if (options.view) {
-      if (!options.attributes) {
-        options.attributes = ['uuid', 'name', 'title', 'content'];
-      }
-
-      completeIncludeOptions(
-        options,
-        'Type',
-        {
-          model: conf.global.models.ResourceType,
-          as: 'Type',
-          attributes: ['name'],
-        }
-      );
-
-      checkViewOptions(options);
-    }
-
-    return super.getListOptions(options);
   }
 }

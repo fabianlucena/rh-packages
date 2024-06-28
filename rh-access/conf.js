@@ -12,8 +12,9 @@ export const conf = {
   schema: 'acc',
   init: [],
   configure: null,
-  routesPath: dirname + '/routes',
-  modelsPath: dirname + '/models',
-  servicesPath: dirname + '/services',
-  controllersPath: dirname + '/controllers',
+  routesPath: `${dirname}/routes`,
+  modelsPath: `${dirname}/models`,
+  servicesPath: `${dirname}/services`,
+  controllersPath: `${dirname}/controllers`,
+  iconsPath: `${dirname}/icons`,
 };

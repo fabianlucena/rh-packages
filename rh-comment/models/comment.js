@@ -7,9 +7,9 @@ export default (sequelize, DataTypes) => {
         throw new Error('There is no ModelEntityName model. Try adding RH Model Entity Name module to the project.');
       }
 
-      this.belongsTo(models.ModelEntityName, { foreignKey: 'modelEntityNameId' });
-      this.belongsTo(models.CommentType,     { foreignKey: 'commentTypeId' });
-      this.belongsTo(models.User,            { foreignKey: 'userId' });
+      this.belongsTo(models.ModelEntityName, { as: 'modelEntityName', foreignKey: 'modelEntityNameId' });
+      this.belongsTo(models.CommentType,     { as: 'type',            foreignKey: 'commentTypeId' });
+      this.belongsTo(models.User,            { as: 'user',            foreignKey: 'userId' });
     }
   }
   Comment.init({

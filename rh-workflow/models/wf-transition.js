@@ -3,10 +3,10 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class WfTransition extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Module,         { foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true });
-      this.belongsTo(models.WfWorkflowType, { foreignKey: 'workflowTypeId' });
-      this.belongsTo(models.WfStatus,       { as: 'From', foreignKey: 'fromId' });
-      this.belongsTo(models.WfStatus,       { as: 'To',   foreignKey: 'toId' });
+      this.belongsTo(models.Module,         { as: 'ownerModule',  foreignKey: 'ownerModuleId' });
+      this.belongsTo(models.WfWorkflowType, { as: 'workflowType', foreignKey: 'workflowTypeId' });
+      this.belongsTo(models.WfStatus,       { as: 'from',         foreignKey: 'fromId' });
+      this.belongsTo(models.WfStatus,       { as: 'to',           foreignKey: 'toId' });
     }
   }
   WfTransition.init({
@@ -54,6 +54,10 @@ export default (sequelize, DataTypes) => {
     },
     description: {
       type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    ownerModuleId: {
+      type: DataTypes.BIGINT,
       allowNull: true,
     },
   }, {

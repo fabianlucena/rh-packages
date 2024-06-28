@@ -1,15 +1,17 @@
-definitions:
-  Resource:
-    properties:
-      name:
-        type: string
-      label:
-        type: integer
-  Error:
-    properties:
-      error:
-        name: string
-        example: Example error
+components:
+  schemas:
+    Resource:
+      properties:
+        name:
+          type: string
+        label:
+          type: integer
+
+    Error:
+      properties:
+        error:
+          name: string
+          example: Example error
 
 /resource:
   get:
@@ -23,8 +25,8 @@ definitions:
         '200':
           description: Success
           schema:
-            $ref: '#/definitions/Resource'
+            $ref: '#/components/schemas/Resource'
         '403':
           description: No session
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/components/schemas/Error'

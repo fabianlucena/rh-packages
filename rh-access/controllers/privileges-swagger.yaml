@@ -1,19 +1,19 @@
-definitions:
-  Privileges:
-    properties:
-      userId:
-        type: string
-      typeId:
-        type: integer
-      data:
-        type: JSON
-  Error:
-    properties:
-      error:
-        type: string
-        example: Example error
-
-
+components:
+  schemas:
+    Privileges:
+      properties:
+        userId:
+          type: string
+        typeId:
+          type: integer
+        data:
+          type: JSON
+    Error:
+      properties:
+        error:
+          type: string
+          example: Example error
+ 
 /privileges:
   get:
     tags:
@@ -21,13 +21,14 @@ definitions:
     summary: Login
     description: Get privileges for the logged user
     produces:
-      - application/json
+      -  application/json
     responses:
       '200':
         description: Success
         schema:
-          $ref: '#/definitions/Privileges'
+          $ref: '#/components/schemas/Privileges'
       '403':
-        description: No session
-        schema:
-          $ref: '#/definitions/Error'
+          description: No session
+          schema:
+            $ref: '#/components/schemas/Error'
+

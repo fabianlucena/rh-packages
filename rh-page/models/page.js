@@ -3,13 +3,13 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class Page extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Module,     { foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true });
-      this.belongsTo(models.PageFormat, { foreignKey: 'formatId',      as: 'Format',      allowNull: false });
-      this.belongsTo(models.Language,   { foreignKey: 'languageId',                       allowNull: true });
+      this.belongsTo(models.Module,     { as: 'ownerModule', foreignKey: 'ownerModuleId' });
+      this.belongsTo(models.PageFormat, { as: 'format',      foreignKey: 'formatId' });
+      this.belongsTo(models.Language,   { as: 'language',    foreignKey: 'languageId' });
     }
 
     static postAssociate(models) {
-      this.hasMany(models.Share, { as: 'Collaborators', foreignKey: 'objectId' });
+      this.hasMany(models.Share, { as: 'share', foreignKey: 'objectId' });
     }
   }
   Page.init({
@@ -51,6 +51,10 @@ export default (sequelize, DataTypes) => {
     content: {
       type: DataTypes.TEXT,
       allowNull: false,
+    },
+    ownerModuleId: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
     },
   }, {
     sequelize,

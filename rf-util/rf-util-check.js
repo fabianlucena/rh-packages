@@ -1,4 +1,4 @@
-import { MissingParameterError, CheckError, } from './rf-util-error.js';
+import { MissingParameterError, CheckError } from './rf-util-error.js';
 import { loc } from 'rf-locale';
 import * as uuid from 'uuid';
 
@@ -18,7 +18,7 @@ export function checkParameter(value, params, ...freeParams) {
   const missing = [];
   for (let name in params) {
     if (value[name] === undefined) {
-      missing.push(params[name]);
+      missing.push(name);
     }
   }
 
@@ -129,14 +129,14 @@ export function checkParameterStringNotNullOrEmpty(value, options) {
     value,
     {
       statusCode: 400,
-      _message: [loc._f('"%s" parameter is missing, null, or empty'), options?.paramTitle ?? 'value'],
+      _message: [loc._f('"%s" parameter is missing, null, or empty.'), options?.paramTitle ?? 'value'],
       ...options,
     }
   ) && checkString(
     value,
     {
       statusCode: 400,
-      _message: [loc._f('"%s" parameter is not a string'), options?.paramTitle ?? 'value'],
+      _message: [loc._f('"%s" parameter is not a string.'), options?.paramTitle ?? 'value'],
       ...options,
     }
   ) ;

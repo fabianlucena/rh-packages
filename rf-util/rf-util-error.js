@@ -1,5 +1,9 @@
-import { loc } from 'rf-locale';
+import { defaultLoc, loc } from 'rf-locale';
 import { format } from './rf-util-string.js';
+
+function getLoc(loc) {
+  return loc ?? defaultLoc;
+}
 
 export function setUpError(error, options) {
   let arranged = {};
@@ -77,7 +81,7 @@ export class MissingParameterError extends Error {
   _n() {return this.missingParameters.length;}
 
   async getMessageParams(loc) {
-    return [await loc._and(...await loc._a(this.missingParameters))];
+    return [await getLoc(loc)._and(...await getLoc(loc)._a(this.missingParameters))];
   }
 }
 
@@ -106,14 +110,14 @@ export async function getTranslatedParams(params, all, loc) {
   if (all) {
     return Promise.all(await params.map(async param => {
       if (Array.isArray(param))
-        return await loc._(...param);
+        return await getLoc(loc)._(...param);
       else
-        return await loc._(param);
+        return await getLoc(loc)._(param);
     }));
   } else {
     return Promise.all(await params.map(async param => {
       if (Array.isArray(param))
-        return await loc._(...param);
+        return await getLoc(loc)._(...param);
       else
         return param;
     }));
@@ -127,12 +131,14 @@ export async function getErrorMessageParams(error, loc) {
   let _params = error._params;
   if (!_params) {
     let params = error.params;
-    if (params)
+    if (params) {
       return await getTranslatedParams(params, false, loc);
+    }
 
     _params = error.constructor._params;
-    if (!_params)
+    if (!_params) {
       return error.constructor.params || [];
+    }
   }
 
   return await getTranslatedParams(_params, true, loc);
@@ -188,7 +194,7 @@ export async function getErrorMessage(error, loc) {
       params = await getErrorMessageParams(error, loc);
     }
 
-    return await loc._(_message, ...params);
+    return await getLoc(loc)._(_message, ...params);
   }
     
   // For singular/plural messages
@@ -247,18 +253,18 @@ export async function getErrorMessage(error, loc) {
     params = await getErrorMessageParams(error, loc);
   }
 
-  return loc._n(_n, _singular, _plural, ...params);
+  return getLoc(loc)._n(_n, _singular, _plural, ...params);
 }
 
 export async function getErrorData(error, loc, options) {
-  let data = {};
+  let data = { error: null };
   if (error instanceof Error) {
     data.name = error.constructor.name;
     if (data.name[0] == '_') {
       data.name = data.name.substring(1);
     }
 
-    const visibleProperties = options?.properties ?? error.constructor?.VisibleProperties ?? ['message', 'title', 'length', 'fileName', 'lineNumber', 'columnNumber', 'stack', 'redirectTo'];
+    const visibleProperties = options?.properties ?? error.constructor?.VisibleProperties ?? ['message', 'title', 'length', 'fileName', 'lineNumber', 'columnNumber', 'redirectTo', 'stack'];
     visibleProperties.forEach(n => data[n] = error[n]);
 
     if (error.statusCode) {
@@ -271,7 +277,7 @@ export async function getErrorData(error, loc, options) {
   }
 
   if (error._title) {
-    data.title = await loc._(error._title);
+    data.title = await getLoc(loc)._(error._title);
   }
 
   if (data.stack && typeof data.stack === 'string') {

@@ -54,8 +54,8 @@ async function clearCache() {
 
 async function checkClearCache(entity) {
   if (entity === 'Type'
-        || entity === 'Comment'
-        || entity === 'ModelEntityName'
+    || entity === 'Comment'
+    || entity === 'ModelEntityName'
   ) {
     await clearCache();
   }
@@ -82,8 +82,6 @@ async function getCommentTypesForEntity(entity, options) {
     const commentTypes = await conf.commentTypeService.getForEntityName(
       entity,
       {
-        raw: true,
-        nest: true,
         loc: options?.loc,
       }
     );
@@ -268,7 +266,7 @@ async function getted(entity, result, options) {
         commentTypeId,
       };
 
-      row[name] = await conf.commentService.getFor(where, { view: true, raw: true, nest: true, loc: options?.loc });
+      row[name] = await conf.commentService.getFor(where, { view: true, loc: options?.loc });
     }
   }
 
@@ -312,8 +310,6 @@ async function updated(entity, result, data, options, service) {
 
   const rows = await service.getList({
     ...options,
-    raw: true,
-    nest: true,
     loc: options.loc,
   });
 
@@ -384,8 +380,6 @@ async function deleting(entity, options, service) {
 
   const rows = await service.getList({
     ...options,
-    raw: true,
-    nest: true,
     loc: options.loc,
   });
   for (const row of rows) {

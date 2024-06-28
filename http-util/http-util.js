@@ -35,6 +35,42 @@ export class _HttpError extends Error {
   }
 }
 
+export class NotFoundError extends Error {
+  static VisibleProperties = ['message', 'title'];
+
+  statusCode = 404;
+
+  constructor(message, options, ...params) {
+    super();
+    setUpError(
+      this,
+      {
+        message,
+        options,
+        params
+      }
+    );
+  }
+}
+
+export class _NotFoundError extends Error {
+  static VisibleProperties = ['message', 'title', 'redirectTo'];
+
+  statusCode = 404;
+
+  constructor(_message, options, ...params) {
+    super();
+    setUpError(
+      this,
+      {
+        _message,
+        ...options,
+        params
+      }
+    );
+  }
+}
+
 export class UnauthorizedError extends Error {
   static VisibleProperties = ['message', 'title'];
 
@@ -68,6 +104,14 @@ export class _UnauthorizedError extends Error {
         params
       }
     );
+  }
+}
+
+export class ForbiddenError extends Error {
+  statusCode = 403;
+
+  constructor(message) {
+    super(message);
   }
 }
 
@@ -211,19 +255,33 @@ export async function httpUtilConfigure(global, ...modules) {
   global.sequelize.Sequelize ??= global.Sequelize ?? global.db?.Sequelize ?? global.config?.db?.Sequelize;
   global.models ||= global.sequelize.models || {};
 
+  const log = global.log;
+  log?.info('.. Before config actions.');
   await beforeConfig(global);
+  log?.info('.. Configuring modules.');
   await configureModules(global, modules);
-  await beforeSync(global);
   if (global.config.db.sync) {
+    log?.info('.. Synchronizing DB.');
+    await beforeSync(global);
     await syncDB(global);
+  } else {
+    log?.info('.. Skip DB sinchronization.');
   }
   if (global.postConfigureModels) {
-    global.postConfigureModels(global.sequelize);
+    log?.info('.. Post configuring modules.');
+    await global.postConfigureModels(global.sequelize);
+  } else {
+    log?.info('.. Skip post configuring modules.');
   }
+  log?.info('.. After sinchronization DB.');
   await afterSync(global);
+  log?.info('.. After config.');
   await afterConfig(global);
   if (global.config.db.updateData) {
+    log?.info('.. Updating data.');
     await updateData(global);
+  } else {
+    log?.info('.. Skip updating data.');
   }
     
   await configureSwagger(global);
@@ -290,16 +348,16 @@ export async function configureControllers(controllers, controllersPath, options
     .filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js' && (!options?.exclude || !options.exclude.test(file)));
 
   for(const file of files) {
-    const modules = await import('file://' + path.join(controllersPath, file));
-    for (const k in modules) {
-      const module = modules[k];
-      let name = k;
+    const module = await import('file://' + path.join(controllersPath, file));
+    for (const controllerName in module) {
+      const controller = module[controllerName];
+      let name = controllerName;
       const l = name.length;
       if (l > 10 && name.endsWith('Controller')) {
         name = name.substring(0, l - 10);
       }
 
-      controllers[name] = module;
+      controllers[name] = controller;
     }
   }
 }
@@ -476,12 +534,71 @@ export async function getOptionsFromParamsAndOData(params, definitions, options)
   return await getWhereOptionsFromParams(params, definitions, options);
 }
 
+export class NoRowsError extends Error {
+  static _message = loc._f('There are no rows.');
+
+  constructor(message) {
+    super();
+    setUpError(
+      this,
+      {
+        message
+      }
+    );
+  }
+}
+
 export async function deleteHandler(req, res, rowCount) {
   const loc = req.loc ?? defaultLoc;
   if (!rowCount) {
-    res.status(200).send({ msg: await loc._('Nothing to delete.') });
+    throw new NoRowsError({
+      statusCode: 404,
+      message: 'There are no items to delete',
+    });
   } else if (rowCount != 1) {
-    res.status(200).send({ msg: await loc._('%s rows deleted.', rowCount) });
+    res.status(200).send({ msg: await loc._('%s items deleted.', rowCount) });
+  } else {
+    res.sendStatus(204);
+  }
+}
+
+export async function patchHandler(req, res, rowCount) {
+  const loc = req.loc ?? defaultLoc;
+  if (!rowCount) {
+    throw new NoRowsError({
+      statusCode: 404,
+      message: 'There are no items to update',
+    });
+  } else if (rowCount != 1) {
+    res.status(200).send({ msg: await loc._('%s items update.', rowCount) });
+  } else {
+    res.sendStatus(204);
+  }
+}
+
+export async function enableHandler(req, res, rowCount) {
+  const loc = req.loc ?? defaultLoc;
+  if (!rowCount) {
+    throw new NoRowsError({
+      statusCode: 404,
+      message: 'There are no items to enable',
+    });
+  } else if (rowCount != 1) {
+    res.status(200).send({ msg: await loc._('%s items enabled.', rowCount) });
+  } else {
+    res.sendStatus(204);
+  }
+}
+
+export async function disableHandler(req, res, rowCount) {
+  const loc = req.loc ?? defaultLoc;
+  if (!rowCount) {
+    throw new NoRowsError({
+      statusCode: 404,
+      message: 'There are no items to disable',
+    });
+  } else if (rowCount != 1) {
+    res.status(200).send({ msg: await loc._('%s items disabled.', rowCount) });
   } else {
     res.sendStatus(204);
   }
@@ -551,12 +668,20 @@ export async function configureModule(global, module) {
   }
 
   if (typeof module === 'string') {
+    const moduleName = module;
+    global.log?.info('.... Module: ' + moduleName);
+
+    let modulePath = moduleName;
     const tryModulePath = path.join(process.cwd(), module);
     if (tryModulePath.endsWith('.js') && fs.existsSync(tryModulePath)) {
-      module = url.pathToFileURL(tryModulePath).href;
+      modulePath = url.pathToFileURL(tryModulePath).href;
     }
 
-    module = (await import(module)).conf;
+    if (!modulePath) {
+      throw new Error(`Can't find module: "${moduleName}".`);
+    }
+
+    module = (await import(modulePath)).conf;
   }
 
   if (!module.name) {
@@ -606,7 +731,7 @@ export async function configureModule(global, module) {
     }
   }
 
-  global.modules[module.name] = module;
+  global.modules.push(module);
   module.global = global;
 
   if (module.configure) {
@@ -624,7 +749,6 @@ export async function configureModule(global, module) {
   if (module.controllersPath) {
     await configureControllers(global.controllers, module.controllersPath);
   }
-
   if (module.schema && global.createSchema) {
     await global.createSchema(module.schema);
   }
@@ -670,7 +794,7 @@ export async function installModule(global, module) {
 }
 
 export async function configureModules(global, modules) {
-  global.modules ||= {};
+  global.modules ||= [];
   global.services ||= {};
   global.controllers ||= {};
   global.data ||= {};
@@ -688,12 +812,13 @@ export async function configureModules(global, modules) {
     await installModule(global, module);
   }
 
-  filterData(global);
+  await filterData(global);
 }
 
 export function installControllerRoutes(global) {
   for (const controllerName in global.controllers) {
     const controller = global.controllers[controllerName];
+    controller.init && controller.init();
     if (controller.routes) {
       const routes = controller.routes();
 
@@ -878,8 +1003,7 @@ export async function configureSwagger(global) {
     const swaggerUI = await import('swagger-ui-express');
 
     let apis = [];
-    for (const moduleName in global.modules) {
-      const module = global.modules[moduleName];
+    for (const module of global.modules) {
       apis.push(
         ...[module.routesPath, module.controllersPath]
           .filter(i => i)
@@ -899,7 +1023,7 @@ export async function configureSwagger(global) {
         components: {
           securitySchemes: {
             bearerAuth: {
-              description: 'Enter token in format (Bearer &lt;token&gt;)',
+              description: 'Enter token with the `Bearer: ` prefix, eg. "Bearer 57bad00fbd50ce1af7c7d2..."',
               type: 'apiKey',
               in: 'header',
               name: 'Authorization',

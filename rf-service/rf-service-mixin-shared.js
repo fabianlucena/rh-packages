@@ -1,8 +1,27 @@
-import { includeCollaborators } from 'sql-util';
-import { _Error, CheckError } from 'rf-util';
+import { dependency } from 'rf-dependency';
+import { CheckError, _Error } from './rf-service-errors.js';
 import { loc } from 'rf-locale';
 
 export const ServiceMixinShared = Service => class ServiceShared extends Service {
+  init() {
+    super.init();
+
+    this.shareObject ??= this.Name;
+    this.shareService ??= dependency.get('shareService');
+  }
+
+  prepareReferences() {
+    if (!this.references.owner) {
+      this.references.owner = { service: 'shareService' };
+    }
+
+    if (!this.references.share) {
+      this.references.share = true;
+    }
+
+    super.prepareReferences();
+  }
+
   async validateForCreation(data) {
     if (!data.owner && !data.ownerId && !this.skipNoOwnerCheck) {
       throw new CheckError(loc._f('No owner specified.'));
@@ -12,10 +31,10 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
   }
 
   /**
-     * Creates a new row into DB.
-     * @param {object} data - data for the new row.
-     * @returns {Promise[row]}
-     */
+   * Creates a new row into DB.
+   * @param {object} data - data for the new row.
+   * @returns {Promise[row]}
+   */
   async create(data, options) {
     const addShare = data.ownerId || data.owner;
     if (addShare) {
@@ -60,18 +79,18 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
   }
 
   /**
-     * Add a collaborator for a object ID.
-     * @param {object} data - ID for the collaborator.
-     * @param {object} transaction - transaction object.
-     * @returns {Promise[row]}
-     */
+   * Add a collaborator for a object ID.
+   * @param {object} data - ID for the collaborator.
+   * @param {object} transaction - transaction object.
+   * @returns {Promise[row]}
+   */
   async addCollaborator(data, options) {
     if (!this.shareObject) {
-      throw new _Error(loc._f('No shareObject defined on %s. Try adding "shareObject = %s" to the class.', this.constructor.name, this.constructor.name));
+      throw new _Error(loc._f('No shareObject defined in %s.', this.constructor.name));
     }
 
     if (!this.shareService) {
-      throw new _Error(loc._f('No shareService defined on %s. Try adding "shareService = conf.global.services.Share.singleton()" to the class.', this.constructor.name));
+      throw new _Error(loc._f('No shareService defined in %s.', this.constructor.name));
     }
 
     if (!data.userId && !data.user) {
@@ -81,26 +100,61 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
     return this.shareService.create({ objectName: this.shareObject, ...data }, options);
   }
 
-  /**
-     * Gets the options for use in the getList and getListAndCount methods.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     *  - includeOwner: for owners inclusion.
-     * @returns {options}
-     */
   async getListOptions(options) {
-    if (options?.includeOwner) {
-      includeCollaborators(options, this.shareObject ?? this.name, this.models, { filterType: 'owner' });
-      delete options.includeOwner;
+    if (options?.include?.owner) {
+      let ownerOptions = options.include.owner;
+      if (ownerOptions === true || typeof options.include.owner !== 'object') {
+        ownerOptions = {};
+      }
+
+      options = {
+        ...options,
+        include: {
+          ...options?.include,
+          owner: {
+            attributes: [],
+            ...ownerOptions,
+            include: {
+              objectName: {
+                required: false,
+                attributes: [],
+                where: { name: this.shareObject ?? this.name },
+              },
+              type: {
+                required: false,
+                attributes: [],
+                where: { name: 'owner' },
+              },
+              user: {
+                required: false,
+                attributes: ['uuid', 'userName', 'displayName'],
+              },
+            },
+          },
+        },
+      };
+
+      if (options.where?.shareType !== undefined) {
+        options.include.owner.include.shareType.where.name = options.where.shareType;
+        delete options.where.shareType;
+      }
+
+      const isEnabled = options.isEnabled ?? options.where?.isEnabled;
+      if (isEnabled !== undefined) {
+        options.include.owner.include.user.where.isEnabled = isEnabled;
+        options.include.owner.include.shareType.where.isEnabled = isEnabled;
+        options.include.owner.where.isEnabled = isEnabled;
+      }
     }
 
     return super.getListOptions(options);
   }
 
   /**
-     * Deletes a row for a given criteria.
-     * @param {object} where - Where object with the criteria to delete.
-     * @returns {Promise[integer]} deleted rows count.
-     */
+   * Deletes a row for a given criteria.
+   * @param {object} where - Where object with the criteria to delete.
+   * @returns {Promise[integer]} deleted rows count.
+   */
   async delete(options) {        
     await this.completeReferences(options.where, true);
 

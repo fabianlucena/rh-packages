@@ -135,9 +135,7 @@ async function getWorkflowsForEntity(entity, options) {
     const workflows = await conf.wfWorkflowService.getForEntityName(
       entity,
       {
-        includeWorkflowType: true,
-        raw: true,
-        nest: true,
+        include: { type: true },
         loc: options.loc,
       }
     );
@@ -235,11 +233,11 @@ async function getted(entity, result, options) {
           entityId: row.id
         },
         {
-          includeStatus: true,
-          includeAssignee: true,
+          include: {
+            Status: true,
+            Assignee: true,
+          },
           skipNoRowsError: true,
-          raw: true,
-          nest: true,
           loc: options.loc,
         },
       );

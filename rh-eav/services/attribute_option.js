@@ -1,11 +1,7 @@
-import { EavAttributeService } from './attribute.js';
-import { conf } from '../conf.js';
-import { ServiceIdUuidNameTitleDescriptionTranslatable } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class EavAttributeOptionService extends ServiceIdUuidNameTitleDescriptionTranslatable {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.EavAttributeOption;
+export class EavAttributeOptionService extends Service.IdUuidNameUniqueTitleDescriptionTranslatable {
   references = {
-    attribute: EavAttributeService.singleton(),
+    attribute: 'eavAttributeService',
   };
 }

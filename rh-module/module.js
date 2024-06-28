@@ -22,8 +22,7 @@ async function updateData() {
   }
 
   const moduleService = ModuleService.singleton();
-  for (const moduleName in conf?.global?.modules) {
-    const module = conf.global.modules[moduleName];
+  for (const module of conf?.global?.modules) {
     const moduleData = {
       isEnabled: module.isEnabled,
       name: module.name,

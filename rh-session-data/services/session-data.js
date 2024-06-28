@@ -1,16 +1,13 @@
-import { conf } from '../conf.js';
-import { ServiceBase } from 'rf-service';
+import { Service } from 'rf-service';
 import { checkDataForMissingProperties, getSingle } from 'sql-util';
 import { deepMerge } from 'rf-util';
 import { loc } from 'rf-locale';
 
-export class SessionDataService extends ServiceBase {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.SessionData;
+export class SessionDataService extends Service.Base {
   references = {
-    session: conf.global.services.Session.singleton(),
+    session: true,
   };
-  defaultTranslationContext = 'page';
+  defaultTranslationContext = 'session';
 
   async completeJsonData(data) {
     if (!data.jsonData && data.data) {
@@ -35,20 +32,20 @@ export class SessionDataService extends ServiceBase {
   }
 
   /**
-     * Gets a list of session data.
-     * @param {Options} options - options for the @see sequelize.findAll method.
-     * @returns {Promise{ProjectList}}
-     */
+   * Gets a list of session data.
+   * @param {Options} options - options for the @see sequelize.findAll method.
+   * @returns {Promise{ProjectList}}
+   */
   async getForSessionId(sessionId, options) {
     const rows = await this.getList({ ...options, where: { ...options?.where, sessionId }, limit: 2 });
     return getSingle(rows, { ...options, params: ['SessionData', [loc._cf('sessionData', 'Session ID = %s'), sessionId], 'SessionData'] });
   }
 
   /**
-     * Get data for a session.
-     * @param {string} sessionId - Session ID to retrive the data.
-     * @returns {Promise[Site]}
-     */
+   * Get data for a session.
+   * @param {string} sessionId - Session ID to retrive the data.
+   * @returns {Promise[Site]}
+   */
   async getDataForSessionId(sessionId, options) {
     return (await this.getForSessionId(sessionId, options)).data;
   }
@@ -71,11 +68,11 @@ export class SessionDataService extends ServiceBase {
   }
 
   /**
-     * Add data to a session.
-     * @param {string} sessionId - Session ID to wich add the data.
-     * @param {object} sessionData - Data to add or replace.
-     * @returns {Promise[Site]}
-     */
+   * Add data to a session.
+   * @param {string} sessionId - Session ID to wich add the data.
+   * @param {object} sessionData - Data to add or replace.
+   * @returns {Promise[Site]}
+   */
   async addData(sessionId, sessionData) {
     const mergedData = deepMerge(
       await this.getDataIfExistsForSessionId(sessionId) ?? {},

@@ -1,16 +1,14 @@
 import { conf } from '../conf.js';
 import { runSequentially } from 'rf-util';
-import { ServiceIdUuidNameTitleDescriptionEnabledTranslatable } from 'rf-service';
-import { completeIncludeOptions } from 'sql-util';
+import { Service } from 'rf-service';
 
-export class CommentTypeService extends ServiceIdUuidNameTitleDescriptionEnabledTranslatable {
-  sequelize = conf.global.sequelize;
-  model = conf.global.models.CommentType;
+export class CommentTypeService extends Service.IdUuidEnableNameUniqueTitleDescriptionTranslatable {
   references = {
     modelEntityName: {
-      service: conf?.global?.services?.ModelEntityName?.singleton(),
       createIfNotExists: true,
-    }
+      attributes: ['uuid', 'name'],
+      whereColumn: 'name',
+    },
   };
 
   constructor() {
@@ -35,39 +33,6 @@ export class CommentTypeService extends ServiceIdUuidNameTitleDescriptionEnabled
     );
 
     return attribute;
-  }
-
-  async getListOptions(options) {
-    options ||= {};
-
-    if (options.includeModelEntityName || options.where?.modelEntityName) {
-      let attributes = options.includeModelEntityName || [];
-      if (attributes === true) {
-        attributes = ['uuid', 'name'];
-      }
-
-      let where;
-      if (options.isEnabled !== undefined) {
-        where = { isEnabled: options.isEnabled };
-      }
-
-      if (options.where?.modelEntityName) {
-        where = { ...where, ...options.where.modelEntityName };
-        delete options.where?.modelEntityName;
-      }
-
-      completeIncludeOptions(
-        options,
-        'ModelEntityName',
-        {
-          model: conf.global.models.ModelEntityName,
-          attributes,
-          where,
-        }
-      );
-    }
-        
-    return super.getListOptions(options);
   }
 
   async getForEntityName(entityName, options) {

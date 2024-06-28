@@ -7,10 +7,10 @@ export default (sequelize, DataTypes) => {
         throw new Error('There is no ModelEntityName model. Try adding RH Model Entity Name module to the project.');
       }
 
-      this.belongsTo(models.ModelEntityName, { foreignKey: 'objectNameId',  allowNull: false, onDelete: 'cascade' });
-      this.belongsTo(models.User,            { foreignKey: 'userId',        allowNull: false, onDelete: 'cascade' });
-      this.belongsTo(models.ShareType,       { foreignKey: 'typeId',        allowNull: false });
-      this.belongsTo(models.Module,          { foreignKey: 'ownerModuleId', as: 'OwnerModule', allowNull: true });
+      this.belongsTo(models.ModelEntityName, { as: 'objectName',  foreignKey: 'objectNameId', onDelete: 'cascade' });
+      this.belongsTo(models.User,            { as: 'user',        foreignKey: 'userId',       onDelete: 'cascade' });
+      this.belongsTo(models.ShareType,       { as: 'type',        foreignKey: 'typeId' });
+      this.belongsTo(models.Module,          { as: 'ownerModule', foreignKey: 'ownerModuleId' });
     }
   }
   Share.init({

@@ -1,12 +1,10 @@
-import { completeIncludeOptions, getIncludedModelOptions } from 'sql-util';
-import { conf } from '../conf.js';
-import { ServiceId } from 'rf-service';
+import { Service } from 'rf-service';
 
-export class LogService extends ServiceId {
-  sequelize = conf.global.sequelize;
-  Sequelize = conf.global.Sequelize;
-  model = conf.global.models.Log;
-  models = conf.global.models;
+export class LogService extends Service.Id {
+  references = {
+    session: { attributes: ['id'] },
+    user: { attributes: ['username', 'displayName'] },
+  };
 
   async validateForCreation(data) {
     if (data.ref !== undefined && isNaN(data.ref)) {
@@ -14,32 +12,6 @@ export class LogService extends ServiceId {
     }
         
     return super.validateForCreation(data);
-  }
-
-  async getListOptions(options) {
-    options = await super.getListOptions(options);
-
-    if (options.includeUser) {
-      completeIncludeOptions(
-        options,
-        'Session',
-        {
-          model: this.models.Session,
-          attributes: ['id'],
-        }
-      );
-
-      completeIncludeOptions(
-        getIncludedModelOptions(options, this.models.Session),
-        'User',
-        {
-          model: this.models.User,
-          attributes: ['username', 'displayName'],
-        }
-      );
-    }
-
-    return options;
   }
 
   async getMaxRef() {

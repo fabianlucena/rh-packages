@@ -3,8 +3,8 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class SiteModule extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Module, { foreignKey: 'moduleId' });
-      this.belongsTo(models.Site,   { foreignKey: 'siteId' });
+      this.belongsTo(models.Module, { as: 'module', foreignKey: 'moduleId' });
+      this.belongsTo(models.Site,   { as: 'site',   foreignKey: 'siteId' });
     }
   }
   SiteModule.init({
