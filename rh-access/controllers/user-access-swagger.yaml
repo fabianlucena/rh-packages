@@ -1,0 +1,140 @@
+definitions:
+  User:
+    type: object
+    properties:
+      username:
+        type: string
+        required: true
+        example: admin
+      displayName:
+        type: string
+        required: true
+        example: Admin
+      typeId:
+        type: integer
+      isEnabled:
+        type: boolean
+
+  Error:
+    properties:
+      error:
+        type: string
+        example: Example error
+        
+/user-access:
+  post:
+    tags:
+      - User Access
+    summary: Create an user
+    description: Add a new user to the database
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - User: body
+        in: body
+        schema:
+          $ref: '#/definitions/User'
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/definitions/Error'
+      '400':
+        description: Missing parameters
+        schema:
+          $ref: '#/definitions/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/definitions/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/definitions/Error'
+
+  get:
+    tags:
+      - User Access
+    summary: Get an user list
+    description: If the UUID or username params is provided this endpoint returns a single user otherwise returns a list of users
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+      - name: username
+        in: query
+        type: string
+        example: admin
+      - name: limit
+        in: query
+        type: int
+      - name: offset
+        in: query
+        type: int
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/definitions/User'
+      '204':
+        description: Success no user
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/definitions/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/definitions/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/definitions/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/definitions/Error'
+
+  delete:
+    tags:
+      - User Access
+    summary: Delete an user access
+    description: Delete a user access from the user UUID and site UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID,UUID
+        required: true
+        example: 0F7B8F7F-D792-405B-8DE0-2E9E04BAC3A4,D781CFDF-CB71-4428-8F49-614387500813
+    responses:
+      '204':
+        description: Success
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/definitions/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/definitions/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/definitions/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/definitions/Error'

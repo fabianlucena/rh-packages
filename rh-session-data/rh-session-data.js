@@ -1,40 +1,40 @@
-import {SessionDataService} from './services/session-data.js';
-import {conf as localConf} from './conf.js';
-import {deepComplete} from 'rf-util';
+import { SessionDataService } from './services/session-data.js';
+import { conf as localConf } from './conf.js';
+import { deepComplete } from 'rf-util';
 
 export const conf = localConf;
 
 conf.configure = configure;
 
 function configure (global) {
-    global.eventBus?.$on('login', login);
-    global.eventBus?.$on('menuGet', menuGet);
+  global.eventBus?.$on('login', login);
+  global.eventBus?.$on('menuGet', menuGet);
 }
 
 async function login(data, options) {
-    if (!options?.sessionId || !options?.oldSessionId) {
-        return;
-    }
+  if (!options?.sessionId || !options?.oldSessionId) {
+    return;
+  }
 
-    const sessionDataService = SessionDataService.singleton();
-    const oldData = await sessionDataService.getDataIfExistsForSessionId(options.oldSessionId);
-    if (!oldData) {
-        return;
-    }
+  const sessionDataService = SessionDataService.singleton();
+  const oldData = await sessionDataService.getDataIfExistsForSessionId(options.oldSessionId);
+  if (!oldData) {
+    return;
+  }
 
-    const sessionId = options.sessionId;
-    await sessionDataService.addData(sessionId, oldData);
+  const sessionId = options.sessionId;
+  await sessionDataService.addData(sessionId, oldData);
 
-    return sessionDataService.getDataIfExistsForSessionId(sessionId);
+  return sessionDataService.getDataIfExistsForSessionId(sessionId);
 }
 
 async function menuGet(data, options) {
-    if (!options?.sessionId) {
-        return;
-    }
+  if (!options?.sessionId) {
+    return;
+  }
 
-    const thisData = await SessionDataService.singleton().getDataIfExistsForSessionId(options.sessionId);
-    deepComplete(data, thisData);
+  const thisData = await SessionDataService.singleton().getDataIfExistsForSessionId(options.sessionId);
+  deepComplete(data, thisData);
 
-    return thisData;
+  return thisData;
 }

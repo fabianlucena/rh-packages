@@ -1,4 +1,4 @@
-import {loc} from 'rf-locale';
+import { loc } from 'rf-locale';
 
 loc._f('Actions');
 loc._f('Add');

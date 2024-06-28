@@ -13,10 +13,10 @@ export class EavAttributeService extends ServiceIdUuidNameTitleDescriptionEnable
     sequelize = conf.global.sequelize;
     model = conf.global.models.EavAttribute;
     references = {
-        type: EavAttributeTypeService.singleton(),
-        category: EavAttributeCategoryService.singleton(),
+    type: 'eavAttributeTypeService',
+    category: 'eavAttributeCategoryService',
         modelEntityName: {
-            service: conf?.global?.services?.ModelEntityName?.singleton(),
+      service: 'modelEntityNameService',
             createIfNotExists: true,
         }
     };

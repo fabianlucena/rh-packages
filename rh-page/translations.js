@@ -1,4 +1,4 @@
-import {conf} from './conf.js';
+import { conf } from './conf.js';
 
 const loc = conf.loc;
 

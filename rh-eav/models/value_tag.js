@@ -1,42 +1,42 @@
-import {conf} from '../conf.js';
+import { conf } from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-    class EavValueTag extends sequelize.Sequelize.Model {
-        static associate(models) {
-            this.belongsTo(models.EavAttribute,    {foreignKey: 'attributeId'});
-            this.belongsTo(models.EavAttributeTag, {foreignKey: 'tagId',      as: 'Tag'});
-        }
+  class EavValueTag extends sequelize.Sequelize.Model {
+    static associate(models) {
+      this.belongsTo(models.EavAttribute,    { foreignKey: 'attributeId' });
+      this.belongsTo(models.EavAttributeTag, { foreignKey: 'tagId',      as: 'Tag' });
     }
-    EavValueTag.init({
-        id: {
-            type: DataTypes.BIGINT,
-            autoIncrement: true,
-            primaryKey: true,
-            unique: true,
-        },
-        uuid: {
-            type: DataTypes.UUID,
-            allowNull: false,
-            defaultValue: DataTypes.UUIDV4,
-            unique: true,
-        },
-        entityId: {
-            type: DataTypes.BIGINT,
-            allowNull: false,
-        },
-        attributeId: {
-            type: DataTypes.BIGINT,
-            allowNull: false,
-        },
-        tagId: {
-            type: DataTypes.BIGINT,
-            allowNull: false,
-        },
-    }, {
-        sequelize,
-        timestamps: true,
-        tableName: 'ValueTag',
-        schema: conf.schema,
-    });
-    return EavValueTag;
+  }
+  EavValueTag.init({
+    id: {
+      type: DataTypes.BIGINT,
+      autoIncrement: true,
+      primaryKey: true,
+      unique: true,
+    },
+    uuid: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4,
+      unique: true,
+    },
+    entityId: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    attributeId: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    tagId: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+  }, {
+    sequelize,
+    timestamps: true,
+    tableName: 'ValueTag',
+    schema: conf.schema,
+  });
+  return EavValueTag;
 };

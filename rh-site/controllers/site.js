@@ -1,50 +1,14 @@
-import {SiteService} from '../services/site.js';
-import {getOptionsFromParamsAndOData} from 'http-util';
-
-/**
- * @swagger
- * definitions:
- *  Site:
- *      properties:
- *          name:
- *              type: string
- *          title:
- *              type: integer
- *  Error:
- *      properties:
- *          error:
- *              name: string
- *              example: Example error
- */
+import { SiteService } from '../services/site.js';
+import { getOptionsFromParamsAndOData } from 'http-util';
 
 export class SiteController {
-    /** 
-     * @swagger
-     * /api/site:
-     *  get:
-     *      tags:
-     *          - Access
-     *      summary: Sites
-     *      description: Get sites available for the logged user
-     *      produces:
-     *          -  application/json
-     *      responses:
-     *          '200':
-     *              description: Success
-     *              schema:
-     *                  $ref: '#/definitions/Site'
-     *          '403':
-     *              description: No session
-     *              schema:
-     *                  $ref: '#/definitions/Error'
-     */
-    static async get(req, res) {
-        const definitions = {uuid: 'uuid', name: 'string'};
-        let options = {view: true, limit: 10, offset: 0};
+  static async get(req, res) {
+    const definitions = { uuid: 'uuid', name: 'string' };
+    let options = { view: true, limit: 10, offset: 0 };
 
-        options = await getOptionsFromParamsAndOData(req?.query, definitions, options);
-        const rows = await SiteService.singleton().getList(options);
+    options = await getOptionsFromParamsAndOData(req?.query, definitions, options);
+    const rows = await SiteService.singleton().getList(options);
 
-        res.status(200).send(rows);
-    }
+    res.status(200).send(rows);
+  }
 }

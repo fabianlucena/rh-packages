@@ -53,21 +53,21 @@
  * - path: is the base path for this controller, can be a empty string.
  * - routes: is a list of objects with the routes see bellow.
  * - cors: is a list of paths and allowed methods for the CORS policies 
- *      definitions.
+ *   definitions.
  * 
  * The routes is a list of objects with the following properties:
  * - httpMethod: HTTP method in lower case,
  * - path: is the path for this endpoint inner the controller's path, 
- *      can be a empty string.
+ *   can be a empty string.
  * - method: the method to call for handled this endpoint.
  * - methodIsStatic: boolean indicator for the method if is static or non 
- *      static.
+ *   static.
  * - permission: permission method or value to check the permission.
  * - permissionIsStatic: boolean indicator for the permission if is static or 
- *      non static.
+ *   non static.
  * - middleware: middleware method to call before call the handler.
  * - middlewareIsStatic: boolean indicator for the middleware if is static or 
- *      non static.
+ *   non static.
  * 
  * The cors is a list of items to be used to CORS policy configuration. 
  * Each item contains:
@@ -80,191 +80,191 @@
  * This parameter is an objet with the following properties:
  * 
  * - skipStatic: [boolean]{default:false} avoid to scan for the static 
- *      methods and properties. 
+ *   methods and properties. 
  * - skipNonStatic: [boolean]{default:false} avoid to scan for the non static 
- *      methods and properties.
+ *   methods and properties.
  * - skipParent: [boolean]{default:false} no scan parent classes, only for 
- *      static methods and properties.
+ *   static methods and properties.
  * - appendHandlers: [array]{default:undefined} add other handlers to extract, 
- *      for example 
- *      [{name: 'getData', httpMethod: 'get', handler: 'defaultGet'}],
- *      will search for getData method name in the controlles class, and will 
- *      generate a route for the HTTP method GET, using the defaultGet method 
- *      as handler: This minds that defaultGet will call to getData. This 
- *      extraction can be combined con subpath, premissions, and middlewares. 
- *      In this case, if you override the get method remember to call 
- *      this.defaultGet after return to properly handle. 
+ *   for example 
+ *   [{name: 'getData', httpMethod: 'get', handler: 'defaultGet'}],
+ *   will search for getData method name in the controlles class, and will 
+ *   generate a route for the HTTP method GET, using the defaultGet method 
+ *   as handler: This minds that defaultGet will call to getData. This 
+ *   extraction can be combined con subpath, premissions, and middlewares. 
+ *   In this case, if you override the get method remember to call 
+ *   this.defaultGet after return to properly handle. 
  */
 export function getRoutes(controllerClass, options) {
-    options ??= {};
+  options ??= {};
 
-    const handlers = [
-        {name: 'get'},
-        {name: 'post'},
-        {name: 'patch'},
-        {name: 'put'},
-        {name: 'delete'},
-        {name: 'options'},
-    ];
+  const handlers = [
+    { name: 'get' },
+    { name: 'post' },
+    { name: 'patch' },
+    { name: 'put' },
+    { name: 'delete' },
+    { name: 'options' },
+  ];
 
-    if (options.appendHandlers) {
-        handlers.push(...options.appendHandlers);
+  if (options.appendHandlers) {
+    handlers.push(...options.appendHandlers);
+  }
+
+  handlers.push({ name: 'all' });
+
+  const controllerInstance = new controllerClass;
+
+  const props = [];
+  if (!options.skipStatic) {
+    props.push(...Object.getOwnPropertyNames(controllerClass));
+  }
+
+  if (!options.skipNonStatic) {
+    props.push(
+      ...Object.getOwnPropertyNames(controllerInstance.__proto__),
+      ...Object.getOwnPropertyNames(controllerInstance)
+    );
+  }
+
+  if (!options.skipParent) {
+    let parent = controllerClass.__proto__;
+    while (parent && parent.name) {
+      props.push(...Object.getOwnPropertyNames(parent));
+      parent = parent.__proto__;
     }
+  }
 
-    handlers.push({name: 'all'});
+  const routes = [];
+  handlers.forEach(handler => {
+    const addToRoutes = [];
+    props.forEach(prop => {
+      const parts = prop.split(' ');
+      const name = parts[0];
+      if (handler.name !== name) {
+        return;
+      }
 
-    const controllerInstance = new controllerClass;
+      const path = parts.length > 1?
+        parts.slice(1).join(' '):
+        '';
+      if (routes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
+        return;
+      }
 
-    const props = [];
-    if (!options.skipStatic) {
-        props.push(...Object.getOwnPropertyNames(controllerClass));
-    }
+      if (addToRoutes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
+        return;
+      }
 
-    if (!options.skipNonStatic) {
-        props.push(
-            ...Object.getOwnPropertyNames(controllerInstance.__proto__),
-            ...Object.getOwnPropertyNames(controllerInstance)
-        );
-    }
+      const route = {
+        httpMethod: handler.httpMethod ?? name,
+        path,
+      };
 
-    if (!options.skipParent) {
-        let parent = controllerClass.__proto__;
-        while (parent && parent.name) {
-            props.push(...Object.getOwnPropertyNames(parent));
-            parent = parent.__proto__;
-        }
-    }
+      if (controllerInstance[handler.handler]) {
+        route.method = handler.handler;
+        route.methodIsStatic = false;
+      } else if (controllerClass[handler.handler]) {
+        route.method = handler.handler;
+        route.methodIsStatic = true;
+      } else if (controllerInstance[prop]) {
+        route.method = prop;
+        route.methodIsStatic = false;
+      } else if (controllerClass[prop]) {
+        route.method = prop;
+        route.methodIsStatic = true;
+      }
 
-    const routes = [];
-    handlers.forEach(handler => {
-        const addToRoutes = [];
-        props.forEach(prop => {
-            const parts = prop.split(' ');
-            const name = parts[0];
-            if (handler.name !== name) {
-                return;
-            }
+      const pathSuffix = path?
+        ' ' + path
+        :'';
 
-            const path = parts.length > 1?
-                parts.slice(1).join(' '):
-                '';
-            if (routes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
-                return;
-            }
+      let withSuffix = name + 'Permission' + pathSuffix;
+      if (controllerInstance[withSuffix]) {
+        route.permission = controllerInstance[withSuffix];
+        route.permissionIsStatic = false;
+      } else if (controllerClass[withSuffix]) {
+        route.permission = controllerClass[withSuffix];
+        route.permissionIsStatic = true;
+      }
 
-            if (addToRoutes.find(r => r.path === path && r.httpMethod === handler.httpMethod)) {
-                return;
-            }
+      withSuffix = name + 'Middleware' + pathSuffix;
+      if (controllerInstance[withSuffix]) {
+        route.middleware = controllerInstance[withSuffix];
+        route.middlewareIsStatic = false;
+      } else if (controllerClass[withSuffix]) {
+        route.middleware = controllerClass[withSuffix];
+        route.middlewareIsStatic = true;
+      }
 
-            const route = {
-                httpMethod: handler.httpMethod ?? name,
-                path,
-            };
-
-            if (controllerInstance[handler.handler]) {
-                route.method = handler.handler;
-                route.methodIsStatic = false;
-            } else if (controllerClass[handler.handler]) {
-                route.method = handler.handler;
-                route.methodIsStatic = true;
-            } else if (controllerInstance[prop]) {
-                route.method = prop;
-                route.methodIsStatic = false;
-            } else if (controllerClass[prop]) {
-                route.method = prop;
-                route.methodIsStatic = true;
-            }
-
-            const pathSuffix = path?
-                ' ' + path
-                :'';
-
-            let withSuffix = name + 'Permission' + pathSuffix;
-            if (controllerInstance[withSuffix]) {
-                route.permission = controllerInstance[withSuffix];
-                route.permissionIsStatic = false;
-            } else if (controllerClass[withSuffix]) {
-                route.permission = controllerClass[withSuffix];
-                route.permissionIsStatic = true;
-            }
-
-            withSuffix = name + 'Middleware' + pathSuffix;
-            if (controllerInstance[withSuffix]) {
-                route.middleware = controllerInstance[withSuffix];
-                route.middlewareIsStatic = false;
-            } else if (controllerClass[withSuffix]) {
-                route.middleware = controllerClass[withSuffix];
-                route.middlewareIsStatic = true;
-            }
-
-            addToRoutes.push(route);
-        });
-
-        if (addToRoutes.length) {
-            routes.push(...addToRoutes);
-        }
+      addToRoutes.push(route);
     });
 
-    let path = controllerInstance.path;
+    if (addToRoutes.length) {
+      routes.push(...addToRoutes);
+    }
+  });
+
+  let path = controllerInstance.path;
+  if (path === undefined) {
+    path = controllerClass.path;
+
     if (path === undefined) {
-        path = controllerClass.path;
+      path = '/{controller}';
+    }
+  }
 
-        if (path === undefined) {
-            path = '/{controller}';
-        }
+  if (path) {
+    if (path.search('{controller}')) {
+      let controller = controllerClass.name;
+      if (controller.endsWith('controller') || controller.endsWith('Controller')) {
+        controller = dasherize(controller.substring(0, controller.length - 10));
+      }
+      controller = dasherize(controller);
+
+      path = path.replace(/\{controller\}/g, controller);
     }
 
-    if (path) {
-        if (path.search('{controller}')) {
-            let controller = controllerClass.name;
-            if (controller.endsWith('controller') || controller.endsWith('Controller')) {
-                controller = dasherize(controller.substring(0, controller.length - 10));
-            }
-            controller = dasherize(controller);
+    if (path.search('{{}')) {
+      path = path.replace(/\{\{\}/g, '{');
+    }
+  }
 
-            path = path.replace(/\{controller\}/g, controller);
-        }
-
-        if (path.search('{{}')) {
-            path = path.replace(/\{\{\}/g, '{');
-        }
+  const cors = [];
+  for (const route of routes) {
+    const httpMethod = route.httpMethod.toUpperCase();
+    if (httpMethod === 'ALL') {
+      continue;
     }
 
-    const cors = [];
-    for (const route of routes) {
-        const httpMethod = route.httpMethod.toUpperCase();
-        if (httpMethod === 'ALL') {
-            continue;
-        }
-
-        const path = route.path;
-        const item = cors.find(i => i.path === path);
-        if (!item) {
-            cors.push({
-                path,
-                httpMethods: [httpMethod],
-            });
-        } else {
-            if (!item.httpMethods.includes(httpMethod)) {
-                item.httpMethods.push(httpMethod);
-            }
-        }
+    const path = route.path;
+    const item = cors.find(i => i.path === path);
+    if (!item) {
+      cors.push({
+        path,
+        httpMethods: [httpMethod],
+      });
+    } else {
+      if (!item.httpMethods.includes(httpMethod)) {
+        item.httpMethods.push(httpMethod);
+      }
     }
+  }
 
-    return {controller: controllerClass, path, routes, cors};
+  return { controller: controllerClass, path, routes, cors };
 }
 
 function dasherize(text, sep) {
-    if (!text) {
-        return text;
-    }
+  if (!text) {
+    return text;
+  }
 
-    return text
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .split(/([^a-zA-Z0-9]|(?<=[a-z])(?=[A-Z0-9])|(?<=[A-Z])(?=[0-9])|(?<=[0-9])(?=[a-zA-Z]))/)
-        .map(t => t.trim().toLowerCase())
-        .filter(t => t && t.match(/[a-zA-Z0-9]/))
-        .join(sep ?? '-')
-        .trim();
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .split(/([^a-zA-Z0-9]|(?<=[a-z])(?=[A-Z0-9])|(?<=[A-Z])(?=[0-9])|(?<=[0-9])(?=[a-zA-Z]))/)
+    .map(t => t.trim().toLowerCase())
+    .filter(t => t && t.match(/[a-zA-Z0-9]/))
+    .join(sep ?? '-')
+    .trim();
 }

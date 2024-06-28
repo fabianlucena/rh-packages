@@ -1,41 +1,41 @@
-import {checkParameterStringNotNullOrEmpty, checkParameterStringUndefinedOrNotNullAndNotEmpty, trim} from 'rf-util';
-import {loc} from 'rf-locale';
-import {ConflictError} from 'http-util';
+import { checkParameterStringNotNullOrEmpty, checkParameterStringUndefinedOrNotNullAndNotEmpty, trim } from 'rf-util';
+import { loc } from 'rf-locale';
+import { ConflictError } from 'http-util';
 
 export const ServiceMixinTitle = Service => class extends Service {
-    constructor() {
-        super();
+  constructor() {
+    super();
 
-        this.searchColumns ??= [];
-        this.searchColumns.push('title');
+    this.searchColumns ??= [];
+    this.searchColumns.push('title');
 
-        this.translatableColumns ??= [];
-        this.translatableColumns.push('title');
+    this.translatableColumns ??= [];
+    this.translatableColumns.push('title');
+  }
+
+  async validateForCreation(data) {
+    checkParameterStringNotNullOrEmpty(trim(data?.title), loc._f('Title'));
+    await this.checkTitleForConflict(data.title, data);
+    return super.validateForCreation(data);
+  }
+
+  async checkTitleForConflict(title) {
+    const rows = await this.getFor({ title }, { limit: 1 });
+    if (rows?.length) {
+      throw new ConflictError(loc._f(`Exists another row with title %s in ${this.constructor.name}.`, title));
+    }
+  }
+
+  async validateForUpdate(data, where) {
+    checkParameterStringUndefinedOrNotNullAndNotEmpty(data.title, loc._f('Title'));
+    if (data.title) {
+      await this.checkTitleForConflict(data.title, data, where);
     }
 
-    async validateForCreation(data) {
-        checkParameterStringNotNullOrEmpty(trim(data?.title), loc._f('Title'));
-        await this.checkTitleForConflict(data.title, data);
-        return super.validateForCreation(data);
-    }
+    return super.validateForUpdate(data);
+  }
 
-    async checkTitleForConflict(title) {
-        const rows = await this.getFor({title}, {limit: 1});
-        if (rows?.length) {
-            throw new ConflictError(loc._f(`Exists another row with title %s in ${this.constructor.name}.`, title));
-        }
-    }
-
-    async validateForUpdate(data, where) {
-        checkParameterStringUndefinedOrNotNullAndNotEmpty(data.title, loc._f('Title'));
-        if (data.title) {
-            await this.checkTitleForConflict(data.title, data, where);
-        }
-
-        return super.validateForUpdate(data);
-    }
-
-    /**
+  /**
      * Gets a row for its title. For many coincidences and for no rows this 
      * function fails.
      * @param {string|Array} title - title for the row to get.
@@ -48,15 +48,15 @@ export const ServiceMixinTitle = Service => class extends Service {
      * This function uses @ref getSingle function so the options for getSingle
      * function can be specified.
      */
-    async getForTitle(title, options) {
-        if (title === undefined) {
-            throw new Error(loc._f('Invalid value for title to get row'));
-        }
-
-        if (Array.isArray(title)) {
-            return this.getList({...options, where: {...options?.where, title}});
-        }
-            
-        return this.getSingleFor({title}, options);
+  async getForTitle(title, options) {
+    if (title === undefined) {
+      throw new Error(loc._f('Invalid value for title to get row'));
     }
+
+    if (Array.isArray(title)) {
+      return this.getList({ ...options, where: { ...options?.where, title }});
+    }
+            
+    return this.getSingleFor({ title }, options);
+  }
 };

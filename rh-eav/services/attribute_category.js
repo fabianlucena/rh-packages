@@ -5,7 +5,7 @@ export class EavAttributeCategoryService extends ServiceIdUuidNameTitleDescripti
     sequelize = conf.global.sequelize;
     model = conf.global.models.EavAttributeCategory;
 
-    async checkTitleForConflict() {
-        return true;
-    }
+  async checkTitleForConflict() {
+    return true;
+  }
 }

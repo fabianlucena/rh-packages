@@ -5,10 +5,9 @@ const name = 'rhOptions';
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export const conf = {
-    name,
-    title: 'RH Options',
-    version: '0.1',
-    path: dirname,
-    controllersPath: dirname + '/controllers',
-    apis: [dirname + '/controllers/*.js'],
+  name,
+  title: 'RH Options',
+  version: '0.1',
+  path: dirname,
+  controllersPath: dirname + '/controllers',
 };
