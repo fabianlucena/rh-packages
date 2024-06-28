@@ -50,7 +50,7 @@ export default (sequelize, DataTypes) => {
     },
     priorityId: {
       type: DataTypes.BIGINT,
-      allowNull: false,
+      allowNull: true,
     },
     assigneeId: {
       type: DataTypes.BIGINT,
@@ -60,6 +60,10 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    translationContext: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     description: {
       type: DataTypes.TEXT,
@@ -72,7 +76,7 @@ export default (sequelize, DataTypes) => {
   }, {
     sequelize,
     timestamps: true,
-    freezeTableName: true,
+    tableName: 'Issue',
     schema: conf.schema,
   });
   return Issue;

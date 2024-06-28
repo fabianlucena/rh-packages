@@ -18,12 +18,12 @@ export class EavAttributeService extends Service.IdUuidEnableNameUniqueTitleDesc
   };
     
   init() {
+    super.init();
+        
     this.eavAttributeTypeService =     EavAttributeTypeService.    singleton();
     this.eavAttributeCategoryService = EavAttributeCategoryService.singleton();
     this.eavAttributeOptionService =   EavAttributeOptionService.  singleton();
     this.eavAttributeTagService =      EavAttributeTagService.     singleton();
-
-    super.init();
   }
 
   async validateForCreation(data) {

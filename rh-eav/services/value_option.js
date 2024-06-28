@@ -4,8 +4,8 @@ import { loc } from 'rf-locale';
 
 export class EavValueOptionService extends Service.IdUuidTranslatable {
   references = {
-    attribute: 'eavAttributeService',
-    option: 'eavAttributeOptionService',
+    attribute:       'eavAttributeService',
+    option:          'eavAttributeOptionService',
     modelEntityName: true,
   };
 
@@ -14,13 +14,13 @@ export class EavValueOptionService extends Service.IdUuidTranslatable {
       throw new Error(loc._cf('eav', 'Delete without where is forbiden.'));
     }
 
-    if (options.where.notId) {
-      const where = options.where;
+    const where = options.where;
+    if (where.id || where.notId) {
       const filters = where[Op.and] ??= [];
 
       if (where.id) {
-        filters.push({ id: options.where.id });
-        delete options.where.id;
+        filters.push({ id: where.id });
+        delete where.id;
       }
 
       if (where.notId) {
@@ -30,12 +30,7 @@ export class EavValueOptionService extends Service.IdUuidTranslatable {
         }
 
         filters.push({ id: { [Op.notIn]: notId }});
-        delete options.where.notId;
-      }
-
-      if (filters.length) {
-        options.where ||= {};
-        options.where[Op.and] = filters;
+        delete where.notId;
       }
     }
 
