@@ -4,8 +4,8 @@ export default (sequelize, DataTypes) => {
   class CompanySite extends sequelize.Sequelize.Model {
     static associate(models) {
       this.belongsTo(models.Module,  { as: 'ownerModule', foreignKey: 'ownerModuleId' });
-      this.belongsTo(models.Company, { as: 'companyI',    foreignKey: 'companyId' });
-      this.belongsTo(models.Site,    { as: 'site',        foreignKey: 'siteId' });
+      this.belongsTo(models.Company, { as: 'company',     foreignKey: 'companyId'     });
+      this.belongsTo(models.Site,    { as: 'site',        foreignKey: 'siteId'        });
     }
   }
   CompanySite.init({

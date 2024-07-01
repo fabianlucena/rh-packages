@@ -1,10 +1,21 @@
 import { CompanySiteService } from '../services/company-site.js';
 import { conf } from '../conf.js';
 import { getOptionsFromParamsAndOData, _HttpError } from 'http-util';
-import { checkParameter, checkParameterUuid, MissingParameterError } from 'rf-util';
+import { checkParameterUuid, MissingParameterError } from 'rf-util';
+import { Controller } from 'rh-controller';
+import dependency from 'rf-dependency';
 
-export class CompanySiteController {
-  static async post(req, res) {
+export class CompanySiteController extends Controller {
+  constructor() {
+    super();
+
+    this.service =            dependency.get('companySiteService');
+    this.sessionSiteService = dependency.get('sessionSiteService');
+    this.sessionDataService = dependency.get('sessionDataService');
+  }
+
+  postPermission = 'company-site.switch';
+  async post(req, res) {
     const loc = req.loc;
 
     const companyUuid = req.query?.companyUuid ?? req.params?.companyUuid ?? req.body?.companyUuid;
@@ -18,26 +29,27 @@ export class CompanySiteController {
       attributes:['companyId', 'siteId'],
       view: true,
       include: {
-        company: true,
-        site: true,
+        company: {},
+        site:    {},
       },
       where: {},
     };
     if (companyUuid) {
       await checkParameterUuid(companyUuid, loc._cf('companySite', 'Company UUID'));
-      options.where.companyUuid = companyUuid;
+      options.where.company = { uuid: companyUuid };
     }
 
     if (siteUuid) {
       await checkParameterUuid(companyUuid, loc._cf('companySite', 'Site UUID'));
-      options.where.siteUuid = siteUuid;
+      options.where.site = { uuid: siteUuid };
     }
 
     if (!req.roles.includes('admin')) {
-      options.where.siteName = req?.sites ?? null;
+      options.where.site ??= {};
+      options.where.site.name = req?.sites ?? null;
     }
 
-    const companySites = await CompanySiteService.singleton().getList(options);
+    const companySites = await this.service.getList(options);
     if (!companySites?.length) {
       throw new _HttpError(loc._cf('companySite', 'The selected object does not exist or you do not have permission.'), 400);
     }
@@ -50,7 +62,7 @@ export class CompanySiteController {
     const sessionId = req.session.id;
     const siteId = companySite.siteId;
 
-    conf.global.services.SessionSite.singleton().createOrUpdate({ sessionId, siteId });
+    this.sessionSiteService.createOrUpdate({ sessionId, siteId });
 
     if (companySite.company.isTranslatable) {
       companySite.company.title = await loc._(companySite.company.title);
@@ -78,9 +90,8 @@ export class CompanySiteController {
       menu: [menuItem],
     };
 
-    const sessionDataService = conf.global.services.SessionData.singleton();
-    if (sessionDataService) {
-      const sessionData = await sessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
+    if (this.sessionDataService) {
+      const sessionData = await this.sessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
 
       sessionData.api ??= {};
       sessionData.api.data = {};
@@ -90,7 +101,7 @@ export class CompanySiteController {
       sessionData.menu = sessionData.menu.filter(item => item.parent != 'breadcrumb' && item.name != 'company-site');
       sessionData.menu.push(menuItem);
 
-      await sessionDataService.setData(sessionId, sessionData);
+      await this.sessionDataService.setData(sessionId, sessionData);
     }
 
     data.count = 1;
@@ -101,14 +112,11 @@ export class CompanySiteController {
 
     req.log?.info(`Company switched to: ${companySite.company.title}.`, { sessionId, siteId, companyName: companySite.company.name });
 
-    res.status(200).send(data);
+    return data;
   }
 
-  static async get(req, res) {
-    if ('$object' in req.query) {
-      return CompanySiteController.getObject(req, res);
-    }
-
+  getPermission = 'company-site.switch';
+  async getData(req, res) {
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = { view: true, limit: 10, offset: 0 };
 
@@ -123,14 +131,12 @@ export class CompanySiteController {
       ...options.include,
     };
 
-    const result = await CompanySiteService.singleton().getListAndCount(options);
+    const result = await this.service.getListAndCount(options);
         
-    res.status(200).send(result);
+    return result;
   }
 
-  static async getObject(req, res) {
-    checkParameter(req.query, '$object');
-
+  async getObject(req, res) {
     const actions = [{
       name: 'select',
       type: 'button',

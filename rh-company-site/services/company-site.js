@@ -1,12 +1,20 @@
+import dependency from 'rf-dependency';
 import { conf } from '../conf.js';
 import { Service } from 'rf-service';
 import { checkDataForMissingProperties } from 'sql-util';
 
-export class CompanySiteService extends ServiceOwnerModule {
+export class CompanySiteService extends Service.OwnerModule {
   references = {
     company: { otherName: 'name' },
-    site: { otherName: 'name' },
+    site:    { otherName: 'name' },
   };
+
+  init() {
+    super.init();
+
+    this.companyService = dependency.get('companyService');
+    this.siteService = dependency.get('siteService');
+  }
 
   /**
    * Creates a new user CompanySite row into DB.
@@ -40,7 +48,7 @@ export class CompanySiteService extends ServiceOwnerModule {
         }
       } else {
         if (!company) {
-          company = await conf.global.services.Company.singleton().get(data.companyId);
+          company = await this.companyServices.get(data.companyId);
         }
 
         siteData.name = company.name;
@@ -48,13 +56,13 @@ export class CompanySiteService extends ServiceOwnerModule {
         siteData.ownerModuleId = company.ownerModuleId;
       }
 
-      const site = await conf.global.services.Site.singleton().createIfNotExists(siteData);
+      const site = await this.siteService.createIfNotExists(siteData);
       data.siteId = site.id;
 
       await checkDataForMissingProperties(data, 'CompanySiteService', 'siteId');
     }
 
-    return conf.global.models.CompanySite.create(data);
+    super.create(data);
   }
 
   /**
