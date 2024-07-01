@@ -85,7 +85,7 @@ export class ProjectController extends Controller {
       include: { owner: true },
     };
 
-    if (conf.global.models.Company) {
+    if (this.companyService) {
       options.include = {
         company: true,
         ...options.include,
@@ -102,7 +102,7 @@ export class ProjectController extends Controller {
 
     const result = await this.service.getListAndCount(options);
 
-    if (conf.global.models.Company) {
+    if (this.companyService) {
       result.rows = result.rows.map(row => {
         row.companyUuid = row.company.uuid;
 
@@ -138,7 +138,7 @@ export class ProjectController extends Controller {
       },
     ];
 
-    if (conf.global.models.Company) {
+    if (this.companyService) {
       columns.push({
         alias: 'company',
         name: 'company.title',
@@ -218,7 +218,7 @@ export class ProjectController extends Controller {
     ];
 
         
-    if (conf.global.models.Company) {
+    if (this.companyService) {
       fields.push({
         alias: 'company',
         name: 'companyUuid',

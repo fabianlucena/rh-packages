@@ -3,6 +3,7 @@ import { Service, OptionalService, Op } from 'rf-service';
 import { CheckError } from 'rf-util';
 import { loc } from 'rf-locale';
 import { _ConflictError } from 'http-util';
+import dependency from 'rf-dependency';
 
 export class ProjectService extends Service.IdUuidEnableNameUniqueTitleSharedTranslatable {
   references = {
@@ -14,8 +15,14 @@ export class ProjectService extends Service.IdUuidEnableNameUniqueTitleSharedTra
   eventBus = conf.global.eventBus;
   viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'description'];
 
+  init() {
+    super.init();
+
+    this.companyService = dependency.get('companyService', null);
+  }
+
   async validateForCreation(data) {
-    if (conf.global.models.Company) {
+    if (this.companyService) {
       if (!data?.companyId) {
         throw new CheckError(loc._cf('project', 'Company parameter is missing.'));
       }
@@ -26,7 +33,7 @@ export class ProjectService extends Service.IdUuidEnableNameUniqueTitleSharedTra
 
   async checkNameForConflict(name, data) {
     const where = { name };
-    if (conf.global.models.Company) {
+    if (this.companyService) {
       where.companyId = data.companyId;
     }
 
@@ -39,7 +46,7 @@ export class ProjectService extends Service.IdUuidEnableNameUniqueTitleSharedTra
   async checkTitleForConflict(title, data, where) {
     const whereOptions = { title };
 
-    if (conf.global.models.Company) {
+    if (this.companyService) {
       const companyId = where?.companyId ?? data?.companyId;
       if (companyId) {
         whereOptions.companyId = companyId;
