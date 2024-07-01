@@ -1,10 +1,6 @@
-import { WfWorkflowService } from './services/wf-workflow.js';
-import { WfWorkflowTypeService } from './services/wf-workflow-type.js';
-import { WfStatusService } from './services/wf-status.js';
-import { WfTransitionService } from './services/wf-transition.js';
-import { WfCaseService } from './services/wf-case.js';
 import { conf as localConf } from './conf.js';
 import { runSequentially } from 'rf-util';
+import dependency from 'rf-dependency';
 
 export const conf = localConf;
 
@@ -33,12 +29,12 @@ async function configure(global, options) {
 }
 
 async function init() {
-  conf.modelEntityNameService = conf.global.services.ModelEntityName.singleton();
-  conf.wfWorkflowService =      WfWorkflowService.    singleton();
-  conf.wfWorkflowTypeService =  WfWorkflowTypeService.singleton();
-  conf.wfStatusService =        WfStatusService.      singleton();
-  conf.wfTransitionService =    WfTransitionService.  singleton();
-  conf.wfCaseService =          WfCaseService.        singleton();
+  conf.modelEntityNameService = dependency.get('modelEntityNameService');
+  conf.wfWorkflowService =      dependency.get('wfWorkflowService');
+  conf.wfWorkflowTypeService =  dependency.get('wfWorkflowTypeService');
+  conf.wfStatusService =        dependency.get('wfStatusService');
+  conf.wfTransitionService =    dependency.get('wfTransitionService');
+  conf.wfCaseService =          dependency.get('wfCaseService');
 }
 
 async function updateData(global) {
