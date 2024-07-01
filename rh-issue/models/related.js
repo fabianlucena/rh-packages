@@ -17,7 +17,7 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.BIGINT,
             allowNull: false,
         },
-        RelationshipId: {
+        relationshipId: {
             type: DataTypes.BIGINT,
             allowNull: false,
         },
