@@ -1,21 +1,27 @@
-import { BranchService } from '../services/branch.js';
 import { conf } from '../conf.js';
 import { getOptionsFromParamsAndOData, _HttpError, _ConflictError } from 'http-util';
 import { checkParameter, checkParameterUuid, filterVisualItemsByAliasName } from 'rf-util';
+import Controller from 'rh-controller';
+import dependency from 'rf-dependency';
 
-const branchService = BranchService.singleton();
+export class BranchController extends Controller {
+  constructor() {
+    super();
 
-export class BranchController {
-  static async checkDataForCompanyId(req, data) {
+    this.service =        dependency.get('branchService');
+    this.companyService = dependency.get('companyService');
+  }
+
+  async checkDataForCompanyId(req, data) {
     if (!conf.filters?.getCurrentCompanyId) {
       return;
     }
             
     if (!data.companyId) {
       if (data.companyUuid) {
-        data.companyId = await conf.global.services.Company.singleton().getIdForUuid(data.companyUuid);
+        data.companyId = await this.companyService.getIdForUuid(data.companyUuid);
       } else if (data.companyName) {
-        data.companyId = await conf.global.services.Company.singleton().getIdForName(data.companyName);
+        data.companyId = await this.companyService.getIdForName(data.companyName);
       } else {
         data.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
         return data.companyId;
@@ -34,22 +40,23 @@ export class BranchController {
     return data.companyId;
   }
 
-  static async checkUuid(req, uuid) {
-    const branch = await branchService.getForUuid(uuid, { skipNoRowsError: true });
+  async checkUuid(req, uuid) {
+    const branch = await this.branchService.getForUuid(uuid, { skipNoRowsError: true });
     if (!branch) {
       throw new _HttpError(req.loc._cf('branch', 'The branch with UUID %s does not exists.'), 404, uuid);
     }
 
-    return await BranchController.checkDataForCompanyId(req, { companyId: branch.companyId });
+    return await this.checkDataForCompanyId(req, { companyId: branch.companyId });
   }
 
-  static async post(req, res) {
+  postPermission = 'branch.create';
+  async post(req, res) {
     const loc = req.loc;
     checkParameter(req?.body, { name: loc._cf('branch', 'Name'), title: loc._cf('branch', 'Title') });
         
     const data = { ...req.body };
 
-    await BranchController.checkDataForCompanyId(req, data);
+    await this.checkDataForCompanyId(req, data);
 
     if (await branchService.getForName(data.name, { skipNoRowsError: true })) {
       throw new _ConflictError(req.loc._cf('branch', 'Exists another branch with that name.'));
@@ -66,13 +73,8 @@ export class BranchController {
     res.status(204).send();
   }
 
-  static async get(req, res) {
-    if ('$grid' in req.query) {
-      return BranchController.getGrid(req, res);
-    } else if ('$form' in req.query) {
-      return BranchController.getForm(req, res);
-    }
-
+  getPermission = 'branch.get';
+  async getData(req, res) {
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = {
       view: true,
@@ -103,7 +105,7 @@ export class BranchController {
     res.status(200).send(result);
   }
 
-  static async getGrid(req, res) {
+  async getGrid(req, res) {
     checkParameter(req.query, '$grid');
 
     const actions = [];
@@ -153,7 +155,7 @@ export class BranchController {
     res.status(200).send(grid);
   }
 
-  static async getForm(req, res) {
+  async getForm(req, res) {
     checkParameter(req.query, '$form');
 
     const loc = req.loc;
@@ -231,9 +233,10 @@ export class BranchController {
     res.status(200).send(form);
   }
 
-  static async delete(req, res) {
+  deletePermission = 'branch.delete';
+  async delete(req, res) {
     const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('branch', 'UUID'));
-    await BranchController.checkUuid(req, uuid);
+    await this.checkUuid(req, uuid);
 
     const rowsDeleted = await branchService.deleteForUuid(uuid);
     if (!rowsDeleted) {
@@ -243,9 +246,10 @@ export class BranchController {
     res.sendStatus(204);
   }
 
-  static async enablePost(req, res) {
+  enablePostPermission = 'branch.edit';
+  async enablePost(req, res) {
     const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('branch', 'UUID'));
-    await BranchController.checkUuid(req, uuid);
+    await this.checkUuid(req, uuid);
 
     const rowsUpdated = await branchService.enableForUuid(uuid);
     if (!rowsUpdated) {
@@ -255,9 +259,10 @@ export class BranchController {
     res.sendStatus(204);
   }
 
-  static async disablePost(req, res) {
+  disablePostPermission = 'branch.edit';
+  async disablePost(req, res) {
     const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('branch', 'UUID'));
-    await BranchController.checkUuid(req, uuid);
+    await this.checkUuid(req, uuid);
 
     const rowsUpdated = await branchService.disableForUuid(uuid);
     if (!rowsUpdated) {
@@ -267,9 +272,10 @@ export class BranchController {
     res.sendStatus(204);
   }
 
-  static async patch(req, res) {
+  patchPermission = 'branch.edit';
+  async patch(req, res) {
     const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('branch', 'UUID'));
-    await BranchController.checkUuid(req, uuid);
+    await this.checkUuid(req, uuid);
 
     const rowsUpdated = await branchService.updateForUuid(req.body, uuid);
     if (!rowsUpdated) {
@@ -279,7 +285,8 @@ export class BranchController {
     res.sendStatus(204);
   }
 
-  static async getCompany(req, res) {
+  'getPermission /company' = 'branch.edit';
+  async getCompany(req, res) {
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = { view: true, limit: 10, offset: 0 };
 
