@@ -122,7 +122,7 @@ async function getAttributes(entity, options) {
         }));
       }
 
-      attribute.type = attribute.Type.name;
+      attribute.type = attribute.type.name;
       attribute.htmlType = attribute.type;
     }
   }
@@ -261,7 +261,7 @@ async function getted(entity, result, options) {
     for (const attribute of attributes) {
       const attributeId = attribute.id;
       const name = attribute.name;
-      const typeName = attribute.Type.name;
+      const typeName = attribute.type.name;
       const where = {
         attributeId,
         entityId,
