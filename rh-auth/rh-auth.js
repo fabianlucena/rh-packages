@@ -9,10 +9,12 @@ import { SessionController } from './controllers/session.js';
 import { _UnauthorizedError, NoPermissionError } from 'http-util';
 import { runSequentially } from 'rf-util';
 import { loc } from 'rf-locale';
+import dependency from 'rf-dependency';
 
 export const conf = localConf;
 
 conf.configure = configure;
+conf.init = init;
 conf.updateData = updateData;
 
 function configure (global) {
@@ -24,6 +26,10 @@ function configure (global) {
   global.checkPermissionHandler = getCheckPermissionHandler(previousHandler);
 
   global.eventBus?.$on('sessionUpdated', sessionUpdated);
+}
+
+function init() {
+  conf.sessionService = dependency.get('sessionService');
 }
 
 function getCheckPermissionHandler(chain) {
@@ -66,10 +72,10 @@ async function updateData(global) {
   }
 
   const
-    userTypeService =     UserTypeService.    singleton(),
-    identityTypeService = IdentityTypeService.singleton(),
-    userService =         UserService.        singleton(),
-    identityService =     IdentityService.    singleton();
+    userTypeService =     dependency.get('userTypeService');
+    identityTypeService = dependency.get('identityTypeService');
+    userService =         dependency.get('userService');
+    identityService =     dependency.get('identityService');
 
   await runSequentially(data?.userTypes,     async data => await userTypeService.    createIfNotExists(data));
   await runSequentially(data?.identityTypes, async data => await identityTypeService.createIfNotExists(data));
@@ -78,5 +84,5 @@ async function updateData(global) {
 }
 
 async function sessionUpdated(sessionId) {
-  SessionService.singleton().deleteFromCacheForSessionId(sessionId);
+  conf.sessionService.deleteFromCacheForSessionId(sessionId);
 }

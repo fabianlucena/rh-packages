@@ -1,5 +1,5 @@
-import { LogoutService } from '../services/logout.js';
 import { conf } from '../conf.js';
+import dependency from 'rf-dependency';
 
 export class LogoutController {
   static async post(req, res) {
@@ -8,7 +8,8 @@ export class LogoutController {
       req.log?.info('Error to logout no session.');
     }
 
-    await LogoutService.singleton().logout(req.session);
+    const logoutService = dependency.get('logoutService');
+    await logoutService.logout(req.session);
     await conf.global.eventBus?.$emit('logout', req.session.id);
     req.log?.info('Logout session closed.', { sessionId: req.session.id });
 

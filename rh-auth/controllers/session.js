@@ -5,17 +5,21 @@ import { defaultLoc } from 'rf-locale';
 import { Controller } from 'rh-controller';
 import { dependency } from 'rf-dependency';
 
-const log = dependency.get('log', () => {});
-
 export class SessionController extends Controller {
+  static init() {
+    this.log = dependency.get('log', {
+      info: () => {},
+    });
+  }
+
   static configureMiddleware() {
     return async (req, res, next) => {
       const authorization = req.header('Authorization');
       if (!authorization || authorization.length < 8 || authorization.slice(0, 7).toLowerCase() !== 'bearer ') {
         if (!authorization) {
-          log.info('no authorization token');
+          this.log.info('no authorization token');
         } else if (authorization.length < 8 || authorization.slice(0, 7).toLowerCase() !== 'bearer ') {
-          log.info('invalid authorization token scheme');
+          this.log.info('invalid authorization token scheme');
         }
 
         next();
@@ -33,7 +37,7 @@ export class SessionController extends Controller {
         .then(session => {
           req.session = session;
           req.user = req.session.user;
-          log.info({ session: session.id, username: session.user.username });
+          this.log.info({ session: session.id, username: session.user.username });
           next();
         })
         .catch(async err => {
@@ -62,7 +66,7 @@ export class SessionController extends Controller {
           result.clearBearerAuthorization = true;
           result.redirectTo = '#login';
 
-          log.info({ error: err, result });
+          this.log.info({ error: err, result });
           res.status(401).send(result);
         });
     };

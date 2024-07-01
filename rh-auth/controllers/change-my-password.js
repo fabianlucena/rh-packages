@@ -2,6 +2,7 @@ import { IdentityService } from '../services/identity.js';
 import { _HttpError } from 'http-util';
 import { checkParameter, checkParameterNotNullOrEmpty } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
+import dependency from 'rf-dependency';
 
 export class ChangeMyPasswordController {
   static async getForm(req, res) {
@@ -61,7 +62,7 @@ export class ChangeMyPasswordController {
       throw new _HttpError(loc._cf('changeMyPassword', 'The new password and the current password are the same'), 400);
     }
 
-    const identityService = IdentityService.singleton();
+    const identityService = dependency.get('identityService');
     const checkResult = await identityService.checkLocalPasswordForUsername(req.user.username, data.currentPassword, loc);
     if (checkResult !== true) {
       throw new _HttpError(checkResult || loc._cf('changeMyPassword', checkResult || 'Error invalid password'), 403);
