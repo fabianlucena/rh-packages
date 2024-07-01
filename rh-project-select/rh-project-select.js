@@ -48,7 +48,7 @@ export async function getFiltersFromRequest(req) {
     ) {
       value = request[value.request];
     } else if (typeof value === 'function') {
-      value = value(req);
+      value = await value(req);
     }
 
     where[name] = value;

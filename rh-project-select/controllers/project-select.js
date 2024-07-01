@@ -99,7 +99,7 @@ export class ProjectSelectController extends Controller {
       view: true,
       limit: 10,
       offset: 0,
-      where: getFiltersFromRequest(req),
+      where: await getFiltersFromRequest(req),
     };
 
     options = await getOptionsFromParamsAndOData(
