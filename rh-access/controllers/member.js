@@ -195,7 +195,7 @@ export class MemberController {
     if (!req.roles.includes('admin'))
       options.where = { ...options?.where, id: await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles) };
 
-    const roleService = conf.global.services.Role.singleton();
+    const roleService = dependency.get('roleService');
     const result = await roleService.getListAndCount(options);
         
     const loc = req.loc;

@@ -19,6 +19,7 @@
     "crypto": "^1.0.1",
     "http-status-codes": "^2.3.0",
     "rf-locale": "file:../../rf-locale",
+    "rf-model-sequelize": "file:../../rf-model-sequelize",
     "swagger-jsdoc": "^6.2.5",
     "swagger-ui-express": "^4.5.0",
     "uuid": "^9.0.0"

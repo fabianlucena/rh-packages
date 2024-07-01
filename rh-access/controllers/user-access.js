@@ -1,4 +1,3 @@
-import { conf } from '../conf.js';
 import { getOptionsFromParamsAndOData, _HttpError } from 'http-util';
 import { checkParameter, checkParameterUuid, checkParameterUuidList, checkNotNullNotEmptyAndNotUndefined } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
@@ -217,7 +216,7 @@ export class UserAccessController {
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
 
-    const siteService = conf.global.services.Site.singleton();
+    const siteService = dependency.get('siteService');
     const result = await siteService.getListAndCount(options);
 
     res.status(200).send(result);

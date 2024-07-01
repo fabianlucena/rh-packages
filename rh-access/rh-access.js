@@ -1,22 +1,14 @@
-import { RoleService } from './services/role.js';
-import { RoleParentSiteService } from './services/role_parent_site.js';
-import { PermissionService } from './services/permission.js';
-import { RolePermissionService } from './services/role_permission.js';
-import { UserSiteRoleService } from './services/user_site_role.js';
-import { UserGroupService } from './services/user_group.js';
-import { ShareTypeService } from './services/share_type.js';
-import { AssignableRolePerRoleService } from './services/assignable_role_per_role.js';
-import { PrivilegesService } from './services/privileges.js';
-import { SessionSiteService } from './services/session_site.js';
 import { PrivilegesController } from './controllers/privileges.js';
 import { NoPermissionError } from 'http-util';
 import { runSequentially } from 'rf-util';
 import { conf as localConf } from './conf.js';
+import dependency from 'rf-dependency';
 
 export const conf = localConf;
 
 conf.configure = configure;
 conf.updateData = updateData;
+conf.init = [init];
 
 function configure(global) {
   if (global.router) {
@@ -28,6 +20,11 @@ function configure(global) {
 
   global.eventBus?.$on('login', login);
   global.eventBus?.$on('sessionUpdated', sessionUpdated);
+}
+
+function init() {
+  conf.sessionSiteService = dependency.get('sessionSiteService');
+  conf.privilegesService  = dependency.get('privilegesService');
 }
 
 function getCheckPermissionHandler(chain) {
@@ -74,14 +71,14 @@ async function updateData(global) {
   }
 
   const
-    roleService =                  RoleService.                 singleton(),
-    permissionService =            PermissionService.           singleton(),
-    rolePermissionService =        RolePermissionService.       singleton(),
-    userSiteRoleService =          UserSiteRoleService.         singleton(),
-    roleParentSiteService =        RoleParentSiteService.       singleton(),
-    userGroupService =             UserGroupService.            singleton(),
-    shareTypeService =             ShareTypeService.            singleton(),
-    assignableRolePerRoleService = AssignableRolePerRoleService.singleton();
+    roleService =                  dependency.get('roleService');
+    permissionService =            dependency.get('permissionService');
+    rolePermissionService =        dependency.get('rolePermissionService');
+    userSiteRoleService =          dependency.get('userSiteRoleService');
+    roleParentSiteService =        dependency.get('roleParentSiteService');
+    userGroupService =             dependency.get('userGroupService');
+    shareTypeService =             dependency.get('shareTypeService');
+    assignableRolePerRoleService = dependency.get('assignableRolePerRoleService');
 
   await runSequentially(data?.roles,                   async data => await roleService.                 createIfNotExists(data));
   await runSequentially(data?.permissions,             async data => await permissionService.           createIfNotExists(data));
@@ -98,22 +95,21 @@ async function login(data, options) {
     return;
   }
 
-  const sessionSiteService = SessionSiteService.singleton();
   const sessionId = options?.sessionId;
-  const currentSite = await sessionSiteService.getList({ where: { sessionId }});
+  const currentSite = await conf.sessionSiteService.getList({ where: { sessionId }});
   if (currentSite?.length)  {
     return;
   }
 
-  const oldSite = await sessionSiteService.getList({ where: { sessionId: options.oldSessionId }});
+  const oldSite = await conf.sessionSiteService.getList({ where: { sessionId: options.oldSessionId }});
   if (!oldSite?.length) {
     return;
   }
 
-  await sessionSiteService.createOrUpdate({ sessionId, siteId: oldSite[0].siteId });
+  await conf.sessionSiteService.createOrUpdate({ sessionId, siteId: oldSite[0].siteId });
 }
 
 async function sessionUpdated(sessionId) {
-  await PrivilegesService.singleton().deleteFromCacheForSessionId(sessionId);
+  await conf.privilegesService.deleteFromCacheForSessionId(sessionId);
 }
 

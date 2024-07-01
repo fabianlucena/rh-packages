@@ -1,8 +1,7 @@
-import { SwitchSiteService } from '../services/switch-site.js';
-import { SessionSiteService } from '../services/session_site.js';
 import { conf } from '../conf.js';
 import { getOptionsFromParamsAndOData, httpErrorHandler } from 'http-util';
 import { checkParameter, checkParameterUuid } from 'rf-util';
+import dependency from 'rf-dependency';
 
 export class SwitchSiteController {
   static currentSiteGet(req, res) {
@@ -22,7 +21,7 @@ export class SwitchSiteController {
 
   static async post(req, res) {
     const siteUuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('switchSite', 'UUID'));
-    await SessionSiteService.singleton().createOrUpdate({
+    await dependency.get('sessionSiteService').createOrUpdate({
       sessionId: req?.session?.id,
       siteUuid,
     });
@@ -43,7 +42,7 @@ export class SwitchSiteController {
       options.where.name = req?.sites ?? null;
     }
 
-    const result = await conf.global.services.Site.singleton().getListAndCount(options);
+    const result = await dependency.get('siteService').getListAndCount(options);
         
     res.status(200).send(result);
   }

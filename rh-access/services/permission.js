@@ -1,4 +1,4 @@
-import { RolePermissionService } from './role_permission.js';
+import { dependency } from 'rf-dependency';
 import { Service, Op } from 'rf-service';
 import { runSequentially } from 'rf-util';
 
@@ -10,6 +10,11 @@ export class PermissionService extends Service.IdUuidEnableNameUniqueTitleOwnerM
     },
   };
   defaultTranslationContext = 'user';
+
+  init() {
+    super.init();
+    this.rolePermissionService = dependency.get('rolePermissionService');
+  }
 
   /**
    * Creates a new Permission row into DB if not exists.
@@ -23,7 +28,10 @@ export class PermissionService extends Service.IdUuidEnableNameUniqueTitleOwnerM
         data.roles:
         data.roles.split(',');
 
-      await runSequentially(roles, async roleName => await RolePermissionService.singleton().createIfNotExists({ role: roleName, permission: data.name, ownerModule: data.ownerModule }));
+      await runSequentially(
+        roles,
+        async roleName => await this.rolePermissionService.createIfNotExists({ role: roleName, permission: data.name, ownerModule: data.ownerModule })
+      );
     }
 
     return result;
