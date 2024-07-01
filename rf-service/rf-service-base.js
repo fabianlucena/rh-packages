@@ -513,10 +513,10 @@ export class ServiceBase {
 
     const includes = options.include;
     if (includes) {
-      for (const includeName in includes) {
-        let include = includes[includeName];
+      for (const includedName in includes) {
+        let include = includes[includedName];
         if (include === undefined || include === null) {
-          delete includes[includeName];
+          delete includes[includedName];
           continue;
         } else if (include === true) {
           include = {};
@@ -524,12 +524,12 @@ export class ServiceBase {
           include = { attributes: [] };
         }
 
-        const reference = this.references[includeName];
+        const reference = this.references[includedName];
         if (!reference) {
           throw new Error(
             loc._f(
               'Can\'t include "%s" because is not reference, in service "%s".',
-              includeName,
+              includedName,
               this.constructor.name
             ),
           );
@@ -547,7 +547,7 @@ export class ServiceBase {
           include = await reference.service.getListOptions({ isEnabled: options.isEnabled, ...include });
         }
 
-        includes[includeName] = include;
+        includes[includedName] = include;
       }
     }
 
@@ -726,8 +726,8 @@ export class ServiceBase {
     options = { ...options, include: { ...options?.include }};
     options.attributes = [];
     if (options.include) {
-      for (var includeName in options.include) {
-        options.include[includeName].attributes = [];
+      for (var includedName in options.include) {
+        options.include[includedName].attributes = [];
       }
     }
         

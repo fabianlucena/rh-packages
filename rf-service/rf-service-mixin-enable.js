@@ -14,9 +14,9 @@ export const ServiceMixinEnable = Service => class ServiceEnable extends Service
       options.where ??= {};
       options.where.isEnabled ??= options.isEnabled;
 
-      for (const includeName in options.include) {
-        options.include[includeName].where ??= {};
-        options.include[includeName].where.isEnabled ??= options.isEnabled;
+      for (const includedName in options.include) {
+        options.include[includedName].where ??= {};
+        options.include[includedName].where.isEnabled ??= options.isEnabled;
       }
     }
 
