@@ -1,30 +1,23 @@
-import { LogService } from '../services/log.js';
+import { Controller } from 'rh-controller';
 import { getOptionsFromParamsAndOData } from 'http-util';
-import { checkParameter } from 'rf-util';
+import dependency from 'rf-dependency';
 
-const logService = LogService.singleton();
+export class LogController extends Controller {
+  constructor() {
+    super();
 
-export class LogController {
-  static async get(req, res) {
-    if ('$grid' in req.query) {
-      return LogController.getGrid(req, res);
-    }
+    this.service = dependency.get('logService');
+  }
 
+  getPermission = 'log.get';
+  async getData(req, res) {
     let options = {
       view: true,
       limit: 10,
       offset: 0,
       orderBy: [['dateTime', 'DESC']],
       loc: req.loc,
-      include: { User: true },
-      searchColumns: [
-        'ref',
-        'type',
-        'sessionId',
-        'message',
-        'jsonData',
-        '$Session.User.username$',
-      ],
+      include: { user: true },
     };
 
     options = await getOptionsFromParamsAndOData(req?.query, null, options);
@@ -33,9 +26,7 @@ export class LogController {
     res.status(200).send(result);
   }
 
-  static async getGrid(req, res) {
-    checkParameter(req.query, '$grid');
-
+  async getGrid(req, res) {
     const actions = [/*'view', */'search', 'paginate'];
                 
     let loc = req.loc;

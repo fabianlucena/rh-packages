@@ -3,8 +3,16 @@ import { Service } from 'rf-service';
 export class LogService extends Service.Id {
   references = {
     session: { attributes: ['id'] },
-    user: { attributes: ['username', 'displayName'] },
+    user:    { attributes: ['username', 'displayName'] },
   };
+  searchColumns = [
+    'ref',
+    'type',
+    'sessionId',
+    'message',
+    'jsonData',
+    'session.user.username',
+  ];
 
   async validateForCreation(data) {
     if (data.ref !== undefined && isNaN(data.ref)) {

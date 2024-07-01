@@ -13,7 +13,6 @@ export const conf = {
   init: null,
   configure: null,
   modelsPath: dirname + '/models',
-  routesPath: dirname + '/routes',
   servicesPath: dirname + '/services',
   controllersPath: dirname + '/controllers',
   iconsPath: dirname + '/icons',
