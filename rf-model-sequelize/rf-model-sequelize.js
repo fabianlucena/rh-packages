@@ -163,13 +163,13 @@ export class ModelSequelize {
 
       const includes = options.include;
       sanitizedOptions.include ??= [];
-      for (const includeName in includes) {
-        const reference = references[includeName];
+      for (const includedName in includes) {
+        const reference = references[includedName];
         if (!reference) {
-          throw Error(`Reference does not exist for include "${includeName}" in service "${service.constructor.name}".`);
+          throw Error(`Reference does not exist for include "${includedName}" in service "${service.constructor.name}".`);
         }
 
-        let include = includes[includeName];
+        let include = includes[includedName];
         if (include === true) {
           include = {};
         } else if (!include) {
@@ -180,24 +180,24 @@ export class ModelSequelize {
 
         sanitizedInclude.model = include.model ?? reference.service?.model?.model;
         if (!sanitizedInclude.model) {
-          if (!references[includeName]) {
-            throw Error(`Reference for "${includeName}" does not exists in service "${service.constructor.name}".`);
+          if (!references[includedName]) {
+            throw Error(`Reference for "${includedName}" does not exists in service "${service.constructor.name}".`);
           }
 
-          if (!references[includeName].service) {
-            throw Error(`Service for reference "${includeName}" does not exists in service "${service.constructor.name}".`);
+          if (!references[includedName].service) {
+            throw Error(`Service for reference "${includedName}" does not exists in service "${service.constructor.name}".`);
           }
 
-          if (!references[includeName].service.model) {
-            throw Error(`Model for reference "${includeName}" does not exists in service "${service.constructor.name}".`);
+          if (!references[includedName].service.model) {
+            throw Error(`Model for reference "${includedName}" does not exists in service "${service.constructor.name}".`);
           }
 
-          throw Error(`Sequelize model for reference "${includeName}" does not exists in service "${service.constructor.name}".`);
+          throw Error(`Sequelize model for reference "${includedName}" does not exists in service "${service.constructor.name}".`);
         }
 
-        sanitizedInclude.as ??= includeName;
+        sanitizedInclude.as ??= includedName;
 
-        if (this.model.associations[includeName].through) {
+        if (this.model.associations[includedName]?.through) {
           sanitizedInclude.through = { attributes: [] };
         }
 
@@ -231,12 +231,12 @@ export class ModelSequelize {
       const symbols = Object.getOwnPropertySymbols(where);
       for (let k of symbols) {
         let v = where[k];
-        k = opMap[k];
-        if (!k) {
+        const w = opMap[k];
+        if (!w) {
           throw Error('Unknown symbol in query.');
         }
 
-        newWhere[k] = this.sanitizeWhere(v);
+        newWhere[w] = this.sanitizeWhere(v);
       }
 
       for (let k in where) {
