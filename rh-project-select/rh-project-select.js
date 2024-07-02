@@ -63,7 +63,7 @@ async function getAvailableProjectsIdForRequest(req) {
     skipNoRowsError: true,
   };
 
-  return projectService.getIdFor(getFiltersFromRequest(req), options);
+  return projectService.getIdFor(await getFiltersFromRequest(req), options);
 }
 
 async function getCurrentProjectId(req) {
