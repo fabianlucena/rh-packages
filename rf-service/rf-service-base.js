@@ -2,7 +2,7 @@ import { Op, Column } from './rf-service-op.js';
 import { NoRowsError, ManyRowsError } from './rf-service-errors.js';
 import { ucfirst, lcfirst } from 'rf-util/rf-util-string.js';
 import { trim, _Error } from 'rf-util';
-import { loc } from 'rf-locale';
+import { defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
 
 /**
@@ -101,6 +101,10 @@ export class ServiceBase {
     this.defaultTranslationContext ??= this.name;
     this.eventName ??= this.Name;
 
+    if (this.eventBus === true) {
+      this.eventBus = dependency.get('eventBus');
+    }
+
     this.prepareReferences();
   }
 
@@ -120,7 +124,11 @@ export class ServiceBase {
       }
                 
       if (typeof reference !== 'object') {
-        throw new _Error(loc._f('Error in reference definition for rerence name "%s", in service "%s".', name, this.constructor.name));
+        throw new _Error(defaultLoc._f(
+          'Error in reference definition for reference name "%s", in service "%s".',
+          name,
+          this.constructor.name
+        ));
       }
 
       if (reference.function) {
@@ -141,7 +149,12 @@ export class ServiceBase {
         let service = dependency.get(serviceName, null);
         if (!service) {
           if (!reference.optional) {
-            throw new _Error(loc._f('Error service name "%s", not found for reference "%s" in service "%s".', serviceName, name, this.constructor.name));
+            throw new _Error(defaultLoc._f(
+              'Error service name "%s", not found for reference "%s" in service "%s".',
+              serviceName,
+              name,
+              this.constructor.name
+            ));
           }
 
           continue;
@@ -526,13 +539,11 @@ export class ServiceBase {
 
         const reference = this.references[includedName];
         if (!reference) {
-          throw new Error(
-            loc._f(
-              'Can\'t include "%s" because is not reference, in service "%s".',
-              includedName,
-              this.constructor.name
-            ),
-          );
+          throw new _Error(defaultLoc._f(
+            'Can\'t include "%s" because is not reference in service "%s".',
+            includedName,
+            this.constructor.name
+          ));
         }
 
         if (reference?.service) {

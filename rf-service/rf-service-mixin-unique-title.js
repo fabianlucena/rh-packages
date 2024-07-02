@@ -28,7 +28,7 @@ export const ServiceMixinUniqueTitle = Service => class extends Service {
 
     const rowsCount = await this.countFor(forOption);
     if (rowsCount) {
-      throw new ConflictError(loc._f(`Exists another row with title %s in ${this.constructor.name}.`, title));
+      throw new ConflictError(loc._f('Exists another row with title %s in %s.', title, this.constructor.name));
     }
   }
 
