@@ -1,111 +1,149 @@
 [
     {
+        "source": "Can\\'t include \"%s\" because is not reference in service \"%s\".",
+        "language": "es",
+        "translation": "No se puede incluir \"%s\" porque no es una referencia en el servicio \"%s\".\n",
+        "ref": "..\\rf-service\\rf-service-base.js [542,39]"
+    },
+    {
+        "source": "Error in reference definition for reference name \"%s\", in service \"%s\".",
+        "language": "es",
+        "isDraft": false,
+        "translation": "Error en la definición de la referencia para la referencia nombre \"%s\", en el servicio \"%s\".",
+        "ref": "..\\rf-service\\rf-service-base.js [127,37]"
+    },
+    {
+        "source": "Error service name \"%s\", not found for reference \"%s\" in service \"%s\".",
+        "language": "es",
+        "translation": "Error en el nombre de servicio \"%s\", no se encuentra la referencia \"%s\" en el servicio \"%s\".",
+        "ref": "..\\rf-service\\rf-service-base.js [153,41]"
+    },
+    {
         "source": "Exists another row with that UUID.",
         "language": "es",
         "translation": "Existe otra fila con ese UUID.",
-        "ref": "..\\rf-service\\rf-service-mixin-uuid.js [18,82]"
+        "ref": "..\\rf-service\\rf-service-mixin-uuid.js [18,36]"
     },
     {
         "source": "Exists another row with that name.",
         "language": "es",
         "translation": "Existe otra fila con ese nombre.",
-        "ref": "..\\rf-service\\rf-service-mixin-name.js [17,82]"
+        "ref": "..\\rf-service\\rf-service-mixin-name.js [22,36]"
     },
     {
-        "source": "Exists another row with that title.",
+        "source": "Exists another row with title %s in %s.",
         "language": "es",
-        "translation": "Existe otra fila con ese título.",
-        "ref": "..\\rf-service\\rf-service-mixin-title.js [17,82]"
+        "isDraft": false,
+        "translation": "Existe otra fila con el título %s en %s.",
+        "ref": "..\\rf-service\\rf-service-mixin-unique-title.js [31,35]"
     },
     {
         "source": "ID parameter is forbidden for creation.",
         "language": "es",
         "translation": "El parámetro ID está prohibido para la creación.",
-        "ref": "..\\rf-service\\rf-service-mixin-id.js [7,83]"
+        "ref": "..\\rf-service\\rf-service-mixin-id.js [12,32]"
     },
     {
         "source": "ID parameter is forbidden for update.",
         "language": "es",
         "translation": "El parámetro ID está prohibido para la modificación.",
-        "ref": "..\\rf-service\\rf-service-mixin-id.js [15,81]"
+        "ref": "..\\rf-service\\rf-service-mixin-id.js [18,32]"
     },
     {
-        "source": "Invalid value for name to get row",
+        "source": "Invalid value for name to get row in %s.",
         "language": "es",
-        "translation": "Valor inválido para el nombre al obtener la fila",
-        "ref": "..\\rf-service\\rf-service-mixin-name.js [44,72]"
+        "isDraft": false,
+        "translation": "Valor inválido para el nombre al obtener las filas en %s.",
+        "ref": "..\\rf-service\\rf-service-mixin-name.js [49,27]"
     },
     {
         "source": "Invalid value for title to get row",
         "language": "es",
         "translation": "Valor inválido para el título al obtener la fila",
-        "ref": "..\\rf-service\\rf-service-mixin-title.js [45,73]"
+        "ref": "..\\rf-service\\rf-service-mixin-unique-title.js [68,27]"
     },
     {
         "source": "Name",
         "language": "es",
         "translation": "Nombre",
-        "ref": "..\\rf-service\\rf-service-mixin-name.js [9,76]"
+        "ref": "..\\rf-service\\rf-service-mixin-name.js [14,62]"
     },
     {
         "source": "Name parameter is forbidden for update.",
         "language": "es",
         "translation": "El parámetro nombre está prohibido para la modificación.",
-        "ref": "..\\rf-service\\rf-service-mixin-name.js [23,83]"
-    },
-    {
-        "source": "No Sequalize.Op defined on %s. Try adding \"Sequelize = conf.global.Sequelize\" to the class.",
-        "language": "es",
-        "isDraft": false,
-        "translation": "No hay Sequelize.Op definido en %s. Intente añadiendo \"Sequelize = conf.global.Sequelize\" a la clase.",
-        "ref": "..\\rf-service\\rf-service-base.js [272,158]"
-    },
-    {
-        "source": "No moduleModel defined on %s. Try adding \"moduleModel = conf.global.models.Module\" to the class.",
-        "language": "es",
-        "translation": "No hay moduleModel definido en %s. Intente añadiendo \"moduleModel = conf.global.models.Module\" a la clase.",
-        "ref": "..\\rf-service\\rf-service-mixin-module.js [37,163]"
-    },
-    {
-        "source": "No moduleService defined on %s. Try adding \"moduleService = conf.global.services.Module.singleton()\" to the class.",
-        "language": "es",
-        "translation": "No hay moduleService definido en %s. Intente añadiendo \"moduleService = conf.global.services.Module.singleton()\" a la clase.",
-        "ref": "..\\rf-service\\rf-service-mixin-module.js [14,181]"
+        "ref": "..\\rf-service\\rf-service-mixin-name.js [28,32]"
     },
     {
         "source": "No owner specified.",
         "language": "es",
         "translation": "No se ha especificado el propietario.",
-        "ref": "..\\rf-service\\rf-service-mixin-shared.js [8,63]"
+        "ref": "..\\rf-service\\rf-service-mixin-shared.js [27,32]"
+    },
+    {
+        "source": "No shareObject defined in %s.",
+        "language": "es",
+        "translation": "No se ha definido el shareObject en %s.",
+        "ref": "..\\rf-service\\rf-service-mixin-shared.js [89,28]"
+    },
+    {
+        "source": "No shareService defined in %s.",
+        "language": "es",
+        "translation": "No hay shareService definido en %s.",
+        "ref": "..\\rf-service\\rf-service-mixin-shared.js [93,28]"
     },
     {
         "source": "Object is disabled.",
         "language": "es",
         "translation": "El objeto está deshabilitado.",
-        "ref": "..\\rf-service\\rf-service-errors.js [50,52]"
+        "ref": "..\\rf-service\\rf-service-errors.js [50,25]"
+    },
+    {
+        "source": "Spanish",
+        "language": "es",
+        "translation": "Español",
+        "ref": "rh-service-es.js [18,20]"
+    },
+    {
+        "source": "Spanish language.",
+        "language": "es",
+        "translation": "Idioma castellano.",
+        "ref": "rh-service-es.js [19,26]"
     },
     {
         "source": "There are many rows.",
         "language": "es",
         "translation": "Hay muchas filas.",
-        "ref": "..\\rf-service\\rf-service-errors.js [35,53]"
+        "ref": "..\\rf-service\\rf-service-errors.js [35,25]"
     },
     {
         "source": "There are no rows.",
         "language": "es",
         "translation": "No hay filas.",
-        "ref": "..\\rf-service\\rf-service-errors.js [5,51]\n..\\rf-service\\rf-service-errors.js [19,51]"
+        "ref": "..\\rf-service\\rf-service-errors.js [5,25]\n..\\rf-service\\rf-service-errors.js [19,25]"
     },
     {
         "source": "Title",
         "language": "es",
         "translation": "Título",
-        "ref": "..\\rf-service\\rf-service-mixin-title.js [9,78]\n..\\rf-service\\rf-service-mixin-title.js [22,86]"
+        "ref": "..\\rf-service\\rf-service-mixin-unique-title.js [18,63]\n..\\rf-service\\rf-service-mixin-unique-title.js [36,71]"
+    },
+    {
+        "source": "Title update for many rows is forbiden.",
+        "language": "es",
+        "translation": "Se prohíbe la actualización de título para muchas filas.",
+        "ref": "..\\rf-service\\rf-service-mixin-unique-title.js [44,37]"
+    },
+    {
+        "source": "Title update without where clause is forbiden.",
+        "language": "es",
+        "translation": "Se prohíbe la actualización de título con la cláusula where.",
+        "ref": "..\\rf-service\\rf-service-mixin-unique-title.js [39,37]"
     },
     {
         "source": "UUID parameter is forbidden for update.",
         "language": "es",
         "translation": "El parámetro UUID está prohibido para la modificación.",
-        "ref": "..\\rf-service\\rf-service-mixin-uuid.js [24,83]"
+        "ref": "..\\rf-service\\rf-service-mixin-uuid.js [24,32]"
     }
 ]
