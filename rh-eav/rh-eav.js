@@ -260,8 +260,8 @@ async function getted(entity, result, options) {
         
     for (const attribute of attributes) {
       const attributeId = attribute.id;
-      const name = attribute.name;
-      const typeName = attribute.type.name;
+      const fieldName = attribute.fieldName ?? attribute.name;
+      const typeName = attribute.type;
       const where = {
         attributeId,
         entityId,
@@ -276,39 +276,35 @@ async function getted(entity, result, options) {
             skipNoRowsError: true,
           }
         );
-        row[name] = valueRow?.value;
+        row[fieldName] = valueRow?.value;
       } break;
       case 'select': {
         const valueRows = await conf.eavValueOptionService.getFor(
           where,
           {
-            include: {
-              Option: true,
-            },
+            include: { option: true },
             loc: options?.loc,
           },
         );
 
         if (valueRows?.length) {
-          row[name] = valueRows[0]?.Option;
+          row[fieldName] = valueRows[0]?.option;
         }
       } break;
       case 'tags': {
         const valueRows = await conf.eavValueTagService.getFor(
           where,
           {
-            include: {
-              Tag: true,
-            },
+            include: { tag: true },
             loc: options?.loc,
           },
         );
 
         if (valueRows?.length) {
-          row[name] = valueRows.map(r => r.Tag.name);
+          row[fieldName] = valueRows.map(r => r.tag.name);
         }
       } break;
-      default: row[name] = (options?.loc ?? loc)._c('eav', 'Error unknown attribute type: %s', typeName);
+      default: row[fieldName] = await (options?.loc ?? loc)._c('eav', 'Error unknown attribute type: %s', typeName);
       }
     }
   }
