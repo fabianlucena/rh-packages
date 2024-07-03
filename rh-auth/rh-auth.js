@@ -1,10 +1,5 @@
-import { UserService } from './services/user.js';
-import { UserTypeService } from './services/user_type.js';
-import { IdentityService } from './services/identity.js';
-import { IdentityTypeService } from './services/identity_type.js';
 import { conf as localConf } from './conf.js';
 import './services/device.js';
-import { SessionService } from './services/session.js';
 import { SessionController } from './controllers/session.js';
 import { _UnauthorizedError, NoPermissionError } from 'http-util';
 import { runSequentially } from 'rf-util';
@@ -72,9 +67,9 @@ async function updateData(global) {
   }
 
   const
-    userTypeService =     dependency.get('userTypeService');
-    identityTypeService = dependency.get('identityTypeService');
-    userService =         dependency.get('userService');
+    userTypeService =     dependency.get('userTypeService'),
+    identityTypeService = dependency.get('identityTypeService'),
+    userService =         dependency.get('userService'),
     identityService =     dependency.get('identityService');
 
   await runSequentially(data?.userTypes,     async data => await userTypeService.    createIfNotExists(data));
