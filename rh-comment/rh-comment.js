@@ -21,11 +21,11 @@ async function configure(global, options) {
 
   global.eventBus?.$on('interface.grid.get', interfaceGridGet);
   global.eventBus?.$on('interface.form.get', interfaceFormGet);
-  global.eventBus?.$on('getted', getted);
-  global.eventBus?.$on('created', created);
-  global.eventBus?.$on('updated', updated);
-  global.eventBus?.$on('deleting', deleting);
-  global.eventBus?.$on('deleted', deleted);
+  global.eventBus?.$on('getted',    getted);
+  global.eventBus?.$on('created',   created);
+  global.eventBus?.$on('updated',   updated);
+  global.eventBus?.$on('deleting',  deleting);
+  global.eventBus?.$on('deleted',   deleted);
   global.eventBus?.$on('sanitized', sanitized);
 }
 
@@ -118,7 +118,7 @@ async function interfaceFormGet(form, options) {
       }
 
       const field = {
-        name: commentType.name,
+        name: commentType.fieldName ?? commentType.name,
         label: commentType.title,
         type: 'list',
         className: 'hide-marker',
@@ -147,7 +147,7 @@ async function interfaceFormGet(form, options) {
       fields.push(field);
 
       const addField = {
-        name: commentType.addName,
+        name: commentType.addName ?? (commentType.name + 'Add'),
         label: commentType.addTitle,
         type: 'textArea',
       };
@@ -187,7 +187,7 @@ async function interfaceGridGet(grid, options) {
       }
 
       const field = {
-        name: commentType.name,
+        name: commentType.fieldName ?? commentType.name,
         label: commentType.title,
         type: 'list',
         className: 'hide-marker',
@@ -206,7 +206,7 @@ async function interfaceGridGet(grid, options) {
             className: 'small',
           },
           {
-            name: 'User.displayName',
+            name: 'user.displayName',
             label: await loc._c('comment', 'User'),
             className: 'framed detail small',
           },
@@ -259,14 +259,23 @@ async function getted(entity, result, options) {
 
     for (const commentType of commentTypes) {
       const commentTypeId = commentType.id;
-      const name = commentType.name;
+      const fieldName = commentType.fieldName ?? commentType.name;
       const where = {
         modelEntityNameId,
         entityId,
         commentTypeId,
       };
 
-      row[name] = await conf.commentService.getFor(where, { view: true, loc: options?.loc });
+      row[fieldName] = await conf.commentService.getFor(
+        where,
+        {
+          view: true,
+          include: {
+            user: { attributes: [ 'displayName' ] },
+          },
+          loc: options?.loc,
+        },
+      );
     }
   }
 
@@ -335,24 +344,24 @@ async function updateValues(entity, entityIds, data, options) {
 
   const modelEntityNameId = await getEnityTypeId(entity, queryOptions);
 
-  let name,
+  let fieldName,
     value;
   for (const entityId of entityIds) {
     for (const commentType of commentTypes) {
-      name = commentType.name;
-      if (name) {
-        value = data[name];
+      fieldName = commentType.fieldName ?? commentType.name;
+      if (fieldName) {
+        value = data[fieldName];
       } else {
         value = false;
       }
 
       if (!value) {
-        name = commentType.addName;
-        if (!name) {
+        fieldName = commentType.addName ?? (commentType.name + 'Add');
+        if (!fieldName) {
           continue;
         }
 
-        value = data[name];
+        value = data[fieldName];
         if (!value) {
           continue;
         }
@@ -420,18 +429,18 @@ async function sanitized(entity, rows, options) {
 
   for (const row of rows) {
     for (const commentType of commentTypes) {
-      const name = commentType.name;
-      if (!row[name]) {
+      const fieldName = commentType.fieldName ?? commentType.name;
+      if (!row[fieldName]) {
         continue;
       }
 
-      if (Array.isArray(row[name])) {
+      if (Array.isArray(row[fieldName])) {
         if (conf.commentService.sanitize) {
-          row[name] = await conf.commentService.sanitize(row[name], options);
+          row[fieldName] = await conf.commentService.sanitize(row[fieldName], options);
         }
       } else {
         if (conf.commentService.sanitizeRow) {
-          row[name] = await conf.commentService.sanitizeRow(row[name], options);
+          row[fieldName] = await conf.commentService.sanitizeRow(row[fieldName], options);
         }
       }
     }

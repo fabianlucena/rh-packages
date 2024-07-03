@@ -37,6 +37,10 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    fieldName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     addName: {
       type: DataTypes.STRING,
       allowNull: false,
