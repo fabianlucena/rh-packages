@@ -13,12 +13,12 @@ export const ServiceMixinId = Service => class ServiceId extends Service {
     }
   }
 
-  async validateForUpdate(data) {
+  async validateForUpdate(data, where) {
     if (data?.id) {
       throw new CheckError(loc._f('ID parameter is forbidden for update.'));
     }
 
-    return super.validateForUpdate(data);
+    return super.validateForUpdate(data, where);
   }
 
   /**

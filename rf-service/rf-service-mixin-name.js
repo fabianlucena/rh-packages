@@ -23,12 +23,12 @@ export const ServiceMixinName = Service => class extends Service {
     }
   }
 
-  async validateForUpdate(data) {
+  async validateForUpdate(data, where) {
     if (data.name) {
       throw new CheckError(loc._f('Name parameter is forbidden for update.'));
     }
 
-    return super.validateForUpdate(data);
+    return super.validateForUpdate(data, where);
   }
 
   /**

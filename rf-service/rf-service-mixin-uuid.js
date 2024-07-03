@@ -19,12 +19,12 @@ export const ServiceMixinUuid = Service => class ServiceUuid extends Service {
     }
   }
 
-  async validateForUpdate(data) {
+  async validateForUpdate(data, where) {
     if (data.uuid) {
       throw new CheckError(loc._f('UUID parameter is forbidden for update.'));
     }
 
-    return super.validateForUpdate(data);
+    return super.validateForUpdate(data, where);
   }
 
   /**

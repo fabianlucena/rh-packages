@@ -330,7 +330,7 @@ export class ServiceBase {
       }
     }
 
-    if (reference.clean && data[idPropertyName]) {
+    if (reference.clean) {
       delete data[uuidPropertyName];
       delete data[Name];
       delete data[name];
