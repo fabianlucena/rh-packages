@@ -91,8 +91,8 @@
  * - appendHandlers: [array]{default:undefined} add other handlers to extract, 
  *   for example 
  *   [
- *    { name: 'getData',       httpMethod: 'get',  handler: 'defaultGet', },
- *    { name: 'enableForUuid', httpMethod: 'post', handler: 'defaultEnableForUuid', inPathParam: 'uuid', path: '/enable' },
+ *    { name: 'getData',           httpMethod: 'get',  handler: 'defaultGet', },
+ *    { name: 'postEnableForUuid', httpMethod: 'post', handler: 'defaultEnableForUuid', inPathParam: 'uuid', path: '/enable' },
  *  ],
  * 
  *   The first one will search for getData method name in the controller class, 
@@ -101,9 +101,9 @@
  *    extraction can be combined con subpath, premissions, and middlewares. 
  *    In this case, if you override the get method remember to call 
  *    this.defaultGet after return to properly handle.
- *  The second one will search of a enableForUuid or enableForUuidPermission
+ *  The second one will search of a postEnableForUuid or postEnableForUuidPermission
  *    and generate a route for  for the HTTP method POST, using the 
- *    defaultEnableForUuid. If no path defined for enableForUuid method the path
+ *    defaultEnableForUuid. If no path defined for postEnableForUuid method the path
  *    /enable will be used. And, because the inPathParam property member, a 
  *    route for UUID in URL parameter will be generated too.
  * - skipMethodNotAllowedHandler: [bool]{default:false} after the routes 
