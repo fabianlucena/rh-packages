@@ -52,6 +52,10 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false
     },
+    translationContext: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
     description: {
       type: DataTypes.TEXT,
       allowNull: true,
