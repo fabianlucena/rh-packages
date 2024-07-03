@@ -71,13 +71,13 @@ async function updateData(global) {
   }
 
   const
-    roleService =                  dependency.get('roleService');
-    permissionService =            dependency.get('permissionService');
-    rolePermissionService =        dependency.get('rolePermissionService');
-    userSiteRoleService =          dependency.get('userSiteRoleService');
-    roleParentSiteService =        dependency.get('roleParentSiteService');
-    userGroupService =             dependency.get('userGroupService');
-    shareTypeService =             dependency.get('shareTypeService');
+    roleService =                  dependency.get('roleService'),
+    permissionService =            dependency.get('permissionService'),
+    rolePermissionService =        dependency.get('rolePermissionService'),
+    userSiteRoleService =          dependency.get('userSiteRoleService'),
+    roleParentSiteService =        dependency.get('roleParentSiteService'),
+    userGroupService =             dependency.get('userGroupService'),
+    shareTypeService =             dependency.get('shareTypeService'),
     assignableRolePerRoleService = dependency.get('assignableRolePerRoleService');
 
   await runSequentially(data?.roles,                   async data => await roleService.                 createIfNotExists(data));
