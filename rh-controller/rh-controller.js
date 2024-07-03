@@ -123,11 +123,11 @@ export class Controller {
     if ('$grid' in req.query) {
       let func;
       if (typeof this.getGrid === 'function') {
-        func = this.getGrid;
+        func = (...args) => this.getGrid(...args);
       } else if (typeof this.constructor.getGrid === 'function') {
         func = this.constructor.getGrid;
       } else if (typeof this.getFields === 'function') {
-        func = this.getFields;
+        func = (...args) => this.getFields(...args);
       } else if (typeof this.constructor.getFields === 'function') {
         func = this.constructor.getFields;
       }
@@ -161,11 +161,11 @@ export class Controller {
     if ('$form' in req.query) {
       let func;
       if (typeof this.getForm === 'function') {
-        func = this.getForm;
+        func = (...args) => this.getForm(...args);
       } else if (typeof this.constructor.getForm === 'function') {
         func = this.constructor.getForm;
       } else if (typeof this.getFields === 'function') {
-        func = this.getFields;
+        func = (...args) => this.getFields(...args);
       } else if (typeof this.constructor.getFields === 'function') {
         func = this.constructor.getFields;
       }
@@ -199,11 +199,11 @@ export class Controller {
     if ('$object' in req.query) {
       let func;
       if (typeof this.getObject === 'function') {
-        func = this.getObject;
+        func = (...args) => this.getObject(...args);
       } else if (typeof this.constructor.getObject === 'function') {
         func = this.constructor.getObject;
       } else if (typeof this.getFields === 'function') {
-        func = this.getFields;
+        func = (...args) => this.getFields(...args);
       } else if (typeof this.constructor.getFields === 'function') {
         func = this.constructor.getFields;
       }
