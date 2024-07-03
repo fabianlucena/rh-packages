@@ -261,9 +261,9 @@ export class ProjectController extends Controller {
     res.status(200).send(form);
   }
 
-  deleteForUuidPermission = 'project.delete';
-  enableForUuidPermission = 'project.edit';
-  disableForUuidPermission = 'project.edit';
+  deleteForUuidPermission =      'project.delete';
+  postEnableForUuidPermission =  'project.edit';
+  postDisableForUuidPermission = 'project.edit';
 
   'patchPermission /:uuid' = 'project.edit';
   async 'patch /:uuid'(req, res) {
