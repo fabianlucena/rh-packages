@@ -2,96 +2,94 @@
     {
         "source": "Assignee",
         "language": "es",
-        "isDraft": false,
         "translation": "Encargado",
-        "ref": "..\\rh-workflow\\models\\wf-workflow.js [101,31]"
+        "ref": "..\\rh-workflow\\models\\wf-workflow.js [105,25]"
     },
     {
         "source": "Create workflows",
         "language": "es",
         "context": "permission",
         "translation": "Crear flujos de trabajos",
-        "ref": "..\\rh-workflow\\conf_data.js [16,46]"
+        "ref": "..\\rh-workflow\\conf_data.js [16,43]"
     },
     {
         "source": "Delete workflows",
         "language": "es",
         "context": "permission",
         "translation": "Eliminar flujos de trabajos",
-        "ref": "..\\rh-workflow\\conf_data.js [18,46]"
+        "ref": "..\\rh-workflow\\conf_data.js [18,43]"
     },
     {
         "source": "Edit workflows",
         "language": "es",
         "context": "permission",
         "translation": "Modificar flujos de trabajos",
-        "ref": "..\\rh-workflow\\conf_data.js [17,46]"
+        "ref": "..\\rh-workflow\\conf_data.js [17,43]"
     },
     {
         "source": "Exists another row with that title.",
         "language": "es",
         "translation": "Existe otra fila con ese título.",
-        "ref": "..\\rh-workflow\\services\\wf-transition.js [40,41]"
+        "ref": "..\\rh-workflow\\services\\wf-transition.js [33,35]"
     },
     {
         "source": "From parameter is missing or from status does not exist.",
         "language": "es",
         "context": "workflow",
         "translation": "El parámetro desde (from) está perdido o el estado desde (from) no existe.",
-        "ref": "..\\rh-workflow\\services\\wf-transition.js [27,38]"
+        "ref": "..\\rh-workflow\\services\\wf-transition.js [20,32]"
     },
     {
         "source": "Get workflows",
         "language": "es",
         "context": "permission",
         "translation": "Obtener flujos de trabajos",
-        "ref": "..\\rh-workflow\\conf_data.js [15,46]"
+        "ref": "..\\rh-workflow\\conf_data.js [15,43]"
     },
     {
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-workflow-es.js [18,28]"
+        "ref": "rh-workflow-es.js [18,20]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-workflow-es.js [19,34]"
+        "ref": "rh-workflow-es.js [19,26]"
     },
     {
         "source": "To parameter is missing or to status does not exist.",
         "language": "es",
         "context": "workflow",
         "translation": "No se encuentra el parámetro hasta (to) o el estado hasta (to) no existe.",
-        "ref": "..\\rh-workflow\\services\\wf-transition.js [31,38]"
+        "ref": "..\\rh-workflow\\services\\wf-transition.js [24,32]"
     },
     {
         "source": "Workflow",
         "language": "es",
-        "isDraft": false,
         "translation": "Flujo de trabajo",
-        "ref": "..\\rh-workflow\\models\\wf-workflow.js [121,31]"
+        "ref": "..\\rh-workflow\\models\\wf-workflow.js [125,25]"
     },
     {
         "source": "Workflow manager",
         "language": "es",
         "context": "role",
         "translation": "Administrador de flujos de trabajos",
-        "ref": "..\\rh-workflow\\conf_data.js [7,46]"
+        "ref": "..\\rh-workflow\\conf_data.js [7,43]"
     },
     {
         "source": "Workflow type parameter is missing or workflow type does not exist.",
         "language": "es",
         "context": "workflow",
         "translation": "No se encuentra el parámetro tipo de flujo de trabajo (workflow type) o el tipo de flujo de trabajo (workflow type) no existe.",
-        "ref": "..\\rh-workflow\\services\\wf-transition.js [23,38]"
+        "ref": "..\\rh-workflow\\services\\wf-transition.js [16,32]"
     },
     {
         "source": "Workflows",
         "language": "es",
         "context": "menu",
         "translation": "Flujos de trabajos",
-        "ref": "..\\rh-workflow\\conf_data.js [15,174]"
+        "ref": "..\\rh-workflow\\conf_data.js [15,172]"
     }
 ]

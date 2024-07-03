@@ -3,20 +3,19 @@
         "source": "Can\\'t include \"%s\" because is not reference in service \"%s\".",
         "language": "es",
         "translation": "No se puede incluir \"%s\" porque no es una referencia en el servicio \"%s\".\n",
-        "ref": "..\\rf-service\\rf-service-base.js [542,39]"
+        "ref": "..\\rf-service\\rf-service-base.js [546,39]"
     },
     {
         "source": "Error in reference definition for reference name \"%s\", in service \"%s\".",
         "language": "es",
-        "isDraft": false,
         "translation": "Error en la definición de la referencia para la referencia nombre \"%s\", en el servicio \"%s\".",
-        "ref": "..\\rf-service\\rf-service-base.js [127,37]"
+        "ref": "..\\rf-service\\rf-service-base.js [131,37]"
     },
     {
         "source": "Error service name \"%s\", not found for reference \"%s\" in service \"%s\".",
         "language": "es",
         "translation": "Error en el nombre de servicio \"%s\", no se encuentra la referencia \"%s\" en el servicio \"%s\".",
-        "ref": "..\\rf-service\\rf-service-base.js [153,41]"
+        "ref": "..\\rf-service\\rf-service-base.js [157,41]"
     },
     {
         "source": "Exists another row with that UUID.",
@@ -33,7 +32,6 @@
     {
         "source": "Exists another row with title %s in %s.",
         "language": "es",
-        "isDraft": false,
         "translation": "Existe otra fila con el título %s en %s.",
         "ref": "..\\rf-service\\rf-service-mixin-unique-title.js [31,35]"
     },
@@ -52,7 +50,6 @@
     {
         "source": "Invalid value for name to get row in %s.",
         "language": "es",
-        "isDraft": false,
         "translation": "Valor inválido para el nombre al obtener las filas en %s.",
         "ref": "..\\rf-service\\rf-service-mixin-name.js [49,27]"
     },
