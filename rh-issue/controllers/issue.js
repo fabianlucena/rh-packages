@@ -1,11 +1,24 @@
 import { conf } from '../conf.js';
 import { Controller } from 'rh-controller';
 import { getOptionsFromParamsAndOData, _HttpError, getUuidFromRequest, makeContext } from 'http-util';
-import { checkParameter, filterVisualItemsByAliasName } from 'rf-util';
-import { loc, defaultLoc } from 'rf-locale';
+import { checkParameter } from 'rf-util';
+import { defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
 
 export class IssueController extends Controller {
+  constructor() {
+    super();
+
+    this.projectService =          dependency.get('projectService');
+    this.issueTypeService =        dependency.get('issueTypeService');
+    this.issuePriorityService =    dependency.get('issuePriorityService');
+    this.issueCloseReasonService = dependency.get('issueCloseReasonService');
+    this.wfWorkflowService =       dependency.get('wfWorkflowService');
+    this.wfStatusService =         dependency.get('wfStatusService');
+    this.wfTransitionService =     dependency.get('wfTransitionService');
+    this.userService =             dependency.get('userService');
+  }
+
   async checkDataForProjectId(req, data) {
     if (!conf.filters?.getCurrentProjectId) {
       return data.projectId;
@@ -14,22 +27,22 @@ export class IssueController extends Controller {
     data ??= {};
     if (!data.projectId) {
       if (data.projectUuid) {
-        data.projectId = await conf.global.services.Project.singleton().getIdForUuid(data.projectUuid);
+        data.projectId = await this.projectService.getIdForUuid(data.projectUuid);
       } else if (data.projectName) {
-        data.projectId = await conf.global.services.Project.singleton().getIdForName(data.projectName);
+        data.projectId = await this.projectService.getIdForName(data.projectName);
       } else {
         data.projectId = await conf.filters.getCurrentProjectId(req) ?? null;
         return data.projectId;
       }
         
       if (!data.projectId) {
-        throw new _HttpError(loc._cf('issue', 'The project does not exist or you do not have permission to access it.'), 404);
+        throw new _HttpError(checkParameter._cf('issue', 'The project does not exist or you do not have permission to access it.'), 404);
       }
     }
 
     const projectId = await conf.filters.getCurrentProjectId(req) ?? null;
     if (data.projectId != projectId) {
-      throw new _HttpError(loc._cf('issue', 'The project does not exist or you do not have permission to access it.'), 403);
+      throw new _HttpError(checkParameter._cf('issue', 'The project does not exist or you do not have permission to access it.'), 403);
     }
 
     return data.projectId;
@@ -43,43 +56,39 @@ export class IssueController extends Controller {
       throw new _HttpError(loc._cf('issue', 'The issue with UUID %s does not exists.'), 404, uuid);
     }
 
-    const projectId = await IssueController.checkDataForProjectId(req, { projectId: issue.projectId });
+    const projectId = await this.checkDataForProjectId(req, { projectId: issue.projectId });
 
     return { uuid, projectId };
   }
 
+  postPermission = 'issue.create';
   async post(req, res) {
     const loc = req.loc ?? defaultLoc;
     checkParameter(req?.body, { name: loc._cf('issue', 'Name'), title: loc._cf('issue', 'Title') });
         
     const data = { ...req.body };
-    await IssueController.checkDataForProjectId(req, data);
+    await this.checkDataForProjectId(req, data);
 
     await this.service.create(data, { context: makeContext(req, res) });
 
     res.status(204).send();
   }
 
-  async get(req, res) {
-    if ('$grid' in req.query) {
-      return IssueController.getGrid(req, res);
-    } else if ('$form' in req.query) {
-      return IssueController.getForm(req, res);
-    }
-
+  getPermission = 'issue.get';
+  async getData(req) {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = {
       view: true,
-      limit: 10,
-      offset: 0,
+      limit:  10,
+      offset:  0,
       include: {
-        Project: true,
-        Type: true,
-        Priority: true,
-        Status: true,
-        Workflow: true,
-        CloseReason: true,
+        project:     true,
+        type:        true,
+        priority:    true,
+        status:      true,
+        workflow:    true,
+        closeReason: true,
       },
       loc,
     };
@@ -95,179 +104,133 @@ export class IssueController extends Controller {
     await conf.global.eventBus?.$emit('Issue.response.getted', result, options);
     result = await this.service.sanitize(result);
 
-    res.status(200).send(result);
+    return result;
   }
 
-  async getGrid(req, res) {
-    checkParameter(req.query, '$grid');
-
-    const actions = [];
-    if (req.permissions.includes('issue.create')) actions.push('create');
-    if (req.permissions.includes('issue.edit'))   actions.push('enableDisable', 'edit');
-    if (req.permissions.includes('issue.delete')) actions.push('delete');
-    actions.push('search', 'paginate');
+  async getFields(req) {
+    const gridActions = [];
+    if (req.permissions.includes('issue.create')) gridActions.push('create');
+    if (req.permissions.includes('issue.edit'))   gridActions.push('enableDisable', 'edit');
+    if (req.permissions.includes('issue.delete')) gridActions.push('delete');
+    gridActions.push('search', 'paginate');
         
-    const loc = req.loc ?? defaultLoc;
-    const columns = [
-      {
-        name: 'title',
-        type: 'text',
-        label: await loc._cf('issue', 'Title'),
-      },
-      {
-        name: 'name',
-        type: 'text',
-        label: await loc._cf('issue', 'Name'),
-      },
-      {
-        alias: 'project',
-        name: 'Project.title',
-        type: 'text',
-        label: await loc._cf('issue', 'Project'),
-      },
-      {
-        alias: 'type',
-        name: 'Type.title',
-        type: 'text',
-        label: await loc._cf('issue', 'Type'),
-      },
-      {
-        alias: 'priority',
-        name: 'Priority.title',
-        type: 'text',
-        label: await loc._cf('issue', 'Priority'),
-      },
-    ];
-
-    const details = [
-      {
-        name: 'description',
-        type: 'text',
-        label: await loc._cf('issue', 'Description'),
-      },
-      {
-        alias: 'closeReason',
-        name: 'CloseReason.title',
-        type: 'text',
-        label: await loc._cf('issue', 'Close reason'),
-      },
-    ];
-
-    const grid = {
-      title: await loc._('Issues'),
-      load: {
-        service: 'issue',
-        method: 'get',
-      },
-      actions,
-      columns: await filterVisualItemsByAliasName(columns, conf?.issue, { loc, entity: 'Issue', translationContext: 'issue', interface: 'grid' }),
-      details: await filterVisualItemsByAliasName(details, conf?.issue, { loc, entity: 'Issue', translationContext: 'issue', interface: 'grid' }),
-    };
-
-    await conf.global.eventBus?.$emit('Issue.interface.grid.get', grid, { loc });
-    await conf.global.eventBus?.$emit('interface.grid.get', grid, { loc, entity: 'Issue' });
-
-    res.status(200).send(grid);
-  }
-
-  async getForm(req, res) {
-    checkParameter(req.query, '$form');
-
     const loc = req.loc ?? defaultLoc;
     const fields = [
       {
-        name: 'title',
-        type: 'text',
-        label: await loc._cf('issue', 'Title'),
-        placeholder: await loc._cf('issue', 'Title'),
-        required: true,
+        name:        'title',
+        type:        'text',
+        label:       await loc._c('issue', 'Title'),
+        placeholder: await loc._c('issue', 'Type the title here'),
+        isField:     true,
+        isColumn:    true,
+        required:    true,
         onValueChanged: {
           mode: {
-            create: true,
+            create:       true,
             defaultValue: false,
           },
-          action: 'setValues',
+          action:   'setValues',
           override: false,
           map: {
             name: {
-              source: 'title',
+              source:   'title',
               sanitize: 'dasherize',
             },
           },
         },
       },
       {
-        name: 'name',
-        type: 'text',
-        label: await loc._cf('issue', 'Name'),
-        placeholder: await loc._cf('issue', 'Name'),
-        required: true,
+        name:       'name',
+        type:       'text',
+        label:       await loc._c('issue', 'Name'),
+        placeholder: await loc._c('issue', 'Type the name here'),
+        isField:     true,
+        isColumn:    true,
+        required:    true,
         disabled: {
-          create: false,
+          create:      false,
           defaultValue: true,
         },
       },
       {
-        alias: 'project',
-        name: 'Project.uuid',
-        type: 'select',
-        label: await loc._cf('issue', 'Project'),
-        placeholder: await loc._cf('issue', 'Project'),
-        required: true,
+        alias:       'project',
+        name:        'project.uuid',
+        gridName:    'project.title',
+        type:        'select',
+        gridType:    'text',
+        label:       await loc._c('issue', 'Project'),
+        placeholder: await loc._c('issue', 'Select the project'),
+        isField:     true,
+        isColumn:    true,
+        required:    true,
         loadOptionsFrom: {
           service: 'issue/project',
-          value: 'uuid',
-          text: 'title',
-          title: 'description',
+          value:   'uuid',
+          text:    'title',
+          title:   'description',
         },
       },
       {
-        alias: 'type',
-        name: 'Type.uuid',
-        type: 'select',
-        label: await loc._cf('issue', 'Type'),
-        placeholder: await loc._cf('issue', 'Type'),
-        required: true,
+        alias:       'type',
+        name:        'type.uuid',
+        gridName:    'type.title',
+        type:        'select',
+        gridType:    'text',
+        label:       await loc._c('issue', 'Type'),
+        placeholder: await loc._c('issue', 'Select the type'),
+        isField:     true,
+        isColumn:    true,
+        required:    true,
         loadOptionsFrom: {
           service: 'issue/type',
-          value: 'uuid',
-          text: 'title',
-          title: 'description',
+          value:   'uuid',
+          text:    'title',
+          title:   'description',
         },
       },
       {
-        alias: 'priority',
-        name: 'Priority.uuid',
-        type: 'select',
-        label: await loc._cf('issue', 'Priority'),
-        placeholder: await loc._cf('issue', 'Priority'),
+        alias:       'priority',
+        name:        'priority.uuid',
+        gridName:    'priority.title',
+        type:        'select',
+        gridType:    'text',
+        label:       await loc._c('issue', 'Priority'),
+        placeholder: await loc._c('issue', 'Select the priority'),
+        isField:     true,
+        isColumn:    true,
         options: [{ value: null, text: '' }],
         loadOptionsFrom: {
           service: 'issue/priority',
-          value: 'uuid',
-          text: 'title',
-          title: 'description',
+          value:   'uuid',
+          text:    'title',
+          title:   'description',
         },
       },
       {
-        name: 'isEnabled',
-        type: 'checkbox',
-        label: await loc._cf('issue', 'Enabled'),
-        placeholder: await loc._cf('issue', 'Enabled'),
-        value: true,
+        name:        'description',
+        type:        'textArea',
+        label:       await loc._c('issue', 'Description'),
+        placeholder: await loc._c('issue', 'Type the description here'),
+        isField:     true,
+        isDetail:    true,
       },
       {
-        name: 'description',
-        type: 'textArea',
-        label: await loc._cf('issue', 'Description'),
-        placeholder: await loc._cf('issue', 'Description'),
+        name:        'isEnabled',
+        type:        'checkbox',
+        label:       await loc._c('issue', 'Enabled'),
+        placeholder: await loc._c('issue', 'Check for enable and uncheck for disable'),
+        value:       true,
+        isField:     true,
       },
       {
-        alias: 'closeReason',
-        name: 'CloseReason.uuid',
-        type: 'select',
-        label: await loc._cf('issue', 'Close reason'),
-        placeholder: await loc._cf('issue', 'Close reason'),
+        alias:       'closeReason',
+        name:        'closeReason.uuid',
+        gridName:    'closeReason.title',
+        type:        'select',
+        label:       await loc._c('issue', 'Close reason'),
+        placeholder: await loc._c('issue', 'Type the description here'),
+        isField:     true,
+        isDetail:    true,
         options: [{ value: null, text: '' }],
         loadOptionsFrom: {
           service: 'issue/close-reason',
@@ -278,70 +241,28 @@ export class IssueController extends Controller {
       },
     ];
 
-    const form = {
-      title: await loc._('Issues'),
+    const result = {
+      title: await loc._c('issue', 'Issues'),
+      load: {
+        service: 'issue',
+        method: 'get',
+      },
       action: 'issue',
-      fields: await filterVisualItemsByAliasName(fields, conf?.issue, { loc, entity: 'Issue', interface: 'form' }),
+      gridActions,
+      fields,
+      fieldsFilter: conf?.issue,
     };
 
-    await conf.global.eventBus?.$emit('Issue.interface.form.get', form, { loc });
-    await conf.global.eventBus?.$emit('interface.form.get', form, { loc, entity: 'Issue' });
-        
-    res.status(200).send(form);
+    return result;
   }
 
-  async delete(req, res) {
-    const { uuid } = await this.checkUuid(req);
+  deleteForUuidPermission =      'issue.delete';
+  postEnableForUuidPermission =  'issue.edit';
+  postDisableForUuidPermission = 'issue.edit';
+  patchForUuidPermission =       'issue.edit';
 
-    const rowsDeleted = await this.service.deleteForUuid(uuid);
-    if (!rowsDeleted) {
-      const loc = req.loc ?? defaultLoc;
-      throw new _HttpError(loc._cf('issue', 'Issue with UUID %s does not exists.'), 403, uuid);
-    }
-
-    res.sendStatus(204);
-  }
-
-  async enablePost(req, res) {
-    const { uuid } = await this.checkUuid(req);
-
-    const rowsUpdated = await this.service.enableForUuid(uuid);
-    if (!rowsUpdated) {
-      const loc = req.loc ?? defaultLoc;
-      throw new _HttpError(loc._cf('issue', 'Issue with UUID %s does not exists.'), 403, uuid);
-    }
-
-    res.sendStatus(204);
-  }
-
-  async disablePost(req, res) {
-    const { uuid } = await this.checkUuid(req);
-
-    const rowsUpdated = await this.service.disableForUuid(uuid);
-    if (!rowsUpdated) {
-      const loc = req.loc ?? defaultLoc;
-      throw new _HttpError(loc._cf('issue', 'Issue with UUID %s does not exists.'), 403, uuid);
-    }
-
-    res.sendStatus(204);
-  }
-
-  async patch(req, res) {
-    const { uuid, projectId } = await this.checkUuid(req);
-
-    const loc = req.loc ?? defaultLoc;
-    const data = { ...req.body, uuid: undefined };
-    const where = { uuid, projectId };
-
-    const rowsUpdated = await this.issueService.updateFor(data, where, { context: makeContext(req, res) });
-    if (!rowsUpdated) {
-      throw new _HttpError(loc._cf('issue', 'Issue with UUID %s does not exists.'), 403, uuid);
-    }
-
-    res.sendStatus(204);
-  }
-
-  async getProject(req, res) {
+  'getPermission /project' = 'issue.edit';
+  async 'get /project'(req, res) {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = { view: true, limit: 10, offset: 0, loc };
@@ -352,40 +273,92 @@ export class IssueController extends Controller {
       options.where.id = await conf.filters.getCurrentProjectId(req) ?? null;
     }
 
-    const result = await conf.global.services.Project.singleton().getListAndCount(options);
+    const result = await this.projectService.getListAndCount(options);
 
     res.status(200).send(result);
   }
 
-  async getType(req, res) {
+  'getPermission /type' = 'issue.edit';
+  async 'get /type'(req, res) {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = { view: true, limit: 10, offset: 0, loc };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    const result = await conf.global.services.IssueType.singleton().getListAndCount(options);
+    const result = await this.issueTypeService.getListAndCount(options);
 
     res.status(200).send(result);
   }
 
-  async getPriority(req, res) {
+  'getPermission /priority' = 'issue.edit';
+  async 'get /priority'(req) {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = { view: true, limit: 10, offset: 0, loc };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    const result = await conf.global.services.IssuePriority.singleton().getListAndCount(options);
+    let result = await this.issuePriorityService.getListAndCount(options);
+    result = this.issuePriorityService.sanitize(result);
 
-    res.status(200).send(result);
+    return result;
   }
 
-  async getCloseReason(req, res) {
+  'getPermission /close-reason' = 'issue.edit';
+  async 'get /close-reason'(req, res) {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = { view: true, limit: 10, offset: 0, loc };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    const result = await conf.global.services.IssueCloseReason.singleton().getListAndCount(options);
+    const result = await this.issueCloseReasonService.getListAndCount(options);
+
+    res.status(200).send(result);
+  }
+
+  'getPermission /workflow' = 'issue.edit';
+  async 'get /workflow'(req, res) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid', name: 'string' };
+    let options = { view: true, limit: 10, offset: 0, loc };
+
+    options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
+    const result = await this.wfWorkflowService.getListAndCount(options);
+
+    res.status(200).send(result);
+  }
+
+  'getPermission /status' = 'issue.edit';
+  async 'get /status'(req, res) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid', name: 'string' };
+    let options = { view: true, limit: 10, offset: 0, loc };
+
+    options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
+    const result = await this.wfStatusService.getListAndCount(options);
+
+    res.status(200).send(result);
+  }
+
+  'getPermission /assignee' = 'issue.edit';
+  async 'get /assignee'(req, res) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid', name: 'string' };
+    let options = { view: true, limit: 10, offset: 0, loc };
+
+    options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
+    const result = await this.userService.getListAndCount(options);
+
+    res.status(200).send(result);
+  }
+
+  'getPermission /transition' = 'issue.edit';
+  async 'get /transition'(req, res) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid', name: 'string' };
+    let options = { view: true, limit: 10, offset: 0, loc };
+
+    options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
+    const result = await this.wfTransitionService.getListAndCount(options);
 
     res.status(200).send(result);
   }
