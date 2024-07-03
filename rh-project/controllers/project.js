@@ -9,7 +9,7 @@ export class ProjectController extends Controller {
   constructor() {
     super();
 
-    this.service = dependency.get('projectService');
+    this.service =        dependency.get('projectService');
     this.companyService = dependency.get('companyService', null);
   }
 
@@ -115,7 +115,7 @@ export class ProjectController extends Controller {
     res.status(200).send(result);
   }
 
-  async getGrid(req, res) {
+  async getGrid(req) {
     checkParameter(req.query, '$grid');
 
     const actions = [];
@@ -172,10 +172,7 @@ export class ProjectController extends Controller {
       columns: await filterVisualItemsByAliasName(columns, conf?.project, { loc, entity: 'Project', translationContext: 'project', interface: 'grid' }),
     };
 
-    await conf.global.eventBus?.$emit('Project.interface.grid.get', grid, { loc });
-    await conf.global.eventBus?.$emit('interface.grid.get', grid, { loc, entity: 'Project' });
-
-    res.status(200).send(grid);
+    return grid;
   }
 
   async getForm(req, res) {

@@ -12,5 +12,6 @@ export const conf = {
   schema: 'workflow',
   modelsPath: `${dirname}/models`,
   servicesPath: `${dirname}/services`,
+  controllersPath: `${dirname}/controllers`,
   iconsPath: `${dirname}/icons`,
 };
