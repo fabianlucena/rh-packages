@@ -1,42 +1,129 @@
 [
     {
-        "source": "Option",
+        "source": "Attribute",
         "language": "es",
         "context": "eav",
-        "translation": "Opción",
-        "ref": "..\\rh-eav\\conf_data.js [6,37]"
+        "translation": "Atributo",
+        "ref": "..\\rh-eav\\services\\value_tag.js [31,56]\n..\\rh-eav\\services\\attribute_tag.js [12,56]"
+    },
+    {
+        "source": "Cannot update option value because attributeId data is missing or empty",
+        "language": "es",
+        "context": "eav",
+        "isDraft": false,
+        "translation": "No se puede actualizar la opción porque el dato ID de atributo está ausente o es vacío.",
+        "ref": "..\\rh-eav\\services\\value_text.js [14,28]\n..\\rh-eav\\services\\value_tag.js [99,28]\n..\\rh-eav\\services\\value_option.js [42,28]"
+    },
+    {
+        "source": "Cannot update option value because entityId data is missing or empty",
+        "language": "es",
+        "context": "eav",
+        "isDraft": false,
+        "translation": "No se puede actualizar la opción porque el dato de ID de entidad (entidadId) está vacío o no se encuentra.",
+        "ref": "..\\rh-eav\\services\\value_text.js [18,28]\n..\\rh-eav\\services\\value_tag.js [103,28]\n..\\rh-eav\\services\\value_option.js [46,28]"
+    },
+    {
+        "source": "Delete without where is forbiden.",
+        "language": "es",
+        "context": "eav",
+        "translation": "Eliminar sin filtro (where) está prohibido.",
+        "ref": "..\\rh-eav\\services\\value_tag.js [161,27]\n..\\rh-eav\\services\\value_option.js [14,27]"
+    },
+    {
+        "source": "Error unknown attribute type: %s",
+        "language": "es",
+        "context": "eav",
+        "translation": "Error tipo de atributo %s desconocido",
+        "ref": "..\\rh-eav\\rh-eav.js [308,61]"
+    },
+    {
+        "source": "Exists another attribute with that title for this entity.",
+        "language": "es",
+        "context": "eav",
+        "isDraft": false,
+        "translation": "Existe otro atributo con ese título para esta entidad.",
+        "ref": "..\\rh-eav\\services\\attribute.js [70,35]"
+    },
+    {
+        "source": "Exists another tag with that name.",
+        "language": "es",
+        "context": "eav",
+        "translation": "Existe otra etiqueta con ese nombre.",
+        "ref": "..\\rh-eav\\services\\attribute_tag.js [18,36]"
+    },
+    {
+        "source": "No attribute for tag creation.",
+        "language": "es",
+        "context": "eav",
+        "translation": "No hay atributo para la creación de etiquetas.",
+        "ref": "..\\rh-eav\\services\\value_tag.js [63,30]"
+    },
+    {
+        "source": "Select",
+        "language": "es",
+        "context": "eav",
+        "translation": "Seleccione",
+        "ref": "..\\rh-eav\\conf_data.js [6,34]"
     },
     {
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-eav-es.js [18,28]"
+        "ref": "rh-eav-es.js [18,20]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-eav-es.js [19,34]"
+        "ref": "rh-eav-es.js [19,26]"
+    },
+    {
+        "source": "Tag",
+        "language": "es",
+        "context": "eav",
+        "translation": "Etiqueta",
+        "ref": "..\\rh-eav\\services\\value_tag.js [32,56]"
+    },
+    {
+        "source": "Tags",
+        "language": "es",
+        "context": "eav",
+        "translation": "Etiquetas",
+        "ref": "..\\rh-eav\\conf_data.js [7,34]"
     },
     {
         "source": "Text",
         "language": "es",
         "context": "eav",
         "translation": "Texto",
-        "ref": "..\\rh-eav\\conf_data.js [5,37]"
+        "ref": "..\\rh-eav\\conf_data.js [5,34]"
+    },
+    {
+        "source": "The tag is already linked to the entity.",
+        "language": "es",
+        "context": "eav",
+        "translation": "La etiqueta ya está vinculada a la entidad.",
+        "ref": "..\\rh-eav\\services\\value_tag.js [36,36]"
     },
     {
         "source": "The value is a free text.",
         "language": "es",
         "context": "eav",
         "translation": "El valor es un texto libre.",
-        "ref": "..\\rh-eav\\conf_data.js [5,76]"
+        "ref": "..\\rh-eav\\conf_data.js [5,73]"
     },
     {
         "source": "The value must be select from a set of options.",
         "language": "es",
         "context": "eav",
         "translation": "El valor debe seleccionarse desde un conjunto de opciones.",
-        "ref": "..\\rh-eav\\conf_data.js [6,76]"
+        "ref": "..\\rh-eav\\conf_data.js [6,73]"
+    },
+    {
+        "source": "The values are tags, free to add and select.",
+        "language": "es",
+        "context": "eav",
+        "translation": "Los valores son etiquetas, para agregar libremente y seleccionar.",
+        "ref": "..\\rh-eav\\conf_data.js [7,73]"
     }
 ]

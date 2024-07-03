@@ -4,7 +4,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Encargado",
-        "ref": "..\\rh-issue\\conf_data.js [49,26]"
+        "ref": "..\\rh-issue\\conf_data.js [50,31]"
     },
     {
         "source": "Blocker",
@@ -24,37 +24,36 @@
         "source": "Check for enable and uncheck for disable",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "Marque para habilitar y desmarque para deshabilitar",
-        "ref": "..\\rh-issue\\controllers\\issue.js [239,32]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [236,32]"
     },
     {
         "source": "Close",
         "language": "es",
         "context": "issue",
         "translation": "Cerrar",
-        "ref": "..\\rh-issue\\conf_data.js [81,24]"
+        "ref": "..\\rh-issue\\conf_data.js [82,24]"
     },
     {
         "source": "Close a ticket.",
         "language": "es",
         "context": "issue",
         "translation": "Cierra una incidencia.",
-        "ref": "..\\rh-issue\\conf_data.js [84,30]"
+        "ref": "..\\rh-issue\\conf_data.js [85,30]"
     },
     {
         "source": "Close reason",
         "language": "es",
         "context": "issue",
         "translation": "Motivo de cierre",
-        "ref": "..\\rh-issue\\controllers\\issue.js [248,32]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [245,32]"
     },
     {
         "source": "Closed",
         "language": "es",
         "context": "issue",
         "translation": "Cerrado",
-        "ref": "..\\rh-issue\\conf_data.js [68,24]"
+        "ref": "..\\rh-issue\\conf_data.js [69,24]"
     },
     {
         "source": "Company productivity has stopped until this is resolved.",
@@ -82,7 +81,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Descripción ",
-        "ref": "..\\rh-issue\\controllers\\issue.js [230,32]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [227,32]"
     },
     {
         "source": "Desirable",
@@ -117,21 +116,21 @@
         "language": "es",
         "context": "issue",
         "translation": "Habilitado ",
-        "ref": "..\\rh-issue\\controllers\\issue.js [238,32]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [235,32]"
     },
     {
         "source": "Exists another issue with that name in this project.",
         "language": "es",
         "context": "issue",
         "translation": "Existe otra incidencia con ese nombre en este proyecto.",
-        "ref": "..\\rh-issue\\services\\issue.js [34,36]"
+        "ref": "..\\rh-issue\\services\\issue.js [39,36]"
     },
     {
         "source": "Exists another issue with that title in this project.",
         "language": "es",
         "context": "issue",
         "translation": "Existe otra incidencia con ese título en este proyecto.",
-        "ref": "..\\rh-issue\\services\\issue.js [45,36]"
+        "ref": "..\\rh-issue\\services\\issue.js [50,36]"
     },
     {
         "source": "Get issues",
@@ -151,9 +150,8 @@
         "source": "Issue",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "Incidencia",
-        "ref": "..\\rh-issue\\controllers\\issue.js [272,30]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [269,30]"
     },
     {
         "source": "Issue manager",
@@ -166,9 +164,8 @@
         "source": "Issues",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "Incidencias",
-        "ref": "..\\rh-issue\\controllers\\issue.js [280,24]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [277,24]"
     },
     {
         "source": "Issues",
@@ -182,58 +179,56 @@
         "language": "es",
         "context": "issue",
         "translation": "Minimalista",
-        "ref": "..\\rh-issue\\conf_data.js [44,18]\n..\\rh-issue\\conf_data.js [53,20]"
+        "ref": "..\\rh-issue\\conf_data.js [44,18]\n..\\rh-issue\\conf_data.js [54,20]"
     },
     {
         "source": "Name",
         "language": "es",
         "context": "issue",
         "translation": "Nombre ",
-        "ref": "..\\rh-issue\\controllers\\issue.js [67,43]\n..\\rh-issue\\controllers\\issue.js [163,32]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [67,43]\n..\\rh-issue\\controllers\\issue.js [160,32]"
     },
     {
         "source": "Open",
         "language": "es",
         "context": "issue",
         "translation": "Abierto",
-        "ref": "..\\rh-issue\\conf_data.js [60,24]"
+        "ref": "..\\rh-issue\\conf_data.js [61,24]"
     },
     {
         "source": "Priority",
         "language": "es",
         "context": "issue",
         "translation": "Prioridad",
-        "ref": "..\\rh-issue\\controllers\\issue.js [215,32]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [212,32]"
     },
     {
         "source": "Project",
         "language": "es",
         "context": "issue",
         "translation": "Proyecto",
-        "ref": "..\\rh-issue\\controllers\\issue.js [179,32]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [176,32]"
     },
     {
         "source": "Project parameter is missing.",
         "language": "es",
         "context": "issue",
         "translation": "No se encuentra el parámetro proyecto.",
-        "ref": "..\\rh-issue\\services\\issue.js [25,32]"
+        "ref": "..\\rh-issue\\services\\issue.js [30,32]"
     },
     {
         "source": "Related",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "Relacionado",
-        "ref": "..\\rh-issue\\controllers\\issue.js [263,32]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [260,32]"
     },
     {
         "source": "Relationship",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "Relación",
-        "ref": "..\\rh-issue\\controllers\\issue.js [268,30]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [265,30]"
     },
     {
         "source": "Resolved",
@@ -246,25 +241,22 @@
         "source": "Select the priority",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "Seleccione la prioridad",
-        "ref": "..\\rh-issue\\controllers\\issue.js [216,32]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [213,32]"
     },
     {
         "source": "Select the project",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "Seleccione el proyecto",
-        "ref": "..\\rh-issue\\controllers\\issue.js [180,32]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [177,32]"
     },
     {
         "source": "Select the type",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "Seleccione el tipo",
-        "ref": "..\\rh-issue\\controllers\\issue.js [198,32]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [195,32]"
     },
     {
         "source": "Spanish",
@@ -277,6 +269,14 @@
         "language": "es",
         "translation": "Idioma español.",
         "ref": "rh-issue-es.js [19,26]"
+    },
+    {
+        "source": "Status",
+        "language": "es",
+        "context": "issue",
+        "isDraft": false,
+        "translation": "Estado",
+        "ref": "..\\rh-issue\\conf_data.js [49,31]"
     },
     {
         "source": "Task",
@@ -304,7 +304,7 @@
         "language": "es",
         "context": "issue",
         "translation": "La incidencia está cerrada.",
-        "ref": "..\\rh-issue\\conf_data.js [71,30]"
+        "ref": "..\\rh-issue\\conf_data.js [72,30]"
     },
     {
         "source": "The issue is important and must be solved.",
@@ -332,7 +332,7 @@
         "language": "es",
         "context": "issue",
         "translation": "La incidencia está abierta.",
-        "ref": "..\\rh-issue\\conf_data.js [63,30]"
+        "ref": "..\\rh-issue\\conf_data.js [64,30]"
     },
     {
         "source": "The issue is very important and must be resolved as soon as possible..",
@@ -381,7 +381,7 @@
         "language": "es",
         "context": "issue",
         "translation": "El flujo de trabajo minimalista unicamente admite los estados abierto y cerrado.",
-        "ref": "..\\rh-issue\\conf_data.js [56,26]"
+        "ref": "..\\rh-issue\\conf_data.js [57,26]"
     },
     {
         "source": "The project does not exist or you do not have permission to access it.",
@@ -395,7 +395,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Título ",
-        "ref": "..\\rh-issue\\controllers\\issue.js [67,76]\n..\\rh-issue\\controllers\\issue.js [140,32]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [67,76]\n..\\rh-issue\\controllers\\issue.js [137,32]"
     },
     {
         "source": "Trivial",
@@ -409,31 +409,28 @@
         "language": "es",
         "context": "issue",
         "translation": "Tipo",
-        "ref": "..\\rh-issue\\controllers\\issue.js [197,32]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [194,32]"
     },
     {
         "source": "Type the description here",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "Escriba aquí la descripción",
-        "ref": "..\\rh-issue\\controllers\\issue.js [231,32]\n..\\rh-issue\\controllers\\issue.js [249,32]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [228,32]\n..\\rh-issue\\controllers\\issue.js [246,32]"
     },
     {
         "source": "Type the name here",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "Escriba aquí el nombre",
-        "ref": "..\\rh-issue\\controllers\\issue.js [164,32]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [161,32]"
     },
     {
         "source": "Type the title here",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "Escriba aquí el título",
-        "ref": "..\\rh-issue\\controllers\\issue.js [141,32]"
+        "ref": "..\\rh-issue\\controllers\\issue.js [138,32]"
     },
     {
         "source": "Urgent",
@@ -454,6 +451,6 @@
         "language": "es",
         "context": "issue",
         "translation": "Flujo de trabajo",
-        "ref": "..\\rh-issue\\conf_data.js [50,26]"
+        "ref": "..\\rh-issue\\conf_data.js [51,31]"
     }
 ]

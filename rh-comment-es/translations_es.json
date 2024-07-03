@@ -1,14 +1,38 @@
 [
     {
+        "source": "Add %s",
+        "language": "es",
+        "context": "comment",
+        "isDraft": false,
+        "translation": "Agregar %s",
+        "ref": "..\\rh-comment\\rh-comment.js [151,44]"
+    },
+    {
+        "source": "Date",
+        "language": "es",
+        "context": "comment",
+        "isDraft": false,
+        "translation": "Fecha",
+        "ref": "..\\rh-comment\\rh-comment.js [136,30]\n..\\rh-comment\\rh-comment.js [204,30]"
+    },
+    {
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-comment-es.js [18,28]"
+        "ref": "rh-comment-es.js [18,20]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-comment-es.js [19,34]"
+        "ref": "rh-comment-es.js [19,26]"
+    },
+    {
+        "source": "User",
+        "language": "es",
+        "context": "comment",
+        "isDraft": false,
+        "translation": "Usuario",
+        "ref": "..\\rh-comment\\rh-comment.js [142,30]\n..\\rh-comment\\rh-comment.js [210,30]"
     }
 ]
