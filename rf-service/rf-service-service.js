@@ -13,6 +13,7 @@ import { ServiceMixinIdName } from './rf-service-mixin-id-name.js';
 import { ServiceMixinIdEnable } from './rf-service-mixin-id-enable.js';
 import { ServiceMixinUuidEnable } from './rf-service-mixin-uuid-enable.js';
 import { ServiceMixinNameUniqueTitle } from './rf-service-mixin-name-unique-title.js';
+import { ServiceMixinExpirable } from './rf-service-mixin-expirable.js';
 
 const Service = {
   Base: ServiceBase,
@@ -31,6 +32,7 @@ const Service = {
   ServiceMixinIdEnable,
   ServiceMixinUuidEnable,
   ServiceMixinNameUniqueTitle,
+  ServiceMixinExpirable,
 };
 
 export default Service;
@@ -82,6 +84,10 @@ const classesData = [
   {
     name: 'Translatable',
     mixin: ServiceMixinTranslatable,
+  },
+  {
+    name: 'Expirable',
+    mixin: ServiceMixinExpirable,
   },
 ];
 

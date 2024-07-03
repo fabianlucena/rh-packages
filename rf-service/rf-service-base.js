@@ -148,16 +148,22 @@ export class ServiceBase {
         let serviceName = reference.service;
         let service = dependency.get(serviceName, null);
         if (!service) {
-          if (!reference.optional) {
-            throw new _Error(defaultLoc._f(
-              'Error service name "%s", not found for reference "%s" in service "%s".',
-              serviceName,
-              name,
-              this.constructor.name
-            ));
+          if (!serviceName.endsWith('Service')) {
+            service = dependency.get(serviceName + 'Service', null);
           }
 
-          continue;
+          if (!service) {
+            if (!reference.optional) {
+              throw new _Error(defaultLoc._f(
+                'Error service name "%s", not found for reference "%s" in service "%s".',
+                serviceName,
+                name,
+                this.constructor.name
+              ));
+            }
+
+            continue;
+          }
         }
 
         reference.service = service;
@@ -564,8 +570,9 @@ export class ServiceBase {
 
     options = this.arrangeSearchColumns(options);
 
-    if (options.view && !options.attributes?.length && this.viewAttributes?.length) {
-      options.attributes = this.viewAttributes;
+    if (options.view && this.viewAttributes?.length) {
+      options.attributes ??= [];
+      options.attributes.push(...this.viewAttributes.filter(a => !options.attributes.includes(a)));
     }
 
     if (options.orderBy?.length) {
@@ -798,7 +805,7 @@ export class ServiceBase {
    * @param {object} options - object with the where property for criteria to delete and the transaction object.
    * @returns {Promise[integer]} deleted rows count.
    */
-  async delete(options) {        
+  async delete(options) {
     await this.completeReferences(options.where, true);
 
     await this.emit('deleting', options?.emitEvent, options, this);
