@@ -23,6 +23,11 @@ export default (sequelize, DataTypes) => {
       this.belongsTo(models.User,             { as: 'assignee',    foreignKey: 'assigneesId' });
       this.belongsTo(models.IssueCloseReason, { as: 'closeReason', foreignKey: 'closeReasonId' });
     }
+
+    static postAssociate(models) {      
+      this.hasMany(models.IssueRelated, { as: 'relatedTo',   foreignKey: 'fromId' });
+      this.hasMany(models.IssueRelated, { as: 'relatedFrom', foreignKey: 'toId'   });
+    }
   }
   Issue.init({
     id: {

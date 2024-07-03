@@ -13,7 +13,10 @@ export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescription
     status:      'wfStatusService',
     assignee:    'userService',
     closeReason: 'issueCloseReasonService',
+    relatedTo:   'issueRelatedService',
+    relatedFrom: 'issueRelatedService',
   };
+  defaultTranslationContext = 'issue';
   viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'isTranslatable', 'description'];
   eventBus = conf.global.eventBus;
 
