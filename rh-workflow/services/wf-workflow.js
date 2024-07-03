@@ -7,7 +7,7 @@ export class WfWorkflowService extends Service.IdUuidEnableNameUniqueTitleOwnerM
       attributes: ['uuid', 'name'],
       whereColumn: 'name',
     },
-    type: 'wfWorkflowTypeService',
+    type: 'wfTypeService',
   };
   defaultTranslationContext = 'workflow';
   translatableColumns = [

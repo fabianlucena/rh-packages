@@ -31,7 +31,7 @@ async function configure(global, options) {
 async function init() {
   conf.modelEntityNameService = dependency.get('modelEntityNameService');
   conf.wfWorkflowService =      dependency.get('wfWorkflowService');
-  conf.wfWorkflowTypeService =  dependency.get('wfWorkflowTypeService');
+  conf.wfTypeService =          dependency.get('wfTypeService');
   conf.wfStatusService =        dependency.get('wfStatusService');
   conf.wfTransitionService =    dependency.get('wfTransitionService');
   conf.wfCaseService =          dependency.get('wfCaseService');
@@ -40,25 +40,21 @@ async function init() {
 async function updateData(global) {
   const data = global?.data;
 
-  await runSequentially(data?.workflowsTypes,       async data => updateWfWorkflowType(data));
+  await runSequentially(data?.workflowsTypes,       async data => updateWfType(data));
   await runSequentially(data?.workflowsStatuses,    async data => updateWfStatus(data));
   await runSequentially(data?.workflowsTransitions, async data => updateWfTransition(data));
   await runSequentially(data?.workflows,            async data => updateWfWorkflow(data));
 }
 
 async function updateWfWorkflow(workflow) {
-  if (workflow.type && !workflow.workflowType) {
-    workflow = { ...workflow, workflowType: workflow.type, type: undefined };
-  }
-
   const defaultData = { ownerModule: workflow.ownerModule };
     
-  if (typeof workflow.workflowType === 'object') {
-    await updateWfWorkflowType({ ...defaultData, ...workflow.workflowType });
-    workflow = { ...workflow, workflowType: workflow.workflowType.name };
+  if (typeof workflow.type === 'object') {
+    await updateWfType({ ...defaultData, ...workflow.type });
+    workflow = { ...workflow, type: workflow.type.name };
   }
 
-  defaultData.workflowType = workflow.workflowType;
+  defaultData.type = workflow.type;
 
   if (workflow.statuses) {
     await runSequentially(workflow.statuses, async data => updateWfStatus({ ...defaultData, ...data }));
@@ -71,20 +67,20 @@ async function updateWfWorkflow(workflow) {
   await conf.wfWorkflowService.createIfNotExists(workflow);
 }
 
-async function updateWfWorkflowType(workflowType) {
-  await conf.wfWorkflowTypeService.createIfNotExists(workflowType);
+async function updateWfType(type) {
+  await conf.wfTypeService.createIfNotExists(type);
 
   const defaultData = {
-    workflowType: workflowType.name,
-    ownerModule: workflowType.ownerModule,
+    type:        type.name,
+    ownerModule: type.ownerModule,
   };
 
-  if (workflowType.statuses) {
-    await runSequentially(workflowType.statuses, async data => updateWfStatus({ ...defaultData, ...data }));
+  if (type.statuses) {
+    await runSequentially(type.statuses, async data => updateWfStatus({ ...defaultData, ...data }));
   }
 
-  if (workflowType.transitions) {
-    await runSequentially(workflowType.transitions, async data => updateWfTransition({ ...defaultData, ...data }));
+  if (type.transitions) {
+    await runSequentially(type.transitions, async data => updateWfTransition({ ...defaultData, ...data }));
   }
 }
 
@@ -92,7 +88,7 @@ async function updateWfStatus(workflowStatus) {
   await conf.wfStatusService.createIfNotExists(workflowStatus);
 
   const defaultData = {
-    workflowType: workflowStatus.workflowType ?? workflowStatus.type,
+    type:        workflowStatus.type,
     ownerModule: workflowStatus.ownerModule,
   };
 
@@ -103,7 +99,7 @@ async function updateWfStatus(workflowStatus) {
 
 async function updateWfTransition(workflowTransition) {
   const defaultData = {
-    workflowType: workflowTransition.workflowType ?? workflowTransition.type,
+    type:        workflowTransition.type,
     ownerModule: workflowTransition.ownerModule,
   };
 
@@ -230,8 +226,8 @@ async function getted(entity, result, options) {
         },
         {
           include: {
-            Status: true,
-            Assignee: true,
+            //status:   true,
+            //assignee: true,
           },
           skipNoRowsError: true,
           loc: options.loc,

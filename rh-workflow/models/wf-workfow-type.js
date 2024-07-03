@@ -1,12 +1,12 @@
 import { conf } from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-  class WfWorkflowType extends sequelize.Sequelize.Model {
+  class WfType extends sequelize.Sequelize.Model {
     static associate(models) {
       this.belongsTo(models.Module, { as: 'ownerModule', foreignKey: 'ownerModuleId' });
     }
   }
-  WfWorkflowType.init({
+  WfType.init({
     id: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
@@ -48,8 +48,8 @@ export default (sequelize, DataTypes) => {
   }, {
     sequelize,
     timestamps: true,
-    tableName: 'WorkflowType',
+    tableName: 'Type',
     schema: conf.schema,
   });
-  return WfWorkflowType;
+  return WfType;
 };
