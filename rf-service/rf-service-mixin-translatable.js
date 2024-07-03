@@ -1,5 +1,3 @@
-import { ucfirst } from 'rf-util/rf-util-string.js';
-
 export const ServiceMixinTranslatable = Service => class ServiceTranslatable extends Service {
   async getList(options) {
     let result = super.getList(options);
@@ -34,9 +32,9 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
       delete row.isTranslatable;
     }
 
-    for (const referenceName in this.references) {
-      const reference = this.references[referenceName];
-      if (!reference) {
+    for (const name in this.references) {
+      const reference = this.references[name];
+      if (!reference || !row[name]) {
         continue;
       }
 
@@ -46,26 +44,14 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
           service = reference.service;
         }
 
-        if (!service?.prototype?.translateRow) {
-          continue;
-        }
-      }
-            
-      let name = ucfirst(referenceName);
-      if (!row[name]) {
-        name = service.constructor?.name;
-        if (name.endsWith('Service')) {
-          name = name.substring(0, name.length - 7);
-        }
-
-        if (!row[name]) {
+        if (!service?.translateRow
+          && !service?.prototype?.translateRow
+        ) {
           continue;
         }
       }
 
-      if (service.translateRow) {
-        row[name] = await service.translateRow(row[name], loc, options);
-      }
+      row[name] = await service.translateRow(row[name], loc, options);
     }
 
     return row;
