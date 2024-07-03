@@ -85,8 +85,6 @@ export class IssueController extends Controller {
         project:     true,
         type:        true,
         priority:    true,
-        status:      true,
-        workflow:    true,
         closeReason: true,
         relatedTo:   {
           include: {

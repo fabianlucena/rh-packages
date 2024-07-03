@@ -6,21 +6,10 @@ export default (sequelize, DataTypes) => {
       if (!models.Project) {
         throw new Error('There is no Project model. Try adding RH Project module to the project.');
       }
-
-      if (!models.WfWorkflow) {
-        throw new Error('There is no WfWorkflow model. Try adding RH Workflow module to the project.');
-      }
-
-      if (!models.WfStatus) {
-        throw new Error('There is no WfStatus model. Try adding RH Workflow module to the project.');
-      }
         
       this.belongsTo(models.Project,          { as: 'project',     foreignKey: 'projectId' });
       this.belongsTo(models.IssueType,        { as: 'type',        foreignKey: 'typeId' });
       this.belongsTo(models.IssuePriority,    { as: 'priority',    foreignKey: 'priorityId' });
-      this.belongsTo(models.WfWorkflow,       { as: 'workflow',    foreignKey: 'workflowId' });
-      this.belongsTo(models.WfStatus,         { as: 'status',      foreignKey: 'statusId' });
-      this.belongsTo(models.User,             { as: 'assignee',    foreignKey: 'assigneesId' });
       this.belongsTo(models.IssueCloseReason, { as: 'closeReason', foreignKey: 'closeReasonId' });
     }
 
@@ -64,10 +53,6 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
     },
     priorityId: {
-      type: DataTypes.BIGINT,
-      allowNull: true,
-    },
-    assigneeId: {
       type: DataTypes.BIGINT,
       allowNull: true,
     },

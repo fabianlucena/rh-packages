@@ -8,14 +8,11 @@ import dependency from 'rf-dependency';
 export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescriptionTranslatable {
   references = {
     project:     true,
-    type:        'issueTypeService',
-    priority:    'issuePriorityService',
-    workflow:    'wfWorkflowService',
-    status:      'wfStatusService',
-    assignee:    'userService',
-    closeReason: 'issueCloseReasonService',
-    relatedTo:   'issueRelatedService',
-    relatedFrom: 'issueRelatedService',
+    type:        'issueType',
+    priority:    'issuePriority',
+    closeReason: 'issueCloseReason',
+    relatedTo:   'issueRelated',
+    relatedFrom: 'issueRelated',
   };
   defaultTranslationContext = 'issue';
   viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'isTranslatable', 'description'];
