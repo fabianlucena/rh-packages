@@ -10,12 +10,12 @@ export class OAuth2ClientController extends Controller {
     this.service = dependency.get('oAuth2ClientService');
   }
 
-  getPermission =            'oauth2Client.get';
-  postPermission =           'oauth2Client.create';
-  patchPermission =          'oauth2Client.edit';
-  deletePermission =         'oauth2Client.delete';
-  enableForUuidPermission =  'oauth2Client.edit';
-  disableForUuidPermission = 'oauth2Client.edit';
+  getPermission =                'oauth2Client.get';
+  postPermission =               'oauth2Client.create';
+  patchPermission =              'oauth2Client.edit';
+  deletePermission =             'oauth2Client.delete';
+  postEnableForUuidPermission =  'oauth2Client.edit';
+  postDisableForUuidPermission = 'oauth2Client.edit';
 
   'getData';
 
