@@ -39,22 +39,22 @@ export class EavValueOptionService extends Service.IdUuidTranslatable {
 
   async updateValue(data, options) {
     if (!data.attributeId) {
-      throw new _Error(loc._f('Cannot update option value because attributeId data is missing or empty'));
+      throw new _Error(loc._cf('eav', 'Cannot update option value because attributeId data is missing or empty'));
     }
 
     if (!data.entityId) {
-      throw new _Error(loc._f('Cannot update option value because entityId data is missing or empty'));
+      throw new _Error(loc._cf('eav', 'Cannot update option value because entityId data is missing or empty'));
     }
 
     let valueId;
     const serviceData = {
       attributeId: data.attributeId,
       entityId: data.entityId,
-      optionUuid: data.value,
+      option: { uuid: data.value },
     };
 
     if (data.value) {
-      data.optionUuid = data.value;
+      data.option = { uuid: data.value };
       const result = await this.getFor(serviceData, options);
       if (!result?.length) {
         const inserted = await this.create(serviceData, options);

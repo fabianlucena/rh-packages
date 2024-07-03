@@ -67,7 +67,7 @@ export class EavAttributeService extends Service.IdUuidEnableNameUniqueTitleDesc
       }
     );
     if (rows?.length) {
-      throw new ConflictError(loc._f('Exists another attribute with that title for this entity.'));
+      throw new ConflictError(loc._cf('eav', 'Exists another attribute with that title for this entity.'));
     }
   }
 

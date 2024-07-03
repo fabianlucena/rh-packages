@@ -11,11 +11,11 @@ export class EavValueTextService extends Service.IdUuid {
 
   async updateValue(data, options) {
     if (!data.attributeId) {
-      throw new _Error(loc._f('Cannot update option value because attributeId data is missing or empty'));
+      throw new _Error(loc._cf('eav', 'Cannot update option value because attributeId data is missing or empty'));
     }
         
     if (!data.entityId) {
-      throw new _Error(loc._f('Cannot update option value because entityId data is missing or empty'));
+      throw new _Error(loc._cf('eav', 'Cannot update option value because entityId data is missing or empty'));
     }
 
     const serviceData = {

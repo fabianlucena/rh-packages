@@ -45,7 +45,7 @@ export default (sequelize, DataTypes) => {
     },
     fieldName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     isTranslatable: {
       type: DataTypes.BOOLEAN,

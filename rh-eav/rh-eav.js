@@ -206,14 +206,15 @@ async function interfaceGridGet(grid, options) {
         continue;
       }
 
+      const fieldName = attribute.fieldName ?? attribute.name;
       const field = {
-        name: attribute.name,
+        name:  fieldName,
         label: attribute.title,
-        type: attribute.htmlType,
+        type:  attribute.htmlType,
       };
 
       if (attribute.type === 'select') {
-        field.name = field.name + '.title';
+        field.name = fieldName + '.title';
       }
 
       if (attribute.isColumn) {
