@@ -148,7 +148,7 @@ async function interfaceFormGet(form, options) {
 
       const addField = {
         name: commentType.addName ?? (commentType.name + 'Add'),
-        label: commentType.addTitle,
+        label: commentType.addTitle ?? loc._c('comment', 'Add %s', commentType.title),
         type: 'textArea',
       };
       fields.push(addField);

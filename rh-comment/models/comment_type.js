@@ -39,15 +39,15 @@ export default (sequelize, DataTypes) => {
     },
     fieldName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     addName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     addTitle: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     isTranslatable: {
       type: DataTypes.BOOLEAN,
