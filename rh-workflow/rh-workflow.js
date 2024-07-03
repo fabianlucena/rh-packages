@@ -10,8 +10,6 @@ conf.updateData = updateData;
 conf.modelEntityNameCache = {};
 conf.workflowsCache = {};
 conf.fieldsCache = {};
-conf.columnsCache = {};
-conf.detailsCache = {};
 
 async function configure(global, options) {
   for (const k in options) {
@@ -144,60 +142,45 @@ async function interfaceGridGet(grid, options) {
     return;
   }
 
-  conf.columnsCache[entity] ||= {};
-  conf.detailsCache[entity] ||= {};
-
-  const columnsCache = conf.columnsCache[entity];
-  const detailsCache = conf.detailsCache[entity];
+  conf.fieldsCache[entity] ||= {};
+  const fieldsCache = conf.fieldsCache[entity];
 
   const loc = options?.loc;
   const language = loc?.language;
-  if (columnsCache[language] === undefined) {
-    columnsCache[language] = [];
-    detailsCache[language] = [];
+  if (fieldsCache[language] === undefined) {
+    fieldsCache[language] = [];
 
     const workflows = await getWorkflowsForEntity(entity, { loc });
-    const columns = [];
-    const details = [];
     for (const workflow of workflows) {
-      const fields = [
+      fieldsCache[language].push(
         {
-          isColumn: workflow.showCurrentStatusInColumn,
-          isDetail: workflow.showCurrentStatusInDetail,
-          name: workflow.currentStatusName,
-          label: workflow.currentStatusTitle,
-          type: 'text',
+          isColumn:  workflow.showCurrentStatusInColumn,
+          isDetail:  workflow.showCurrentStatusInDetail,
+          name:      workflow.currentStatusName,
+          label:     workflow.currentStatusTitle,
+          type:      'text',
           className: 'framed',
         },
         {
-          isColumn: workflow.showAssigneeInColumn,
-          isDetail: workflow.showAssigneeInDetail,
-          name: workflow.assigneeName,
-          label: workflow.assigneeTitle,
-          type: 'text',
+          isColumn:  workflow.showAssigneeInColumn,
+          isDetail:  workflow.showAssigneeInDetail,
+          name:      workflow.assigneeName,
+          label:     workflow.assigneeTitle,
+          type:      'text',
         },
         {
-          isColumn: workflow.showWorkflowInColumn,
-          isDetail: workflow.showWorkflowInDetail,
-          name: workflow.workflowName,
-          label: workflow.workflowTitle,
-          type: 'text',
+          isColumn:  workflow.showWorkflowInColumn,
+          isDetail:  workflow.showWorkflowInDetail,
+          name:      workflow.workflowName,
+          label:     workflow.workflowTitle,
+          type:      'text',
         },
-      ];
-
-      columns.push(...fields.filter(f => f.isColumn));
-      details.push(...fields.filter(f => f.isDetail));
+      );
     }
-
-    columnsCache[language].push(...columns);
-    detailsCache[language].push(...details);
   }
 
-  grid.columns ??= [];
-  grid.details ??= [];
-
-  grid.columns.push(...columnsCache[language]);
-  grid.details.push(...detailsCache[language]);
+  grid.fields ??= [];
+  grid.fields.push(...fieldsCache[language]);
 }
 
 async function getted(entity, result, options) {

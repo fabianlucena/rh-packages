@@ -69,9 +69,8 @@ export class IssueController extends Controller {
     const data = { ...req.body };
     await this.checkDataForProjectId(req, data);
 
-    await this.service.create(data, { context: makeContext(req, res) });
-
-    res.status(204).send();
+    const issue = await this.service.create(data, { context: makeContext(req, res) });
+    await this.service.autoRelatedForId(issue.id);
   }
 
   getPermission = 'issue.get';

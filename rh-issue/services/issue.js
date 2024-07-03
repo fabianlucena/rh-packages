@@ -3,6 +3,7 @@ import { Service, Op } from 'rf-service';
 import { CheckError } from 'rf-util';
 import { loc } from 'rf-locale';
 import { _ConflictError } from 'http-util';
+import dependency from 'rf-dependency';
 
 export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescriptionTranslatable {
   references = {
@@ -19,6 +20,13 @@ export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescription
   defaultTranslationContext = 'issue';
   viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'isTranslatable', 'description'];
   eventBus = conf.global.eventBus;
+
+  init() {
+    super.init();
+
+    this.issueRelatedService =      dependency.get('issueRelatedService');
+    this.issueRelationshipService = dependency.get('issueRelationshipService');
+  }
 
   async validateForCreation(data) {
     if (!data?.projectId) {
@@ -43,6 +51,39 @@ export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescription
     const rows = await this.getFor(whereOptions, { limit: 1 });
     if (rows?.length) {
       throw new _ConflictError(loc._cf('issue', 'Exists another issue with that title in this project.'));
+    }
+  }
+
+  async autoRelatedForId(id) {
+    const issue = await this.getForId(id);
+    const criteria = [];
+    for (const word of issue.description.split(/[\s.,;:]+/)) {
+      if (word.length < 2) {
+        continue;
+      }
+
+      criteria.push({ [Op.like]: `%${word}%` });
+    }
+    if (!criteria.length) {
+      return;
+    }
+
+    const candidates = await this.getFor({
+      id: { [Op.ne]: id },
+      description: { [Op.or]: criteria },
+    });
+    if (!candidates.length) {
+      return;
+    }
+
+    const relationshipId = await this.issueRelationshipService.getIdForName('related');
+
+    for (const candidate of candidates) {
+      await this.issueRelatedService.create({
+        fromId: id,
+        toId:   candidate.id,
+        relationshipId,
+      });     
     }
   }
 }
