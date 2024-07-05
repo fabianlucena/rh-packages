@@ -68,8 +68,11 @@ export class OAuth2ClientRedirectionService {
       '{code}':         data.code,
       '{clientId}':     oAuth2Client.clientId,
       '{clientSecret}': oAuth2Client.clientSecret,
+      '{protocolHost}': data.protocolHost ?? (data.protocol + '//' + data.host),
     };
-    return replace(getTokenBody, replacements);
+    const body = replace(getTokenBody, replacements);
+
+    return body;
   }
 
   async getTokenDataFromCodeForOAuth2ClientAndData(oAuth2Client, data) {

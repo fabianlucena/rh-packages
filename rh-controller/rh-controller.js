@@ -180,8 +180,9 @@ export class Controller {
             const loc = req.loc;
             const entity = this.getName();
 
-            await this.eventBus.$emit('interface.form.get', form, { loc, entity });
-            await this.eventBus.$emit(`${entity}.interface.form.get`, form, { loc });
+            const context = makeContext(req, res);
+            await this.eventBus.$emit('interface.form.get', form, { loc, entity, context });
+            await this.eventBus.$emit(`${entity}.interface.form.get`, form, { loc, context });
           }
 
           if (form.fieldsFilter) {

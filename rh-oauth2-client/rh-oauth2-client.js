@@ -25,14 +25,15 @@ async function init() {
 }
 
 async function loginInterfaceFormGet(form, options) {
-  const items = await getFieldsFromCache(options?.loc?.language);
+  const items = await getFieldsFromCache(options);
   for (const item of items) {
     const clientState = await conf.oAuth2StateService.create({ oAuth2ClientId: item.client.id });
     form.fields.push({ ...item.field, href: item.field.href + clientState.state });
   }
 }
 
-async function getFieldsFromCache(language) {
+async function getFieldsFromCache(options) {
+  const language = options?.loc?.language;
   if (conf.fieldsCache[language]) {
     return conf.fieldsCache[language];
   }
@@ -52,8 +53,11 @@ async function getFieldsFromCache(language) {
     const urlReplacements = {
       '{sessionIndex}': '{sessionIndex}',
       '{deviceToken}':  '{deviceToken}',
+      '{host}':         '{host}',
+      '{protocol}':     '{protocol}',
+      '{protocolHost}': '{protocolHost}',
     };
-    let state = Object.keys(urlReplacements).join(',') + ',';
+    let state = '{sessionIndex},{deviceToken},';
 
     const field = {
       name: oauth2Client.name,
