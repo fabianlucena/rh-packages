@@ -1,5 +1,4 @@
 import { CheckError } from './rf-service-errors.js';
-import { loc } from 'rf-locale';
 
 export const ServiceMixinId = Service => class ServiceId extends Service {
   async validateForCreation(data) {
@@ -9,13 +8,13 @@ export const ServiceMixinId = Service => class ServiceId extends Service {
 
   async checkIdForCreation(id) {
     if (id) {
-      throw new CheckError(loc._f('ID parameter is forbidden for creation.'));
+      throw new CheckError(loc => loc._('ID parameter is forbidden for creation.'));
     }
   }
 
   async validateForUpdate(data, where) {
     if (data?.id) {
-      throw new CheckError(loc._f('ID parameter is forbidden for update.'));
+      throw new CheckError(loc => loc._('ID parameter is forbidden for update.'));
     }
 
     return super.validateForUpdate(data, where);

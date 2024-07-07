@@ -1,6 +1,6 @@
 import { conf } from '../conf.js';
 import { Controller } from 'rh-controller';
-import { getOptionsFromParamsAndOData, _HttpError, getUuidFromRequest, makeContext } from 'http-util';
+import { getOptionsFromParamsAndOData, HttpError, getUuidFromRequest, makeContext } from 'http-util';
 import { checkParameter } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
@@ -36,13 +36,13 @@ export class IssueController extends Controller {
       }
         
       if (!data.projectId) {
-        throw new _HttpError(checkParameter._cf('issue', 'The project does not exist or you do not have permission to access it.'), 404);
+        throw new HttpError(checkParameter._c('issue', 'The project does not exist or you do not have permission to access it.'), 404);
       }
     }
 
     const projectId = await conf.filters.getCurrentProjectId(req) ?? null;
     if (data.projectId != projectId) {
-      throw new _HttpError(checkParameter._cf('issue', 'The project does not exist or you do not have permission to access it.'), 403);
+      throw new HttpError(checkParameter._c('issue', 'The project does not exist or you do not have permission to access it.'), 403);
     }
 
     return data.projectId;
@@ -53,7 +53,7 @@ export class IssueController extends Controller {
     const uuid = await getUuidFromRequest(req);
     const issue = await this.service.getForUuid(uuid, { skipNoRowsError: true, loc });
     if (!issue) {
-      throw new _HttpError(loc._cf('issue', 'The issue with UUID %s does not exists.'), 404, uuid);
+      throw new HttpError(loc => loc._c('issue', 'The issue with UUID %s does not exists.'), 404, uuid);
     }
 
     const projectId = await this.checkDataForProjectId(req, { projectId: issue.projectId });
@@ -63,8 +63,13 @@ export class IssueController extends Controller {
 
   postPermission = 'issue.create';
   async post(req, res) {
-    const loc = req.loc ?? defaultLoc;
-    checkParameter(req?.body, { name: loc._cf('issue', 'Name'), title: loc._cf('issue', 'Title') });
+    checkParameter(
+      req?.body,
+      {
+        name:  loc => loc._c('issue', 'Name'),
+        title: loc => loc._c('issue', 'Title'),
+      },
+    );
         
     const data = { ...req.body };
     await this.checkDataForProjectId(req, data);

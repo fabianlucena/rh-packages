@@ -1,7 +1,6 @@
 import { ResourceTypeService } from './resource_type.js';
 import { Service } from 'rf-service';
 import { checkNotNullNotEmptyAndNotUndefined } from 'rf-util';
-import { loc } from 'rf-locale';
 
 export class ResourceService extends Service.IdUuidEnableNameTranslatable {
   references = {
@@ -20,7 +19,7 @@ export class ResourceService extends Service.IdUuidEnableNameTranslatable {
   }
 
   async validateForCreation(data) {
-    checkNotNullNotEmptyAndNotUndefined(data.content, loc._cf('resource', 'Content'));
+    checkNotNullNotEmptyAndNotUndefined(data.content, loc => loc._c('resource', 'Content'));
     if (!data.typeId) {
       data.typeId = await this.resourceTypeService.getIdForName('raw');
     }

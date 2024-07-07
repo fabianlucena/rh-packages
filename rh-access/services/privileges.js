@@ -1,8 +1,8 @@
 import { conf } from '../conf.js';
 import { Service } from 'rf-service';
-import { complete, _Error } from 'rf-util';
+import { complete } from 'rf-util';
 import dependency from 'rf-dependency';
-import { loc } from 'rf-locale';
+import { ForbidenMethodError } from './errors.js';
 
 complete(
   conf,
@@ -49,19 +49,19 @@ export class PrivilegesService extends Service.Base {
   }
 
   async create() {
-    throw new _Error(loc._cf('privileges', 'Cannot create privileges, privileges is a container not an entity.'));
+    throw new ForbidenMethodError(loc => loc._c('privileges', 'Cannot create privileges, privileges is a container not an entity.'));
   }
 
   async getList() {
-    throw new _Error(loc._cf('privileges', 'Cannot get privileges, privileges is a container not an entity.'));
+    throw new ForbidenMethodError(loc => loc._c('privileges', 'Cannot get privileges, privileges is a container not an entity.'));
   }
 
   async update() {
-    throw new _Error(loc._cf('privileges', 'Cannot update privileges, privileges is a container not an entity.'));
+    throw new ForbidenMethodError(loc => loc._c('privileges', 'Cannot update privileges, privileges is a container not an entity.'));
   }
 
   async delete() {
-    throw new _Error(loc._cf('privileges', 'Cannot delete privileges, privileges is a container not an entity.'));
+    throw new ForbidenMethodError(loc => loc._c('privileges', 'Cannot delete privileges, privileges is a container not an entity.'));
   }
 
   /**

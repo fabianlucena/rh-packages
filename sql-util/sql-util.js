@@ -1,76 +1,54 @@
 import { ModelSequelize } from 'rf-model-sequelize';
-import { setUpError, deepComplete, replace, format } from 'rf-util';
-import { loc, defaultLoc } from 'rf-locale';
+import { deepComplete, replace, BaseError } from 'rf-util';
 import dependency from 'rf-dependency';
 import fs from 'fs';
 import path from 'path';
 
-export class NoRowsError extends Error {
-  static _message = loc._f('There are no "%s" for "%s" in "%s"');
-  static _params = [loc._f('element'), loc._f('selector'), loc._f('model')];
+export class NoRowsError extends BaseError {
+  message = async loc => loc._(
+    'There are no "%s" for "%s" in "%s"',
+    await loc._('items'),
+    await loc._('selector'),
+    await loc._('model'),
+  );
 
   constructor(message) {
-    super();
-    setUpError(
-      this,
-      {
-        message
-      }
-    );
+    super({ message });
   }
 }
 
-export class ManyRowsError extends Error {
-  static NoObjectValues = ['length'];
-  static VisibleProperties = ['message', 'title', 'length'];
-  static _message = loc._f('There are many "%s" for "%s" in "%s"');
-  static _params = [loc._f('element'), loc._f('selector'), loc._f('model')];
+export class ManyRowsError extends BaseError {
+  static noObjectValues = ['length'];
+  static visibleProperties = ['message', 'title', 'length'];
+  message = async loc => loc._(
+    'There are many "%s" (%s) for "%s" in "%s"',
+    await loc._('items'),
+    await loc.number(length),
+    await loc._('selector'),
+    await loc._('model'),
+  );
 
   constructor(message, length) {
-    super();
-    setUpError(
-      this,
-      {
-        message,
-        length
-      }
-    );
+    super({ message, length });
   }
 }
 
-export class MissingPropertyError extends Error {
-  static NoObjectValues = ['length'];
-  static VisibleProperties = ['objectName', 'properties'];
-  static _zeroMessage = loc._f('No properties for object "%s"');
-  static _message = loc._nf(0, 'Missing property "%s" for  object "%s"', 'Missing properties "%s" for object "%s"');
+export class MissingPropertyError extends BaseError {
+  static noObjectValues = ['length'];
+  static visibleProperties = ['objectName', 'properties'];
+  message = async loc => loc._nn(
+    this.properties.length,
+    'No properties for object "%s"',
+    'Missing property "%s" for  object "%s"',
+    'Missing properties "%s" for object "%s"',
+    await loc._('objectName'),
+    await loc._('modepropertiesl'),
+  );
 
   properties = [];
 
   constructor(objectName, ...properties) {
-    super();
-    setUpError(
-      this,
-      {
-        objectName,
-        properties,
-      }
-    );
-  }
-
-  _n() { return this.properties.length; }
-
-  async getMessageParams(loc) {
-    return [await (loc ?? defaultLoc)._and(...this.properties), this.objectName];
-  }
-
-  async toString() {
-    if (!this.properties.length) {
-      return format(MissingPropertyError._zeroMessage, ...await this.getMessageParams());
-    } else if (this.properties.length === 1) {
-      return format(MissingPropertyError._message[0], ...await this.getMessageParams());
-    } else {
-      return format(MissingPropertyError._message[1], ...await this.getMessageParams());
-    }
+    super({ objectName, properties });
   }
 }
 
@@ -142,9 +120,7 @@ export async function getSingle(rowList, options) {
         
     throw new NoRowsError({
       message: options?.noRowsError ?? options?.error,
-      _message: options?._noRowsError ?? options?._error,
       params: options?.noRowsErrorParams ?? options?.params,
-      _params: options?._noRowsErrorParams ?? options?._params,
       statusCode: 404
     });
   }
@@ -155,9 +131,7 @@ export async function getSingle(rowList, options) {
 
   return new ManyRowsError({
     message: options?.manyRowsError || options?.error,
-    _message: options?._manyRowsError || options?._error,
     params: options?.manyRowsError ?? options?.params,
-    _params: options?._manyRowsError ?? options?._params,
     length: rowList.length,
   });
 }

@@ -1,13 +1,13 @@
-import { conf } from '../conf.js';
-import { getOptionsFromParamsAndOData, _HttpError } from 'http-util';
+import { getOptionsFromParamsAndOData, HttpError } from 'http-util';
 import { checkParameter, checkParameterUuid, checkParameterUuidList, checkParameterNotNullOrEmpty } from 'rf-util';
 import dependency from 'rf-dependency';
+import { defaultLoc } from 'rf-locale';
 
 export class MemberController {
   static async getUserIdFromUuid(req, uuid) {
     const userId = await dependency.get('memberService').getUserIdForUserUuid(uuid, { where: { siteId: req.site.id }, skipNoRowsError: true });
     if (!userId) {
-      throw new _HttpError(req.loc._cf('member', 'The member with UUID %s does not exists.'), 404, uuid);
+      throw new HttpError(loc => loc._c('member', 'The member with UUID %s does not exists.'), 404, uuid);
     }
 
     return userId;
@@ -200,8 +200,9 @@ export class MemberController {
         
     const loc = req.loc;
     result.rows = await Promise.all(result.rows.map(async row => {
-      if (row.isTranslatable)
+      if (row.isTranslatable) {
         row.title = await loc._(row.title);
+      }
 
       delete row.isTranslatable;
 
@@ -212,24 +213,32 @@ export class MemberController {
   }
     
   static async post(req, res) {
-    const loc = req.loc;
-    checkParameter(req?.body?.User, { username: loc._cf('member', 'Username'), displayName: loc._cf('member', 'Display name') });
+    checkParameter(
+      req?.body?.user,
+      {
+        username:    loc => loc._c('member', 'Username'),
+        displayName: loc => loc._c('member', 'Display name'),
+      }
+    );
 
     const data = {
       ...req.body,
       siteId: req.site.id,
-      rolesUuid: await checkParameterUuidList(req.body.roles, loc._cf('member', 'Roles')),
+      rolesUuid: await checkParameterUuidList(req.body.roles, loc => loc._c('member', 'Roles')),
     };
     if (!req.roles.includes('admin'))
       data.assignableRolesId = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
 
-    await dependency.get('memberService').create(data, { loc });
+    await dependency.get('memberService').create(data, { loc: req.loc });
 
     res.status(204).send();
   }
 
   static async delete(req, res) {
-    const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('member', 'UUID'));
+    const uuid = await checkParameterUuid(
+      req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid,
+      loc => loc._c('member', 'UUID'),
+    );
     const userId = await this.getUserIdFromUuid(req, uuid);
 
     const deleteWhere = {
@@ -242,36 +251,44 @@ export class MemberController {
             
     const rowsDeleted = await dependency.get('memberService').deleteFor(deleteWhere);
     if (!rowsDeleted)
-      throw new _HttpError(req.loc._cf('member', 'The member with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('member', 'The member with UUID %s does not exists.'), 403, uuid);
 
     res.sendStatus(204);
   }
 
   static async enablePost(req, res) {
-    const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('member', 'UUID'));
+    const uuid = await checkParameterUuid(
+      req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid,
+      loc => loc._c('member', 'UUID'),
+    );
     const userId = await this.getUserIdFromUuid(req, uuid);
 
     const rowsUpdated = await dependency.get('memberService').enableForSiteIdAndUserId(req.site.id, userId);
     if (!rowsUpdated)
-      throw new _HttpError(req.loc._cf('member', 'The member with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('member', 'The member with UUID %s does not exists.'), 403, uuid);
 
     res.sendStatus(204);
   }
 
   static async disablePost(req, res) {
-    const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('member', 'UUID'));
+    const uuid = await checkParameterUuid(
+      req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid,
+      loc => loc._c('member', 'UUID'),
+    );
     const userId = await this.getUserIdFromUuid(req, uuid);
 
     const rowsUpdated = await dependency.get('memberService').disableForSiteIdAndUserId(req.site.id, userId);
     if (!rowsUpdated)
-      throw new _HttpError(req.loc._cf('member', 'The member with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('member', 'The member with UUID %s does not exists.'), 403, uuid);
 
     res.sendStatus(204);
   }
 
   static async patch(req, res) {
-    const loc = req.loc;
-    const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('member', 'UUID'));
+    const uuid = await checkParameterUuid(
+      req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid,
+      loc => loc._c('member', 'UUID'),
+    );
     const userId = await this.getUserIdFromUuid(req, uuid);
     const siteId = req.site.id;
 
@@ -279,7 +296,10 @@ export class MemberController {
       ...req.body,
       siteId,
       userId,
-      rolesUuid: await checkParameterUuidList(req.body.Roles, loc._cf('member', 'Roles')),
+      rolesUuid: await checkParameterUuidList(
+        req.body.Roles,
+        loc => loc._c('member', 'Roles'),
+      ),
     };
     const options = {};
     if (!req.roles.includes('admin'))
@@ -287,27 +307,30 @@ export class MemberController {
         
     const rowsUpdated = await dependency.get('memberService').updateFor(data, { userId, siteId }, options);
     if (!rowsUpdated)
-      throw new _HttpError(req.loc._cf('member', 'The member with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('member', 'The member with UUID %s does not exists.'), 403, uuid);
 
     res.sendStatus(204);
   }
 
   static async checkChangePasswordPermission(req, res) {
-    const loc = req.loc;
-    const userUuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, loc._cf('member', 'UUID'));
+    const loc = req.loc ?? defaultLoc;
+    const userUuid = await checkParameterUuid(
+      req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid,
+      loc => loc._c('member', 'UUID'),
+    );
     const userId = await this.getUserIdFromUuid(req, userUuid);
         
     if (userId == req.user.id)
-      throw new _HttpError(loc._cf('member', 'Error you cannot set your own password. Please use change password option instead.'), 403);
+      throw new HttpError(loc => loc._c('member', 'Error you cannot set your own password. Please use change password option instead.'), 403);
 
     let sites = await dependency.get('siteService').getForUserId(userId);
     sites = sites.filter(site => site.name !== 'system');
     if (sites.length !== 1)
-      throw new _HttpError(loc._cf('member', 'You cannot change the member password because the member has another accesses. Please contact the asministrator.', 403));
+      throw new HttpError(loc => loc._c('member', 'You cannot change the member password because the member has another accesses. Please contact the asministrator.', 403));
 
     const site = sites[0];
     if (sites[0].id !== req.site.id)
-      throw new _HttpError(loc._cf('member', 'You cannot change the member password because the member the user belongs to another site. Please contact the asministrator.', 403));
+      throw new HttpError(loc => loc._c('member', 'You cannot change the member password because the member the user belongs to another site. Please contact the asministrator.', 403));
 
     const user = (await dependency.get('userService').getForId(userId));
 
@@ -316,7 +339,7 @@ export class MemberController {
 
     for (const roleId of rolesId) {
       if (!assignableRolesId.includes(roleId)) {
-        res.status(403).send(loc._cf('member', 'You cannot change the member password because the member has another accesses. Please contact the asministrator.'));
+        res.status(403).send(loc._c('member', 'You cannot change the member password because the member has another accesses. Please contact the asministrator.'));
         return false;
       }
     }
@@ -361,22 +384,21 @@ export class MemberController {
   }
     
   static async postSetPassword(req, res) {
-    const loc = req.loc;
-    checkParameter(req?.body, { password: loc._cf('member', 'password') });
+    checkParameter(req?.body, { password: loc => loc._c('member', 'password') });
     const data = req.body;
 
-    checkParameterNotNullOrEmpty(data.password, loc._cf('member', 'password'));
+    checkParameterNotNullOrEmpty(data.password, loc => loc._c('member', 'password'));
         
     const { user } = await this.checkChangePasswordPermission(req, res);
 
     const identity = await dependency.get('identityService').getLocalForUserId(user.id);
     if (!identity)
-      throw new _HttpError(loc._cf('member', 'Error to get local identity'), 404);
+      throw new HttpError(loc => loc._c('member', 'Error to get local identity'), 404);
 
     const result = await dependency.get('identityService').updateForId({ password: data.password }, identity.id);
     if (result)
       return res.status(204).send();
 
-    throw new _HttpError(loc._cf('member', 'Error to change the password'), 500);
+    throw new HttpError(loc => loc._c('member', 'Error to change the password'), 500);
   }
 }

@@ -1,6 +1,5 @@
 import { dependency } from 'rf-dependency';
-import { CheckError, _Error } from './rf-service-errors.js';
-import { loc } from 'rf-locale';
+import { CheckError, NoSharedObjectError, NoSharedServiceError } from './rf-service-errors.js';
 
 export const ServiceMixinShared = Service => class ServiceShared extends Service {
   init() {
@@ -24,7 +23,7 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
 
   async validateForCreation(data) {
     if (!data.owner && !data.ownerId && !this.skipNoOwnerCheck) {
-      throw new CheckError(loc._f('No owner specified.'));
+      throw new CheckError(loc => loc._('No owner specified.'));
     }
 
     return super.validateForCreation(data);
@@ -86,11 +85,17 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
    */
   async addCollaborator(data, options) {
     if (!this.shareObject) {
-      throw new _Error(loc._f('No shareObject defined in %s.', this.constructor.name));
+      throw new NoSharedObjectError(loc => loc._(
+        'No shareObject defined in %s.',
+        this.constructor.name,
+      ));
     }
 
     if (!this.shareService) {
-      throw new _Error(loc._f('No shareService defined in %s.', this.constructor.name));
+      throw new NoSharedServiceError(loc => loc._(
+        'No shareService defined in %s.',
+        this.constructor.name,
+      ));
     }
 
     if (!data.userId && !data.user) {

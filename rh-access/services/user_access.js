@@ -22,14 +22,25 @@ export class UserAccessService extends UserSiteRoleService {
   async completeReferences(data, clean) {
     data = await super.completeReferences(data, clean);
 
-    if (!data.rolesId?.length && data.rolesUuid?.length) {
-      data.rolesId = await this.roleService.getIdForUuid(data.rolesUuid);
+    if (!data.rolesId?.length) {
+      if (data.roles?.length) {
+        for (const role of data.roles) {
+          if (!role.id) {
+            role.id = await this.roleService.getIdForUuid(role.uuid);
+          }
+        }
+
+        data.rolesId = data.roles.map(r => r.id);
+        delete data.roles;
+      }
     }
+
+    return data;
   }
 
   async validateForCreation(data) {
-    if (data.User) {
-      await this.userService.validateForCreation(data.User);
+    if (data.user) {
+      await this.userService.validateForCreation(data.user);
     }
         
     await checkDataForMissingProperties(data, 'UserSiteRole', 'userId', 'siteId');
@@ -42,7 +53,7 @@ export class UserAccessService extends UserSiteRoleService {
   }
 
   async create(data) {
-    await this.completeReferences(data, true);
+    data = await this.completeReferences(data, true);
     await this.validateForCreation(data);
 
     const transaction = await this.createTransaction();
@@ -50,14 +61,8 @@ export class UserAccessService extends UserSiteRoleService {
       let user;
       if (data.userId) {
         user = await this.userService.getForId(data.userId, { transaction });
-      } else if (data.userUuid) {
-        user = await this.userService.getForUuid(data.userUuid, { transaction });
       } else {
         user = await this.userService.create(data.User, { transaction });
-      }
-            
-      if (!data.rolesId?.length && data.rolesUuid?.length) {
-        data.rolesId = await this.roleService.getIdForUuid(data.rolesUuid);
       }
 
       user.rolesId = await this.updateRoles({

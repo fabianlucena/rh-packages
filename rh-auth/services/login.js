@@ -2,9 +2,8 @@ import { UserService } from '../services/user.js';
 import { DeviceService } from '../services/device.js';
 import { IdentityService } from '../services/identity.js';
 import { SessionService } from '../services/session.js';
-import { _Error } from 'rf-util';
-import { loc } from 'rf-locale';
 import { HttpError } from 'http-util';
+import { InvalidDeviceError, InvalidTokenError, NoOldSessionError, NoUserError } from './errors.js';
 
 export class LoginService {
   static singleton() {
@@ -33,7 +32,7 @@ export class LoginService {
 
     const user = await userService.getForUsername(username);
     if (!user) {
-      throw new _Error(loc._cf('login', 'Error to get user to create session'));
+      throw new NoUserError(loc => loc._c('login', 'Error to get user to create session'));
     }
 
     await userService.checkEnabledUser(user, username);
@@ -50,7 +49,7 @@ export class LoginService {
         throw new HttpError('Invalid device', 400);                
       }
     }
-        
+    
     if (!device) {
       device = await deviceService.create({ data: '' });
     }
@@ -89,11 +88,11 @@ export class LoginService {
 
     const oldSession = await sessionService.getForAutoLoginToken(autoLoginToken);
     if (!oldSession) {
-      throw new _Error(loc._cf('login', 'Error to get old session to create session'));
+      throw new NoOldSessionError(loc => loc._c('login', 'Error to get old session to create session'));
     }
 
     if (oldSession.close) {
-      throw new _Error(loc._cf('login', 'The auto login token is invalid becasuse the session is closed'));
+      throw new InvalidTokenError(loc => loc._c('login', 'The auto login token is invalid becasuse the session is closed'));
     }
 
     const device = await DeviceService.singleton().getForToken(deviceToken);
@@ -102,7 +101,7 @@ export class LoginService {
     }
 
     if (oldSession.deviceId != device.id) {
-      throw new _Error(loc._cf('login', 'The device is not the same'));
+      throw new InvalidDeviceError(loc => loc._c('login', 'The device is not the same'));
     }
 
     const userService = UserService.singleton();

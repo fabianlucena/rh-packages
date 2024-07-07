@@ -1,7 +1,6 @@
 import { dependency } from 'rf-dependency';
 import { conf } from '../conf.js';
-import { getOptionsFromParamsAndOData, _HttpError } from 'http-util';
-import { defaultLoc } from 'rf-locale';
+import { getOptionsFromParamsAndOData, HttpError } from 'http-util';
 import { checkParameter, MissingParameterError } from 'rf-util';
 import { Controller } from 'rh-controller';
 import { getFiltersFromRequest } from '../rh-project-select.js';
@@ -16,26 +15,26 @@ export class ProjectSelectController extends Controller {
 
   postPermission = 'project-select.switch';
   async post(req) {
-    const loc = req.loc ?? defaultLoc;
+    const loc = req.loc;
 
     const projectUuid = req.query?.projectUuid ?? req.params?.projectUuid ?? req.body?.projectUuid;
     if (!projectUuid) {
-      throw new MissingParameterError(loc._cf('projectSelect', 'Project UUID'));
+      throw new MissingParameterError(loc => loc._c('projectSelect', 'Project UUID'));
     }
 
     const options = { skipNoRowsError: true, loc };
     let project = await this.projectService.getForUuid(projectUuid, options);
     if (!project) {
-      throw new _HttpError(loc._cf('projectSelect', 'The selected project does not exist or you do not have permission to access it.'), 400);
+      throw new HttpError(loc => loc._c('projectSelect', 'The selected project does not exist or you do not have permission to access it.'), 400);
     }
 
     if (!project.isEnabled) {
-      throw new _HttpError(loc._cf('projectSelect', 'The selected project is disabled.'), 403);
+      throw new HttpError(loc => loc._c('projectSelect', 'The selected project is disabled.'), 403);
     }
 
     if (conf.checkFunction) {
       if (!conf.checkFunction(project, req)) {
-        throw new _HttpError(loc._cf('projectSelect', 'You do not have permission to select this project.'), 400);
+        throw new HttpError(loc => loc._c('projectSelect', 'You do not have permission to select this project.'), 400);
       }
     }
 
@@ -116,7 +115,7 @@ export class ProjectSelectController extends Controller {
   async getObject(req) {
     checkParameter(req.query, '$object');
 
-    const loc = req.loc ?? defaultLoc;
+    const loc = req.loc;
 
     const actions = [
       {

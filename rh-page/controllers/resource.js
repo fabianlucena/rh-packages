@@ -1,5 +1,5 @@
 import { ResourceService } from '../services/resource.js';
-import { getOptionsFromParamsAndOData, _HttpError } from 'http-util';
+import { getOptionsFromParamsAndOData, HttpError } from 'http-util';
 
 const resource = ResourceService.singleton();
 
@@ -19,11 +19,11 @@ export class ResourceController {
 
     const result = await resource.getListAndCount(options);
     if (!result?.count) {
-      throw new _HttpError(req.loc._cf('resource', 'Resource not found.'), 404);
+      throw new HttpError(loc => loc._c('resource', 'Resource not found.'), 404);
     }
 
     if (result.count > 1) {
-      throw new _HttpError(req.loc._cf('resource', 'There are many resources for that criteria.'), 400);
+      throw new HttpError(loc => loc._c('resource', 'There are many resources for that criteria.'), 400);
     }
 
     const row = result.rows[0];

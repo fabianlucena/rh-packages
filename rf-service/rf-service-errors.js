@@ -1,109 +1,72 @@
-import { setUpError } from 'rf-util/rf-util-error.js';
-import { loc } from 'rf-locale';
+import { BaseError } from 'rf-util/rf-util-error.js';
 
-export class NoRowsError extends Error {
-  static _message = loc._f('There are no rows.');
-
+export class ReferenceDefinitionError extends BaseError {
   constructor(message) {
-    super();
-    setUpError(
-      this,
-      {
-        message,
-      }
-    );
+    super({ message });
   }
 }
 
-export class NoRowError extends Error {
-  static _message = loc._f('There are no rows.');
-
-  constructor(message) {
-    super();
-    setUpError(
-      this,
-      {
-        message,
-      }
-    );
-  }
+export class NoRowsError extends BaseError {
+  message = loc => loc._('There are no rows.');
 }
 
-export class ManyRowsError extends Error {
-  static NoObjectValues = ['length'];
-  static VisibleProperties = ['message', 'title', 'length'];
-  static _message = loc._f('There are many rows.');
+export class NoRowError extends BaseError {
+  message = loc => loc._('There are no rows.');
+}
+
+export class ManyRowsError extends BaseError {
+  static noObjectValues = ['length'];
+  static visibleProperties = ['message', 'title', 'length'];
+  message = loc => loc._('There are many rows.');
 
   constructor(message, length) {
-    super();
-    setUpError(
-      this,
-      {
-        message,
-        length,
-      }
-    );
+    super({
+      message,
+      length,
+    });
   }
 }
 
-export class DisabledRowError extends Error {
-  static _message = loc._f('Object is disabled.');
+export class DisabledRowError extends BaseError {
+  message = loc => loc._('Object is disabled.');
 
   constructor(message) {
-    super();
-    setUpError(
-      this,
-      {
-        message,
-      }
-    );
+    super({ message });
   }
 }
 
-export class CheckError extends Error {
-  static VisibleProperties = ['message'];
-
-  constructor(message, options, ...params) {
-    super();
-    setUpError(
-      this,
-      {
-        message: message,
-        options: options,
-        params: params
-      }
-    );
+export class CheckError extends BaseError {
+  constructor(message) {
+    super({ message });
   }
 }
 
-export function format(text, ...params) {
-  if (!text) {
-    return text;
+export class NoSharedObjectError extends BaseError {
+  constructor(message) {
+    super({ message });
   }
-
-  text = text.replace(/%%/g, '%');
-  for (const replacement of params) {
-    text = text.replace('%s', replacement);
-  }
-
-  return text;
 }
 
-export class _Error extends Error {
-  static VisibleProperties = ['message'];
-
-  constructor(message, ...params) {
-    super();
-    setUpError(
-      this,
-      {
-        _message: message,
-        params
-      }
-    );
+export class NoSharedServiceError extends BaseError {
+  constructor(message) {
+    super({ message });
   }
+}
 
-  get message() {
-    return format(...this._message);
+export class InvalidValueError extends BaseError {
+  constructor(message) {
+    super({ message });
+  }
+}
+
+export class NonExistentError extends BaseError {
+  constructor(message) {
+    super({ message });
+  }
+}
+
+export class NotEnabledError extends BaseError {
+  constructor(message) {
+    super({ message });
   }
 }

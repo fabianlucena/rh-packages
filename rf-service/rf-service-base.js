@@ -1,8 +1,7 @@
 import { Op, Column } from './rf-service-op.js';
-import { NoRowsError, ManyRowsError } from './rf-service-errors.js';
+import { NoRowsError, ManyRowsError, ReferenceDefinitionError } from './rf-service-errors.js';
 import { ucfirst, lcfirst } from 'rf-util/rf-util-string.js';
-import { trim, _Error } from 'rf-util';
-import { defaultLoc } from 'rf-locale';
+import { trim } from 'rf-util';
 import dependency from 'rf-dependency';
 
 /**
@@ -124,7 +123,7 @@ export class ServiceBase {
       }
                 
       if (typeof reference !== 'object') {
-        throw new _Error(defaultLoc._f(
+        throw new ReferenceDefinitionError(loc => loc._(
           'Error in reference definition for reference name "%s", in service "%s".',
           name,
           this.constructor.name
@@ -154,7 +153,7 @@ export class ServiceBase {
 
           if (!service) {
             if (!reference.optional) {
-              throw new _Error(defaultLoc._f(
+              throw new ReferenceDefinitionError(loc => loc._(
                 'Error service name "%s", not found for reference "%s" in service "%s".',
                 serviceName,
                 name,
@@ -545,7 +544,7 @@ export class ServiceBase {
 
         const reference = this.references[includedName];
         if (!reference) {
-          throw new _Error(defaultLoc._f(
+          throw new ReferenceDefinitionError(loc => loc._(
             'Can\'t include "%s" because is not reference in service "%s".',
             includedName,
             this.constructor.name

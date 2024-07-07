@@ -2,10 +2,10 @@ import { EavAttributeTypeService } from './attribute_type.js';
 import { EavAttributeCategoryService } from './attribute_category.js';
 import { EavAttributeOptionService } from './attribute_option.js';
 import { EavAttributeTagService } from './attribute_tag.js';
-import { runSequentially, _Error } from 'rf-util';
-import { loc } from 'rf-locale';
+import { runSequentially } from 'rf-util';
 import { Service } from 'rf-service';
 import { ConflictError } from 'http-util';
+import { AttributeDefinitionError } from './error.js';
 
 export class EavAttributeService extends Service.IdUuidEnableNameUniqueTitleDescriptionTranslatable {
   references = {
@@ -28,7 +28,7 @@ export class EavAttributeService extends Service.IdUuidEnableNameUniqueTitleDesc
 
   async validateForCreation(data) {
     if (!data.typeId) {
-      throw new _Error(loc._cf('No type defined for attribute "%s".', data.name));
+      throw new AttributeDefinitionError(loc => loc._c('No type defined for attribute "%s".', data.name));
     }
 
     const type = await this.eavAttributeTypeService.getNameForId(data.typeId);
@@ -45,7 +45,7 @@ export class EavAttributeService extends Service.IdUuidEnableNameUniqueTitleDesc
           });
                 
           if (!category) {
-            throw new _Error(loc._cf('No category defined for attribute "%s".', data.name));
+            throw new AttributeDefinitionError(loc => loc._c('No category defined for attribute "%s".', data.name));
           }
         }
 
@@ -67,7 +67,7 @@ export class EavAttributeService extends Service.IdUuidEnableNameUniqueTitleDesc
       }
     );
     if (rows?.length) {
-      throw new ConflictError(loc._cf('eav', 'Exists another attribute with that title for this entity.'));
+      throw new ConflictError(loc => loc._c('eav', 'Exists another attribute with that title for this entity.'));
     }
   }
 

@@ -1,10 +1,10 @@
 import { IdentityService } from '../services/identity.js';
 import { Service } from 'rf-service';
 import { getSingle } from 'sql-util';
-import { _ConflictError } from 'http-util';
-import { checkParameter, _Error } from 'rf-util';
-import { loc } from 'rf-locale';
+import { ConflictError } from 'http-util';
+import { checkParameter } from 'rf-util';
 import dependency from 'rf-dependency';
+import { NonExistentError, NotEnabledError } from 'rf-service/rf-service-errors.js';
 
 export class UserService extends Service.IdUuidEnableOwnerModule {
   references = {
@@ -29,13 +29,19 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
       data.typeId = await this.userTypeService.getIdForName('user');
     }
 
-    checkParameter(data, { username: loc._cf('user', 'Username'), displayName: loc._cf('user', 'Display name') });
+    checkParameter(
+      data,
+      {
+        username:    loc => loc._c('user', 'Username'),
+        displayName: loc => loc._c('user', 'Display name'),
+      }
+    );
     if (await this.getForUsername(data.username, { check: false, skipNoRowsError: true })) {
-      throw new _ConflictError(loc._cf('user', 'Another user with the same username already exists.'));
+      throw new ConflictError(loc => loc._c('user', 'Another user with the same username already exists.'));
     }
 
     if (await this.getForDisplayName(data.displayName, { check: false, skipNoRowsError: true })) {
-      throw new _ConflictError(loc._cf('user', 'Another user with the same display name already exists.'));
+      throw new ConflictError(loc => loc._c('user', 'Another user with the same display name already exists.'));
     }
 
     return super.validateForCreation(data);
@@ -136,11 +142,11 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
    */
   async checkEnabledUser(user, username) {
     if (!user) {
-      throw new _Error(loc._cf('user', 'User "%s" does not exist'), username);
+      throw new NonExistentError(loc => loc._c('user', 'User "%s" does not exist'), username);
     }
 
     if (!user.isEnabled) {
-      throw new _Error(loc._cf('user', 'User "%s" is not enabled'), username);
+      throw new NotEnabledError(loc => loc._c('user', 'User "%s" is not enabled'), username);
     }
 
     return true;

@@ -1,6 +1,6 @@
 import { CompanyService } from '../services/company.js';
 import { conf } from '../conf.js';
-import { getOptionsFromParamsAndOData, _HttpError, getUuidFromRequest } from 'http-util';
+import { getOptionsFromParamsAndOData, HttpError, getUuidFromRequest } from 'http-util';
 import { checkParameter } from 'rf-util';
 
 const companyService = CompanyService.singleton();
@@ -19,12 +19,12 @@ export class CompanyController {
       }
 
       if (!data.id) {
-        throw new _HttpError(req.loc._cf('company', 'The company does not exist or you do not have permission to access it.'), 404);
+        throw new HttpError(loc => loc._c('company', 'The company does not exist or you do not have permission to access it.'), 404);
       }
 
       const companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
       if (data.id != companyId) {
-        throw new _HttpError(req.loc._cf('company', 'The company does not exist or you do not have permission to access it.'), 403);
+        throw new HttpError(loc => loc._c('company', 'The company does not exist or you do not have permission to access it.'), 403);
       }
     }
 
@@ -35,7 +35,7 @@ export class CompanyController {
     const uuid = await getUuidFromRequest(req);
     const company = await companyService.getForUuid(uuid, { skipNoRowsError: true });
     if (!company) {
-      throw new _HttpError(req.loc._cf('company', 'The company with UUID %s does not exists.'), 404, uuid);
+      throw new HttpError(loc => loc._c('company', 'The company with UUID %s does not exists.'), 404, uuid);
     }
 
     await CompanyController.checkData(req, { id: company.id });
@@ -44,14 +44,19 @@ export class CompanyController {
   }
 
   static async post(req, res) {
-    const loc = req.loc;
-    checkParameter(req?.body, { name: loc._cf('company', 'Name'), title: loc._cf('company', 'Title') });
+    checkParameter(
+      req?.body,
+      {
+        name:  loc => loc._c('company', 'Name'),
+        title: loc => loc._c('company', 'Title'),
+      },
+    );
         
     const data = { ...req.body };
     if (!data.owner && !data.ownerId) {
       data.ownerId = req.user.id;
       if (!data.ownerId) {
-        throw new _HttpError(req.loc._cf('company', 'The company data does not have a owner.'));
+        throw new HttpError(loc => loc._c('company', 'The company data does not have a owner.'));
       }
     }
 
@@ -195,7 +200,7 @@ export class CompanyController {
     const { uuid } = await CompanyController.checkUuid(req);
     const rowsDeleted = await companyService.deleteForUuid(uuid);
     if (!rowsDeleted) {
-      throw new _HttpError(req.loc._cf('company', 'Company with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('company', 'Company with UUID %s does not exists.'), 403, uuid);
     }
 
     res.sendStatus(204);
@@ -205,7 +210,7 @@ export class CompanyController {
     const { uuid } = await CompanyController.checkUuid(req);
     const rowsUpdated = await companyService.enableForUuid(uuid);
     if (!rowsUpdated) {
-      throw new _HttpError(req.loc._cf('company', 'Company with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('company', 'Company with UUID %s does not exists.'), 403, uuid);
     }
 
     res.sendStatus(204);
@@ -215,7 +220,7 @@ export class CompanyController {
     const { uuid } = await CompanyController.checkUuid(req);
     const rowsUpdated = await companyService.disableForUuid(uuid);
     if (!rowsUpdated) {
-      throw new _HttpError(req.loc._cf('company', 'Company with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('company', 'Company with UUID %s does not exists.'), 403, uuid);
     }
 
     res.sendStatus(204);
@@ -229,7 +234,7 @@ export class CompanyController {
 
     const rowsUpdated = await companyService.updateFor(data, where);
     if (!rowsUpdated) {
-      throw new _HttpError(req.loc._cf('company', 'Company with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('company', 'Company with UUID %s does not exists.'), 403, uuid);
     }
 
     res.sendStatus(204);

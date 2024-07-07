@@ -1,8 +1,7 @@
 import { conf } from '../conf.js';
 import { Service, Op } from 'rf-service';
 import { CheckError } from 'rf-util';
-import { loc } from 'rf-locale';
-import { _ConflictError } from 'http-util';
+import { ConflictError } from 'http-util';
 import dependency from 'rf-dependency';
 
 export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescriptionTranslatable {
@@ -27,7 +26,7 @@ export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescription
 
   async validateForCreation(data) {
     if (!data?.projectId) {
-      throw new CheckError(loc._cf('issue', 'Project parameter is missing.'));
+      throw new CheckError(loc => loc._c('issue', 'Project parameter is missing.'));
     }
 
     return super.validateForCreation(data);
@@ -36,7 +35,7 @@ export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescription
   async checkNameForConflict(name, data) {
     const rows = await this.getFor({ name, projectId: data.projectId }, { skipNoRowsError: true });
     if (rows?.length) {
-      throw new _ConflictError(loc._cf('issue', 'Exists another issue with that name in this project.'));
+      throw new ConflictError(loc => loc._c('issue', 'Exists another issue with that name in this project.'));
     }
   }
 
@@ -47,7 +46,7 @@ export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescription
     if (where?.uuid) {whereOptions.uuid = { [Op.ne]: where.uuid };}
     const rows = await this.getFor(whereOptions, { limit: 1 });
     if (rows?.length) {
-      throw new _ConflictError(loc._cf('issue', 'Exists another issue with that title in this project.'));
+      throw new ConflictError(loc => loc._c('issue', 'Exists another issue with that title in this project.'));
     }
   }
 

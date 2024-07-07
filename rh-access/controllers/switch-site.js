@@ -1,9 +1,12 @@
-import { conf } from '../conf.js';
 import { getOptionsFromParamsAndOData, httpErrorHandler } from 'http-util';
 import { checkParameter, checkParameterUuid } from 'rf-util';
 import dependency from 'rf-dependency';
 
 export class SwitchSiteController {
+  static init() {
+    this.service = dependency.get('switchSiteService');
+  }
+
   static currentSiteGet(req, res) {
     const siteId = req?.site?.id;
     if (!siteId) {
@@ -14,14 +17,17 @@ export class SwitchSiteController {
       options = { view: true, limit: 10, offset: 0 };
 
     getOptionsFromParamsAndOData(req?.query, definitions, options)
-      .then(options => SwitchSiteService.getForId(siteId, options))
+      .then(options => this.service.getForId(siteId, options))
       .then(element => res.status(200).send(element))
       .catch(httpErrorHandler(req, res));
   }
 
   static async post(req, res) {
-    const siteUuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('switchSite', 'UUID'));
-    await dependency.get('sessionSiteService').createOrUpdate({
+    const siteUuid = await checkParameterUuid(
+      req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid,
+      loc => loc._c('switchSite', 'UUID')
+    );
+    await this.service.createOrUpdate({
       sessionId: req?.session?.id,
       siteUuid,
     });

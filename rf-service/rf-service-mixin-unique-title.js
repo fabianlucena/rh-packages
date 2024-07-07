@@ -1,7 +1,7 @@
 import { Op } from './rf-service.js';
 import { checkParameterStringNotNullOrEmpty, checkParameterStringUndefinedOrNotNullAndNotEmpty, trim } from 'rf-util';
-import { loc } from 'rf-locale';
 import { ConflictError } from 'http-util';
+import { InvalidValueError } from './rf-service-errors.js';
 
 export const ServiceMixinUniqueTitle = Service => class extends Service {
   constructor() {
@@ -15,7 +15,7 @@ export const ServiceMixinUniqueTitle = Service => class extends Service {
   }
 
   async validateForCreation(data) {
-    checkParameterStringNotNullOrEmpty(trim(data?.title), loc._f('Title'));
+    checkParameterStringNotNullOrEmpty(trim(data?.title), loc => loc._('Title'));
     await this.checkTitleForConflict(data.title, data);
     return super.validateForCreation(data);
   }
@@ -28,20 +28,20 @@ export const ServiceMixinUniqueTitle = Service => class extends Service {
 
     const rowsCount = await this.countFor(forOption);
     if (rowsCount) {
-      throw new ConflictError(loc._f('Exists another row with title %s in %s.', title, this.constructor.name));
+      throw new ConflictError(loc => loc._('Exists another row with title %s in %s.', title, this.constructor.name));
     }
   }
 
   async validateForUpdate(data, where) {
-    checkParameterStringUndefinedOrNotNullAndNotEmpty(data.title, loc._f('Title'));
+    checkParameterStringUndefinedOrNotNullAndNotEmpty(data.title, loc => loc._('Title'));
     if (data.title) {
       if (!where) {
-        throw new ConflictError(loc._f('Title update without where clause is forbiden.'));
+        throw new ConflictError(loc => loc._('Title update without where clause is forbiden.'));
       }
 
       const rowsCount = await this.countFor(where);
       if (rowsCount > 1) {
-        throw new ConflictError(loc._f('Title update for many rows is forbiden.'));
+        throw new ConflictError(loc => loc._('Title update for many rows is forbiden.'));
       }
 
       await this.checkTitleForConflict(data.title, data, where);
@@ -65,7 +65,7 @@ export const ServiceMixinUniqueTitle = Service => class extends Service {
    */
   async getForTitle(title, options) {
     if (title === undefined) {
-      throw new Error(loc._f('Invalid value for title to get row'));
+      throw new InvalidValueError(loc => loc._('Invalid value for title to get row'));
     }
 
     if (Array.isArray(title)) {

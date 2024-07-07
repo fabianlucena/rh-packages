@@ -1,7 +1,6 @@
 import { conf } from '../conf.js';
 import { Service } from 'rf-service';
-import { _Error } from 'rf-util';
-import { loc } from 'rf-locale';
+import { UpdateAttributeValueError } from './error.js';
 
 export class EavValueTextService extends Service.IdUuid {
   references = {
@@ -11,11 +10,11 @@ export class EavValueTextService extends Service.IdUuid {
 
   async updateValue(data, options) {
     if (!data.attributeId) {
-      throw new _Error(loc._cf('eav', 'Cannot update option value because attributeId data is missing or empty'));
+      throw new UpdateAttributeValueError(loc => loc._c('eav', 'Cannot update option value because attributeId data is missing or empty'));
     }
         
     if (!data.entityId) {
-      throw new _Error(loc._cf('eav', 'Cannot update option value because entityId data is missing or empty'));
+      throw new UpdateAttributeValueError(loc => loc._c('eav', 'Cannot update option value because entityId data is missing or empty'));
     }
 
     const serviceData = {

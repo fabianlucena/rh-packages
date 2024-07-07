@@ -1,5 +1,5 @@
-import { setUpError, errorHandler, deepComplete, runSequentially, stripQuotes, checkParameterUuid } from 'rf-util';
-import { loc, defaultLoc } from 'rf-locale';
+import { errorHandler, deepComplete, runSequentially, stripQuotes, checkParameterUuid, BaseError } from 'rf-util';
+import { defaultLoc } from 'rf-locale';
 import { installRoutes } from 'rf-express-routes';
 import dependency from 'rf-dependency';
 import * as uuid from 'uuid';
@@ -7,202 +7,97 @@ import fs from 'fs';
 import path from 'path';
 import url from 'url';
 
-export class HttpError extends Error {
+export class HttpError extends BaseError {
   constructor(message, statusCode, ...params) {
-    super();
-    setUpError(
-      this,
-      {
-        message,
-        statusCode,
-        params
-      }
-    );
+    super({ message, statusCode, params });
   }
 }
 
-export class _HttpError extends Error {
-  constructor(message, statusCode, ...params) {
-    super();
-    setUpError(
-      this,
-      {
-        _message: message,
-        statusCode,
-        params
-      }
-    );
-  }
-}
-
-export class NotFoundError extends Error {
-  static VisibleProperties = ['message', 'title'];
-
+export class NotFoundError extends BaseError {
   statusCode = 404;
 
   constructor(message, options, ...params) {
-    super();
-    setUpError(
-      this,
-      {
-        message,
-        options,
-        params
-      }
-    );
+    super({ message, options, params });
   }
 }
 
-export class _NotFoundError extends Error {
-  static VisibleProperties = ['message', 'title', 'redirectTo'];
-
-  statusCode = 404;
-
-  constructor(_message, options, ...params) {
-    super();
-    setUpError(
-      this,
-      {
-        _message,
-        ...options,
-        params
-      }
-    );
-  }
-}
-
-export class UnauthorizedError extends Error {
-  static VisibleProperties = ['message', 'title'];
+export class UnauthorizedError extends BaseError {
+  static visibleProperties = ['message', 'title'];
 
   statusCode = 401;
 
   constructor(message, options, ...params) {
-    super();
-    setUpError(
-      this,
-      {
-        message,
-        options,
-        params
-      }
-    );
+    super({ message, options, ...params });
   }
 }
 
-export class _UnauthorizedError extends Error {
-  static VisibleProperties = ['message', 'title', 'redirectTo'];
-
-  statusCode = 401;
-
-  constructor(_message, options, ...params) {
-    super();
-    setUpError(
-      this,
-      {
-        _message,
-        ...options,
-        params
-      }
-    );
-  }
-}
-
-export class ForbiddenError extends Error {
+export class ForbiddenError extends BaseError {
   statusCode = 403;
 
   constructor(message) {
-    super(message);
+    super({ message });
   }
 }
 
-export class NoPermissionError extends Error {
-  static NoObjectValues = ['permissions'];
-  static VisibleProperties = ['message', 'title', 'permissions', 'redirectTo'];
-  static _zeroMessage = loc._f('You do not have permission.');
-  static _message = loc._nf(0, 'You do not have permission: "%s"', 'You do not have any of permissions: "%s".');
+export class NoPermissionError extends BaseError {
+  static noObjectValues = ['permissions'];
+  static visibleProperties = ['message', 'title', 'permissions', 'redirectTo'];
+  message = async loc => loc._nn(
+    this.permissions.length,
+    'You do not have permission.',
+    'You do not have permission: "%s"',
+    'You do not have any of permissions: "%s".',
+    await loc._or(...this.permissions),
+  );
 
   statusCode = 403;
   permissions = [];
 
   constructor(permissions, options, ...params) {
-    super();
-    setUpError(
-      this,
-      {
-        permissions,
-        options,
-        params
-      }
-    );
-  }
-
-  _n() {return this.permissions.length;}
-
-  async getMessageParams(loc) {
-    return [await loc._or(...this.permissions)];
+    super({ permissions, options, ...params });
   }
 }
 
-export class MethodNotAllowedError extends Error {
-  static NoObjectValues = ['method'];
-  static VisibleProperties = ['message', 'title', 'method'];
-  static _message = loc._f('Method "%s" not allowed.');
-  static param = ['<unknown>'];
+export class MethodNotAllowedError extends BaseError {
+  static noObjectValues = ['method'];
+  static visibleProperties = ['message', 'title', 'method'];
+  message = loc => loc._(
+    'Method "%s" not allowed.',
+    this.param[0],
+  );
+  param = ['<unknown>'];
 
   statusCode = 405;
   method = '';
 
   constructor(method) {
-    super();
-    setUpError(
-      this,
-      {
-        method
-      }
-    );
-  }
-
-  // eslint-disable-next-line no-unused-vars
-  async getMessageParams(loc) {
-    return [this.method];
+    super({ method });
   }
 }
 
-export class NoUUIDError extends Error {
-  static NoObjectValues = ['paramName'];
-  static VisibleProperties = ['message', 'title', 'paramName'];
-  static _message = loc._f('The "%s" parameter is not a valid UUID.');
-  static param = ['<unknown>'];
+export class NoUUIDError extends BaseError {
+  static noObjectValues = ['paramName'];
+  static visibleProperties = ['message', 'title', 'paramName'];
+  message = loc => loc._(
+    'The "%s" parameter is not a valid UUID.',
+    this.param[0],
+  );
+  param = ['<unknown>'];
 
   statusCode = 403;
 
   constructor(paramName) {
-    super();
-    setUpError(this, { paramName });
+    super({ paramName });
   }
 }
 
-export class ConflictError extends Error {
-  static VisibleProperties = ['message'];
-  static _message = loc._f('Conflict.');
-
+export class ConflictError extends BaseError {
+  static visibleProperties = ['message'];
+  message = loc => loc._('Conflict.');
   statusCode = 409;
 
   constructor(message) {
-    super();
-    setUpError(this, { message });
-  }
-}
-
-export class _ConflictError extends Error {
-  static VisibleProperties = ['message'];
-  static _message = loc._f('Conflict.');
-
-  statusCode = 409;
-
-  constructor(_message) {
-    super();
-    setUpError(this, { _message });
+    super({ message });
   }
 }
 
@@ -379,7 +274,7 @@ export function asyncHandler(methodContainer, method) {
   return async (req, res, next) => {
     try {
       if (!methodContainer) {
-        throw new _HttpError(loc._f('No method defined.'));
+        throw new HttpError(loc => loc._('No method defined.'));
       }
 
       if (method) {
@@ -388,7 +283,7 @@ export function asyncHandler(methodContainer, method) {
         } else if (typeof method === 'function') {
           await methodContainer.call(method, req, res, next);
         } else {
-          throw new _HttpError(loc._f('Error in method definition.'));
+          throw new HttpError(loc => loc._('Error in method definition.'));
         }
       } else {
         await methodContainer(req, res, next);
@@ -421,19 +316,19 @@ export async function getOptionsFromOData(params, options) {
   if (params.$top) {
     const limit = parseInt(params.$top);
     if (isNaN(limit)) {
-      throw new _HttpError(loc._f('Error to convert $top = "%s" parameter value to a integer number.'), 400, params.$top);
+      throw new HttpError(loc => loc._('Error to convert $top = "%s" parameter value to a integer number.'), 400, params.$top);
     }
 
     if (!options.overrideMaxRowsInResult && limit > maxRowsInResult) {
-      throw new _HttpError(loc._f('Too many rows to return, please select a lower number (at most %s) for $top parameter.'), 400, maxRowsInResult);
+      throw new HttpError(loc => loc._('Too many rows to return, please select a lower number (at most %s) for $top parameter.'), 400, maxRowsInResult);
     }
 
     if (limit > options.maxLimit) {
-      throw new _HttpError(loc._f('Too many rows to return, please select a lower number (at most %s) for $top parameter.'), 400, options.maxLimit);
+      throw new HttpError(loc => loc._('Too many rows to return, please select a lower number (at most %s) for $top parameter.'), 400, options.maxLimit);
     }
 
     if (limit < 0) {
-      throw new _HttpError(loc._f('The $top parameter cannot be negative.'), 400);
+      throw new HttpError(loc => loc._('The $top parameter cannot be negative.'), 400);
     }
 
     options.limit = limit;
@@ -446,11 +341,11 @@ export async function getOptionsFromOData(params, options) {
   if (params.$skip) {
     const offset = parseInt(params.$skip);
     if (isNaN(offset)) {
-      throw new _HttpError(loc._f('Error to convert $skip = "%s" parameter value to a integer number.'), 400, params.$skip);
+      throw new HttpError(loc => loc._('Error to convert $skip = "%s" parameter value to a integer number.'), 400, params.$skip);
     }
 
     if (offset < 0) {
-      throw new _HttpError(loc._f('The $skip param cannot be negative.'), 400);
+      throw new HttpError(loc => loc._('The $skip param cannot be negative.'), 400);
     }
         
     options.offset = offset;
@@ -466,11 +361,11 @@ export async function getOptionsFromOData(params, options) {
     for (const filter of filters) {
       const parts = filter.split(' ').map(t => t.trim()).filter(i => !!i);
       if (parts.length < 3) {
-        throw new _HttpError(loc._f('Error to compile filter in part "%s".'), 400, filter);
+        throw new HttpError(loc => loc._('Error to compile filter in part "%s".'), 400, filter);
       }
 
       if (parts[1] !== 'eq') {
-        throw new _HttpError(loc._f('Error to compile filter in part "%s", only the "eq" operator is supported.'), 400, filter);
+        throw new HttpError(loc => loc._('Error to compile filter in part "%s", only the "eq" operator is supported.'), 400, filter);
       }
 
       let value = parts.slice(2).join(' ');
@@ -534,17 +429,11 @@ export async function getOptionsFromParamsAndOData(params, definitions, options)
   return await getWhereOptionsFromParams(params, definitions, options);
 }
 
-export class NoRowsError extends Error {
-  static _message = loc._f('There are no rows.');
+export class NoRowsError extends BaseError {
+  message = loc => loc._('There are no rows.');
 
   constructor(message) {
-    super();
-    setUpError(
-      this,
-      {
-        message
-      }
-    );
+    super({ message });
   }
 }
 
@@ -1190,7 +1079,7 @@ export async function getUuidFromRequest(req) {
     if (uuid === undefined) {
       uuid = req.params.uuid;
     } else if (uuid.toUpperCase() !== req.params.uuid.toUpperCase()) {
-      throw new _HttpError(loc._f('UUID inconsistence. Many UUIDs were received but they are different.'), 400, uuid);
+      throw new HttpError(loc => loc._('UUID inconsistence. Many UUIDs were received but they are different.'), 400, uuid);
     }
   }
 
@@ -1198,7 +1087,7 @@ export async function getUuidFromRequest(req) {
     if (uuid === undefined) {
       uuid = req.query.uuid;
     } else if (uuid.toUpperCase() !== req.query.uuid.toUpperCase()) {
-      throw new _HttpError(loc._f('UUID inconsistence. Many UUIDs were received but they are different.'), 400, uuid);
+      throw new HttpError(loc => loc._('UUID inconsistence. Many UUIDs were received but they are different.'), 400, uuid);
     }
   }
 
@@ -1206,11 +1095,11 @@ export async function getUuidFromRequest(req) {
     if (uuid === undefined) {
       uuid = req.body.uuid;
     } else if (uuid.toUpperCase() !== req.body.uuid.toUpperCase()) {
-      throw new _HttpError(loc._f('UUID inconsistence. Many UUIDs were received but they are different.'), 400, uuid);
+      throw new HttpError(loc => loc._('UUID inconsistence. Many UUIDs were received but they are different.'), 400, uuid);
     }
   }
 
-  return checkParameterUuid(uuid, loc._f('UUID'));
+  return checkParameterUuid(uuid, loc => loc._('UUID'));
 }
 
 export function makeContext(req, res) {

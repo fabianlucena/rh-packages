@@ -1,8 +1,7 @@
 import { conf } from '../conf.js';
 import { Service, OptionalService, Op } from 'rf-service';
 import { CheckError } from 'rf-util';
-import { loc } from 'rf-locale';
-import { _ConflictError } from 'http-util';
+import { ConflictError } from 'http-util';
 import dependency from 'rf-dependency';
 
 export class ProjectService extends Service.IdUuidEnableNameUniqueTitleSharedTranslatable {
@@ -24,7 +23,7 @@ export class ProjectService extends Service.IdUuidEnableNameUniqueTitleSharedTra
   async validateForCreation(data) {
     if (this.companyService) {
       if (!data?.companyId) {
-        throw new CheckError(loc._cf('project', 'Company parameter is missing.'));
+        throw new CheckError(loc => loc._c('project', 'Company parameter is missing.'));
       }
     }
 
@@ -39,7 +38,7 @@ export class ProjectService extends Service.IdUuidEnableNameUniqueTitleSharedTra
 
     const rows = await this.getFor(where, { skipNoRowsError: true });
     if (rows?.length) {
-      throw new _ConflictError(loc._cf('project', 'Exists another project with that name in this company.'));
+      throw new ConflictError(loc => loc._c('project', 'Exists another project with that name in this company.'));
     }
   }
 
@@ -59,7 +58,7 @@ export class ProjectService extends Service.IdUuidEnableNameUniqueTitleSharedTra
 
     const rows = await this.getFor(whereOptions, { limit: 1 });
     if (rows?.length) {
-      throw new _ConflictError(loc._cf('project', 'Exists another project with that title in this company.'));
+      throw new ConflictError(loc => loc._c('project', 'Exists another project with that title in this company.'));
     }
   }
 
