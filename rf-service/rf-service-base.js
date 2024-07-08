@@ -450,12 +450,13 @@ export class ServiceBase {
     }
 
     if (qColumns.length) {
-      const qWhere = { [Op.or]: qColumns };
-      if (options.where) {
-        options.where = { [Op.and]: [options.where, qWhere] };
-      } else {
-        options.where = qWhere;
+      if (!options.where) {
+        options.where = { [Op.and]: [] };
+      } else if (!options.where[Op.and]) {
+        options.where[Op.and] = [];
       }
+
+      options.where[Op.and].push({ [Op.or]: qColumns });
     }
 
     return options;
