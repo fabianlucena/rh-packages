@@ -59,18 +59,13 @@ export class UserAccessController extends Controller {
       },
       {
         name:            'roles',
-        type:            'list',
+        type:            'select',
+        gridType:        'list',
         label:           await loc._('Roles'),
         singleProperty:  'title',
-        isColumn:        true,
-        isField:         false,
-      },
-      {
-        name:            'roles.uuid',
-        type:            'select',
-        label:           await loc._('Roles'),
         multiple:        true,
         big:             true,
+        isColumn:        true,
         isField:         true,
         loadOptionsFrom: {
           service: 'user-access/role',
@@ -103,7 +98,7 @@ export class UserAccessController extends Controller {
       user:  { uuid: req.body.user?.uuid },
       site:  { uuid: req.body.site?.uuid },
       roles: checkParameterUuidList(
-        req.body.roles.uuid,
+        req.body.roles,
         loc => loc._c('userAccess', 'Roles'),
       ).map(uuid => ({ uuid })),
     };
