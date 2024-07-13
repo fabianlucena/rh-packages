@@ -90,7 +90,7 @@ export class MergeTypeError extends BaseError {
 export async function getErrorMessage(error, loc) {
   let message;
   if (error.getMessage) {
-    message = error.getMessage(loc);
+    message = await error.getMessage(loc);
   } else {
     message = error.message;
   }
@@ -100,7 +100,7 @@ export async function getErrorMessage(error, loc) {
   }
 
   if (typeof message === 'function') {
-    message = message(loc);
+    message = await message(loc);
   }
 
   return error.message;
@@ -121,7 +121,7 @@ export async function getErrorData(error, loc, options) {
       data.statusCode = error.statusCode;
     }
 
-    data.message = await error.getMessage(loc);
+    data.message = await getErrorMessage(error, loc);
   } else {
     data.message = error;
   }
