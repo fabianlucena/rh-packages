@@ -70,3 +70,9 @@ export class NotEnabledError extends BaseError {
     super({ message });
   }
 }
+
+export class QueryError extends BaseError {
+  constructor(message) {
+    super({ message });
+  }
+}

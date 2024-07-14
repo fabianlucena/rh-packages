@@ -1,5 +1,5 @@
 import { Op, Column } from './rf-service-op.js';
-import { NoRowsError, ManyRowsError, ReferenceDefinitionError } from './rf-service-errors.js';
+import { NoRowsError, ManyRowsError, ReferenceDefinitionError, QueryError } from './rf-service-errors.js';
 import { ucfirst, lcfirst } from 'rf-util/rf-util-string.js';
 import { trim } from 'rf-util';
 import dependency from 'rf-dependency';
@@ -577,8 +577,25 @@ export class ServiceBase {
 
     if (options.orderBy?.length) {
       options.orderBy = options.orderBy.map(orderBy => {
-        let column = orderBy[0];
-        const sort = orderBy[1];
+        let orderByParts;
+        if (Array.isArray(orderBy)) {
+          orderByParts = orderBy;
+        } else if (typeof orderBy === 'string') {
+          const parts = orderBy.split(' ');
+          orderByParts = [parts.slice(0, -1).join(' '), parts.slice(-1)[0]];
+        } else if (typeof orderBy === 'object') {
+          const keys = Object.keys(orderBy);
+          if (keys.length > 1) {
+            throw new QueryError(loc => loc._c('service', 'Unknown order by option format for: "%s". It must be string or two items array or a single property object.', orderBy));
+          }
+          orderByParts = [keys[1], orderBy[keys[1]]];
+        }
+
+        if (orderByParts.length > 2) {
+          throw new QueryError(loc => loc._c('service', 'Unknown order by option format for: "%s". It must be string or two items array or a single property object.', orderBy));
+        }
+        let column = orderByParts[0];
+        const sort = orderByParts[1] ?? 'ASC';
         if (Column.isColumn(column)) {
           column = Column(column);
         }
