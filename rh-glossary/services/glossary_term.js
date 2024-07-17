@@ -1,7 +1,7 @@
 import { conf } from '../conf.js';
 import { Service } from 'rf-service';
 
-export class GlossaryTypeService extends Service.IdUuidEnableNameTitleDescription {
+export class GlossaryTermService extends Service.IdUuidEnableNameTitleDescription {
   references = {
     glossary: true,
     category: 'glossaryCategory',

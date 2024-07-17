@@ -11,14 +11,14 @@
         "language": "es",
         "context": "permission",
         "translation": "Crear glosarios",
-        "ref": "..\\rh-glossary\\conf_data.js [16,43]"
+        "ref": "..\\rh-glossary\\conf_data.js [17,43]"
     },
     {
         "source": "Delete glossarys",
         "language": "es",
         "context": "permission",
         "translation": "Eliminar glosarios",
-        "ref": "..\\rh-glossary\\conf_data.js [18,43]"
+        "ref": "..\\rh-glossary\\conf_data.js [19,43]"
     },
     {
         "source": "Description",
@@ -32,7 +32,7 @@
         "language": "es",
         "context": "permission",
         "translation": "Modificar glosarios",
-        "ref": "..\\rh-glossary\\conf_data.js [17,43]"
+        "ref": "..\\rh-glossary\\conf_data.js [18,43]"
     },
     {
         "source": "Enabled",
@@ -46,7 +46,15 @@
         "language": "es",
         "context": "permission",
         "translation": "Obtener glosarios",
-        "ref": "..\\rh-glossary\\conf_data.js [15,43]"
+        "ref": "..\\rh-glossary\\conf_data.js [16,43]"
+    },
+    {
+        "source": "Glossary editor",
+        "language": "es",
+        "context": "role",
+        "isDraft": false,
+        "translation": "Editor de glosario",
+        "ref": "..\\rh-glossary\\conf_data.js [8,43]"
     },
     {
         "source": "Glossary manager",
@@ -67,7 +75,7 @@
         "language": "es",
         "context": "menu",
         "translation": "Glosarios",
-        "ref": "..\\rh-glossary\\conf_data.js [15,172]"
+        "ref": "..\\rh-glossary\\conf_data.js [16,172]"
     },
     {
         "source": "Name",

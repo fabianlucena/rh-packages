@@ -6,6 +6,6 @@ export class GlossaryCategoryService extends Service.IdUuidEnableNameTitleDescri
     glossary: true,
   };
   defaultTranslationContext = 'glossary';
-  viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'description'];
+  viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'description', 'isTranslatable'];
   eventBus = conf.global.eventBus;
 }

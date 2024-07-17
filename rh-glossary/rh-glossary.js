@@ -16,7 +16,7 @@ async function configure(global, options) {
 async function updateData(global) {
   const data = global?.data;
   const glossaryService =           dependency.get('glossaryService');
-  const glossaryCategoryService =   dependency.get('glossaryCategory');
+  const glossaryCategoryService =   dependency.get('glossaryCategoryService');
   const glossaryTypeService =       dependency.get('glossaryTypeService');
   const glossaryTermService =       dependency.get('glossaryTermService');
   const glossaryDefinitionService = dependency.get('glossaryDefinitionService');
