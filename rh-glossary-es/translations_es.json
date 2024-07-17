@@ -1,0 +1,133 @@
+[
+    {
+        "source": "Check for enable and uncheck for disable",
+        "language": "es",
+        "context": "glossary",
+        "translation": "Marque para habilitar y desmarque para deshabilitar",
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [91,32]"
+    },
+    {
+        "source": "Create glossarys",
+        "language": "es",
+        "context": "permission",
+        "translation": "Crear glosarios",
+        "ref": "..\\rh-glossary\\conf_data.js [16,43]"
+    },
+    {
+        "source": "Delete glossarys",
+        "language": "es",
+        "context": "permission",
+        "translation": "Eliminar glosarios",
+        "ref": "..\\rh-glossary\\conf_data.js [18,43]"
+    },
+    {
+        "source": "Description",
+        "language": "es",
+        "context": "glossary",
+        "translation": "Descripción ",
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [82,32]"
+    },
+    {
+        "source": "Edit glossarys",
+        "language": "es",
+        "context": "permission",
+        "translation": "Modificar glosarios",
+        "ref": "..\\rh-glossary\\conf_data.js [17,43]"
+    },
+    {
+        "source": "Enabled",
+        "language": "es",
+        "context": "glossary",
+        "translation": "Habilitado ",
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [90,32]"
+    },
+    {
+        "source": "Get glossarys",
+        "language": "es",
+        "context": "permission",
+        "translation": "Obtener glosarios",
+        "ref": "..\\rh-glossary\\conf_data.js [15,43]"
+    },
+    {
+        "source": "Glossary manager",
+        "language": "es",
+        "context": "role",
+        "translation": "Administrador de glosarios",
+        "ref": "..\\rh-glossary\\conf_data.js [7,43]"
+    },
+    {
+        "source": "Glossarys",
+        "language": "es",
+        "context": "glossary",
+        "translation": "Glosarios",
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [98,24]"
+    },
+    {
+        "source": "Glossarys",
+        "language": "es",
+        "context": "menu",
+        "translation": "Glosarios",
+        "ref": "..\\rh-glossary\\conf_data.js [15,172]"
+    },
+    {
+        "source": "Name",
+        "language": "es",
+        "context": "glossary",
+        "translation": "Nombre ",
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [51,32]"
+    },
+    {
+        "source": "Project",
+        "language": "es",
+        "context": "glossary",
+        "translation": "Proyecto",
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [67,32]"
+    },
+    {
+        "source": "Select the project",
+        "language": "es",
+        "context": "glossary",
+        "translation": "Seleccione el proyecto",
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [68,32]"
+    },
+    {
+        "source": "Spanish",
+        "language": "es",
+        "translation": "Español",
+        "ref": "rh-glossary-es.js [18,20]"
+    },
+    {
+        "source": "Spanish language.",
+        "language": "es",
+        "translation": "Idioma español.",
+        "ref": "rh-glossary-es.js [19,26]"
+    },
+    {
+        "source": "Title",
+        "language": "es",
+        "context": "glossary",
+        "translation": "Título ",
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [28,32]"
+    },
+    {
+        "source": "Type the description here",
+        "language": "es",
+        "context": "glossary",
+        "translation": "Escriba aquí la descripción",
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [83,32]"
+    },
+    {
+        "source": "Type the name here",
+        "language": "es",
+        "context": "glossary",
+        "translation": "Escriba aquí el nombre",
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [52,32]"
+    },
+    {
+        "source": "Type the title here",
+        "language": "es",
+        "context": "glossary",
+        "translation": "Escriba aquí el título",
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [29,32]"
+    }
+]
