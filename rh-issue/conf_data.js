@@ -38,6 +38,15 @@ export const data = {
     { name: 'workForMe',  title: loc._cf('issue', 'Work for me'), isTranslatable: true, translationContext: 'issue', description: loc._cf('issue', 'The issue was closed because it was checked and work properly so don\'t need work on it.') },
   ],
 
+  issueRelationships: [
+    {
+      name:               'related',
+      title:              loc._cf('issue', 'Related'),
+      isTranslatable:     1,
+      translationContext: 'issue',
+    },
+  ],
+
   workflows: [
     {
       name: 'issueMinimalistic',
