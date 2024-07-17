@@ -4,7 +4,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Encargado",
-        "ref": "..\\rh-issue\\conf_data.js [50,31]"
+        "ref": "..\\rh-issue\\conf_data.js [59,31]"
     },
     {
         "source": "Blocker",
@@ -32,14 +32,14 @@
         "language": "es",
         "context": "issue",
         "translation": "Cerrar",
-        "ref": "..\\rh-issue\\conf_data.js [82,24]"
+        "ref": "..\\rh-issue\\conf_data.js [91,24]"
     },
     {
         "source": "Close a ticket.",
         "language": "es",
         "context": "issue",
         "translation": "Cierra una incidencia.",
-        "ref": "..\\rh-issue\\conf_data.js [85,30]"
+        "ref": "..\\rh-issue\\conf_data.js [94,30]"
     },
     {
         "source": "Close reason",
@@ -53,7 +53,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Cerrado",
-        "ref": "..\\rh-issue\\conf_data.js [69,24]"
+        "ref": "..\\rh-issue\\conf_data.js [78,24]"
     },
     {
         "source": "Company productivity has stopped until this is resolved.",
@@ -179,7 +179,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Minimalista",
-        "ref": "..\\rh-issue\\conf_data.js [44,18]\n..\\rh-issue\\conf_data.js [54,20]"
+        "ref": "..\\rh-issue\\conf_data.js [53,18]\n..\\rh-issue\\conf_data.js [63,20]"
     },
     {
         "source": "Name",
@@ -193,7 +193,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Abierto",
-        "ref": "..\\rh-issue\\conf_data.js [61,24]"
+        "ref": "..\\rh-issue\\conf_data.js [70,24]"
     },
     {
         "source": "Priority",
@@ -221,7 +221,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Relacionado",
-        "ref": "..\\rh-issue\\controllers\\issue.js [260,32]"
+        "ref": "..\\rh-issue\\conf_data.js [44,31]\n..\\rh-issue\\controllers\\issue.js [260,32]"
     },
     {
         "source": "Relationship",
@@ -274,9 +274,8 @@
         "source": "Status",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "Estado",
-        "ref": "..\\rh-issue\\conf_data.js [49,31]"
+        "ref": "..\\rh-issue\\conf_data.js [58,31]"
     },
     {
         "source": "Task",
@@ -304,7 +303,7 @@
         "language": "es",
         "context": "issue",
         "translation": "La incidencia está cerrada.",
-        "ref": "..\\rh-issue\\conf_data.js [72,30]"
+        "ref": "..\\rh-issue\\conf_data.js [81,30]"
     },
     {
         "source": "The issue is important and must be solved.",
@@ -332,7 +331,7 @@
         "language": "es",
         "context": "issue",
         "translation": "La incidencia está abierta.",
-        "ref": "..\\rh-issue\\conf_data.js [64,30]"
+        "ref": "..\\rh-issue\\conf_data.js [73,30]"
     },
     {
         "source": "The issue is very important and must be resolved as soon as possible..",
@@ -381,7 +380,7 @@
         "language": "es",
         "context": "issue",
         "translation": "El flujo de trabajo minimalista unicamente admite los estados abierto y cerrado.",
-        "ref": "..\\rh-issue\\conf_data.js [57,26]"
+        "ref": "..\\rh-issue\\conf_data.js [66,26]"
     },
     {
         "source": "The project does not exist or you do not have permission to access it.",
@@ -451,6 +450,6 @@
         "language": "es",
         "context": "issue",
         "translation": "Flujo de trabajo",
-        "ref": "..\\rh-issue\\conf_data.js [51,31]"
+        "ref": "..\\rh-issue\\conf_data.js [60,31]"
     }
 ]
