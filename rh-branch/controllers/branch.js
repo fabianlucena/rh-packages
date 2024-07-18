@@ -41,7 +41,7 @@ export class BranchController extends Controller {
   }
 
   async checkUuid(req, uuid) {
-    const branch = await this.branchService.getForUuid(uuid, { skipNoRowsError: true });
+    const branch = await this.service.getForUuid(uuid, { skipNoRowsError: true });
     if (!branch) {
       throw new _HttpError(req.loc._cf('branch', 'The branch with UUID %s does not exists.'), 404, uuid);
     }
@@ -58,7 +58,7 @@ export class BranchController extends Controller {
 
     await this.checkDataForCompanyId(req, data);
 
-    if (await branchService.getForName(data.name, { skipNoRowsError: true })) {
+    if (await this.service.getForName(data.name, { skipNoRowsError: true })) {
       throw new _ConflictError(req.loc._cf('branch', 'Exists another branch with that name.'));
     }
 
@@ -69,7 +69,7 @@ export class BranchController extends Controller {
       }
     }
 
-    await branchService.create(data);
+    await this.service.create(data);
     res.status(204).send();
   }
 
@@ -93,7 +93,7 @@ export class BranchController extends Controller {
 
     await conf.global.eventBus?.$emit('Branch.response.getting', options);
 
-    const result = await branchService.getListAndCount(options);
+    const result = await this.service.getListAndCount(options);
 
     result.rows = result.rows.map(row => {
       row.companyUuid = row.company.uuid;
@@ -127,13 +127,11 @@ export class BranchController extends Controller {
         label: await loc._cf('branch', 'Name'),
       },
       {
-        alias: 'company',
         name: 'company.title',
         type: 'text',
         label: await loc._cf('branch', 'Company'),
       },
       {
-        alias: 'owner',
         name: 'owner.user.displayName',
         type: 'text',
         label: await loc._cf('branch', 'Owner'),
@@ -147,7 +145,16 @@ export class BranchController extends Controller {
         method: 'get',
       },
       actions,
-      columns: await filterVisualItemsByAliasName(columns, conf?.branch, { loc, entity: 'Branch', translationContext: 'branch', interface: 'grid' }),
+      columns: await filterVisualItemsByAliasName(
+        columns,
+        {
+          loc,
+          entity: 'Branch',
+          translationContext: 'branch',
+          interface: 'grid',
+          ...conf?.branch,
+        }
+      ),
     };
 
     await conf.global.eventBus?.$emit('Branch.interface.grid.get', grid, { loc });
@@ -193,7 +200,6 @@ export class BranchController extends Controller {
         },
       },
       {
-        alias: 'company',
         name: 'companyUuid',
         type: 'select',
         label: await loc._cf('branch', 'Company'),
@@ -224,7 +230,16 @@ export class BranchController extends Controller {
     const form = {
       title: await loc._('Branches'),
       action: 'branch',
-      fields: await filterVisualItemsByAliasName(fields, conf?.branch, { loc, entity: 'Branch', translationContext: 'branch', interface: 'form' }),
+      fields: await filterVisualItemsByAliasName(
+        fields,
+        {
+          loc,
+          entity: 'Branch',
+          translationContext: 'branch',
+          interface: 'form',
+          ...conf?.branch,
+        },
+      ),
     };
 
     await conf.global.eventBus?.$emit('interface.form.get', form, { loc, entity: 'Branch' });
@@ -238,7 +253,7 @@ export class BranchController extends Controller {
     const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('branch', 'UUID'));
     await this.checkUuid(req, uuid);
 
-    const rowsDeleted = await branchService.deleteForUuid(uuid);
+    const rowsDeleted = await this.service.deleteForUuid(uuid);
     if (!rowsDeleted) {
       throw new _HttpError(req.loc._cf('branch', 'Branch with UUID %s does not exists.'), 403, uuid);
     }
@@ -251,7 +266,7 @@ export class BranchController extends Controller {
     const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('branch', 'UUID'));
     await this.checkUuid(req, uuid);
 
-    const rowsUpdated = await branchService.enableForUuid(uuid);
+    const rowsUpdated = await this.service.enableForUuid(uuid);
     if (!rowsUpdated) {
       throw new _HttpError(req.loc._cf('branch', 'Branch with UUID %s does not exists.'), 403, uuid);
     }
@@ -264,7 +279,7 @@ export class BranchController extends Controller {
     const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('branch', 'UUID'));
     await this.checkUuid(req, uuid);
 
-    const rowsUpdated = await branchService.disableForUuid(uuid);
+    const rowsUpdated = await this.service.disableForUuid(uuid);
     if (!rowsUpdated) {
       throw new _HttpError(req.loc._cf('branch', 'Branch with UUID %s does not exists.'), 403, uuid);
     }
@@ -277,7 +292,7 @@ export class BranchController extends Controller {
     const uuid = await checkParameterUuid(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, req.loc._cf('branch', 'UUID'));
     await this.checkUuid(req, uuid);
 
-    const rowsUpdated = await branchService.updateForUuid(req.body, uuid);
+    const rowsUpdated = await this.service.updateForUuid(req.body, uuid);
     if (!rowsUpdated) {
       throw new _HttpError(req.loc._cf('branch', 'Branch with UUID %s does not exists.'), 403, uuid);
     }
