@@ -1,7 +1,7 @@
 import { Service } from 'rf-service';
 import { spacialize, ucfirst } from 'rf-util';
 
-export class MenuItemService extends Service.IdUuidEnableNameTranslatable {
+export class MenuItemService extends Service.IdUuidEnableNameOwnerModuleTranslatable {
   references = {
     permission: true,
     parent: 'menuItemService',
@@ -10,6 +10,13 @@ export class MenuItemService extends Service.IdUuidEnableNameTranslatable {
   viewAttributes = ['uuid', 'name', 'jsonData', 'isTranslatable', 'data'];
 
   async validateForCreation(data) {
+    let { uuid, isEnabled, name, parent, parentId, permission, permissionId, isTranslatable, translationContext, ownerModule, ownerModuleId, ...resData } = {
+      ...data, 
+      ...data.data, 
+    };
+
+    data = { uuid, isEnabled, name, parent, parentId, permission, permissionId, isTranslatable, translationContext, ownerModule, ownerModuleId, data: resData };
+
     if (!data.parentId && data.parent) {
       const parentMenuItem = await this.create({
         isEnabled: true,
@@ -19,7 +26,7 @@ export class MenuItemService extends Service.IdUuidEnableNameTranslatable {
 
       data.parentId = parentMenuItem.id;
     }
-
+    
     return super.validateForCreation(data);
   }
 
@@ -75,6 +82,32 @@ export class MenuItemService extends Service.IdUuidEnableNameTranslatable {
     }
 
     return menuItems;
+  }
+
+  async create(data) {
+    return super.create(data);
+  }
+
+  async createIfNotExists(data) {
+    let created;
+    if (data.permissions) {
+      data = { ...data };
+      let permissions = data.permissions;
+      delete data.permissions;
+      if (!Array.isArray(permissions)) {
+        permissions = permissions.split(',');
+      }
+
+      await Promise.all(permissions.map(async permission => {
+        if (await this.createIfNotExists({ ...data, permission })) {
+          created = true;
+        }
+      }));
+    } else {
+      created = await super.createIfNotExists(data);
+    }
+
+    return created;
   }
 
   async override(data1, options1) {
