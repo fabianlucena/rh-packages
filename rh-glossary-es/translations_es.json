@@ -1,10 +1,17 @@
 [
     {
+        "source": "Categories",
+        "language": "es",
+        "context": "menu",
+        "translation": "Categorías",
+        "ref": "..\\rh-glossary\\conf_data.js [25,120]"
+    },
+    {
         "source": "Check for enable and uncheck for disable",
         "language": "es",
         "context": "glossary",
         "translation": "Marque para habilitar y desmarque para deshabilitar",
-        "ref": "..\\rh-glossary\\controllers\\glossary.js [91,32]"
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [36,32]\n..\\rh-glossary\\controllers\\glossary-category.js [34,32]"
     },
     {
         "source": "Create glossarys",
@@ -25,7 +32,7 @@
         "language": "es",
         "context": "glossary",
         "translation": "Descripción ",
-        "ref": "..\\rh-glossary\\controllers\\glossary.js [82,32]"
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [97,32]\n..\\rh-glossary\\controllers\\glossary-category.js [95,32]"
     },
     {
         "source": "Edit glossarys",
@@ -39,7 +46,7 @@
         "language": "es",
         "context": "glossary",
         "translation": "Habilitado ",
-        "ref": "..\\rh-glossary\\controllers\\glossary.js [90,32]"
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [35,32]\n..\\rh-glossary\\controllers\\glossary-category.js [33,32]"
     },
     {
         "source": "Get glossarys",
@@ -49,10 +56,45 @@
         "ref": "..\\rh-glossary\\conf_data.js [16,43]"
     },
     {
+        "source": "Glossaries",
+        "language": "es",
+        "context": "glossary",
+        "translation": "Glosarios",
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [105,24]"
+    },
+    {
+        "source": "Glossaries",
+        "language": "es",
+        "context": "menu",
+        "translation": "Glosarios",
+        "ref": "..\\rh-glossary\\conf_data.js [24,120]"
+    },
+    {
+        "source": "Glossary",
+        "language": "es",
+        "context": "glossary",
+        "translation": "Glosario",
+        "ref": "..\\rh-glossary\\controllers\\glossary-category.js [80,32]"
+    },
+    {
+        "source": "Glossary",
+        "language": "es",
+        "context": "menu",
+        "translation": "Glosario",
+        "ref": "..\\rh-glossary\\conf_data.js [23,120]"
+    },
+    {
+        "source": "Glossary categories",
+        "language": "es",
+        "context": "glossary",
+        "isDraft": false,
+        "translation": "Categorías de glosarios",
+        "ref": "..\\rh-glossary\\controllers\\glossary-category.js [103,24]"
+    },
+    {
         "source": "Glossary editor",
         "language": "es",
         "context": "role",
-        "isDraft": false,
         "translation": "Editor de glosario",
         "ref": "..\\rh-glossary\\conf_data.js [8,43]"
     },
@@ -64,39 +106,32 @@
         "ref": "..\\rh-glossary\\conf_data.js [7,43]"
     },
     {
-        "source": "Glossarys",
-        "language": "es",
-        "context": "glossary",
-        "translation": "Glosarios",
-        "ref": "..\\rh-glossary\\controllers\\glossary.js [98,24]"
-    },
-    {
-        "source": "Glossarys",
-        "language": "es",
-        "context": "menu",
-        "translation": "Glosarios",
-        "ref": "..\\rh-glossary\\conf_data.js [16,172]"
-    },
-    {
         "source": "Name",
         "language": "es",
         "context": "glossary",
         "translation": "Nombre ",
-        "ref": "..\\rh-glossary\\controllers\\glossary.js [51,32]"
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [66,32]\n..\\rh-glossary\\controllers\\glossary-category.js [64,32]"
     },
     {
         "source": "Project",
         "language": "es",
         "context": "glossary",
         "translation": "Proyecto",
-        "ref": "..\\rh-glossary\\controllers\\glossary.js [67,32]"
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [82,32]"
+    },
+    {
+        "source": "Select the glossary",
+        "language": "es",
+        "context": "glossary",
+        "translation": "Seleccione el glosario",
+        "ref": "..\\rh-glossary\\controllers\\glossary-category.js [81,32]"
     },
     {
         "source": "Select the project",
         "language": "es",
         "context": "glossary",
         "translation": "Seleccione el proyecto",
-        "ref": "..\\rh-glossary\\controllers\\glossary.js [68,32]"
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [83,32]"
     },
     {
         "source": "Spanish",
@@ -115,27 +150,34 @@
         "language": "es",
         "context": "glossary",
         "translation": "Título ",
-        "ref": "..\\rh-glossary\\controllers\\glossary.js [28,32]"
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [43,32]\n..\\rh-glossary\\controllers\\glossary-category.js [41,32]"
+    },
+    {
+        "source": "Type",
+        "language": "es",
+        "context": "menu",
+        "translation": "Tipo",
+        "ref": "..\\rh-glossary\\conf_data.js [26,120]"
     },
     {
         "source": "Type the description here",
         "language": "es",
         "context": "glossary",
         "translation": "Escriba aquí la descripción",
-        "ref": "..\\rh-glossary\\controllers\\glossary.js [83,32]"
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [98,32]\n..\\rh-glossary\\controllers\\glossary-category.js [96,32]"
     },
     {
         "source": "Type the name here",
         "language": "es",
         "context": "glossary",
         "translation": "Escriba aquí el nombre",
-        "ref": "..\\rh-glossary\\controllers\\glossary.js [52,32]"
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [67,32]\n..\\rh-glossary\\controllers\\glossary-category.js [65,32]"
     },
     {
         "source": "Type the title here",
         "language": "es",
         "context": "glossary",
         "translation": "Escriba aquí el título",
-        "ref": "..\\rh-glossary\\controllers\\glossary.js [29,32]"
+        "ref": "..\\rh-glossary\\controllers\\glossary.js [44,32]\n..\\rh-glossary\\controllers\\glossary-category.js [42,32]"
     }
 ]

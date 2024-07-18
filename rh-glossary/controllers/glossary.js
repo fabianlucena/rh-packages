@@ -102,7 +102,7 @@ export class GlossaryController extends Controller {
     ];
 
     const result = {
-      title: await loc._c('glossary', 'Glossarys'),
+      title: await loc._c('glossary', 'Glossaries'),
       load: {
         service: 'glossary',
         method:  'get',

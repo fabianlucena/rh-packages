@@ -1,21 +1,28 @@
-import { conf } from '../conf.js';
 import { Controller } from 'rh-controller';
 import { getOptionsFromParamsAndOData } from 'http-util';
 import { defaultLoc } from 'rf-locale';
+import dependency from 'rf-dependency';
 
 export class GlossaryCategoryController extends Controller {
-  postPermission =               'glossary.create';
-  getPermission =                'glossary.get';
-  deleteForUuidPermission =      'glossary.delete';
+  constructor() {
+    super();
+
+    this.service =         dependency.get('glossaryCategoryService');
+    this.glossaryService = dependency.get('glossaryService');
+  }
+
+  postPermission =               'glossary.edit';
+  getPermission =                'glossary.edit';
+  deleteForUuidPermission =      'glossary.edit';
   postEnableForUuidPermission =  'glossary.edit';
   postDisableForUuidPermission = 'glossary.edit';
   patchForUuidPermission =       'glossary.edit';
 
   async getFields(req) {
     const gridActions = [];
-    if (req.permissions.includes('glossary.create')) gridActions.push('create');
-    if (req.permissions.includes('glossary.edit'))   gridActions.push('enableDisable', 'edit');
-    if (req.permissions.includes('glossary.delete')) gridActions.push('delete');
+    gridActions.push('create');
+    gridActions.push('enableDisable', 'edit');
+    gridActions.push('delete');
     gridActions.push('search', 'paginate');
         
     const loc = req.loc ?? defaultLoc;
@@ -65,18 +72,18 @@ export class GlossaryCategoryController extends Controller {
         },
       },
       {
-        alias:       'project',
-        name:        'project.uuid',
-        gridName:    'project.title',
+        alias:       'glossary',
+        name:        'glossary.uuid',
+        gridName:    'glossary.title',
         type:        'select',
         gridType:    'text',
-        label:       await loc._c('glossary', 'Project'),
-        placeholder: await loc._c('glossary', 'Select the project'),
+        label:       await loc._c('glossary', 'Glossary'),
+        placeholder: await loc._c('glossary', 'Select the glossary'),
         isField:     true,
         isColumn:    true,
         required:    true,
         loadOptionsFrom: {
-          service: 'glossary/project',
+          service: 'glossary-category/glossary',
           value:   'uuid',
           text:    'title',
           title:   'description',
@@ -93,56 +100,28 @@ export class GlossaryCategoryController extends Controller {
     ];
 
     const result = {
-      title: await loc._c('glossary', 'Glossarys'),
+      title: await loc._c('glossary', 'Glossary categories'),
       load: {
-        service: 'glossary',
+        service: 'glossary-category',
         method:  'get',
       },
-      getDefaultValues: true,
-      action: 'glossary',
+      action: 'glossary-category',
       gridActions,
       fields,
-      fieldsFilter: conf?.glossary,
     };
 
     return result;
   }
 
-  async getDefault(req) {
-    const row = {};
-
-    if (this.projectService && this.getCurrentProject) {
-      const project = await this.getCurrentProject(req);
-      if (project) {
-        row.project = { uuid: project.uuid };
-      }
-    };
-
-    return {
-      count: 1,
-      rows: [ row ],
-    };
-  }
-
-  'getPermission /project' = [ 'glossary.create', 'glossary.edit' ];
-  async 'get /project'(req, res) {
-    if (!this.projectService) {
-      if (!res.headersSent) {
-        res.status(404).send({ error: 'Not found.' });
-      }
-    }
-
+  'getPermission /glossary' = [ 'glossary.create', 'glossary.edit' ];
+  async 'get /glossary'(req, res) {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = { view: true, limit: 10, offset: 0, loc };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    if (conf.filters?.getCurrentProjectId) {
-      options.where ??= {};
-      options.where.id = await conf.filters.getCurrentProjectId(req) ?? null;
-    }
 
-    const result = await this.projectService.getListAndCount(options);
+    const result = await this.glossaryService.getListAndCount(options);
 
     res.status(200).send(result);
   }
