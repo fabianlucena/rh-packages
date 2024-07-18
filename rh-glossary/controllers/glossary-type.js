@@ -100,7 +100,8 @@ export class GlossaryTypeController extends Controller {
     ];
 
     const result = {
-      title: await loc._c('glossary', 'Glossary types'),
+      title: await loc._c('glossary', 'Type for glossary'),
+      gridTitle: await loc._c('glossary', 'Types for glossaries'),
       load: {
         service: 'glossary-type',
         method:  'get',
