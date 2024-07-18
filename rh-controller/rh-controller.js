@@ -2,7 +2,7 @@ import { getRoutes } from 'rf-get-routes';
 import { deleteHandler, getUuidFromRequest, _HttpError, enableHandler, disableHandler, patchHandler, makeContext } from 'http-util';
 import { defaultLoc } from 'rf-locale';
 import { dependency } from 'rf-dependency';
-import { filterVisualItemsByAliasName } from 'rf-util';
+import { filterVisualItemsByAliasName, ucfirst } from 'rf-util';
 
 
 /**
@@ -126,9 +126,44 @@ export class Controller {
     await checkPermissionHandler(req, res, next);
   }
 
+  async sanitizeFields(interfaceName, result, req) {
+    const loc = req.loc ?? defaultLoc,
+      translationContext = this.translationContext;
+    result.fields = await filterVisualItemsByAliasName(
+      result.fields,
+      {
+        loc,
+        translationContext: this.translationContext,
+        ...result.fieldsFilter,
+        interface: interfaceName,
+        entity: this.getName(),
+      },
+    );
+    delete result.fieldsFilter;
+
+    if (interfaceName) {
+      const substitutions = [ 'title' ];
+      for (const dst in substitutions) {
+        const src = interfaceName + ucfirst(dst);
+        if (result[src] === undefined) {
+          continue;
+        }
+
+        result[dst] = result[src];
+        delete result[src];
+      }
+    }
+
+    if (typeof result.title === 'function') {
+      result.title = await result.title(loc, translationContext);
+    }
+
+    return result;
+  }
+
   async defaultGet(req, res, next) {
     let func,
-      arrange;
+      sanitize;
     const permissions = [],
       events = [],
       entity = this.getName();
@@ -142,18 +177,13 @@ export class Controller {
         func = (...args) => this.getFields(...args);
       } else if (typeof this.constructor.getFields === 'function') {
         func = this.constructor.getFields;
+      } else if (this.service?.getFields) {
+        func = (...args) => this.service.getFields({ context: makeContext(...args) });
       }
 
       permissions.push('getGrid', 'get');
       events.push('interface.grid.get', `${entity}.interface.grid.get`);
-      arrange = async result => {
-        if (result.fieldsFilter) {
-          result.fields = await filterVisualItemsByAliasName(result.fields, result.fieldsFilter);
-          delete result.fieldsFilter;
-        }
-
-        return result;
-      };
+      sanitize = (...params) => this.sanitizeFields('grid', ...params);
     } else if ('$form' in req.query) {
       if (typeof this.getForm === 'function') {
         func = (...args) => this.getForm(...args);
@@ -163,18 +193,13 @@ export class Controller {
         func = (...args) => this.getFields(...args);
       } else if (typeof this.constructor.getFields === 'function') {
         func = this.constructor.getFields;
+      } else if (this.service?.getFields) {
+        func = (...args) => this.service.getFields({ context: makeContext(...args) });
       }
 
       permissions.push('getForm', 'get');
       events.push('interface.form.get', `${entity}.interface.form.get`);
-      arrange = async result => {
-        if (result.fieldsFilter) {
-          result.fields = await filterVisualItemsByAliasName(result.fields, result.fieldsFilter);
-          delete result.fieldsFilter;
-        }
-
-        return result;
-      };
+      sanitize = (...params) => this.sanitizeFields('form', ...params);
     } else if ('$object' in req.query) {
       if (typeof this.getObject === 'function') {
         func = (...args) => this.getObject(...args);
@@ -184,41 +209,31 @@ export class Controller {
         func = (...args) => this.getFields(...args);
       } else if (typeof this.constructor.getFields === 'function') {
         func = this.constructor.getFields;
+      } else if (this.service?.getFields) {
+        func = (...args) => this.service.getFields({ context: makeContext(...args) });
       }
 
       permissions.push('getObject', 'get');
       events.push('interface.object.get', `${entity}.interface.object.get`);
-      arrange = async result => {
-        if (result.fieldsFilter) {
-          result.fields = await filterVisualItemsByAliasName(result.fields, result.fieldsFilter);
-          delete result.fieldsFilter;
-        }
-
-        return result;
-      };
+      sanitize = (...params) => this.sanitizeFields('object', ...params);
     } else if ('$fields' in req.query) {
       if (typeof this.getFields === 'function') {
         func = (...args) => this.getFields(...args);
       } else if (typeof this.constructor.getFields === 'function') {
         func = this.constructor.getFields;
+      } else if (this.service?.getFields) {
+        func = (...args) => this.service.getFields({ context: makeContext(...args) });
       }
 
       permissions.push('getFields', 'get');
       events.push('interface.fields.get', `${entity}.interface.fields.get`);
-      arrange = async result => {
-        if (result.fieldsFilter) {
-          result.fields = await filterVisualItemsByAliasName(result.fields, result.fieldsFilter);
-          delete result.fieldsFilter;
-        }
-
-        return result;
-      };
+      sanitize = (...params) => this.sanitizeFields('fields', ...params);
     } else if ('$default' in req.query) {
       if (typeof this.getDefault === 'function') {
         func = (...args) => this.getDefault(...args);
       } else if (typeof this.constructor.getDefault === 'function') {
         func = this.constructor.getDefault;
-      } else if (this.service && this.service.getDefault) {
+      } else if (this.service?.getDefault) {
         func = (...args) => this.defaultGetDefault(...args);
       }
 
@@ -276,8 +291,8 @@ export class Controller {
       }
     }
 
-    if (arrange) {
-      result = await arrange(result);
+    if (sanitize) {
+      result = await sanitize(result, req, res);
     }
     
     res.status(200).json(result);
@@ -311,7 +326,7 @@ export class Controller {
 
   async defaultGetOptions() {
     const options = { view: true };
-    if (this.service && this.service.references) {
+    if (this.service?.references) {
       options.include = {};
       for (const name in this.service.references) {
         options.include[name] = true;
@@ -322,7 +337,7 @@ export class Controller {
   }
 
   async defaultGetDefault(req, res) {
-    if (!this.service) {
+    if (!this.service?.getDefault) {
       res.status(405).send({ error: 'HTTP method not allowed.' });
       return;
     }
@@ -331,8 +346,17 @@ export class Controller {
       context: makeContext(req, res),
     };
 
-    let result = await this.service.getDefault(options);
-    if (result) {
+    let row = await this.service.getDefault(options);
+    if (!row) {
+      return;
+    }
+
+    let result = {
+      count: 1,
+      rows: [ row ],
+    };
+
+    if (this.service.sanitize) {
       result = await this.service.sanitize(result);
     }
 
