@@ -3,7 +3,9 @@ import { Service } from 'rf-service';
 
 export class GlossaryTypeService extends Service.IdUuidEnableNameTitleDescriptionTranslatable {
   references = {
-    project: true,
+    glossary: {
+      attributes: ['uuid', 'name', 'title']
+    },
   };
   defaultTranslationContext = 'glossary';
   viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'description', 'isTranslatable'];
