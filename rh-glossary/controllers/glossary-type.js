@@ -72,7 +72,6 @@ export class GlossaryTypeController extends Controller {
         },
       },
       {
-        alias:       'glossary',
         name:        'glossary.uuid',
         gridName:    'glossary.title',
         type:        'select',
