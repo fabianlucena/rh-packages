@@ -140,7 +140,6 @@ export class ProjectController extends Controller {
 
     if (this.companyService) {
       columns.push({
-        alias: 'company',
         name: 'company.title',
         type: 'text',
         label: await loc._cf('project', 'Company'),
@@ -149,7 +148,6 @@ export class ProjectController extends Controller {
 
     columns.push(
       {
-        alias: 'owner',
         name: 'owner.user.displayName',
         type: 'text',
         label: await loc._cf('project', 'Owner'),
@@ -169,7 +167,15 @@ export class ProjectController extends Controller {
         method: 'get',
       },
       actions,
-      columns: await filterVisualItemsByAliasName(columns, conf?.project, { loc, entity: 'Project', translationContext: 'project', interface: 'grid' }),
+      columns: await filterVisualItemsByAliasName(
+        columns,
+        {
+          loc,
+          entity: 'Project',
+          translationContext: 'project',
+          interface: 'grid',
+          ...conf?.project, 
+        }),
     };
 
     return grid;
@@ -217,8 +223,7 @@ export class ProjectController extends Controller {
         
     if (this.companyService) {
       fields.push({
-        alias: 'company',
-        name: 'companyUuid',
+        name: 'company.uuid',
         type: 'select',
         label: await loc._cf('project', 'Company'),
         placeholder: await loc._cf('project', 'Company'),
