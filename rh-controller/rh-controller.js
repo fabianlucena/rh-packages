@@ -128,18 +128,36 @@ export class Controller {
 
   async sanitizeFields(interfaceName, result, req) {
     const loc = req.loc ?? defaultLoc,
-      translationContext = this.translationContext;
-    result.fields = await filterVisualItemsByAliasName(
-      result.fields,
-      {
+      translationContext = this.translationContext,
+      options = {
         loc,
         translationContext: this.translationContext,
         ...result.fieldsFilter,
         interface: interfaceName,
         entity: this.getName(),
-      },
-    );
+      };
     delete result.fieldsFilter;
+    
+    if (result.fields) {
+      result.fields = await filterVisualItemsByAliasName(
+        result.fields,
+        options,
+      );
+    }
+
+    if (result.columns) {
+      result.columns = await filterVisualItemsByAliasName(
+        result.columns,
+        options,
+      );
+    }
+
+    if (result.properties) {
+      result.properties = await filterVisualItemsByAliasName(
+        result.properties,
+        options,
+      );
+    }
 
     if (interfaceName) {
       const substitutions = [ 'title' ];

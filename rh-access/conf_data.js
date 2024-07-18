@@ -23,7 +23,7 @@ export const data = {
   ],
 
   menuItems: [
-    { name: 'administration',      isTranslatable: true, roles: 'user',        ownerModule: name, data: { label: loc._cf('premission', 'Administration'), icon: 'administration' }},
+    { name: 'administration',      isTranslatable: true, ownerModule: name, data: { label: loc._cf('premission', 'Administration'), icon: 'administration' }},
   ],
 
   permissions: [
