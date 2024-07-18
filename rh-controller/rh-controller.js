@@ -310,7 +310,7 @@ export class Controller {
   }
 
   async defaultGetOptions() {
-    const options = {};
+    const options = { view: true };
     if (this.service && this.service.references) {
       options.include = {};
       for (const name in this.service.references) {
