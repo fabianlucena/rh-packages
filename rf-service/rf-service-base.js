@@ -11,6 +11,8 @@ import dependency from 'rf-dependency';
  */
 
 export class ServiceBase {
+  hiddenColumns = [];
+
   /**
    * Here are spicifed the references for properties. The referencers have the form proeprtyName: options.
    * {
@@ -97,7 +99,6 @@ export class ServiceBase {
       this.model = dependency.get(this.model);
     }
 
-    this.hiddenColumns ??= ['id'];
     this.defaultTranslationContext ??= this.name;
     this.eventName ??= this.Name;
 
@@ -867,12 +868,12 @@ export class ServiceBase {
           service = reference.service;
         }
 
-        if (!service?.prototype?.sanitizeRow) {
+        if (!service?.sanitizeRow) {
           continue;
         }
       }
             
-      let name = ucfirst(referenceName);
+      let name = referenceName;
       if (!row[name]) {
         name = service.constructor?.name;
         if (name.endsWith('Service')) {

@@ -2,6 +2,14 @@ import { CheckError } from './rf-service-errors.js';
 import { loc } from 'rf-locale';
 
 export const ServiceMixinId = Service => class ServiceId extends Service {
+  init() {
+    if (!this.hiddenColumns.includes('id')) {
+      this.hiddenColumns.push('id');
+    }
+
+    super.init();
+  }
+
   async validateForCreation(data) {
     await this.checkIdForCreation(data.id, data);
     return super.validateForCreation(data);
