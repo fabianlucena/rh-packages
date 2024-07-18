@@ -2,17 +2,8 @@ import { conf } from '../conf.js';
 import { Controller } from 'rh-controller';
 import { getOptionsFromParamsAndOData } from 'http-util';
 import { defaultLoc } from 'rf-locale';
-import dependency from 'rf-dependency';
 
-export class GlossaryController extends Controller {
-  constructor() {
-    super();
-
-    this.service =           dependency.get('glossaryService');
-    this.projectService =    dependency.get('projectService',    null);
-    this.getCurrentProject = dependency.get('getCurrentProject', null);
-  }
-
+export class GlossaryCategoryController extends Controller {
   postPermission =               'glossary.create';
   getPermission =                'glossary.get';
   deleteForUuidPermission =      'glossary.delete';
