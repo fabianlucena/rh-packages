@@ -32,7 +32,8 @@ export class GlossaryController extends Controller {
     let options = { view: true, limit: 10, offset: 0, loc };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    const result = await this.projectService.getListAndCount(options);
+    let result = await this.projectService.getListAndCount(options);
+    result = await this.projectService.sanitize(result);
 
     return result;
   }

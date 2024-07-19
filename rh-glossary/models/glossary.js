@@ -3,7 +3,10 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class Glossary extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Module,   { as: 'ownerModule', foreignKey: 'ownerModuleId' });
+      this.belongsTo(models.Module, { as: 'ownerModule', foreignKey: 'ownerModuleId' });
+      if (models.Project) {
+        this.belongsToMany(models.Project, { as: 'projects', through: models.GlossaryProject, foreignKey: 'glossaryId', otherKey: 'projectId' });
+      }
     }
   }
   Glossary.init({

@@ -3,6 +3,13 @@ import { conf } from '../conf.js';
 import { Service } from 'rf-service';
 
 export class GlossaryService extends Service.IdUuidEnableNameUniqueTitleDescriptionTranslatable {
+  references = {
+    projects: {
+      service: 'project',
+      through: 'glossaryProject',
+      attributes: ['uuid', 'name', 'title'],
+    },
+  };
   defaultTranslationContext = 'glossary';
   viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'description'];
   hiddenColumns = ['projectId'];
@@ -69,16 +76,16 @@ export class GlossaryService extends Service.IdUuidEnableNameUniqueTitleDescript
         },
       },
       {
-        name:        'project.uuid',
-        gridName:    'project.title',
-        type:        'select',
-        gridType:    'text',
-        label:       loc => loc._c('glossary', 'Project'),
-        placeholder: loc => loc._c('glossary', 'Select the project'),
-        isField:     true,
-        isColumn:    true,
-        required:    true,
-        multiple:    true,
+        name:            'projects.uuid',
+        gridName:        'projects',
+        type:            'select',
+        gridType:        'list',
+        singleProperty:  'title',
+        label:           loc => loc._c('glossary', 'Projects'),
+        placeholder:     loc => loc._c('glossary', 'Select the projects'),
+        isField:         true,
+        isColumn:        true,
+        multiple:        true,
         loadOptionsFrom: {
           service: 'glossary/project',
           value:   'uuid',
