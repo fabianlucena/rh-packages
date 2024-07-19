@@ -22,7 +22,7 @@ export class ShareService extends Service.EnableOwnerModuleTranslatable {
    * @returns {Promise{ShareType}}
    */
   async createIfNotExists(data, options) {
-    this.completeReferences(data);
+    data = this.completeReferences(data);
     await checkDataForMissingProperties(data, 'Share', 'objectNameId', 'objectId', 'userId', 'typeId');
 
     const rows = await ShareService.getList(
