@@ -371,9 +371,17 @@ export class Controller {
     }
   }
 
-  async defaultGetOptions() {
+  async defaultGetOptions(req, res) {
     const options = { view: true };
-    if (this.service?.references) {
+    if (!this.service) {
+      return options;
+    }
+
+    if (this.service.getOptions) {
+      return this.service.getOptions({ context: makeContext(req, res) });
+    }
+    
+    if (this.service.references) {
       options.include = {};
       for (const name in this.service.references) {
         options.include[name] = true;
