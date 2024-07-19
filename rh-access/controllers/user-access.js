@@ -1,56 +1,138 @@
-import { getOptionsFromParamsAndOData, _HttpError } from 'http-util';
-import { checkParameter, checkParameterUuid, checkParameterUuidList, checkNotNullNotEmptyAndNotUndefined } from 'rf-util';
+import { getOptionsFromParamsAndOData, HttpError } from 'http-util';
+import { checkParameterUuid, checkParameterUuidList, checkNotNullNotEmptyAndNotUndefined } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
+import { Controller } from 'rh-controller';
 
-export class UserAccessController {
-  static async post(req, res) {
+export class UserAccessController extends Controller {
+  constructor() {
+    super();
+
+    this.userAccessService = dependency.get('userAccessService');
+  }
+
+  async getFields(req) {
+    const gridActions = [];
+    if (req.permissions.includes('user-access.create')) gridActions.push('create');
+    if (req.permissions.includes('user-access.edit'))   gridActions.push('edit');
+    if (req.permissions.includes('user-access.delete')) gridActions.push('delete');
+    gridActions.push('search', 'paginate');
+        
     const loc = req.loc ?? defaultLoc;
+
+    const fields = [
+      {
+        name:            'user.uuid',
+        gridName:        'user.displayName',
+        type:            'select',
+        label:           await loc._('User'),
+        isField:         true,
+        isColumn:        true,
+        loadOptionsFrom: {
+          service: 'user-access/user',
+          value:   'uuid',
+          text:    'displayName',
+          title:   'username',
+        },
+        disabled:        {
+          create:       false,
+          defaultValue: true,
+        },
+      },
+      {
+        name:            'site.uuid',
+        gridName:        'site.title',
+        type:            'select',
+        label:           await loc._('Site'),
+        isField:         true,
+        isColumn:        true,
+        loadOptionsFrom: {
+          service: 'user-access/site',
+          value:   'uuid',
+          text:    'title',
+          title:   'description',
+        },
+        disabled:        {
+          create:       false,
+          defaultValue: true,
+        },
+      },
+      {
+        name:            'roles',
+        type:            'select',
+        gridType:        'list',
+        label:           await loc._('Roles'),
+        singleProperty:  'title',
+        multiple:        true,
+        big:             true,
+        isColumn:        true,
+        isField:         true,
+        loadOptionsFrom: {
+          service: 'user-access/role',
+          value:   'uuid',
+          text:    'title',
+          title:   'description',
+        },
+      },
+    ];
+
+    const result = {
+      title: await loc._('User access'),
+      gridTitle: await loc._('Users accesses'),
+      load: {
+        service: 'user-access',
+        method: 'get',
+      },
+      action: 'user-access',
+      method: 'POST',
+      gridActions,
+      fields,
+    };
+
+    return result;
+  }
+
+  postPermission = 'user-access.create';
+  async post(req) {
     const data = {
-      userUuid: req.body.user,
-      siteUuid: req.body.site,
-      rolesUuid: await checkParameterUuidList(req.body.roles, loc._cf('userAccess', 'Roles')),
+      user:  { uuid: req.body.user?.uuid },
+      site:  { uuid: req.body.site?.uuid },
+      roles: checkParameterUuidList(
+        req.body.roles,
+        loc => loc._c('userAccess', 'Roles'),
+      ).map(uuid => ({ uuid })),
     };
 
     if (req.body.uuid) {
-      if (!data.userUuid) {
-        data.userUuid = req.body.uuid.split(',')[0];
+      if (!data.user.uuid) {
+        data.user.uuid = req.body.uuid.split(',')[0];
       }
 
-      if (!data.siteUuid) {
-        data.siteUuid = req.body.uuid.split(',')[1];
-      }
-    }
-
-    checkParameterUuid(data.userUuid, loc._cf('userAccess', 'User'));
-    checkParameterUuid(data.siteUuid, loc._cf('userAccess', 'Site'));
-
-    if (req.body.site) {
-      const siteUuid = data.siteUuid;
-      if (siteUuid) {
-        data.siteUuid = siteUuid;
-      } else if (!req.site?.id) {
-        throw new _HttpError(loc._cf('userAccess', 'Site UUID param is missing.'), 400);
-      } else {
-        data.siteId = req.site.id;
+      if (!data.site.uuid) {
+        data.site.uuid = req.body.uuid.split(',')[1];
       }
     }
+
+    if (!data.site.uuid) {
+      if (!req.site?.id) {
+        throw new HttpError(loc => loc._c('userAccess', 'Site UUID param is missing.'), 400);
+      }
+      
+      data.site.id = req.site.id;
+    }
+
+    checkParameterUuid(data.user.uuid, loc => loc._c('userAccess', 'User'));
+    checkParameterUuid(data.site.uuid, loc => loc._c('userAccess', 'Site'));
 
     if (!req.roles.includes('admin')) {
       data.assignableRolesId = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
     }
 
-    await dependency.get('userAccessService').create(data);
-
-    res.status(204).send();
+    await this.userAccessService.create(data);
   }
 
-  static async get(req, res) {
-    if ('$grid' in req.query)
-      return this.getGrid(req, res);
-    else if ('$form' in req.query)
-      return this.getForm(req, res);
-            
+  getPermission = 'user-access.get';
+  async getData(req) {
     const loc = req.loc ?? defaultLoc;
     let options = {
       limit: 10,
@@ -59,9 +141,9 @@ export class UserAccessController {
       where: {},
       loc,
       include: {
-        user: {},
-        site: {},
-        roles: { attributes: ['title'] },
+        user:  {},
+        site:  {},
+        roles: { attributes: ['title', 'uuid'] },
       },
     };
 
@@ -75,10 +157,10 @@ export class UserAccessController {
 
     if (!req.roles.includes('admin')) {
       const assignableRolesId = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
-      options.include.role = {
-        ...options.include.role,
+      options.include.roles = {
+        ...options.include.roles,
         where: {
-          ...options.include.role.where,
+          ...options.include.roles.where,
           id: assignableRolesId,
         },
       };
@@ -89,117 +171,23 @@ export class UserAccessController {
       delete options.where.uuid;
 
       options.include.user = { ...options.include.user, where: { ...options.include.user.where, uuid: uuid[0] }};
-      options.include.site = { ...options.include.aite, where: { ...options.include.site.where, uuid: uuid[1] }};
+      options.include.site = { ...options.include.site, where: { ...options.include.site.where, uuid: uuid[1] }};
     }
 
-    const result = await dependency.get('userAccessService').getListAndCount(options);
+    const result = await this.userAccessService.getListAndCount(options);
 
-    res.status(200).send(result);
+    return result;
   }
 
-  static async getGrid(req, res) {
-    checkParameter(req.query, '$grid');
-
-    const actions = [];
-    if (req.permissions.includes('user-access.create')) actions.push('create');
-    if (req.permissions.includes('user-access.edit'))   actions.push('edit');
-    if (req.permissions.includes('user-access.delete')) actions.push('delete');
-    actions.push('search', 'paginate');
-        
-    const loc = req.loc ?? defaultLoc;
-
-    res.status(200).send({
-      title: await loc._('Users accesses'),
-      load: {
-        service: 'user-access',
-        method: 'get',
-      },
-      actions: actions,
-      columns: [
-        {
-          name: 'user.displayName',
-          type: 'text',
-          label: await loc._('User'),
-        },
-        {
-          name: 'site.title',
-          type: 'text',
-          label: await loc._('Site'),
-        },
-        {
-          name: 'roles',
-          type: 'list',
-          label: await loc._('Roles'),
-          singleProperty: 'title',
-        },
-      ]
-    });
-  }
-
-  static async getForm(req, res) {
-    checkParameter(req.query, '$form');
-
-    const loc = req.loc ?? defaultLoc;
-    res.status(200).send({
-      title: await loc._('User access'),
-      action: 'user-access',
-      method: 'POST',
-      fields: [
-        {
-          name: 'user',
-          type: 'select',
-          label: await loc._('User'),
-          loadOptionsFrom: {
-            service: 'user-access-user',
-            value: 'uuid',
-            text: 'displayName',
-            title: 'username',
-          },
-          disabled: {
-            create: false,
-            defaultValue: true,
-          },
-        },
-        {
-          name: 'site',
-          type: 'select',
-          label: await loc._('Sites'),
-          loadOptionsFrom: {
-            service: 'user-access-site',
-            value: 'uuid',
-            text: 'title',
-            title: 'description',
-          },
-          disabled: {
-            create: false,
-            defaultValue: true,
-          },
-        },
-        {
-          name: 'roles',
-          type: 'select',
-          multiple: true,
-          big: true,
-          label: await loc._('Roles'),
-          loadOptionsFrom: {
-            service: 'user-access-role',
-            value: 'uuid',
-            text: 'title',
-            title: 'description',
-          },
-        },
-      ],
-    });
-  }
-
-  static async getUsers(req, res) {
+  'getPermission /user' = 'user-access.edit';
+  async 'get /user'(req) {
     const definitions = { uuid: 'uuid', title: 'string' };
     let options = {
-      view: true,
-      limit: 100,
-      offset: 0,
+      view:       true,
+      limit:      100,
+      offset:     0,
       attributes: ['uuid', 'username', 'displayName'],
-      isEnabled: true,
+      isEnabled:  true,
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
@@ -207,35 +195,44 @@ export class UserAccessController {
     const userService = await dependency.get('userService');
     const result = await userService.getListAndCount(options);
 
-    res.status(200).send(result);
+    return result;
   }
 
-  static async getSites(req, res) {
+  'getPermission /site' = 'user-access.edit';
+  async 'get /site'(req) {
     const definitions = { uuid: 'uuid', title: 'string' };
-    let options = { view: true, limit: 100, offset: 0, attributes: ['uuid', 'name', 'title', 'description'], isEnabled: true };
-
+    let options = {
+      view:       true,
+      limit:      100,
+      offset:     0,
+      attributes: ['uuid', 'name', 'title', 'description'],
+      isEnabled:  true,
+    };
+      
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
 
     const siteService = dependency.get('siteService');
     const result = await siteService.getListAndCount(options);
 
-    res.status(200).send(result);
+    return result;
   }
 
-  static async getRoles(req, res) {
+  'getPermission /role' = 'user-access.edit';
+  async 'get /role'(req) {
     const definitions = { uuid: 'uuid', title: 'string' };
     let options = {
-      view: true,
-      limit: 100,
-      offset: 0,
-      attributes: ['uuid', 'name', 'title', 'description', 'isTranslatable'],
-      isEnabled: true,
+      view:       true,
+      limit:      100,
+      offset:     0,
+      attributes: ['uuid', 'name', 'title', 'description'],
+      isEnabled:  true,
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
 
-    if (!req.roles.includes('admin'))
+    if (!req.roles.includes('admin')) {
       options.where = { ...options?.where, id: await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles) };
+    }
 
     const result = await dependency.get('roleService').getListAndCount(options);
         
@@ -249,38 +246,60 @@ export class UserAccessController {
       return row;
     }));
 
-    res.status(200).send(result);
+    return result;
   }
 
-  static async delete(req, res) {
+  deleteForUuidPermission = 'user-access.delete';
+  async deleteForUuid(req, res) {
     const loc = req.loc ?? defaultLoc;
 
-    let userUuid = checkParameterUuid(req.body.User, { paramTitle: loc._cf('userAccess', 'User'), allowNull: true, allowUndefined: true });
-    let siteUuid = checkParameterUuid(req.body.Site, { paramTitle: loc._cf('userAccess', 'Site'), allowNull: true, allowUndefined: true });
+    let userUuid = checkParameterUuid(
+      req.body.User,
+      {
+        paramTitle:     loc._c('userAccess', 'User'),
+        allowNull:      true,
+        allowUndefined: true,
+      },
+    );
+    let siteUuid = checkParameterUuid(
+      req.body.Site,
+      {
+        paramTitle:     loc => loc._c('userAccess', 'Site'),
+        allowNull:      true,
+        allowUndefined: true,
+      },
+    );
     if (userUuid) {
-      if (!siteUuid)
-        throw new _HttpError(loc._cf('userAccess', 'Site UUID param is missing.'), 403);
-    } else if (siteUuid)
-      throw new _HttpError(loc._cf('userAccess', 'User UUID param is missing.'), 403);
-    else {
-      const uuid = await checkNotNullNotEmptyAndNotUndefined(req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid, loc._cf('userAccess', 'UUID'));
+      if (!siteUuid) {
+        throw new HttpError(loc => loc._c('userAccess', 'Site UUID param is missing.'), 403);
+      }
+    } else if (siteUuid) {
+      throw new HttpError(loc => loc._c('userAccess', 'User UUID param is missing.'), 403);
+    } else {
+      const uuid = await checkNotNullNotEmptyAndNotUndefined(
+        req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid,
+        loc => loc._c('userAccess', 'UUID'),
+      );
       const uuidParts = uuid.split(',');
-      if (uuidParts.length !== 2)
-        throw new _HttpError(loc._cf('userAccess', 'Wrong UUID format.'), 403);
+      if (uuidParts.length !== 2) {
+        throw new HttpError(loc => loc._c('userAccess', 'Wrong UUID format.'), 403);
+      }
 
-      userUuid = checkParameterUuid(uuidParts[0], loc._cf('userAccess', 'User'));
-      siteUuid = checkParameterUuid(uuidParts[1], loc._cf('userAccess', 'Site'));
+      userUuid = checkParameterUuid(uuidParts[0], loc => loc._c('userAccess', 'User'));
+      siteUuid = checkParameterUuid(uuidParts[1], loc => loc._c('userAccess', 'Site'));
     }
 
     let rowsDeleted;
     const deleteWhere = { userUuid, siteUuid };
-    if (!req.roles.includes('admin'))
+    if (!req.roles.includes('admin')) {
       deleteWhere.notRoleName = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
+    }
 
-    rowsDeleted = await dependency.get('userAccessService').deleteFor(deleteWhere);
+    rowsDeleted = await this.userAccessService.deleteFor(deleteWhere);
 
-    if (!rowsDeleted)
-      throw new _HttpError(loc._cf('userAccess', 'User with UUID %s has not access to the site with UUID %s.'), 403, userUuid, siteUuid);
+    if (!rowsDeleted) {
+      throw new HttpError(loc => loc._c('userAccess', 'User with UUID %s has not access to the site with UUID %s.'), 403, userUuid, siteUuid);
+    }
 
     res.sendStatus(204);
   }

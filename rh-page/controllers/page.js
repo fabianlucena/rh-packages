@@ -1,5 +1,5 @@
 import { PageService } from '../services/page.js';
-import { getOptionsFromParamsAndOData, _HttpError } from 'http-util';
+import { getOptionsFromParamsAndOData, HttpError } from 'http-util';
 import { defaultLoc } from 'rf-locale';
 
 const page = PageService.singleton();
@@ -23,7 +23,7 @@ export class PageController {
 
     const result = await page.getListAndCount(options);
     if (!result?.count) {
-      throw new _HttpError(loc._cf('page', 'Page not found.'), 404);
+      throw new HttpError(loc => loc._c('page', 'Page not found.'), 404);
     }
 
     result.rows = result.rows.map(row => {

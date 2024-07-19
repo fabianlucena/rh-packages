@@ -1,7 +1,6 @@
 import { Service } from 'rf-service';
 import { checkDataForMissingProperties, getSingle } from 'sql-util';
 import { deepMerge } from 'rf-util';
-import { loc } from 'rf-locale';
 
 export class SessionDataService extends Service.Base {
   references = {
@@ -38,7 +37,17 @@ export class SessionDataService extends Service.Base {
    */
   async getForSessionId(sessionId, options) {
     const rows = await this.getList({ ...options, where: { ...options?.where, sessionId }, limit: 2 });
-    return getSingle(rows, { ...options, params: ['SessionData', [loc._cf('sessionData', 'Session ID = %s'), sessionId], 'SessionData'] });
+    return getSingle(
+      rows,
+      {
+        ...options,
+        params: [
+          'SessionData',
+          loc => loc._c('sessionData', 'Session ID = %s', sessionId),
+          'SessionData'
+        ],
+      },
+    );
   }
 
   /**

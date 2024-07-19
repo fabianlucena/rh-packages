@@ -1,7 +1,6 @@
 import { PageFormatService } from './page_format.js';
 import { Service } from 'rf-service';
 import { checkParameterStringNotNullOrEmpty } from 'rf-util';
-import { loc } from 'rf-locale';
 
 export class PageService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleSharedTranslatable {
   references = {
@@ -21,7 +20,7 @@ export class PageService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleS
   }
 
   async validateForCreation(data) {
-    checkParameterStringNotNullOrEmpty(data.content, loc._cf('page', 'Content'));
+    checkParameterStringNotNullOrEmpty(data.content, loc => loc._c('page', 'Content'));
     if (!data.formatId) {
       data.formatId = await this.pageFormatService.getIdForName('plain');
     }

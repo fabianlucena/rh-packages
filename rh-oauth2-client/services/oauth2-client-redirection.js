@@ -21,6 +21,7 @@ function replace(obj, replacements) {
 
 export class OAuth2ClientRedirectionService {
   constructor() {
+    this.log =                 dependency.get('log');
     this.oAuth2ClientService = dependency.get('oAuth2ClientService');
     this.oAuth2StateService =  dependency.get('oAuth2StateService');
     this.identityService =     dependency.get('identityService');
@@ -32,7 +33,7 @@ export class OAuth2ClientRedirectionService {
   async getOAuth2ClientForData(data) {
     const oAuth2Client = await this.oAuth2ClientService.getForName(data.name);
     if (!oAuth2Client) {
-      throw new NotFoundError(data.loc._c('oauth2Client', 'Client %s not found', data.name));
+      throw new NotFoundError(await data.loc._c('oauth2Client', 'Client %s not found', data.name));
     }
 
     return oAuth2Client;
@@ -42,7 +43,7 @@ export class OAuth2ClientRedirectionService {
     const result = {};
     const stateParts = data.state.split(',');
     if (stateParts.length !== 3) {
-      throw new HttpError(data.loc._c('oauth2Client', 'Wrong state format must be 3 values comma separated.'));
+      throw new HttpError(await data.loc._c('oauth2Client', 'Wrong state format must be 3 values comma separated.'));
     }
 
     result.sessionIndex = stateParts[0];
@@ -58,7 +59,7 @@ export class OAuth2ClientRedirectionService {
       state: data.state,
     });
     if (!oAuth2State) {
-      throw new NotFoundError(data.loc._c('oauth2Client', 'State %s does not exis in client', data.state, data.name));
+      throw new NotFoundError(await data.loc._c('oauth2Client', 'State %s does not exis in client', data.state, data.name));
     }
   }
 
@@ -68,8 +69,11 @@ export class OAuth2ClientRedirectionService {
       '{code}':         data.code,
       '{clientId}':     oAuth2Client.clientId,
       '{clientSecret}': oAuth2Client.clientSecret,
+      '{protocolHost}': data.protocolHost ?? (data.protocol + '//' + data.host),
     };
-    return replace(getTokenBody, replacements);
+    const body = replace(getTokenBody, replacements);
+
+    return body;
   }
 
   async getTokenDataFromCodeForOAuth2ClientAndData(oAuth2Client, data) {
@@ -82,7 +86,9 @@ export class OAuth2ClientRedirectionService {
       body: new URLSearchParams(body)
     });
     if (!res.ok) {
-      throw new ForbiddenError(data.loc._c('Error to get token from code.'));
+      this.log.error('Error to get token from code');
+      this.log.error({ body });
+      throw new ForbiddenError(await data.loc._c('Error to get token from code.'));
     }
 
     return res.json();
@@ -158,7 +164,7 @@ export class OAuth2ClientRedirectionService {
 
     const user = await this.getOrCreateUserForOAuth2ClientAndUserInfoData(oAuth2Client, userInfoData);
     if (!user) {
-      throw new ForbiddenError(loc._c('You do not have permission to access this system.'));
+      throw new ForbiddenError(await loc._c('You do not have permission to access this system.'));
     }
 
     let device;

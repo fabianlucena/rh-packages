@@ -1,6 +1,6 @@
 import { CheckError, checkParameterStringNotNullOrEmpty, trim } from 'rf-util';
-import { _ConflictError } from 'http-util';
-import { loc } from 'rf-locale';
+import { ConflictError } from 'http-util';
+import { InvalidValueError } from './rf-service-errors.js';
 
 export const ServiceMixinName = Service => class extends Service {
   constructor() {
@@ -11,7 +11,7 @@ export const ServiceMixinName = Service => class extends Service {
   }
 
   async validateForCreation(data) {
-    checkParameterStringNotNullOrEmpty(trim(data?.name), loc._f('Name'));
+    checkParameterStringNotNullOrEmpty(trim(data?.name), loc => loc._('Name'));
     await this.checkNameForConflict(data.name, data);
     return super.validateForCreation(data);
   }
@@ -19,13 +19,13 @@ export const ServiceMixinName = Service => class extends Service {
   async checkNameForConflict(name) {
     const rows = await this.getFor({ name }, { limit: 1 });
     if (rows?.length) {
-      throw new _ConflictError(loc._f('Exists another row with that name.'));
+      throw new ConflictError(loc => loc._('Exists another row with that name.'));
     }
   }
 
   async validateForUpdate(data, where) {
     if (data.name) {
-      throw new CheckError(loc._f('Name parameter is forbidden for update.'));
+      throw new CheckError(loc => loc._('Name parameter is forbidden for update.'));
     }
 
     return super.validateForUpdate(data, where);
@@ -46,7 +46,7 @@ export const ServiceMixinName = Service => class extends Service {
    */
   async getForName(name, options) {
     if (name === undefined) {
-      throw new Error(loc._f('Invalid value for name to get row in %s.'));
+      throw new InvalidValueError(loc => loc._('Invalid value for name to get row in %s.'));
     }
 
     if (Array.isArray(name)) {

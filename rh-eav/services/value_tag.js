@@ -1,8 +1,8 @@
 import { Service, Op } from 'rf-service';
-import { checkParameterNotNullOrEmpty, _Error } from 'rf-util';
-import { loc } from 'rf-locale';
-import { _ConflictError } from 'http-util';
+import { checkParameterNotNullOrEmpty } from 'rf-util';
+import { ConflictError } from 'http-util';
 import dependency from 'rf-dependency';
+import { ForbidenDeleteAttributeValueError, NoAttributeForTagCreationError, UpdateAttributeValueError } from './error.js';
 
 export class EavValueTagService extends Service.IdUuidTranslatable {
   references = {
@@ -28,12 +28,12 @@ export class EavValueTagService extends Service.IdUuidTranslatable {
   }
 
   async validateForCreation(data) {
-    checkParameterNotNullOrEmpty(data.attributeId, loc._cf('eav', 'Attribute'));
-    checkParameterNotNullOrEmpty(data.tagId,       loc._cf('eav', 'Tag'));
+    checkParameterNotNullOrEmpty(data.attributeId, loc => loc._c('eav', 'Attribute'));
+    checkParameterNotNullOrEmpty(data.tagId,       loc => loc._c('eav', 'Tag'));
 
     const rows = await this.getFor(data, { skipNoRowsError: true });
     if (rows.length) {
-      throw new _ConflictError(loc._cf('eav', 'The tag is already linked to the entity.'));
+      throw new ConflictError(loc => loc._c('eav', 'The tag is already linked to the entity.'));
     }
 
     return super.validateForCreation(data);
@@ -60,7 +60,7 @@ export class EavValueTagService extends Service.IdUuidTranslatable {
 
       const attributeId = data.atributeId;
       if (!attributeId) {
-        throw new _Error(loc._cf('eav', 'No attribute for tag creation.'));
+        throw new NoAttributeForTagCreationError(loc => loc._c('eav', 'No attribute for tag creation.'));
       }
 
       const ownerModuleId = data.ownerModuleId;
@@ -96,11 +96,11 @@ export class EavValueTagService extends Service.IdUuidTranslatable {
    */
   async updateValue(data, options) {
     if (!data.attributeId) {
-      throw new _Error(loc._cf('eav', 'Cannot update option value because attributeId data is missing or empty'));
+      throw new UpdateAttributeValueError(loc => loc._c('eav', 'Cannot update option value because attributeId data is missing or empty'));
     }
 
     if (!data.entityId) {
-      throw new _Error(loc._cf('eav', 'Cannot update option value because entityId data is missing or empty'));
+      throw new UpdateAttributeValueError(loc => loc._c('eav', 'Cannot update option value because entityId data is missing or empty'));
     }
 
     if (data.value === undefined) {
@@ -158,7 +158,7 @@ export class EavValueTagService extends Service.IdUuidTranslatable {
   async delete(options) {
     const where = options.where;
     if (!where) {
-      throw new Error(loc._cf('eav', 'Delete without where is forbiden.'));
+      throw new ForbidenDeleteAttributeValueError(loc => loc._c('eav', 'Delete without where is forbiden.'));
     }
 
     const filters = [];

@@ -1,5 +1,5 @@
 import { getRoutes } from 'rf-get-routes';
-import { deleteHandler, getUuidFromRequest, _HttpError, enableHandler, disableHandler, patchHandler, makeContext } from 'http-util';
+import { deleteHandler, getUuidFromRequest, HttpError, enableHandler, disableHandler, patchHandler, makeContext } from 'http-util';
 import { defaultLoc } from 'rf-locale';
 import { dependency } from 'rf-dependency';
 import { filterVisualItemsByAliasName, ucfirst } from 'rf-util';
@@ -423,7 +423,7 @@ export class Controller {
     const uuid = await getUuidFromRequest(req);
     const item = await this.service.getForUuid(uuid, { skipNoRowsError: true, loc, context: makeContext(req, res) });
     if (!item) {
-      throw new _HttpError(loc._cf('controller', 'The item with UUID %s does not exists.'), 404, uuid);
+      throw new HttpError(loc => loc._c('controller', 'The item with UUID %s does not exists.'), 404, uuid);
     }
 
     return { uuid };

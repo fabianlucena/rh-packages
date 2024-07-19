@@ -249,7 +249,7 @@ export class IdentityService extends Service.IdUuidEnable {
           return;
         }
 
-        if (key == derivedKey.toString('hex').replaceAll('=', '')) {
+        if (key == derivedKey.toString('base64').replaceAll('=', '')) {
           resolve(true);
           return;
         }

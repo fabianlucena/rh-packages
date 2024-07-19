@@ -1,7 +1,6 @@
 import { conf } from '../conf.js';
 import { Service } from 'rf-service';
 import { CheckError } from 'rf-util';
-import { loc } from 'rf-locale';
 
 export class BranchService extends Service.IdUuidNameEnabledOwnerModuleSharedTranslatable {
   references = {
@@ -15,7 +14,7 @@ export class BranchService extends Service.IdUuidNameEnabledOwnerModuleSharedTra
 
   async validateForCreation(data) {
     if (!data.companyId) {
-      throw new CheckError(loc._cf('branch', 'Company parameter is missing.'));
+      throw new CheckError(loc => loc._c('branch', 'Company parameter is missing.'));
     }
 
     return super.validateForCreation(data);

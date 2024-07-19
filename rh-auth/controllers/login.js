@@ -1,5 +1,5 @@
 import { conf } from '../conf.js';
-import { _HttpError } from 'http-util';
+import { HttpError } from 'http-util';
 import { checkParameter } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
 import { Controller } from 'rh-controller';
@@ -44,18 +44,28 @@ export class LoginController extends Controller {
   }
 
   async post(req, res) {
-    const loc = req.loc ?? defaultLoc;
     let data;
     if (req?.body?.autoLoginToken) {
       data = checkParameter(req?.body, 'autoLoginToken', 'deviceToken');
     } else {
-      data = checkParameter(req?.body, { username: loc._cf('login', 'Username'), password: loc._cf('login', 'Password') });
+      data = checkParameter(
+        req?.body,
+        {
+          username: loc => loc._c('login', 'Username'),
+          password: loc => loc._c('login', 'Password'),
+        },
+      );
     }
 
     try {
       let session;
       if (data.autoLoginToken) {
-        session = await this.service.forAutoLoginTokenAndSessionIndex(data.autoLoginToken, data.deviceToken, req.body?.sessionIndex ?? req.body.index, loc);
+        session = await this.service.forAutoLoginTokenAndSessionIndex(
+          data.autoLoginToken,
+          data.deviceToken,
+          req.body?.sessionIndex ?? req.body.index,
+          req.loc,
+        );
         req.log?.info('Auto logged by autoLoginToken.', { autoLoginToken: data.autoLoginToken, session });
       } else {
         let deviceToken = data.deviceToken;
@@ -72,7 +82,7 @@ export class LoginController extends Controller {
           req.body.password,
           deviceToken,
           req.body.sessionIndex ?? req.body.index,
-          loc
+          req.loc
         );
         req.log?.info(`User ${req.body.username} successfully logged with username and password.`, { session });
       }
@@ -104,7 +114,7 @@ export class LoginController extends Controller {
         req.log?.info(`Error in login: ${error}.`, { username: req.body.username, error });
       }
 
-      throw new _HttpError(loc._cf('login', 'Invalid login'), 403);
+      throw new HttpError(loc => loc._c('login', 'Invalid login'), 403);
     }
   }
 

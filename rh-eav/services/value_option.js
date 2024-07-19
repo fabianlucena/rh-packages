@@ -1,6 +1,5 @@
 import { Service, Op } from 'rf-service';
-import { _Error } from 'rf-util';
-import { loc } from 'rf-locale';
+import { ForbidenDeleteAttributeValueError, ForbidenUpdateAttributeValueError } from './error.js';
 
 export class EavValueOptionService extends Service.IdUuidTranslatable {
   references = {
@@ -11,7 +10,7 @@ export class EavValueOptionService extends Service.IdUuidTranslatable {
 
   async delete(options) {
     if (!options.where) {
-      throw new Error(loc._cf('eav', 'Delete without where is forbiden.'));
+      throw new ForbidenDeleteAttributeValueError(loc => loc._c('eav', 'Delete without where is forbiden.'));
     }
 
     const where = options.where;
@@ -39,11 +38,11 @@ export class EavValueOptionService extends Service.IdUuidTranslatable {
 
   async updateValue(data, options) {
     if (!data.attributeId) {
-      throw new _Error(loc._cf('eav', 'Cannot update option value because attributeId data is missing or empty'));
+      throw new ForbidenUpdateAttributeValueError(loc => loc._c('eav', 'Cannot update option value because attributeId data is missing or empty'));
     }
 
     if (!data.entityId) {
-      throw new _Error(loc._cf('eav', 'Cannot update option value because entityId data is missing or empty'));
+      throw new ForbidenUpdateAttributeValueError(loc => loc._c('eav', 'Cannot update option value because entityId data is missing or empty'));
     }
 
     let valueId;

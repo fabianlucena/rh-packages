@@ -1,7 +1,6 @@
 import { Service } from 'rf-service';
 import { checkDataForMissingProperties } from 'sql-util';
-import { _ConflictError } from 'http-util';
-import { loc } from 'rf-locale';
+import { ConflictError } from 'http-util';
 
 export class LanguageService extends Service.IdUuidEnableNameTranslatable {
   references = {
@@ -13,7 +12,7 @@ export class LanguageService extends Service.IdUuidEnableNameTranslatable {
 
     const row = await this.getForName(data.name, { skipNoRowsError: true });
     if (row) {
-      throw new _ConflictError(loc._f('Cannot create the language because already exists.'));
+      throw new ConflictError(loc => loc._('Cannot create the language because already exists.'));
     }
 
     if (!data.parentId) {

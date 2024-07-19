@@ -12,7 +12,7 @@ export const data = {
   ],
 
   permissions: [
-    { name: 'workflow.get',    title: loc._cf('permission', 'Get workflows'),    isTranslatable: true, roles: 'workflowManager', ownerModule: name, menuItem: { label: loc._cf('menu', 'Workflows'), isTranslatable: true, icon: 'workflow', action: 'grid', service: 'workflow' }},
+    { name: 'workflow.get',    title: loc._cf('permission', 'Get workflows'),    isTranslatable: true, roles: 'workflowManager', ownerModule: name, menuItem: { label: loc._cf('menu', 'Workflows'), isTranslatable: true, icon: 'workflow', parent: 'administration', action: 'grid', service: 'workflow' }},
     { name: 'workflow.create', title: loc._cf('permission', 'Create workflows'), isTranslatable: true, roles: 'workflowManager', ownerModule: name, },
     { name: 'workflow.edit',   title: loc._cf('permission', 'Edit workflows'),   isTranslatable: true, roles: 'workflowManager', ownerModule: name, },
     { name: 'workflow.delete', title: loc._cf('permission', 'Delete workflows'), isTranslatable: true, roles: 'workflowManager', ownerModule: name, },

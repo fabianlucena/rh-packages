@@ -1,5 +1,4 @@
-import { IdentityService } from '../services/identity.js';
-import { _HttpError } from 'http-util';
+import { HttpError } from 'http-util';
 import { checkParameter, checkParameterNotNullOrEmpty } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
@@ -39,38 +38,41 @@ export class ChangeMyPasswordController {
   }
 
   static async post(req, res) {
-    const loc = req.loc ?? defaultLoc;
     checkParameter(
       req?.body,
       {
-        currentPassword: loc._cf('changeMyPassword', 'current password'),
-        newPassword: loc._cf('changeMyPassword', 'new password'),
-        newPasswordConfirmation: loc._cf('changeMyPassword', 'new password confirmation'),
+        currentPassword:         loc => loc._c('changeMyPassword', 'current password'),
+        newPassword:             loc => loc._c('changeMyPassword', 'new password'),
+        newPasswordConfirmation: loc => loc._c('changeMyPassword', 'new password confirmation'),
       }
     );
 
     const data = req.body;
-    checkParameterNotNullOrEmpty(data.currentPassword, loc._cf('changeMyPassword', 'current password'));
-    checkParameterNotNullOrEmpty(data.newPassword, loc._cf('changeMyPassword', 'new password'));
-    checkParameterNotNullOrEmpty(data.newPasswordConfirmation, loc._cf('changeMyPassword', 'new password confirmation'));
+    checkParameterNotNullOrEmpty(data.currentPassword,         loc => loc._c('changeMyPassword', 'current password'));
+    checkParameterNotNullOrEmpty(data.newPassword,             loc => loc._c('changeMyPassword', 'new password'));
+    checkParameterNotNullOrEmpty(data.newPasswordConfirmation, loc => loc._c('changeMyPassword', 'new password confirmation'));
 
     if (data.newPassword != data.newPasswordConfirmation) {
-      throw new _HttpError(loc._cf('changeMyPassword', 'The new password and its confirmation are distinct'), 400);
+      throw new HttpError(loc => loc._c('changeMyPassword', 'The new password and its confirmation are distinct'), 400);
     }
 
     if (data.newPassword == data.currentPassword) {
-      throw new _HttpError(loc._cf('changeMyPassword', 'The new password and the current password are the same'), 400);
+      throw new HttpError(loc => loc._c('changeMyPassword', 'The new password and the current password are the same'), 400);
     }
 
     const identityService = dependency.get('identityService');
-    const checkResult = await identityService.checkLocalPasswordForUsername(req.user.username, data.currentPassword, loc);
+    const checkResult = await identityService.checkLocalPasswordForUsername(
+      req.user.username,
+      data.currentPassword,
+      req.loc,
+    );
     if (checkResult !== true) {
-      throw new _HttpError(checkResult || loc._cf('changeMyPassword', checkResult || 'Error invalid password'), 403);
+      throw new HttpError(checkResult || (loc => loc._c('changeMyPassword', checkResult || 'Error invalid password')), 403);
     }
 
     const identity = await identityService.getLocalForUsername(req.user.username);
     if (!identity) {
-      throw new _HttpError(checkResult || loc._cf('changeMyPassword', 'Error to get local identity'), 404);
+      throw new HttpError(checkResult || (loc => loc._c('changeMyPassword', 'Error to get local identity')), 404);
     }
 
     const result = await identityService.updateForId({ password: data.newPassword }, identity.id);
@@ -78,6 +80,6 @@ export class ChangeMyPasswordController {
       return res.status(204).send();
     }
 
-    throw new _HttpError(checkResult || loc._cf('changeMyPassword', 'Error to change the password'), 500);
+    throw new HttpError(checkResult || (loc => loc._c('changeMyPassword', 'Error to change the password')), 500);
   }
 }

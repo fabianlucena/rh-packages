@@ -1,6 +1,5 @@
 import { CheckError, checkValidUuidOrNull } from 'rf-util';
-import { loc } from 'rf-locale';
-import { _ConflictError } from 'http-util';
+import { ConflictError } from 'http-util';
 
 export const ServiceMixinUuid = Service => class ServiceUuid extends Service {
   async validateForCreation(data) {
@@ -15,13 +14,13 @@ export const ServiceMixinUuid = Service => class ServiceUuid extends Service {
   async checkUuidForConflict(uuid) {
     const rows = await this.getForUuid(uuid, { skipNoRowsError: true });
     if (rows?.length) {
-      throw new _ConflictError(loc._f('Exists another row with that UUID.'));
+      throw new ConflictError(loc => loc._('Exists another row with that UUID.'));
     }
   }
 
   async validateForUpdate(data, where) {
     if (data.uuid) {
-      throw new CheckError(loc._f('UUID parameter is forbidden for update.'));
+      throw new CheckError(loc => loc._('UUID parameter is forbidden for update.'));
     }
 
     return super.validateForUpdate(data, where);

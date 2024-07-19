@@ -1,15 +1,14 @@
 import { conf } from '../conf.js';
 import { Service } from 'rf-service';
 import { getSingle } from 'sql-util';
-import { check, } from 'rf-util';
-import { loc } from 'rf-locale';
+import { BaseError, check, } from 'rf-util';
 import crypto from 'crypto';
 
-export class SessionClosedError extends Error {
+export class SessionClosedError extends BaseError {
   statusCode = 403;
 }
 
-export class NoSessionForAuthTokenError extends Error {
+export class NoSessionForAuthTokenError extends BaseError {
   statusCode = 403;
 }
 
@@ -151,7 +150,7 @@ export class SessionService extends Service.IdUuid {
    * @returns {Promise[Session]}
    */
   async closeForId(id) {
-    check(id, { _message: loc._cf('session', 'There is no id for session') });
+    check(id, { message: loc => loc._c('session', 'There is no id for session') });
 
     const session = await this.getForId(id);
     const authToken = session.authToken;

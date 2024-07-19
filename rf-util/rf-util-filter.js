@@ -3,7 +3,6 @@ import { ucfirst } from './rf-util-string.js';
 
 export async function filterVisualItemsByAliasName(items, options) {
   const loc = options?.loc ?? defaultLoc;
-  const translationContext = options?.translationContext;
 
   const filtered = [],
     filter = options?.filter,
@@ -37,16 +36,11 @@ export async function filterVisualItemsByAliasName(items, options) {
       }
     }
             
-    if (typeof item.label === 'function') {
-      item.label = await item.label(loc, translationContext);
-    }
 
-    if (typeof item.label === 'function') {
-      item.title = await item.title(loc, translationContext);
-    }
-
-    if (typeof item.label === 'function') {
-      item.placeholder = await item.placeholder(loc, translationContext);
+    for (const t of ['label', 'title', 'placeholder']) {
+      if (typeof item[t] === 'function') {
+        item[t] = await item[t](loc, translationContext);
+      }
     }
 
     filtered.push(item);

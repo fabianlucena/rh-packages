@@ -1,5 +1,5 @@
 import { conf } from '../conf.js';
-import { getOptionsFromParamsAndOData, _HttpError } from 'http-util';
+import { getOptionsFromParamsAndOData, HttpError } from 'http-util';
 import { checkParameter, MissingParameterError } from 'rf-util';
 
 const branchService = conf.global.services.Branch.singleton();
@@ -10,22 +10,22 @@ export class BranchSelectController {
 
     const branchUuid = req.query?.branchUuid ?? req.params?.branchUuid ?? req.body?.branchUuid;
     if (!branchUuid) {
-      throw new MissingParameterError(loc._cf('branchSelect', 'Branch UUID'));
+      throw new MissingParameterError(loc => loc._c('branchSelect', 'Branch UUID'));
     }
 
     const options = { skipNoRowsError: true };
     let branch = await branchService.getForUuid(branchUuid, options);
     if (!branch) {
-      throw new _HttpError(loc._cf('branchSelect', 'The selected branch does not exist or you do not have permission to access it.'), 400);
+      throw new HttpError(loc => loc._c('branchSelect', 'The selected branch does not exist or you do not have permission to access it.'), 400);
     }
 
     if (!branch.isEnabled) {
-      throw new _HttpError(loc._cf('branchSelect', 'The selected branch is disabled.'), 403);
+      throw new HttpError(loc => loc._c('branchSelect', 'The selected branch is disabled.'), 403);
     }
 
     const sessionDataService = conf.global.services.SessionData.singleton();
     if (!sessionDataService) {
-      throw new _HttpError(loc._cf('branchSelect', 'You do not have permission to select this branch.'), 400);
+      throw new HttpError(loc => loc._c('branchSelect', 'You do not have permission to select this branch.'), 400);
     }
 
     const sessionId = req.session.id;
@@ -37,7 +37,7 @@ export class BranchSelectController {
       }
 
       if (companyId != branch.companyId) {
-        throw new _HttpError(loc._cf('branchSelect', 'You do not have permission to select this branch.'), 400);
+        throw new HttpError(loc => loc._c('branchSelect', 'You do not have permission to select this branch.'), 400);
       }
     }
 
