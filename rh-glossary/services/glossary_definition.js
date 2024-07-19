@@ -1,9 +1,12 @@
 import { conf } from '../conf.js';
 import { Service } from 'rf-service';
 
-export class GlossaryDefinitionService extends Service.IdUuidEnableNameTitleDescription {
+export class GlossaryDefinitionService extends Service.IdUuidEnableTranslatable {
   references = {
-    term: 'glossaryTerm',
+    term: {
+      service: 'glossaryTerm',
+      createIfNotExists: true,
+    },
     type: 'glossaryType',
   };
   defaultTranslationContext = 'glossary';
@@ -27,8 +30,8 @@ export class GlossaryDefinitionService extends Service.IdUuidEnableNameTitleDesc
         isField:     true,
       },
       {
-        name:        'glossary.uuid',
-        gridName:    'glossary.title',
+        name:        'term.glossary.uuid',
+        gridName:    'term.glossary.title',
         type:        'select',
         gridType:    'text',
         label:       loc => loc._c('glossary', 'Glossary'),
@@ -44,7 +47,24 @@ export class GlossaryDefinitionService extends Service.IdUuidEnableNameTitleDesc
         },
       },
       {
-        name:        'term',
+        name:        'term.category.uuid',
+        gridName:    'term.category.title',
+        type:        'select',
+        gridType:    'text',
+        label:       loc => loc._c('glossary', 'Category'),
+        placeholder: loc => loc._c('glossary', 'Select the category'),
+        isField:     true,
+        isColumn:    true,
+        required:    true,
+        loadOptionsFrom: {
+          service: 'glossary-definition/category',
+          value:   'uuid',
+          text:    'title',
+          title:   'description',
+        },
+      },
+      {
+        name:        'term.name',
         type:        'text',
         label:       loc => loc._c('glossary', 'Term'),
         placeholder: loc => loc._c('glossary', 'Type the term here'),
@@ -64,23 +84,6 @@ export class GlossaryDefinitionService extends Service.IdUuidEnableNameTitleDesc
         required:    true,
         loadOptionsFrom: {
           service: 'glossary-definition/type',
-          value:   'uuid',
-          text:    'title',
-          title:   'description',
-        },
-      },
-      {
-        name:        'category.uuid',
-        gridName:    'category.title',
-        type:        'select',
-        gridType:    'text',
-        label:       loc => loc._c('glossary', 'Category'),
-        placeholder: loc => loc._c('glossary', 'Select the category'),
-        isField:     true,
-        isColumn:    true,
-        required:    true,
-        loadOptionsFrom: {
-          service: 'glossary-definition/category',
           value:   'uuid',
           text:    'title',
           title:   'description',
@@ -109,5 +112,23 @@ export class GlossaryDefinitionService extends Service.IdUuidEnableNameTitleDesc
     };
 
     return result;
+  }
+
+  async getOptions() {
+    return {
+      include: {
+        term: {
+          include: {
+            glossary: true,
+            category: true,
+          },
+        },
+        type: true,
+      }
+    };
+  }
+
+  async validate(data) {
+    return super.validate(data);
   }
 }

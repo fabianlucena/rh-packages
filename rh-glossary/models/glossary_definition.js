@@ -4,8 +4,8 @@ export default (sequelize, DataTypes) => {
   class GlossaryDefinition extends sequelize.Sequelize.Model {
     static associate(models) {
       this.belongsTo(models.Module,       { as: 'ownerModule', foreignKey: 'ownerModuleId' });
-      this.belongsTo(models.GlossaryTerm, { as: 'term',        foreignKey: 'termId' });
-      this.belongsTo(models.GlossaryType, { as: 'type',        foreignKey: 'typeId' });
+      this.belongsTo(models.GlossaryTerm, { as: 'term',        foreignKey: { name: 'termId', allowNull: false }});
+      this.belongsTo(models.GlossaryType, { as: 'type',        foreignKey: { name: 'typeId', allowNull: false }});
     }
   }
   GlossaryDefinition.init({
