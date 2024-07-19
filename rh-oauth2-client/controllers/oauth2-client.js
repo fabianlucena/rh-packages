@@ -19,7 +19,7 @@ export class OAuth2ClientController extends Controller {
 
   'getData';
 
-  async getFields(req) {
+  async getInterface(req) {
     const loc = req.loc ?? defaultLoc;
 
     const gridActions = [];

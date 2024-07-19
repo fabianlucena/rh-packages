@@ -127,7 +127,7 @@ export class IssueController extends Controller {
     return result;
   }
 
-  async getFields(req) {
+  async getInterface(req) {
     const gridActions = [];
     if (req.permissions.includes('issue.create')) gridActions.push('create');
     if (req.permissions.includes('issue.edit'))   gridActions.push('enableDisable', 'edit');

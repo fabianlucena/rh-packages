@@ -1,6 +1,6 @@
 import { conf } from '../conf.js';
 import { getOptionsFromParamsAndOData, HttpError, ConflictError } from 'http-util';
-import { checkParameter, checkParameterUuid, filterVisualItemsByAliasName } from 'rf-util';
+import { checkParameter, checkParameterUuid, sanitizeFields } from 'rf-util';
 import Controller from 'rh-controller';
 import dependency from 'rf-dependency';
 
@@ -150,7 +150,7 @@ export class BranchController extends Controller {
         method: 'get',
       },
       actions,
-      columns: await filterVisualItemsByAliasName(
+      columns: await sanitizeFields(
         columns,
         {
           loc,
@@ -235,7 +235,7 @@ export class BranchController extends Controller {
     const form = {
       title: await loc._('Branches'),
       action: 'branch',
-      fields: await filterVisualItemsByAliasName(
+      fields: await sanitizeFields(
         fields,
         {
           loc,

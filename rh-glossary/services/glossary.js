@@ -22,7 +22,7 @@ export class GlossaryService extends Service.IdUuidEnableNameUniqueTitleDescript
     super.init();
   }
 
-  async getFields(options) {
+  async getInterface(options) {
     const gridActions = [],
       permissions = options?.context?.req?.permissions;
     if (permissions.includes('glossary.create')) gridActions.push('create');
