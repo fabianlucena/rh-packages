@@ -17,9 +17,8 @@
         "source": "Category",
         "language": "es",
         "context": "glossary",
-        "isDraft": false,
         "translation": "Categoría",
-        "ref": "..\\rh-glossary\\services\\glossary_definition.js [77,33]"
+        "ref": "..\\rh-glossary\\services\\glossary_definition.js [54,33]"
     },
     {
         "source": "Category for glossary",
@@ -33,7 +32,7 @@
         "language": "es",
         "context": "glossary",
         "translation": "Marque para habilitar y desmarque para deshabilitar",
-        "ref": "..\\rh-glossary\\services\\glossary_definition.js [25,33]\n..\\rh-glossary\\services\\glossary.js [38,33]\n..\\rh-glossary\\controllers\\glossary-type.js [33,33]\n..\\rh-glossary\\controllers\\glossary-category.js [33,33]"
+        "ref": "..\\rh-glossary\\services\\glossary_definition.js [28,33]\n..\\rh-glossary\\services\\glossary.js [38,33]\n..\\rh-glossary\\controllers\\glossary-type.js [33,33]\n..\\rh-glossary\\controllers\\glossary-category.js [33,33]"
     },
     {
         "source": "Create glossarys",
@@ -46,15 +45,13 @@
         "source": "Definition",
         "language": "es",
         "context": "glossary",
-        "isDraft": false,
         "translation": "Definición",
-        "ref": "..\\rh-glossary\\services\\glossary_definition.js [92,33]\n..\\rh-glossary\\services\\glossary_definition.js [100,25]"
+        "ref": "..\\rh-glossary\\services\\glossary_definition.js [95,33]\n..\\rh-glossary\\services\\glossary_definition.js [103,25]"
     },
     {
         "source": "Definition",
         "language": "es",
         "context": "menu",
-        "isDraft": false,
         "translation": "Definición",
         "ref": "..\\rh-glossary\\conf_data.js [27,122]"
     },
@@ -62,9 +59,8 @@
         "source": "Definitions",
         "language": "es",
         "context": "glossary",
-        "isDraft": false,
         "translation": "Definiciones",
-        "ref": "..\\rh-glossary\\services\\glossary_definition.js [101,29]"
+        "ref": "..\\rh-glossary\\services\\glossary_definition.js [104,29]"
     },
     {
         "source": "Delete glossarys",
@@ -92,7 +88,7 @@
         "language": "es",
         "context": "glossary",
         "translation": "Habilitado ",
-        "ref": "..\\rh-glossary\\services\\glossary_definition.js [24,33]\n..\\rh-glossary\\services\\glossary.js [37,33]\n..\\rh-glossary\\controllers\\glossary-type.js [32,33]\n..\\rh-glossary\\controllers\\glossary-category.js [32,33]"
+        "ref": "..\\rh-glossary\\services\\glossary_definition.js [27,33]\n..\\rh-glossary\\services\\glossary.js [37,33]\n..\\rh-glossary\\controllers\\glossary-type.js [32,33]\n..\\rh-glossary\\controllers\\glossary-category.js [32,33]"
     },
     {
         "source": "Get glossarys",
@@ -120,7 +116,7 @@
         "language": "es",
         "context": "glossary",
         "translation": "Glosario",
-        "ref": "..\\rh-glossary\\services\\glossary_definition.js [34,33]\n..\\rh-glossary\\services\\glossary.js [111,29]\n..\\rh-glossary\\controllers\\glossary-type.js [78,33]\n..\\rh-glossary\\controllers\\glossary-category.js [78,33]"
+        "ref": "..\\rh-glossary\\services\\glossary_definition.js [37,33]\n..\\rh-glossary\\services\\glossary.js [111,29]\n..\\rh-glossary\\controllers\\glossary-type.js [78,33]\n..\\rh-glossary\\controllers\\glossary-category.js [78,33]"
     },
     {
         "source": "Glossary",
@@ -161,16 +157,15 @@
         "source": "Select the category",
         "language": "es",
         "context": "glossary",
-        "isDraft": false,
         "translation": "Seleccione la categoría",
-        "ref": "..\\rh-glossary\\services\\glossary_definition.js [78,33]"
+        "ref": "..\\rh-glossary\\services\\glossary_definition.js [55,33]"
     },
     {
         "source": "Select the glossary",
         "language": "es",
         "context": "glossary",
         "translation": "Seleccione el glosario",
-        "ref": "..\\rh-glossary\\services\\glossary_definition.js [35,33]\n..\\rh-glossary\\controllers\\glossary-type.js [79,33]\n..\\rh-glossary\\controllers\\glossary-category.js [79,33]"
+        "ref": "..\\rh-glossary\\services\\glossary_definition.js [38,33]\n..\\rh-glossary\\controllers\\glossary-type.js [79,33]\n..\\rh-glossary\\controllers\\glossary-category.js [79,33]"
     },
     {
         "source": "Select the projects",
@@ -183,9 +178,8 @@
         "source": "Select the type",
         "language": "es",
         "context": "glossary",
-        "isDraft": false,
         "translation": "Seleccione el tipo",
-        "ref": "..\\rh-glossary\\services\\glossary_definition.js [61,33]"
+        "ref": "..\\rh-glossary\\services\\glossary_definition.js [81,33]"
     },
     {
         "source": "Spanish",
@@ -203,9 +197,8 @@
         "source": "Term",
         "language": "es",
         "context": "glossary",
-        "isDraft": false,
         "translation": "Término",
-        "ref": "..\\rh-glossary\\services\\glossary_definition.js [49,33]"
+        "ref": "..\\rh-glossary\\services\\glossary_definition.js [69,33]"
     },
     {
         "source": "Title",
@@ -218,9 +211,8 @@
         "source": "Type",
         "language": "es",
         "context": "glossary",
-        "isDraft": false,
         "translation": "Tipo",
-        "ref": "..\\rh-glossary\\services\\glossary_definition.js [60,33]"
+        "ref": "..\\rh-glossary\\services\\glossary_definition.js [80,33]"
     },
     {
         "source": "Type",
@@ -240,9 +232,8 @@
         "source": "Type the definition here",
         "language": "es",
         "context": "glossary",
-        "isDraft": false,
         "translation": "Escriba la definición aquí",
-        "ref": "..\\rh-glossary\\services\\glossary_definition.js [93,33]"
+        "ref": "..\\rh-glossary\\services\\glossary_definition.js [96,33]"
     },
     {
         "source": "Type the description here",
@@ -262,9 +253,8 @@
         "source": "Type the term here",
         "language": "es",
         "context": "glossary",
-        "isDraft": false,
         "translation": "Escriba el tipo aquí",
-        "ref": "..\\rh-glossary\\services\\glossary_definition.js [50,33]"
+        "ref": "..\\rh-glossary\\services\\glossary_definition.js [70,33]"
     },
     {
         "source": "Type the title here",
