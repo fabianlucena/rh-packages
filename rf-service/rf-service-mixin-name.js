@@ -57,7 +57,14 @@ export const ServiceMixinName = Service => class extends Service {
   }
 
   async getSingleOrNullForName(name, options) {
-    return this.getForName(name, { ...options, skipNoRowsError: true, nullOnManyRowsError: true });
+    return this.getForName(
+      name,
+      {
+        ...options,
+        skipNoRowsError: true,
+        nullOnManyRowsError: true,
+      },
+    );
   }
 
   /**
@@ -67,6 +74,8 @@ export const ServiceMixinName = Service => class extends Service {
    * @returns {Promise[row]}
    */
   async createIfNotExists(data, options) {
+    data = { ...data };
+    data = await this.completeReferences(data, true);
     const row = await this.getForName(data.name, { skipNoRowsError: true, ...options });
     if (row) {
       return row;

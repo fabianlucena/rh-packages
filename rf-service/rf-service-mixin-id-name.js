@@ -25,6 +25,17 @@ export const ServiceMixinIdName = Service => class ServiceIdName extends Service
     return row.id;
   }
 
+  async getIdOrNullForName(name, options) {
+    return this.getIdForName(
+      name,
+      {
+        ...options,
+        skipNoRowsError: true,
+        nullOnManyRowsError: true,
+      },
+    );
+  }
+
   async getNameForId(id, options) {
     if (Array.isArray(id)) {
       return (await this.getForId(id, { attributes: ['name'], ...options })).map(row => row.name);

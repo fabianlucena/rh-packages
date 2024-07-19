@@ -187,8 +187,8 @@ export class ServiceBase {
       reference.idPropertyName ??=   lcfirst(reference.name) + 'Id';
       reference.uuidPropertyName ??= lcfirst(reference.name) + 'Uuid';
       reference.namePropertyName ??= lcfirst(reference.name) + 'Name';
-      reference.getIdForName ??= 'getIdForName';
-      reference.getIdForUuid ??= 'getIdForUuid';
+      reference.getIdForName ??= 'getIdOrNullForName';
+      reference.getIdForUuid ??= 'getIdOrNullForUuid';
 
       if (reference.createIfNotExists === true) {
         reference.createIfNotExists = 'createIfNotExists';
@@ -344,7 +344,7 @@ export class ServiceBase {
         if (!data[idPropertyName] && reference.createIfNotExists) {
           let object;
           if (typeof data[name] === 'object' && data[name]) {
-            object = await service[reference.createIfNotExists](data[Name]);
+            object = await service[reference.createIfNotExists](data[name]);
           } else if (typeof data[name] === 'string' && data[name]) {
             object = await service[reference.createIfNotExists]({ name: data[name] });
           } else if (typeof data[Name] === 'object' && data[Name]) {
