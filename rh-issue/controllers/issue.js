@@ -168,7 +168,6 @@ export class IssueController extends Controller {
         },
       },
       {
-        alias:       'project',
         name:        'project.uuid',
         gridName:    'project.title',
         type:        'select',
@@ -186,7 +185,6 @@ export class IssueController extends Controller {
         },
       },
       {
-        alias:       'type',
         name:        'type.uuid',
         gridName:    'type.title',
         type:        'select',
@@ -204,7 +202,6 @@ export class IssueController extends Controller {
         },
       },
       {
-        alias:       'priority',
         name:        'priority.uuid',
         gridName:    'priority.title',
         type:        'select',
@@ -238,7 +235,6 @@ export class IssueController extends Controller {
         isField:     true,
       },
       {
-        alias:       'closeReason',
         name:        'closeReason.uuid',
         gridName:    'closeReason.title',
         type:        'select',

@@ -29,7 +29,7 @@ export class SessionSiteService extends Service.Base {
    * @returns {Promise{SessionSite}}
    */
   async createOrUpdate(data) {
-    await this.completeReferences(data);
+    data = await this.completeReferences(data);
         
     const where = { sessionId: data.sessionId };
     const rows = await this.getList({ where });

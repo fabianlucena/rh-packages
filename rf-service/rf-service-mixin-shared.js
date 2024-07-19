@@ -155,8 +155,9 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
    * @param {object} where - Where object with the criteria to delete.
    * @returns {Promise[integer]} deleted rows count.
    */
-  async delete(options) {        
-    await this.completeReferences(options.where, true);
+  async delete(options) {
+    options = { ...options };        
+    options.where = await this.completeReferences(options.where);
 
     if (this.shareService && this.shareObject) {
       const id = await this.getIdFor(options.where);

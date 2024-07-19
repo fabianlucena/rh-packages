@@ -53,7 +53,8 @@ export class TranslationService extends Service.IdUuidEnable {
    * @returns {options}
    */
   async getListOptions(options) {
-    await this.completeReferences(options.where, true);
+    options = { ...options };
+    options.where = await this.completeReferences(options.where);
 
     if (options.where.domainId === undefined && Object.prototype.hasOwnProperty.call(options.where, 'domainId')) {
       options.where.domainId = null;
@@ -241,7 +242,7 @@ export class TranslationService extends Service.IdUuidEnable {
    * @returns {Promise{Language}}
    */
   async createIfNotExists(data, options) {
-    await this.completeReferences(data);
+    data = await this.completeReferences(data);
 
     const rows = await this.getList({ where: { languageId: data.languageId, sourceId: data.sourceId, domainId: data.domainId, contextId: data.contextId, ...options?.where }, limit: 1, ...options });
     if (rows.length) {
