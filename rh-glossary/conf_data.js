@@ -20,9 +20,10 @@ export const data = {
   ],
 
   menuItems: [
-    { name: 'glossary.admin',    parent: 'administration', ownerModule: name, permissions: 'glossary.edit', label: loc._cf('menu', 'Glossary'),   isTranslatable: true, translationContext: 'menu', icon: 'glossary' },
-    { name: 'glossary.get',      parent: 'glossary.admin', ownerModule: name, permissions: 'glossary.get',  label: loc._cf('menu', 'Glossaries'), isTranslatable: true, translationContext: 'menu', icon: 'glossary',          action: 'grid', service: 'glossary' },
-    { name: 'glossary.category', parent: 'glossary.admin', ownerModule: name, permissions: 'glossary.edit', label: loc._cf('menu', 'Categories'), isTranslatable: true, translationContext: 'menu', icon: 'glossary-category', action: 'grid', service: 'glossary-category' },
-    { name: 'glossary.type',     parent: 'glossary.admin', ownerModule: name, permissions: 'glossary.edit', label: loc._cf('menu', 'Type'),       isTranslatable: true, translationContext: 'menu', icon: 'glossary-type',     action: 'grid', service: 'glossary-type' },
+    { name: 'glossary.admin',      parent: 'administration', ownerModule: name, permissions: 'glossary.edit', label: loc._cf('menu', 'Glossary'),   isTranslatable: true, translationContext: 'menu', icon: 'glossary' },
+    { name: 'glossary.get',        parent: 'glossary.admin', ownerModule: name, permissions: 'glossary.get',  label: loc._cf('menu', 'Glossaries'), isTranslatable: true, translationContext: 'menu', icon: 'glossary',            action: 'grid', service: 'glossary' },
+    { name: 'glossary.category',   parent: 'glossary.admin', ownerModule: name, permissions: 'glossary.edit', label: loc._cf('menu', 'Categories'), isTranslatable: true, translationContext: 'menu', icon: 'glossary-category',   action: 'grid', service: 'glossary-category' },
+    { name: 'glossary.type',       parent: 'glossary.admin', ownerModule: name, permissions: 'glossary.edit', label: loc._cf('menu', 'Type'),       isTranslatable: true, translationContext: 'menu', icon: 'glossary-type',       action: 'grid', service: 'glossary-type' },
+    { name: 'glossary.definition',                           ownerModule: name, permissions: 'glossary.edit', label: loc._cf('menu', 'Definition'), isTranslatable: true, translationContext: 'menu', icon: 'glossary-definition', action: 'grid', service: 'glossary-definition' },
   ],
 };

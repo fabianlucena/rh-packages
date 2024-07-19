@@ -75,7 +75,10 @@ export class GlossaryService extends Service.IdUuidEnableNameUniqueTitleDescript
           defaultValue: true,
         },
       },
-      {
+    ];
+
+    if (this.projectService) {
+      fields.push({
         name:            'projects.uuid',
         gridName:        'projects',
         type:            'select',
@@ -92,16 +95,17 @@ export class GlossaryService extends Service.IdUuidEnableNameUniqueTitleDescript
           text:    'title',
           title:   'description',
         },
-      },
-      {
-        name:        'description',
-        type:        'textArea',
-        label:       loc => loc._c('glossary', 'Description'),
-        placeholder: loc => loc._c('glossary', 'Type the description here'),
-        isField:     true,
-        isDetail:    true,
-      },
-    ];
+      });
+    }
+
+    fields.push({
+      name:        'description',
+      type:        'textArea',
+      label:       loc => loc._c('glossary', 'Description'),
+      placeholder: loc => loc._c('glossary', 'Type the description here'),
+      isField:     true,
+      isDetail:    true,
+    });
 
     const result = {
       title:     loc => loc._c('glossary', 'Glossary'),

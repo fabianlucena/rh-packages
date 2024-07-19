@@ -18,28 +18,27 @@ export class GlossaryTypeController extends Controller {
   postDisableForUuidPermission = 'glossary.edit';
   patchForUuidPermission =       'glossary.edit';
 
-  async getFields(req) {
+  async getFields() {
     const gridActions = [];
     gridActions.push('create');
     gridActions.push('enableDisable', 'edit');
     gridActions.push('delete');
     gridActions.push('search', 'paginate');
-        
-    const loc = req.loc ?? defaultLoc;
+    
     const fields = [
       {
         name:        'isEnabled',
         type:        'checkbox',
-        label:       await loc._c('glossary', 'Enabled'),
-        placeholder: await loc._c('glossary', 'Check for enable and uncheck for disable'),
+        label:       loc => loc._c('glossary', 'Enabled'),
+        placeholder: loc => loc._c('glossary', 'Check for enable and uncheck for disable'),
         value:       true,
         isField:     true,
       },
       {
         name:        'title',
         type:        'text',
-        label:       await loc._c('glossary', 'Title'),
-        placeholder: await loc._c('glossary', 'Type the title here'),
+        label:       loc => loc._c('glossary', 'Title'),
+        placeholder: loc => loc._c('glossary', 'Type the title here'),
         isField:     true,
         isColumn:    true,
         required:    true,
@@ -61,8 +60,8 @@ export class GlossaryTypeController extends Controller {
       {
         name:       'name',
         type:       'text',
-        label:       await loc._c('glossary', 'Name'),
-        placeholder: await loc._c('glossary', 'Type the name here'),
+        label:       loc => loc._c('glossary', 'Name'),
+        placeholder: loc => loc._c('glossary', 'Type the name here'),
         isField:     true,
         isColumn:    true,
         required:    true,
@@ -76,8 +75,8 @@ export class GlossaryTypeController extends Controller {
         gridName:    'glossary.title',
         type:        'select',
         gridType:    'text',
-        label:       await loc._c('glossary', 'Glossary'),
-        placeholder: await loc._c('glossary', 'Select the glossary'),
+        label:       loc => loc._c('glossary', 'Glossary'),
+        placeholder: loc => loc._c('glossary', 'Select the glossary'),
         isField:     true,
         isColumn:    true,
         required:    true,
@@ -91,16 +90,16 @@ export class GlossaryTypeController extends Controller {
       {
         name:        'description',
         type:        'textArea',
-        label:       await loc._c('glossary', 'Description'),
-        placeholder: await loc._c('glossary', 'Type the description here'),
+        label:       loc => loc._c('glossary', 'Description'),
+        placeholder: loc => loc._c('glossary', 'Type the description here'),
         isField:     true,
         isDetail:    true,
       },
     ];
 
     const result = {
-      title: await loc._c('glossary', 'Type for glossary'),
-      gridTitle: await loc._c('glossary', 'Types for glossaries'),
+      title: loc => loc._c('glossary', 'Type for glossary'),
+      gridTitle: loc => loc._c('glossary', 'Types for glossaries'),
       load: {
         service: 'glossary-type',
         method:  'get',
@@ -114,15 +113,16 @@ export class GlossaryTypeController extends Controller {
   }
 
   'getPermission /glossary' = [ 'glossary.create', 'glossary.edit' ];
-  async 'get /glossary'(req, res) {
+  async 'get /glossary'(req) {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = { view: true, limit: 10, offset: 0, loc };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
 
-    const result = await this.glossaryService.getListAndCount(options);
+    let result = await this.glossaryService.getListAndCount(options);
+    result = await this.glossaryService.sanitize(result);
 
-    res.status(200).send(result);
+    return result;
   }
 }
