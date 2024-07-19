@@ -74,8 +74,7 @@ export const ServiceMixinName = Service => class extends Service {
    * @returns {Promise[row]}
    */
   async createIfNotExists(data, options) {
-    data = { ...data };
-    data = await this.completeReferences(data, true);
+    data = await this.completeReferences(data);
     const row = await this.getForName(data.name, { skipNoRowsError: true, ...options });
     if (row) {
       return row;

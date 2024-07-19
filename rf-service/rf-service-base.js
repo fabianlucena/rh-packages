@@ -269,10 +269,10 @@ export class ServiceBase {
   /**
    * Completes the references for a data, and, optionally, cleans the value referenced data.
    * @param {object} data - data object to complete the references.
-   * @param {boolean} clean - if its true cleans the data object of the value referenced data.
    * @returns {Promise[object]} - the arranged data.
    */
-  async completeReferences(data, clean) {
+  async completeReferences(data) {
+    data = { ...data };
     for (const name in this.references) {
       const reference = this.references[name];
       if (reference.function) {
@@ -284,7 +284,7 @@ export class ServiceBase {
         continue;
       }
 
-      await this.completeEntityId(data, { name, ...reference, clean });
+      await this.completeEntityId(data, { name, ...reference });
     }
 
     return data;
@@ -298,9 +298,7 @@ export class ServiceBase {
    * 
    * This method is used by the @see completeReferences.
    * For a complete guide refer to @see references documentation.
-   * Beside the references documentation options may contains the clean property. If 
-   * that property is true after create the reference cleans the data object of 
-   * the value referenced data.
+   * When the reference ID is completes the data is cleaned for old data.
    */
   async completeEntityId(data, reference) {
     const idPropertyName = reference.idPropertyName;
@@ -380,11 +378,9 @@ export class ServiceBase {
       }
     }
 
-    if (reference.clean) {
-      delete data[uuidPropertyName];
-      delete data[Name];
-      delete data[name];
-    }
+    delete data[uuidPropertyName];
+    delete data[Name];
+    delete data[name];
         
     return data;
   }
@@ -416,7 +412,7 @@ export class ServiceBase {
    * @returns {Promise[row]}
    */
   async create(data, options) {
-    await this.completeReferences(data, true);
+    data = await this.completeReferences(data);
     data = await this.validateForCreation(data);
 
     let transaction;
@@ -873,7 +869,7 @@ export class ServiceBase {
    * @returns {Promise[integer]} updated rows count.
    */
   async update(data, options) {
-    await this.completeReferences(data);
+    data = await this.completeReferences(data);
     data = await this.validateForUpdate(data, options?.where);
 
     await this.emit('updating', options?.emitEvent, data, options, this);
@@ -904,7 +900,8 @@ export class ServiceBase {
    * @returns {Promise[integer]} deleted rows count.
    */
   async delete(options) {
-    await this.completeReferences(options.where, true);
+    options = { ...options };
+    options.where = await this.completeReferences(options.where);
 
     await this.emit('deleting', options?.emitEvent, options, this);
     const result = await this.model.delete(options, this);
