@@ -11,7 +11,7 @@ export class UserAccessController extends Controller {
     this.userAccessService = dependency.get('userAccessService');
   }
 
-  async getFields(req) {
+  async getInterface(req) {
     const gridActions = [];
     if (req.permissions.includes('user-access.create')) gridActions.push('create');
     if (req.permissions.includes('user-access.edit'))   gridActions.push('edit');

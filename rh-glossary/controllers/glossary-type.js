@@ -18,7 +18,7 @@ export class GlossaryTypeController extends Controller {
   postDisableForUuidPermission = 'glossary.edit';
   patchForUuidPermission =       'glossary.edit';
 
-  async getFields() {
+  async getInterface() {
     const gridActions = [];
     gridActions.push('create');
     gridActions.push('enableDisable', 'edit');

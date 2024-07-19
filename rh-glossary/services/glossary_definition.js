@@ -13,7 +13,7 @@ export class GlossaryDefinitionService extends Service.IdUuidEnableTranslatable 
   viewAttributes = ['id', 'uuid', 'isEnabled', 'definition'];
   eventBus = conf.global.eventBus;
 
-  async getFields() {
+  async getInterface() {
     const gridActions = [];
     gridActions.push('create');
     gridActions.push('enableDisable', 'edit');

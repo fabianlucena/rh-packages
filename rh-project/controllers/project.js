@@ -1,6 +1,6 @@
 import { conf } from '../conf.js';
 import { getOptionsFromParamsAndOData, HttpError, getUuidFromRequest } from 'http-util';
-import { checkParameter, filterVisualItemsByAliasName } from 'rf-util';
+import { checkParameter, sanitizeFields } from 'rf-util';
 import { Controller } from 'rh-controller';
 import { dependency } from 'rf-dependency';
 
@@ -170,7 +170,7 @@ export class ProjectController extends Controller {
         method: 'get',
       },
       actions,
-      columns: await filterVisualItemsByAliasName(
+      columns: await sanitizeFields(
         columns,
         {
           loc,
@@ -178,7 +178,8 @@ export class ProjectController extends Controller {
           translationContext: 'project',
           interface: 'grid',
           ...conf?.project, 
-        }),
+        },
+      ),
     };
 
     return grid;
@@ -257,7 +258,16 @@ export class ProjectController extends Controller {
     const form = {
       title: await loc._c('project', 'Projects'),
       action: 'project',
-      fields: await filterVisualItemsByAliasName(fields, conf?.project, { entity: 'Project', interface: 'form' }),
+      fields: await sanitizeFields(
+        fields,
+        conf?.project,
+        {
+          loc,
+          entity: 'Project',
+          translationContext: 'project',
+          interface: 'form',
+        },
+      ),
     };
 
     await conf.global.eventBus?.$emit('Project.interface.form.get', form, { loc });

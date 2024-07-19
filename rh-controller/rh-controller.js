@@ -2,7 +2,7 @@ import { getRoutes } from 'rf-get-routes';
 import { deleteHandler, getUuidFromRequest, HttpError, enableHandler, disableHandler, patchHandler, makeContext } from 'http-util';
 import { defaultLoc } from 'rf-locale';
 import { dependency } from 'rf-dependency';
-import { filterVisualItemsByAliasName, ucfirst } from 'rf-util';
+import { sanitizeFields, ucfirst } from 'rf-util';
 
 
 /**
@@ -23,13 +23,13 @@ import { filterVisualItemsByAliasName, ucfirst } from 'rf-util';
  *  - getGrid: for GET and using the defaultGet handler
  *  - getForm: for GET and using the defaultGet handler
  *  - getObject: for GET and using the defaultGet handler
- *  - getFields: for GET and using the defaultGet handler
+ *  - getInterface: for GET and using the defaultGet handler
  *  - getDefault: for GET and using the defaultGet handler
  *  - getDataPermission: same as getData
  *  - getGridPermission: same as getGrid
  *  - getFormPermission: same as getForm
  *  - getObjectPermission: same as getObject
- *  - getFieldsPermission: same as getObject
+ *  - getInterfacePermission: same as getObject
  *  - getDefaultPermission: same as getDefault
  *  - deleteForUuid: for DELETE and using the defaultDeleteForUuid handler
  *  - postEnableForUuid:  for POST and using the defaultPostEnableForUuid  handler in path /enable
@@ -49,9 +49,9 @@ export class Controller {
           { name: 'getGrid',            httpMethod: 'get',    handler: 'defaultGet' },
           { name: 'getForm',            httpMethod: 'get',    handler: 'defaultGet' },
           { name: 'getObject',          httpMethod: 'get',    handler: 'defaultGet' },
-          { name: 'getFields',          httpMethod: 'get',    handler: 'defaultGet' },
+          { name: 'getInterface',       httpMethod: 'get',    handler: 'defaultGet' },
           { name: 'getDefault',         httpMethod: 'get',    handler: 'defaultGet' },
-          { name: 'getFields',          httpMethod: 'get',    handler: 'defaultGet' },
+          { name: 'getInterface',       httpMethod: 'get',    handler: 'defaultGet' },
           { name: 'post',               httpMethod: 'post',   handler: 'defaultPost' },
           { name: 'deleteForUuid',      httpMethod: 'delete', handler: 'defaultDeleteForUuid',      inPathParam: 'uuid' },
           { name: 'patchForUuid',       httpMethod: 'patch',  handler: 'defaultPatchForUuid',       inPathParam: 'uuid' },
@@ -126,7 +126,7 @@ export class Controller {
     await checkPermissionHandler(req, res, next);
   }
 
-  async sanitizeFields(interfaceName, result, req) {
+  async sanitizeInterface(interfaceName, result, req) {
     const loc = req.loc ?? defaultLoc,
       translationContext = this.translationContext,
       options = {
@@ -139,28 +139,28 @@ export class Controller {
     delete result.fieldsFilter;
     
     if (result.fields) {
-      result.fields = await filterVisualItemsByAliasName(
+      result.fields = await sanitizeFields(
         result.fields,
         options,
       );
     }
 
     if (result.columns) {
-      result.columns = await filterVisualItemsByAliasName(
+      result.columns = await sanitizeFields(
         result.columns,
         options,
       );
     }
 
     if (result.details) {
-      result.details = await filterVisualItemsByAliasName(
+      result.details = await sanitizeFields(
         result.details,
         options,
       );
     }
 
     if (result.properties) {
-      result.properties = await filterVisualItemsByAliasName(
+      result.properties = await sanitizeFields(
         result.properties,
         options,
       );
@@ -198,61 +198,61 @@ export class Controller {
         func = (...args) => this.getGrid(...args);
       } else if (typeof this.constructor.getGrid === 'function') {
         func = this.constructor.getGrid;
-      } else if (typeof this.getFields === 'function') {
-        func = (...args) => this.getFields(...args);
-      } else if (typeof this.constructor.getFields === 'function') {
-        func = this.constructor.getFields;
-      } else if (this.service?.getFields) {
-        func = (...args) => this.service.getFields({ context: makeContext(...args) });
+      } else if (typeof this.getInterface === 'function') {
+        func = (...args) => this.getInterface(...args);
+      } else if (typeof this.constructor.getInterface === 'function') {
+        func = this.constructor.getInterface;
+      } else if (this.service?.getInterface) {
+        func = (...args) => this.service.getInterface({ context: makeContext(...args) });
       }
 
       permissions.push('getGrid', 'get');
       events.push('interface.grid.get', `${entity}.interface.grid.get`);
-      sanitize = (...params) => this.sanitizeFields('grid', ...params);
+      sanitize = (...params) => this.sanitizeInterface('grid', ...params);
     } else if ('$form' in req.query) {
       if (typeof this.getForm === 'function') {
         func = (...args) => this.getForm(...args);
       } else if (typeof this.constructor.getForm === 'function') {
         func = this.constructor.getForm;
-      } else if (typeof this.getFields === 'function') {
-        func = (...args) => this.getFields(...args);
-      } else if (typeof this.constructor.getFields === 'function') {
-        func = this.constructor.getFields;
-      } else if (this.service?.getFields) {
-        func = (...args) => this.service.getFields({ context: makeContext(...args) });
+      } else if (typeof this.getInterface === 'function') {
+        func = (...args) => this.getInterface(...args);
+      } else if (typeof this.constructor.getInterface === 'function') {
+        func = this.constructor.getInterface;
+      } else if (this.service?.getInterface) {
+        func = (...args) => this.service.getInterface({ context: makeContext(...args) });
       }
 
       permissions.push('getForm', 'get');
       events.push('interface.form.get', `${entity}.interface.form.get`);
-      sanitize = (...params) => this.sanitizeFields('form', ...params);
+      sanitize = (...params) => this.sanitizeInterface('form', ...params);
     } else if ('$object' in req.query) {
       if (typeof this.getObject === 'function') {
         func = (...args) => this.getObject(...args);
       } else if (typeof this.constructor.getObject === 'function') {
         func = this.constructor.getObject;
-      } else if (typeof this.getFields === 'function') {
-        func = (...args) => this.getFields(...args);
-      } else if (typeof this.constructor.getFields === 'function') {
-        func = this.constructor.getFields;
-      } else if (this.service?.getFields) {
-        func = (...args) => this.service.getFields({ context: makeContext(...args) });
+      } else if (typeof this.getInterface === 'function') {
+        func = (...args) => this.getInterface(...args);
+      } else if (typeof this.constructor.getInterface === 'function') {
+        func = this.constructor.getInterface;
+      } else if (this.service?.getInterface) {
+        func = (...args) => this.service.getInterface({ context: makeContext(...args) });
       }
 
       permissions.push('getObject', 'get');
       events.push('interface.object.get', `${entity}.interface.object.get`);
-      sanitize = (...params) => this.sanitizeFields('object', ...params);
-    } else if ('$fields' in req.query) {
-      if (typeof this.getFields === 'function') {
-        func = (...args) => this.getFields(...args);
-      } else if (typeof this.constructor.getFields === 'function') {
-        func = this.constructor.getFields;
-      } else if (this.service?.getFields) {
-        func = (...args) => this.service.getFields({ context: makeContext(...args) });
+      sanitize = (...params) => this.sanitizeInterface('object', ...params);
+    } else if ('$interface' in req.query) {
+      if (typeof this.getInterface === 'function') {
+        func = (...args) => this.getInterface(...args);
+      } else if (typeof this.constructor.getInterface === 'function') {
+        func = this.constructor.getInterface;
+      } else if (this.service?.getInterface) {
+        func = (...args) => this.service.getInterface({ context: makeContext(...args) });
       }
 
-      permissions.push('getFields', 'get');
-      events.push('interface.fields.get', `${entity}.interface.fields.get`);
-      sanitize = (...params) => this.sanitizeFields('fields', ...params);
+      permissions.push('getInterface', 'get');
+      events.push('interface.get', `${entity}.interface.get`);
+      sanitize = (...params) => this.sanitizeInterface('interface', ...params);
     } else if ('$default' in req.query) {
       if (typeof this.getDefault === 'function') {
         func = (...args) => this.getDefault(...args);
