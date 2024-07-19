@@ -152,6 +152,13 @@ export class Controller {
       );
     }
 
+    if (result.details) {
+      result.details = await filterVisualItemsByAliasName(
+        result.details,
+        options,
+      );
+    }
+
     if (result.properties) {
       result.properties = await filterVisualItemsByAliasName(
         result.properties,
@@ -339,7 +346,29 @@ export class Controller {
       result = await this.service.sanitize(result);
     }
 
+    for (const row of result.rows) {
+      this.addUuidList(row, row, '');
+    }
+
     return result;
+  }
+
+  addUuidList(row, root, name) {
+    for (const k in row) {
+      const v = row[k];
+      if (Array.isArray(v)) {
+        const propertyName = name + k + '.uuid';
+        if (typeof root[propertyName] === 'undefined') {
+          root[propertyName] = v.map(i => i.uuid).filter(i => i);
+        }
+
+        for (const i of v) {
+          this.addUuidList(i, root, name + k + '.');
+        }
+      } else if (typeof v === 'object') {
+        this.addUuidList(v, root, name + k + '.');
+      }
+    }
   }
 
   async defaultGetOptions() {
