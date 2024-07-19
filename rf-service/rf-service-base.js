@@ -2,7 +2,6 @@ import { Op, Column } from './rf-service-op.js';
 import { NoRowsError, ManyRowsError } from './rf-service-errors.js';
 import { ucfirst, lcfirst } from 'rf-util/rf-util-string.js';
 import { trim, _Error } from 'rf-util';
-import { defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
 
 /**
@@ -24,15 +23,18 @@ export class ServiceBase {
    * }
    * 
    * The options for each reference are:
-   *  - idPropertyName: the name for ID property to use in reference and in the data set. If this options is not defined a "name + 'Id'" will be used".
+   *  - idPropertyName: the name for ID property to use in reference and in the data set. If this options is not defined a "reference name + 'Id'" will be used".
    *  - service: the service to get the value of the reference.
-   *  - uuidPropertyName: the name for UUID property to get the refence from the service. If this options is not defined a "name + 'Uuid'" will be used".
+   *  - uuidPropertyName: the name for UUID property to get the refence from the service. If this options is not defined a "reference name + 'Uuid'" will be used".
    *  - name: the name form the property and for search in the service.
    *  - Name: the name for the nested object in the data set. In this object the search of: ID, UUID, and name will be performed.
    *  - otherName: another name for te property name to search in the service.
    *  - createIfNotExists: if it's true and no object ID founded, the system will create with a create if not exists.
    *  - getIdForName: method name for get the ID from name from the service.
    *  - clean: if it's true, the properties uuidPropertyName, name, and Name, will be erased from the data set.
+   *  - through: service for use as interposed table for many to many relationships
+   *  - idThroughLocal: the name for ID property in the interposed table to reference this table. If this options is not defined a "this service name + 'Id'" will be used".
+   *  - idThroughReference: the name for ID property in the interposed table to reference the foreign table. If this options is not defined a "reference name + 'Id'" will be used".
    * 
    * For each reference a check for idPropertyName is performed. If the idPropertyName is not defined, the system will try to get the ID from the service using the uuidPropertyName.
    * If the uuidPropertyName is not defined the the system will try to use the "name" in the service. 
@@ -125,7 +127,8 @@ export class ServiceBase {
       }
                 
       if (typeof reference !== 'object') {
-        throw new _Error(defaultLoc._f(
+        throw new Error(loc => loc._c(
+          'service',
           'Error in reference definition for reference name "%s", in service "%s".',
           name,
           this.constructor.name
@@ -155,7 +158,8 @@ export class ServiceBase {
 
           if (!service) {
             if (!reference.optional) {
-              throw new _Error(defaultLoc._f(
+              throw new Error(loc => loc._c(
+                'service',
                 'Error service name "%s", not found for reference "%s" in service "%s".',
                 serviceName,
                 name,
@@ -193,6 +197,45 @@ export class ServiceBase {
       if (!reference.otherName && reference.name !== name) {
         reference.otherName = name;
       }
+
+      if (reference.through) {
+        if (typeof reference.through === 'string') {
+          reference.through = { service: reference.through };
+        }
+        const through = reference.through;
+
+        if (typeof through.service === 'string') {
+          let serviceName = through.service;
+          let service = dependency.get(serviceName, null);
+          if (!service) {
+            if (!serviceName.endsWith('Service')) {
+              service = dependency.get(serviceName + 'Service', null);
+            }
+
+            if (!service) {
+              if (!reference.optional) {
+                throw new Error(loc => loc._c(
+                  'service',
+                  'Error service name "%s", not found for reference through "%s" in service "%s".',
+                  serviceName,
+                  name,
+                  this.constructor.name
+                ));
+              }
+
+              continue;
+            }
+          }
+
+          through.service = service;
+        }
+
+        through.idLocalPropertyName ??= reference.idThroughLocal ?? ( this.name + 'Id');
+        through.idReferencePropertyName ??= reference.idThroughReference ?? ( reference.service.name + 'Id');
+      }
+
+      delete reference.idThroughLocal;
+      delete reference.idThroughReference;
     }
   }
 
@@ -282,7 +325,7 @@ export class ServiceBase {
         data[idPropertyName] = await service[getIdForName](data[name].name);
       } else if (typeof data[name] === 'string' && data[name] && service[getIdForName]) {
         data[idPropertyName] = await service[getIdForName](data[name], { skipNoRowsError: true });
-      } else if (data[name] && typeof data[name] === 'object') {
+      } else if (data[name] && typeof data[name] === 'object' && !Array.isArray(data[name])) {
         const childData = data[name];
         if (childData.id) {
           data[idPropertyName] = childData.id;
@@ -386,7 +429,7 @@ export class ServiceBase {
     try {
       await this.emit('creating', options?.emitEvent, data, options, this);
       let row = await this.model.create(data, options, this);
-      row = row.get();
+      await this.updateThroughTables({ ...data, ...row }, options);
       await this.emit('created', options?.emitEvent, row, data, options, this);
 
       await transaction?.commit();
@@ -402,6 +445,58 @@ export class ServiceBase {
       await this.pushError(error);
 
       throw error;
+    }
+  }
+
+  async updateThroughTables(data, options) {
+    for (const referenceName in this.references) {
+      const reference = this.references[referenceName],
+        through = reference.through;
+      if (!through || !data[reference.idPropertyName]) {
+        continue;
+      }
+
+      let referenceIds = data[reference.idPropertyName];
+      if (!Array.isArray(referenceIds)) {
+        referenceIds = [ referenceIds ];
+      }
+
+      let localIds = data.id;
+      if (!localIds) {
+        if (!options.where) {
+          throw new Error(loc => loc._c(
+            'service',
+            'Cannot update referenced data "%s", because cannot get ID for local rows (where clause is lost) in service "%s".',
+            referenceName,
+            this.name
+          ));
+        }
+
+        localIds = await this.getIdFor(options.where);
+        if (!localIds.length) {
+          continue;
+        }
+      } else if (!Array.isArray(localIds)) {
+        localIds = [ localIds ];
+      }
+
+      const queryOptions = { transaction: options.transaction };
+      for (const localId of localIds) {
+        for (const referenceId of referenceIds) {
+          const thisData = {
+            [through.idLocalPropertyName]: localId,
+            [through.idReferencePropertyName]: referenceId,
+          };
+          await through.service.createIfNotExists(thisData, queryOptions);
+        }
+
+        await through.service.deleteFor(
+          {
+            [through.idLocalPropertyName]: localId,
+            [through.idReferencePropertyName]: { [Op.notIn]: referenceIds },
+          }, { transaction: options.transaction }
+        );
+      }
     }
   }
   
@@ -546,7 +641,8 @@ export class ServiceBase {
 
         const reference = this.references[includedName];
         if (!reference) {
-          throw new _Error(defaultLoc._f(
+          throw new Error(loc => loc._c(
+            'service',
             'Can\'t include "%s" because is not reference in service "%s".',
             includedName,
             this.constructor.name
@@ -785,6 +881,7 @@ export class ServiceBase {
     if (result.length) {
       result = result[0];
     }
+    await this.updateThroughTables(data, options);
     await this.emit('updated', options?.emitEvent, result, data, options, this);
 
     return result;
