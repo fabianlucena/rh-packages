@@ -41,7 +41,7 @@ export class BranchController extends Controller {
   }
 
   async checkUuid(req, uuid) {
-    const branch = await this.branchService.getForUuid(uuid, { skipNoRowsError: true });
+    const branch = await this.service.getForUuid(uuid, { skipNoRowsError: true });
     if (!branch) {
       throw new HttpError(loc => loc._c('branch', 'The branch with UUID %s does not exists.'), 404, uuid);
     }
@@ -132,13 +132,11 @@ export class BranchController extends Controller {
         label: await loc._c('branch', 'Name'),
       },
       {
-        alias: 'company',
         name: 'company.title',
         type: 'text',
         label: await loc._c('branch', 'Company'),
       },
       {
-        alias: 'owner',
         name: 'owner.user.displayName',
         type: 'text',
         label: await loc._c('branch', 'Owner'),
@@ -152,7 +150,16 @@ export class BranchController extends Controller {
         method: 'get',
       },
       actions,
-      columns: await filterVisualItemsByAliasName(columns, conf?.branch, { loc, entity: 'Branch', translationContext: 'branch', interface: 'grid' }),
+      columns: await filterVisualItemsByAliasName(
+        columns,
+        {
+          loc,
+          entity: 'Branch',
+          translationContext: 'branch',
+          interface: 'grid',
+          ...conf?.branch,
+        }
+      ),
     };
 
     await conf.global.eventBus?.$emit('Branch.interface.grid.get', grid, { loc });
@@ -198,7 +205,6 @@ export class BranchController extends Controller {
         },
       },
       {
-        alias: 'company',
         name: 'companyUuid',
         type: 'select',
         label: await loc._c('branch', 'Company'),
@@ -229,7 +235,16 @@ export class BranchController extends Controller {
     const form = {
       title: await loc._('Branches'),
       action: 'branch',
-      fields: await filterVisualItemsByAliasName(fields, conf?.branch, { interface: 'form' }),
+      fields: await filterVisualItemsByAliasName(
+        fields,
+        {
+          loc,
+          entity: 'Branch',
+          translationContext: 'branch',
+          interface: 'form',
+          ...conf?.branch,
+        },
+      ),
     };
 
     await conf.global.eventBus?.$emit('interface.form.get', form, { loc, entity: 'Branch' });

@@ -25,6 +25,8 @@ conf.updateData = async function(global) {
     menuItemData.parent ??= menuItemData.data.parent;
     menuItemData.permission ??= permissionData.name;
     menuItemData.isTranslatable ??= permissionData.isTranslatable;
+    menuItemData.translationContext ??= permissionData.translationContext;
+    menuItemData.ownerModule ??= permissionData.ownerModule;
     menuItemData.data.label ??= menuItemData.label;
 
     if (!menuItemData.data.label) {
@@ -35,13 +37,12 @@ conf.updateData = async function(global) {
       }
     }
          
-    // eslint-disable-next-line no-unused-vars
-    let { uuid, isEnabled, name, parent, parentId, permission, permissionId, isTranslatable, data, ...resData } = {
+    let { uuid, isEnabled, name, parent, parentId, permission, permissionId, isTranslatable, translationContext, ownerModule, ownerModuleId, ...resData } = {
       ...menuItemData, 
       ...menuItemData.data, 
     };
 
-    menuItemData.data = resData;
+    menuItemData = { uuid, isEnabled, name, parent, parentId, permission, permissionId, isTranslatable, translationContext, ownerModule, ownerModuleId, data: resData };
 
     await menuItemService.createIfNotExists(menuItemData);
   });

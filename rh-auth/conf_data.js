@@ -29,12 +29,12 @@ export const data = {
   ],
 
   menuItems: [
-    { name: 'administration',      isTranslatable: true, roles: 'user',        ownerModule: name, data: { alias: 'administration', label: loc._cf('premission', 'Administration'),                                                       icon: 'administration' }},
+    { name: 'administration',      isTranslatable: true, ownerModule: name, data: { label: loc._cf('menu', 'Administration'),                                                       icon: 'administration' }},
   ],
 
   permissions: [
     { name: 'login-menu',          title: loc._cf('premission', 'Login menu'),            isTranslatable: true, roles: 'anonymous',   ownerModule: name, menuItem: { alias: 'session-menu',                                              icon: 'login',                                     action: 'form',    service: 'login' }},
-    { name: 'session-menu',        title: loc._cf('premission', 'Session menu'),          isTranslatable: true, roles: 'user',        ownerModule: name, menuItem: { alias: 'session-menu',                                              icon: 'user' }},
+    { name: 'session-menu',        title: loc._cf('premission', 'Session menu'),          isTranslatable: true, roles: 'user',        ownerModule: name, menuItem: {                                                                     icon: 'user' }},
 
     { name: 'own-session.get',     title: loc._cf('premission', 'Get own sessions only'), isTranslatable: true, roles: 'user',        ownerModule: name, menuItem: { label: loc._cf('menu', 'My sessions'),        isTranslatable: true, icon: 'session',         parent: 'session-menu',   action: 'grid',    service: 'session' }},
     { name: 'own-password.change', title: loc._cf('premission', 'Change own password'),   isTranslatable: true, roles: 'user',        ownerModule: name, menuItem: { label: loc._cf('menu', 'Change my password'), isTranslatable: true, icon: 'change-password', parent: 'session-menu',   action: 'form',    service: 'change-my-password' }},

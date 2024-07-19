@@ -1,5 +1,5 @@
 import { Service, Op } from 'rf-service';
-import { checkParameterNotNullOrEmpty, } from 'rf-util';
+import { checkParameterNotNullOrEmpty } from 'rf-util';
 import { ConflictError } from 'http-util';
 import dependency from 'rf-dependency';
 import { ForbidenDeleteAttributeValueError, NoAttributeForTagCreationError, UpdateAttributeValueError } from './error.js';

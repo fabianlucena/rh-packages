@@ -141,7 +141,7 @@ export class UserSiteRoleService extends Service.EnableOwnerModuleTranslatable {
    * @returns {Promise{UserSiteRole}}
    */
   async createIfNotExists(data, options) {
-    await this.completeReferences(data);
+    data = await this.completeReferences(data);
     await checkDataForMissingProperties(data, 'UserSiteRole', 'userId', 'siteId', 'roleId');
 
     const rows = await this.getList({
@@ -164,7 +164,8 @@ export class UserSiteRoleService extends Service.EnableOwnerModuleTranslatable {
   }
 
   async delete(options) {
-    await this.completeReferences(options.where, true);
+    options = { ...options };
+    options.where = await this.completeReferences(options.where);
 
     const where = options.where;
     if (where?.notRoleId) {

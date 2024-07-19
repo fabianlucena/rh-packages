@@ -15,6 +15,7 @@ async function configure(global, options) {
 
   dependency.addStatic('getAvailableProjectsIdForRequest', getAvailableProjectsIdForRequest);
   dependency.addStatic('getCurrentProjectId', getCurrentProjectId);
+  dependency.addStatic('getCurrentProject',   getCurrentProject);
 }
 
 var projectService,
@@ -105,4 +106,13 @@ async function getCurrentProjectId(req) {
       return data.projectId;
     }
   }
+}
+
+async function getCurrentProject(req) {
+  const projectId = await getCurrentProjectId(req);
+  if (!projectId) {
+    return;
+  }
+
+  return this.projectService.getForId(projectId);
 }

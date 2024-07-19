@@ -4,6 +4,7 @@ import { ServiceMixinUuid } from './rf-service-mixin-uuid.js';
 import { ServiceMixinEnable } from './rf-service-mixin-enable.js';
 import { ServiceMixinName } from './rf-service-mixin-name.js';
 import { ServiceMixinUniqueTitle } from './rf-service-mixin-unique-title.js';
+import { ServiceMixinTitle } from './rf-service-mixin-title.js';
 import { ServiceMixinOwnerModule } from './rf-service-mixin-owner-module.js';
 import { ServiceMixinShared } from './rf-service-mixin-shared.js';
 import { ServiceMixinDescription } from './rf-service-mixin-description.js';
@@ -23,6 +24,7 @@ const Service = {
   ServiceMixinEnable,
   ServiceMixinName,
   ServiceMixinUniqueTitle,
+  ServiceMixinTitle,
   ServiceMixinOwnerModule,
   ServiceMixinShared,
   ServiceMixinDescription,
@@ -68,6 +70,10 @@ const classesData = [
   {
     name: 'UniqueTitle',
     mixin: ServiceMixinUniqueTitle,
+  },
+  {
+    name: 'Title',
+    mixin: ServiceMixinTitle,
   },
   {
     name: 'OwnerModule',

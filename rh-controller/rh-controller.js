@@ -2,7 +2,7 @@ import { getRoutes } from 'rf-get-routes';
 import { deleteHandler, getUuidFromRequest, HttpError, enableHandler, disableHandler, patchHandler, makeContext } from 'http-util';
 import { defaultLoc } from 'rf-locale';
 import { dependency } from 'rf-dependency';
-import { filterVisualItemsByAliasName } from 'rf-util';
+import { filterVisualItemsByAliasName, ucfirst } from 'rf-util';
 
 
 /**
@@ -23,10 +23,14 @@ import { filterVisualItemsByAliasName } from 'rf-util';
  *  - getGrid: for GET and using the defaultGet handler
  *  - getForm: for GET and using the defaultGet handler
  *  - getObject: for GET and using the defaultGet handler
+ *  - getFields: for GET and using the defaultGet handler
+ *  - getDefault: for GET and using the defaultGet handler
  *  - getDataPermission: same as getData
  *  - getGridPermission: same as getGrid
  *  - getFormPermission: same as getForm
  *  - getObjectPermission: same as getObject
+ *  - getFieldsPermission: same as getObject
+ *  - getDefaultPermission: same as getDefault
  *  - deleteForUuid: for DELETE and using the defaultDeleteForUuid handler
  *  - postEnableForUuid:  for POST and using the defaultPostEnableForUuid  handler in path /enable
  *  - postDisableForUuid: for POST and using the defaultPostDisableForUuid handler in path /disable
@@ -40,10 +44,13 @@ export class Controller {
       this,
       {
         appendHandlers: [
+          { name: 'get',                httpMethod: 'get',    handler: 'defaultGet',  inPathParam: 'uuid' },
           { name: 'getData',            httpMethod: 'get',    handler: 'defaultGet',  inPathParam: 'uuid' },
           { name: 'getGrid',            httpMethod: 'get',    handler: 'defaultGet' },
           { name: 'getForm',            httpMethod: 'get',    handler: 'defaultGet' },
           { name: 'getObject',          httpMethod: 'get',    handler: 'defaultGet' },
+          { name: 'getFields',          httpMethod: 'get',    handler: 'defaultGet' },
+          { name: 'getDefault',         httpMethod: 'get',    handler: 'defaultGet' },
           { name: 'getFields',          httpMethod: 'get',    handler: 'defaultGet' },
           { name: 'post',               httpMethod: 'post',   handler: 'defaultPost' },
           { name: 'deleteForUuid',      httpMethod: 'delete', handler: 'defaultDeleteForUuid',      inPathParam: 'uuid' },
@@ -119,9 +126,74 @@ export class Controller {
     await checkPermissionHandler(req, res, next);
   }
 
+  async sanitizeFields(interfaceName, result, req) {
+    const loc = req.loc ?? defaultLoc,
+      translationContext = this.translationContext,
+      options = {
+        loc,
+        translationContext: this.translationContext,
+        ...result.fieldsFilter,
+        interface: interfaceName,
+        entity: this.getName(),
+      };
+    delete result.fieldsFilter;
+    
+    if (result.fields) {
+      result.fields = await filterVisualItemsByAliasName(
+        result.fields,
+        options,
+      );
+    }
+
+    if (result.columns) {
+      result.columns = await filterVisualItemsByAliasName(
+        result.columns,
+        options,
+      );
+    }
+
+    if (result.details) {
+      result.details = await filterVisualItemsByAliasName(
+        result.details,
+        options,
+      );
+    }
+
+    if (result.properties) {
+      result.properties = await filterVisualItemsByAliasName(
+        result.properties,
+        options,
+      );
+    }
+
+    if (interfaceName) {
+      const substitutions = [ 'title' ];
+      for (const dst in substitutions) {
+        const src = interfaceName + ucfirst(dst);
+        if (result[src] === undefined) {
+          continue;
+        }
+
+        result[dst] = result[src];
+        delete result[src];
+      }
+    }
+
+    if (typeof result.title === 'function') {
+      result.title = await result.title(loc, translationContext);
+    }
+
+    return result;
+  }
+
   async defaultGet(req, res, next) {
+    let func,
+      sanitize;
+    const permissions = [],
+      events = [],
+      entity = this.getName();
+
     if ('$grid' in req.query) {
-      let func;
       if (typeof this.getGrid === 'function') {
         func = (...args) => this.getGrid(...args);
       } else if (typeof this.constructor.getGrid === 'function') {
@@ -130,36 +202,14 @@ export class Controller {
         func = (...args) => this.getFields(...args);
       } else if (typeof this.constructor.getFields === 'function') {
         func = this.constructor.getFields;
+      } else if (this.service?.getFields) {
+        func = (...args) => this.service.getFields({ context: makeContext(...args) });
       }
 
-      if (func) {
-        await this.checkPermissionsFromProperty(req, res, next, 'getGrid');
-        await this.checkPermissionsFromProperty(req, res, next, 'get');
-
-        const grid = await func(req, res, next);
-        if (grid) {
-          if (this.eventBus) {
-            const loc = req.loc;
-            const entity = this.getName();
-
-            await this.eventBus.$emit('interface.grid.get', grid, { loc, entity });
-            await this.eventBus.$emit(`${entity}.interface.grid.get`, grid, { loc });
-          }
-
-          if (grid.fieldsFilter) {
-            grid.fields = await filterVisualItemsByAliasName(grid.fields, grid.fieldsFilter);
-            delete grid.fieldsFilter;
-          }
-          
-          res.status(200).json(grid);
-        }
-
-        return;
-      }
-    }
-    
-    if ('$form' in req.query) {
-      let func;
+      permissions.push('getGrid', 'get');
+      events.push('interface.grid.get', `${entity}.interface.grid.get`);
+      sanitize = (...params) => this.sanitizeFields('grid', ...params);
+    } else if ('$form' in req.query) {
       if (typeof this.getForm === 'function') {
         func = (...args) => this.getForm(...args);
       } else if (typeof this.constructor.getForm === 'function') {
@@ -168,37 +218,14 @@ export class Controller {
         func = (...args) => this.getFields(...args);
       } else if (typeof this.constructor.getFields === 'function') {
         func = this.constructor.getFields;
+      } else if (this.service?.getFields) {
+        func = (...args) => this.service.getFields({ context: makeContext(...args) });
       }
 
-      if (func) {
-        await this.checkPermissionsFromProperty(req, res, next, 'getForm');
-        await this.checkPermissionsFromProperty(req, res, next, 'get');
-
-        const form = await func(req, res, next);
-        if (form) {
-          if (this.eventBus) {
-            const loc = req.loc;
-            const entity = this.getName();
-
-            const context = makeContext(req, res);
-            await this.eventBus.$emit('interface.form.get', form, { loc, entity, context });
-            await this.eventBus.$emit(`${entity}.interface.form.get`, form, { loc, context });
-          }
-
-          if (form.fieldsFilter) {
-            form.fields = await filterVisualItemsByAliasName(form.fields, form.fieldsFilter);
-            delete form.fieldsFilter;
-          }
-
-          res.status(200).json(form);
-        }
-
-        return;
-      }
-    }
-        
-    if ('$object' in req.query) {
-      let func;
+      permissions.push('getForm', 'get');
+      events.push('interface.form.get', `${entity}.interface.form.get`);
+      sanitize = (...params) => this.sanitizeFields('form', ...params);
+    } else if ('$object' in req.query) {
       if (typeof this.getObject === 'function') {
         func = (...args) => this.getObject(...args);
       } else if (typeof this.constructor.getObject === 'function') {
@@ -207,91 +234,188 @@ export class Controller {
         func = (...args) => this.getFields(...args);
       } else if (typeof this.constructor.getFields === 'function') {
         func = this.constructor.getFields;
+      } else if (this.service?.getFields) {
+        func = (...args) => this.service.getFields({ context: makeContext(...args) });
       }
 
-      if (func) {
-        await this.checkPermissionsFromProperty(req, res, next, 'getObject');
-        await this.checkPermissionsFromProperty(req, res, next, 'get');
+      permissions.push('getObject', 'get');
+      events.push('interface.object.get', `${entity}.interface.object.get`);
+      sanitize = (...params) => this.sanitizeFields('object', ...params);
+    } else if ('$fields' in req.query) {
+      if (typeof this.getFields === 'function') {
+        func = (...args) => this.getFields(...args);
+      } else if (typeof this.constructor.getFields === 'function') {
+        func = this.constructor.getFields;
+      } else if (this.service?.getFields) {
+        func = (...args) => this.service.getFields({ context: makeContext(...args) });
+      }
 
-        const object = await func(req, res, next);
-        if (object) {
-          if (this.eventBus) {
-            const loc = req.loc;
-            const entity = this.getName();
+      permissions.push('getFields', 'get');
+      events.push('interface.fields.get', `${entity}.interface.fields.get`);
+      sanitize = (...params) => this.sanitizeFields('fields', ...params);
+    } else if ('$default' in req.query) {
+      if (typeof this.getDefault === 'function') {
+        func = (...args) => this.getDefault(...args);
+      } else if (typeof this.constructor.getDefault === 'function') {
+        func = this.constructor.getDefault;
+      } else if (this.service?.getDefault) {
+        func = (...args) => this.defaultGetDefault(...args);
+      }
 
-            await this.eventBus.$emit('interface.object.get', object, { loc, entity });
-            await this.eventBus.$emit(`${entity}.interface.object.get`, object, { loc });
-          }
+      permissions.push('getData', 'get');
+      events.push('interface.default.get', `${entity}.interface.default.get`);
+    } else {
+      if (typeof this.getData === 'function') {
+        func = (...args) => this.getData(...args);
+      } else if (typeof this.constructor.getData === 'function') {
+        func = this.constructor.getData;
+      } else if (this.service) {
+        func = (...args) => this.defaultGetData(...args);
+      } else {
+        if (this.getGrid || this.constructor.getGrid
+          || this.getForm || this.constructor.getForm
+          || this.getObject || this.constructor.getObject
+          || this.getDefault || this.constructor.getDefault
+        ) {
+          res.status(400).send({ error: 'Missing parameters.' });
+          return;
+        }
+      }
 
-          if (object.fieldsFilter) {
-            object.fields = await filterVisualItemsByAliasName(object.fields, object.fieldsFilter);
-            delete object.fieldsFilter;
-          }
+      permissions.push('getData', 'get');
+      events.push('interface.data.get', `${entity}.interface.data.get`);
+    }
 
-          res.status(200).json(object);
+    if (!func) {
+      if (!res.headersSent) {
+        res.status(405).send({ error: 'HTTP method not allowed.' });
+      }
+
+      return;
+    }
+
+    await Promise.all(
+      permissions.map(
+        async permission => await this.checkPermissionsFromProperty(req, res, next, permission)
+      )
+    );
+
+    let result = await func(req, res, next);
+    if (!result) {
+      if (!res.headersSent && res.statusCode === 200) {
+        res.status(204).end();
+      }
+
+      return;
+    }
+
+    if (this.eventBus) {
+      const loc = req.loc;
+      for (let i = 0; i < events.length; i++) {
+        await this.eventBus.$emit(events[i], result, { loc, entity });
+      }
+    }
+
+    if (sanitize) {
+      result = await sanitize(result, req, res);
+    }
+    
+    res.status(200).json(result);
+  }
+
+  async defaultGetData(req, res, next) {
+    if (!this.service) {
+      res.status(405).send({ error: 'HTTP method not allowed.' });
+      return;
+    }
+
+    let getOptions;
+    if (typeof this.getOptions === 'function') {
+      getOptions = (...args) => this.getOptions(...args);
+    } else if (typeof this.constructor.getOptions === 'function') {
+      getOptions = this.constructor.getOptions;
+    } else {
+      getOptions = (...args) => this.defaultGetOptions(...args);
+    }
+
+    const options = await getOptions(req, res, next);
+    options.context ??= makeContext(req, res);
+
+    let result = await this.service.getListAndCount(options);
+    if (result) {
+      result = await this.service.sanitize(result);
+    }
+
+    for (const row of result.rows) {
+      this.addUuidList(row, row, '');
+    }
+
+    return result;
+  }
+
+  addUuidList(row, root, name) {
+    for (const k in row) {
+      const v = row[k];
+      if (Array.isArray(v)) {
+        const propertyName = name + k + '.uuid';
+        if (typeof root[propertyName] === 'undefined') {
+          root[propertyName] = v.map(i => i.uuid).filter(i => i);
         }
 
-        return;
+        for (const i of v) {
+          this.addUuidList(i, root, name + k + '.');
+        }
+      } else if (typeof v === 'object') {
+        this.addUuidList(v, root, name + k + '.');
+      }
+    }
+  }
+
+  async defaultGetOptions(req, res) {
+    const options = { view: true };
+    if (!this.service) {
+      return options;
+    }
+
+    if (this.service.getOptions) {
+      return this.service.getOptions({ context: makeContext(req, res) });
+    }
+    
+    if (this.service.references) {
+      options.include = {};
+      for (const name in this.service.references) {
+        options.include[name] = true;
       }
     }
 
-    let instance;
-    if (typeof this.getData === 'function') {
-      instance = this;
-    } else if (typeof this.constructor.getData === 'function') {
-      instance = this.constructor;
+    return options;
+  }
+
+  async defaultGetDefault(req, res) {
+    if (!this.service?.getDefault) {
+      res.status(405).send({ error: 'HTTP method not allowed.' });
+      return;
     }
+    
+    const options = {
+      context: makeContext(req, res),
+    };
 
-    if (instance) {
-      await this.checkPermissionsFromProperty(req, res, next, 'getData');
-      await this.checkPermissionsFromProperty(req, res, next, 'get');
-
-      const result = await instance.getData(req, res, next);
-      if (result) {
-        res.send(result);
-      } else if (!res.headersSent && res.statusCode === 200) {
-        res.status(204).end();
-      }
-
+    let row = await this.service.getDefault(options);
+    if (!row) {
       return;
     }
 
-    if (this.service) {
-      await this.checkPermissionsFromProperty(req, res, next, 'getData');
-      await this.checkPermissionsFromProperty(req, res, next, 'get');
+    let result = {
+      count: 1,
+      rows: [ row ],
+    };
 
-      if (typeof this.getOptions === 'function') {
-        instance = this;
-      } else if (typeof this.constructor.getOptions === 'function') {
-        instance = this.constructor;
-      }
-
-      let options;
-      if (instance) {
-        options = await instance.getOptions(req, res, next);
-        options.context ??= makeContext(req, res);
-      }
-
-      let result = await this.service.getListAndCount(options);
-      if (result) {
-        result = await this.service.sanitize(result);
-        res.send(result);
-      } else if (!res.headersSent && res.statusCode === 200) {
-        res.status(204).end();
-      }
-
-      return;
+    if (this.service.sanitize) {
+      result = await this.service.sanitize(result);
     }
 
-    if (this.getGrid || this.constructor.getGrid
-      || this.getForm || this.constructor.getForm
-      || this.getObject || this.constructor.getObject
-    ) {
-      res.status(400).send({ error: 'Missing parameters.' });
-      return;
-    }
-
-    res.status(405).send({ error: 'HTTP method not allowed.' });
+    return result;
   }
 
   async checkUuid(req, res) {

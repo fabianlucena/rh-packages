@@ -12,10 +12,33 @@ export const ServiceMixinIdUuid = Service => class ServiceIdUUID extends Service
    * This function uses @ref getForUUID function so the options for getForUUID
    * function can be specified.
    */
-  async getIdForUuid(name, options) {
-    if (Array.isArray(name))
-      return (await this.getForUuid(name, { attributes: ['id'], ...options })).map(row => row.id);
+  async getIdForUuid(uuid, options) {
+    if (Array.isArray(uuid)) {
+      return (await this.getForUuid(uuid, { attributes: ['id'], ...options })).map(row => row.id);
+    }
         
-    return (await this.getForUuid(name, { attributes: ['id'], ...options })).id;
+    return (await this.getForUuid(uuid, { attributes: ['id'], ...options })).id;
+  }
+
+  async getIdOrNullForUuid(uuid, options) {
+    return this.getIdForUuid(
+      uuid,
+      {
+        ...options,
+        skipNoRowsError: true,
+        nullOnManyRowsError: true,
+      },
+    );
+  }
+
+  async getSingleOrNullForUuid(uuid, options) {
+    return this.getForUuid(
+      uuid,
+      {
+        ...options,
+        skipNoRowsError: true,
+        nullOnManyRowsError: true,
+      },
+    );
   }
 };

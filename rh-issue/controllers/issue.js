@@ -36,13 +36,13 @@ export class IssueController extends Controller {
       }
         
       if (!data.projectId) {
-        throw new HttpError(checkParameter._c('issue', 'The project does not exist or you do not have permission to access it.'), 404);
+        throw new HttpError(loc => loc._c('issue', 'The project does not exist or you do not have permission to access it.'), 404);
       }
     }
 
     const projectId = await conf.filters.getCurrentProjectId(req) ?? null;
     if (data.projectId != projectId) {
-      throw new HttpError(checkParameter._c('issue', 'The project does not exist or you do not have permission to access it.'), 403);
+      throw new HttpError(loc => loc._c('issue', 'The project does not exist or you do not have permission to access it.'), 403);
     }
 
     return data.projectId;
@@ -173,7 +173,6 @@ export class IssueController extends Controller {
         },
       },
       {
-        alias:       'project',
         name:        'project.uuid',
         gridName:    'project.title',
         type:        'select',
@@ -191,7 +190,6 @@ export class IssueController extends Controller {
         },
       },
       {
-        alias:       'type',
         name:        'type.uuid',
         gridName:    'type.title',
         type:        'select',
@@ -209,7 +207,6 @@ export class IssueController extends Controller {
         },
       },
       {
-        alias:       'priority',
         name:        'priority.uuid',
         gridName:    'priority.title',
         type:        'select',
@@ -243,7 +240,6 @@ export class IssueController extends Controller {
         isField:     true,
       },
       {
-        alias:       'closeReason',
         name:        'closeReason.uuid',
         gridName:    'closeReason.title',
         type:        'select',

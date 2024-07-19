@@ -3,8 +3,9 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class MenuItem extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.MenuItem,   { as: 'parent',     foreignKey: 'parentId', allowNull: true, onUpdate: 'NO ACTION', onDelete: 'NO ACTION' });
-      this.belongsTo(models.Permission, { as: 'permission', foreignKey: 'permissionId' });
+      this.belongsTo(models.Module,     { as: 'ownerModule', foreignKey: 'ownerModuleId' });
+      this.belongsTo(models.MenuItem,   { as: 'parent',      foreignKey: 'parentId', allowNull: true, onUpdate: 'NO ACTION', onDelete: 'NO ACTION' });
+      this.belongsTo(models.Permission, { as: 'permission',  foreignKey: 'permissionId' });
     }
   }
   MenuItem.init({

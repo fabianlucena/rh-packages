@@ -1,0 +1,317 @@
+components:
+  schemas:
+    Glossary:
+      type: object
+      properties:
+        isEnabled:
+          type: boolean
+        name:
+          type: string
+          required: true
+          example: admin
+        title:
+          type: string
+          required: true
+          example: Admin
+        Project:
+          type: object
+          properties:
+            name:
+              type: string
+              required: true
+              example: admin
+            title:
+              type: string
+              required: true
+              example: Admin
+
+    Error:
+      properties:
+        error:
+          type: string
+          example: Example error
+
+    Project:
+      properties:
+        uuid:
+          type: string
+          required: true
+        title:
+          type: string
+          required: true
+
+/glossary:
+  post:
+    tags:
+      - Glossary
+    summary: Create a glossary
+    description: Add a new glossary to the database
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Glossary'
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/components/schemas/Error'
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+
+  get:
+    tags:
+      - Glossary
+    summary: Get glossary or a glossary list
+    description: If the UUID or name params is provided this endpoint returns a single glossary otherwise returns a list of glossarys
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+      - name: name
+        in: query
+        type: string
+      - name: limit
+        in: query
+        type: integer
+      - name: offset
+        in: query
+        type: integer
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/components/schemas/Glossary'
+      '204':
+        description: Success no glossary
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+  delete:
+    tags:
+      - Glossary
+    summary: Delete a glossary
+    description: Delete a glossary from its UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        required: true
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+    responses:
+      '204':
+        description: Success
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+  patch:
+    tags:
+      - Glossary
+    summary: Update a glossary
+    description: Update a glossary from its UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Glossary'
+    responses:
+      '204':
+        description: Success
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+/glossary/enable:
+  post:
+    tags:
+      - Glossary
+    summary: Enable a glossary
+    description: Enable a glossary from its UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        required: true
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+    responses:
+      '204':
+        description: Success
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+/glossary/disable:
+  post:
+    tags:
+      - Glossary
+    summary: Disable a glossary
+    description: Disable a glossary from its UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        required: true
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+    responses:
+      '204':
+        description: Success
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+/glossary/project:
+  get:
+    tags:
+      - Glossary
+    summary: Get list of projects available to select in a glossary
+    description: If the UUID or name params is provided this endpoint returns a single project otherwise returns a list of projects
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+      - name: name
+        in: query
+        type: string
+      - name: limit
+        in: query
+        type: integer
+      - name: offset
+        in: query
+        type: integer
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/components/schemas/Project'
+      '204':
+        description: Success no project
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'

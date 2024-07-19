@@ -1,9 +1,6 @@
-import { IssuePriorityService } from './services/issue-priority.js';
-import { IssueCloseReasonService } from './services/issue-close-reason.js';
-import { IssueTypeService } from './services/issue-type.js';
-import { IssueService } from './services/issue.js';
 import { conf as localConf } from './conf.js';
 import { runSequentially } from 'rf-util';
+import dependency from 'rf-dependency';
 
 export const conf = localConf;
 
@@ -18,13 +15,15 @@ async function configure(global, options) {
 
 async function updateData(global) {
   const data = global?.data;
-  const issuePriorityService =    IssuePriorityService.   singleton();
-  const issueTypeService =        IssueTypeService.       singleton();
-  const issueCloseReasonService = IssueCloseReasonService.singleton();
-  const issueService =            IssueService.           singleton();
+  const issuePriorityService =     dependency.get('issuePriorityService');
+  const issueTypeService =         dependency.get('issueTypeService');
+  const issueCloseReasonService =  dependency.get('issueCloseReasonService');
+  const issueRelationshipService = dependency.get('issueRelationshipService');
+  const issueService =             dependency.get('issueService');
 
-  await runSequentially(data?.issuePriorities,   async data => await issuePriorityService.   createIfNotExists(data));
-  await runSequentially(data?.issueTypes,        async data => await issueTypeService.       createIfNotExists(data));
-  await runSequentially(data?.issueCloseReasons, async data => await issueCloseReasonService.createIfNotExists(data));
-  await runSequentially(data?.issues,            async data => await issueService.           createIfNotExists(data));
+  await runSequentially(data?.issuePriorities,    async data => await issuePriorityService.    createIfNotExists(data));
+  await runSequentially(data?.issueTypes,         async data => await issueTypeService.        createIfNotExists(data));
+  await runSequentially(data?.issueCloseReasons,  async data => await issueCloseReasonService. createIfNotExists(data));
+  await runSequentially(data?.issueRelationships, async data => await issueRelationshipService.createIfNotExists(data));
+  await runSequentially(data?.issues,             async data => await issueService.            createIfNotExists(data));
 }
