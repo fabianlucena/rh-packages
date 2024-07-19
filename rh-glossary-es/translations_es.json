@@ -49,18 +49,19 @@
         "ref": "..\\rh-glossary\\services\\glossary_definition.js [95,33]\n..\\rh-glossary\\services\\glossary_definition.js [103,25]"
     },
     {
-        "source": "Definition",
-        "language": "es",
-        "context": "menu",
-        "translation": "Definición",
-        "ref": "..\\rh-glossary\\conf_data.js [27,122]"
-    },
-    {
         "source": "Definitions",
         "language": "es",
         "context": "glossary",
         "translation": "Definiciones",
         "ref": "..\\rh-glossary\\services\\glossary_definition.js [104,29]"
+    },
+    {
+        "source": "Definitions",
+        "language": "es",
+        "context": "menu",
+        "isDraft": false,
+        "translation": "Definiciones",
+        "ref": "..\\rh-glossary\\conf_data.js [27,122]"
     },
     {
         "source": "Delete glossarys",
