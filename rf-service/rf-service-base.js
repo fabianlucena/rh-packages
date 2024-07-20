@@ -1,7 +1,7 @@
 import { Op, Column } from './rf-service-op.js';
 import { NoRowsError, ManyRowsError, ReferenceDefinitionError, QueryError } from './rf-service-errors.js';
 import { ucfirst, lcfirst } from 'rf-util/rf-util-string.js';
-import { trim, _Error } from 'rf-util';
+import { trim } from 'rf-util';
 import dependency from 'rf-dependency';
 
 /**
@@ -13,7 +13,7 @@ export class ServiceBase {
   hiddenColumns = [];
 
   /**
-   * Here are spicifed the references for properties. The referencers have the form proeprtyName: options.
+   * Here are spicifed the references for properties. The references have the form proeprtyName: options.
    * {
    *  user: {
    *      service: conf.global.services.User,
@@ -127,7 +127,7 @@ export class ServiceBase {
       }
                 
       if (typeof reference !== 'object') {
-        throw new Error(loc => loc._c(
+        throw new ReferenceDefinitionError(loc => loc._c(
           'service',
           'Error in reference definition for reference name "%s", in service "%s".',
           name,
@@ -158,7 +158,7 @@ export class ServiceBase {
 
           if (!service) {
             if (!reference.optional) {
-              throw new Error(loc => loc._c(
+              throw new ReferenceDefinitionError(loc => loc._c(
                 'service',
                 'Error service name "%s", not found for reference "%s" in service "%s".',
                 serviceName,
@@ -214,7 +214,7 @@ export class ServiceBase {
 
             if (!service) {
               if (!reference.optional) {
-                throw new Error(loc => loc._c(
+                throw new ReferenceDefinitionError(loc => loc._c(
                   'service',
                   'Error service name "%s", not found for reference through "%s" in service "%s".',
                   serviceName,
@@ -460,7 +460,7 @@ export class ServiceBase {
       let localIds = data.id;
       if (!localIds) {
         if (!options.where) {
-          throw new Error(loc => loc._c(
+          throw new ReferenceDefinitionError(loc => loc._c(
             'service',
             'Cannot update referenced data "%s", because cannot get ID for local rows (where clause is lost) in service "%s".',
             referenceName,
@@ -638,7 +638,7 @@ export class ServiceBase {
 
         const reference = this.references[includedName];
         if (!reference) {
-          throw new Error(loc => loc._c(
+          throw new ReferenceDefinitionError(loc => loc._c(
             'service',
             'Can\'t include "%s" because is not reference in service "%s".',
             includedName,
@@ -1051,7 +1051,7 @@ export class ServiceBase {
         options.where = { name: data.name };
         updateData = { ...data, name: undefined };
       } else {
-        throw new Error('No criteria for find the row.');
+        throw new QueryError('No criteria for find the row.');
       }
     }
 

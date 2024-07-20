@@ -13,10 +13,10 @@ export const data = {
   ],
 
   permissions: [
-    { name: 'glossary.get',    title: loc._cf('permission', 'Get glossarys'),    isTranslatable: true, roles: 'glossaryManager', ownerModule: name },
-    { name: 'glossary.create', title: loc._cf('permission', 'Create glossarys'), isTranslatable: true, roles: 'glossaryManager', ownerModule: name },
-    { name: 'glossary.edit',   title: loc._cf('permission', 'Edit glossarys'),   isTranslatable: true, roles: [ 'glossaryManager', 'glossaryEditor' ], ownerModule: name },
-    { name: 'glossary.delete', title: loc._cf('permission', 'Delete glossarys'), isTranslatable: true, roles: 'glossaryManager', ownerModule: name },
+    { name: 'glossary.get',    title: loc._cf('permission', 'Get glossaries'),    isTranslatable: true, roles: 'glossaryManager', ownerModule: name },
+    { name: 'glossary.create', title: loc._cf('permission', 'Create glossaries'), isTranslatable: true, roles: 'glossaryManager', ownerModule: name },
+    { name: 'glossary.edit',   title: loc._cf('permission', 'Edit glossaries'),   isTranslatable: true, roles: [ 'glossaryManager', 'glossaryEditor' ], ownerModule: name },
+    { name: 'glossary.delete', title: loc._cf('permission', 'Delete glossaries'), isTranslatable: true, roles: 'glossaryManager', ownerModule: name },
   ],
 
   menuItems: [
