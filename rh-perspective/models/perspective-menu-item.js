@@ -5,6 +5,7 @@ export default (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsTo(models.Module,      { as: 'ownerModule', foreignKey: 'ownerModuleId' });
       this.belongsTo(models.Perspective, { as: 'perspective', foreignKey: { name: 'perspectiveId', allowNull: false }});
+      this.belongsTo(models.MenuItem,    { as: 'menuItem',    foreignKey: { name: 'menuItemId',    allowNull: false }});
     }
   }
   PerspectiveMenuItem.init({
@@ -25,25 +26,8 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: true,
     },
-    name: {
+    optionsReplacements: {
       type: DataTypes.STRING,
-      allowNull: false,
-    },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    isTranslatable: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-    translationContext: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    description: {
-      type: DataTypes.TEXT,
       allowNull: true,
     },
   }, {

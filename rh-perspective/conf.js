@@ -8,10 +8,11 @@ export const conf = {
   name,
   title: 'RH Perspective',
   version: '0.1',
+  path: dirname,
   schema: 'perspective',
   configure: null,
   servicesPath: dirname + '/services',
   modelsPath: dirname + '/models',
   controllersPath: dirname + '/controllers',
-  iconstPath: dirname + '/iconst',
+  iconsPath: dirname + '/icons',
 };

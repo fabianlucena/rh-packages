@@ -1,9 +1,15 @@
 [
     {
+        "source": "Check for enable and uncheck for disable",
+        "language": "es",
+        "context": "perspective",
+        "translation": "Marque para habilitar y desmarque para deshabilitar",
+        "ref": "..\\rh-perspective\\services\\perspective.js [20,33]\n..\\rh-perspective\\services\\perspective-menu-item.js [55,33]"
+    },
+    {
         "source": "Create perspectives",
         "language": "es",
         "context": "permission",
-        "isDraft": false,
         "translation": "Crear perspectivas",
         "ref": "..\\rh-perspective\\conf_data.js [18,46]"
     },
@@ -11,49 +17,114 @@
         "source": "Delete perspectives",
         "language": "es",
         "context": "permission",
-        "isDraft": false,
         "translation": "Eliminar perspectivas",
         "ref": "..\\rh-perspective\\conf_data.js [20,46]"
+    },
+    {
+        "source": "Description",
+        "language": "es",
+        "context": "perspective",
+        "translation": "Descripción",
+        "ref": "..\\rh-perspective\\services\\perspective.js [63,33]"
     },
     {
         "source": "Edit perspectives",
         "language": "es",
         "context": "permission",
-        "isDraft": false,
         "translation": "Modificar perspectivas",
         "ref": "..\\rh-perspective\\conf_data.js [19,46]"
+    },
+    {
+        "source": "Enabled",
+        "language": "es",
+        "context": "perspective",
+        "translation": "Habilitado",
+        "ref": "..\\rh-perspective\\services\\perspective.js [19,33]\n..\\rh-perspective\\services\\perspective-menu-item.js [54,33]"
     },
     {
         "source": "Get perspectives",
         "language": "es",
         "context": "permission",
-        "isDraft": false,
         "translation": "Obtener perspectivas",
         "ref": "..\\rh-perspective\\conf_data.js [17,46]"
     },
     {
-        "source": "Perspective editor",
+        "source": "Menu item",
         "language": "es",
-        "context": "role",
+        "context": "perspective",
+        "translation": "Elemento de menú",
+        "ref": "..\\rh-perspective\\services\\perspective-menu-item.js [41,37]"
+    },
+    {
+        "source": "Name",
+        "language": "es",
+        "context": "perspective",
+        "translation": "Nombre",
+        "ref": "..\\rh-perspective\\services\\perspective.js [50,33]"
+    },
+    {
+        "source": "Options",
+        "language": "es",
+        "context": "perspective",
         "isDraft": false,
-        "translation": "Editor de perspectivas",
-        "ref": "..\\rh-perspective\\conf_data.js [8,46]"
+        "translation": "Opciones",
+        "ref": "..\\rh-perspective\\services\\perspective-menu-item.js [62,33]"
+    },
+    {
+        "source": "Perspective",
+        "language": "es",
+        "context": "perspective",
+        "translation": "Perspectiva",
+        "ref": "..\\rh-perspective\\conf_data.js [24,128]\n..\\rh-perspective\\services\\perspective.js [71,29]\n..\\rh-perspective\\services\\perspective-menu-item.js [25,37]"
     },
     {
         "source": "Perspective manager",
         "language": "es",
         "context": "role",
-        "isDraft": false,
         "translation": "Administrador de perspectivas",
-        "ref": "..\\rh-perspective\\conf_data.js [7,46]"
+        "ref": "..\\rh-perspective\\conf_data.js [7,47]"
+    },
+    {
+        "source": "Perspective menu item",
+        "language": "es",
+        "context": "perspective",
+        "translation": "Elemento de menú de perspectiva",
+        "ref": "..\\rh-perspective\\services\\perspective-menu-item.js [70,29]"
+    },
+    {
+        "source": "Perspective selector",
+        "language": "es",
+        "context": "role",
+        "translation": "Selector de perspectiva",
+        "ref": "..\\rh-perspective\\conf_data.js [8,47]"
     },
     {
         "source": "Perspectives",
         "language": "es",
-        "context": "menu",
-        "isDraft": false,
+        "context": "perspective",
         "translation": "Perspectivas",
-        "ref": "..\\rh-perspective\\conf_data.js [17,242]"
+        "ref": "..\\rh-perspective\\conf_data.js [25,128]\n..\\rh-perspective\\services\\perspective.js [72,29]"
+    },
+    {
+        "source": "Perspectives menu items",
+        "language": "es",
+        "context": "perspective",
+        "translation": "Elementos de menú de perspectivas",
+        "ref": "..\\rh-perspective\\conf_data.js [26,128]\n..\\rh-perspective\\services\\perspective-menu-item.js [71,29]"
+    },
+    {
+        "source": "Select the menu item",
+        "language": "es",
+        "context": "perspective",
+        "translation": "Seleccione el elemento de menú",
+        "ref": "..\\rh-perspective\\services\\perspective-menu-item.js [42,37]"
+    },
+    {
+        "source": "Select the perspective",
+        "language": "es",
+        "context": "perspective",
+        "translation": "Seleccione la perspectiva",
+        "ref": "..\\rh-perspective\\services\\perspective-menu-item.js [26,37]"
     },
     {
         "source": "Spanish",
@@ -66,5 +137,41 @@
         "language": "es",
         "translation": "Idioma español.",
         "ref": "rh-perspective-es.js [19,26]"
+    },
+    {
+        "source": "Title",
+        "language": "es",
+        "context": "perspective",
+        "translation": "Título",
+        "ref": "..\\rh-perspective\\services\\perspective.js [27,33]"
+    },
+    {
+        "source": "Type the description here",
+        "language": "es",
+        "context": "perspective",
+        "translation": "Escriba la descripción aquí",
+        "ref": "..\\rh-perspective\\services\\perspective.js [64,33]"
+    },
+    {
+        "source": "Type the name here",
+        "language": "es",
+        "context": "perspective",
+        "translation": "Escriba el nombre aquí",
+        "ref": "..\\rh-perspective\\services\\perspective.js [51,33]"
+    },
+    {
+        "source": "Type the options here in JSON format",
+        "language": "es",
+        "context": "perspective",
+        "isDraft": false,
+        "translation": "Escriba las opciones aquí en formato JSON",
+        "ref": "..\\rh-perspective\\services\\perspective-menu-item.js [63,33]"
+    },
+    {
+        "source": "Type the title here",
+        "language": "es",
+        "context": "perspective",
+        "translation": "Escriba el título aquí",
+        "ref": "..\\rh-perspective\\services\\perspective.js [28,33]"
     }
 ]
