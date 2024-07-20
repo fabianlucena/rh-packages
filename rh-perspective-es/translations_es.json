@@ -1,0 +1,70 @@
+[
+    {
+        "source": "Create perspectives",
+        "language": "es",
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Crear perspectivas",
+        "ref": "..\\rh-perspective\\conf_data.js [18,46]"
+    },
+    {
+        "source": "Delete perspectives",
+        "language": "es",
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Eliminar perspectivas",
+        "ref": "..\\rh-perspective\\conf_data.js [20,46]"
+    },
+    {
+        "source": "Edit perspectives",
+        "language": "es",
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Modificar perspectivas",
+        "ref": "..\\rh-perspective\\conf_data.js [19,46]"
+    },
+    {
+        "source": "Get perspectives",
+        "language": "es",
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Obtener perspectivas",
+        "ref": "..\\rh-perspective\\conf_data.js [17,46]"
+    },
+    {
+        "source": "Perspective editor",
+        "language": "es",
+        "context": "role",
+        "isDraft": false,
+        "translation": "Editor de perspectivas",
+        "ref": "..\\rh-perspective\\conf_data.js [8,46]"
+    },
+    {
+        "source": "Perspective manager",
+        "language": "es",
+        "context": "role",
+        "isDraft": false,
+        "translation": "Administrador de perspectivas",
+        "ref": "..\\rh-perspective\\conf_data.js [7,46]"
+    },
+    {
+        "source": "Perspectives",
+        "language": "es",
+        "context": "menu",
+        "isDraft": false,
+        "translation": "Perspectivas",
+        "ref": "..\\rh-perspective\\conf_data.js [17,242]"
+    },
+    {
+        "source": "Spanish",
+        "language": "es",
+        "translation": "Español",
+        "ref": "rh-perspective-es.js [18,20]"
+    },
+    {
+        "source": "Spanish language.",
+        "language": "es",
+        "translation": "Idioma español.",
+        "ref": "rh-perspective-es.js [19,26]"
+    }
+]
