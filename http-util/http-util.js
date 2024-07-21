@@ -93,11 +93,11 @@ export class NoUUIDError extends BaseError {
 
 export class ConflictError extends BaseError {
   static visibleProperties = ['message'];
-  message = loc => loc._('Conflict.');
   statusCode = 409;
 
   constructor(message) {
-    super({ message });
+    super(message);
+    this.message ??= loc => loc._('Conflict.');
   }
 }
 
