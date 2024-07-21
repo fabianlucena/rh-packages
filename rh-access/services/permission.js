@@ -7,6 +7,7 @@ export class PermissionService extends Service.IdUuidEnableNameUniqueTitleOwnerM
     roles: {
       service: 'roleService',
       whereColumn: 'name',
+      through: 'rolePermission',
     },
   };
   defaultTranslationContext = 'user';
