@@ -9,7 +9,8 @@ export class PerspectiveService extends Service.IdUuidEnableNameUniqueTitleDescr
     },
   };
   defaultTranslationContext = 'perspective';
-  viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'description'];
+  viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'description', 'isTranslatable', 'translationContext'];
+  translatableColumns = [ 'title', 'description' ];
   
   async getInterface(options) {
     const gridActions = [],

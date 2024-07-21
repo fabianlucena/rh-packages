@@ -523,7 +523,7 @@ export class ServiceBase {
             ...referenceData,
             [reference.externIdPropertyName]: localId,
           };
-          const row = await reference.service.findOrCreate(thisData, queryOptions);
+          const [ row ] = await reference.service.findOrCreate(thisData, queryOptions);
           referenceIds.push(row.id);
         }
 

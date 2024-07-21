@@ -178,7 +178,7 @@ export class TranslationService extends Service.IdUuidEnable {
     }
     domainsId.push(undefined);
         
-    let languageData = await LanguageService.singleton().createIfNotExists({ name: language.trim(), title: language.trim() });
+    let [ languageData ] = await LanguageService.singleton().findOrCreate({ name: language.trim(), title: language.trim() });
     while (languageData.id) {
       const data = {
         sourceId,

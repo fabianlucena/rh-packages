@@ -340,6 +340,7 @@ export class Controller {
 
     const options = await getOptions(req, res, next);
     options.context ??= makeContext(req, res);
+    options.loc = options.context.loc;
 
     let result = await this.service.getListAndCount(options);
     if (result) {
