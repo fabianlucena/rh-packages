@@ -2,6 +2,9 @@ import { conf } from '../conf.js';
 
 export default (sequelize, DataTypes) => {
   class Perspective extends sequelize.Sequelize.Model {
+    static associate(models) {
+      this.belongsTo(models.Permission, { as: 'permission',  foreignKey: 'permissionId' });
+    }
   }
   Perspective.init({
     id: {
@@ -40,6 +43,10 @@ export default (sequelize, DataTypes) => {
     },
     description: {
       type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    icon: {
+      type: DataTypes.STRING,
       allowNull: true,
     },
   }, {

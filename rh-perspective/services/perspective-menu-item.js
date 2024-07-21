@@ -57,7 +57,7 @@ export class PerspectiveMenuItemService extends Service.IdUuidEnableTranslatable
         isField:     true,
       },
       {
-        name:        'optionsReplacements',
+        name:        'optionsReplacementsJson',
         type:        'textArea',
         label:       loc => loc._c('perspective', 'Options replacements'),
         placeholder: loc => loc._c('perspective', 'Type the options replacements here in JSON format'),

@@ -26,7 +26,7 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: true,
     },
-    optionsReplacements: {
+    optionsReplacementsJson: {
       type: DataTypes.STRING,
       allowNull: true,
     },

@@ -1,6 +1,13 @@
 import { Service } from 'rf-service';
 
 export class PerspectiveService extends Service.IdUuidEnableNameUniqueTitleDescriptionTranslatable {
+  references = {
+    permission: true,
+    menuItems: {
+      service: 'perspectiveMenuItem',
+      reverse: true,
+    },
+  };
   defaultTranslationContext = 'perspective';
   viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'description'];
   
@@ -55,6 +62,21 @@ export class PerspectiveService extends Service.IdUuidEnableNameUniqueTitleDescr
         disabled: {
           create:      false,
           defaultValue: true,
+        },
+      },
+      {
+        name:            'permission.uuid',
+        gridName:        'permission.name',
+        type:            'select',
+        gridType:        'text',
+        label:           loc => loc._c('perspective', 'Permission'),
+        placeholder:     loc => loc._c('perspective', 'Select the permission'),
+        isField:         true,
+        isColumn:        true,
+        loadOptionsFrom: {
+          service: 'perspective/permission',
+          value:   'uuid',
+          text:    'name',
         },
       },
       {
