@@ -1007,7 +1007,7 @@ export class ServiceBase {
     if (result.length) {
       result = result[0];
     }
-    await this.ExternData(data, options);
+    await this.updateExternData(data, options);
     await this.updateThroughData(data, options);
     await this.emit('updated', options?.emitEvent, result, data, options, this);
 
