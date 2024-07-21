@@ -14,13 +14,13 @@ export const ServiceMixinUuid = Service => class ServiceUuid extends Service {
   async checkUuidForConflict(uuid) {
     const rows = await this.getForUuid(uuid, { skipNoRowsError: true });
     if (rows?.length) {
-      throw new ConflictError(loc => loc._('Exists another row with that UUID.'));
+      throw new ConflictError(loc => loc._c('service', 'Exists another row with that UUID.'));
     }
   }
 
   async validateForUpdate(data, where) {
     if (data.uuid) {
-      throw new CheckError(loc => loc._('UUID parameter is forbidden for update.'));
+      throw new CheckError(loc => loc._c('service', 'UUID parameter is forbidden for update.'));
     }
 
     return super.validateForUpdate(data, where);

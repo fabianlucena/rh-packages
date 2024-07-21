@@ -13,7 +13,7 @@ export class ServiceBase {
   hiddenColumns = [];
 
   /**
-   * Here are spicifed the references for properties. The references have the form proeprtyName: options.
+   * Here are specified the references for properties. The references have the form propertyName: options.
    * {
    *  user: {
    *      service: conf.global.services.User,
@@ -25,7 +25,7 @@ export class ServiceBase {
    * The options for each reference are:
    *  - idPropertyName: the name for ID property to use in reference and in the data set. If this options is not defined a "reference name + 'Id'" will be used".
    *  - service: the service to get the value of the reference.
-   *  - uuidPropertyName: the name for UUID property to get the refence from the service. If this options is not defined a "reference name + 'Uuid'" will be used".
+   *  - uuidPropertyName: the name for UUID property to get the reference from the service. If this options is not defined a "reference name + 'Uuid'" will be used".
    *  - name: the name form the property and for search in the service.
    *  - Name: the name for the nested object in the data set. In this object the search of: ID, UUID, and name will be performed.
    *  - otherName: another name for te property name to search in the service.
@@ -38,8 +38,8 @@ export class ServiceBase {
    * 
    * For each reference a check for idPropertyName is performed. If the idPropertyName is not defined, the system will try to get the ID from the service using the uuidPropertyName.
    * If the uuidPropertyName is not defined the the system will try to use the "name" in the service. 
-   * But if the "name" is not defined the "Name" as nested object, looking for the Nameid, Name.uuid, or Name.name.  
-   * If all of the previus alternatives fail, and the otherName is defined an attempt to looking for name = otherName in the service will be running.
+   * But if the "name" is not defined the "Name" as nested object, looking for the Name.id, Name.uuid, or Name.name.  
+   * If all of the previous alternatives fail, and the otherName is defined an attempt to looking for name = otherName in the service will be running.
    * If the reference ID is still missing and createIfNotExists is true, the system will try to create the referenced object using:
    *  - the data[Name] object as the first try,
    *  - the {name: data.name} object as the second try, and
@@ -51,7 +51,7 @@ export class ServiceBase {
 
   /**
    * Holds a list of error for this instance.
-   * Wrning, if this is a singleton, this list contains error for all of the threads.
+   * Warning, if this is a singleton, this list contains error for all of the threads.
    */
   lastErrors = [];
 
@@ -275,6 +275,11 @@ export class ServiceBase {
     data = { ...data };
     for (const name in this.references) {
       const reference = this.references[name];
+
+      if (reference.through) {
+        continue;
+      }
+
       if (reference.function) {
         await reference.function(data);
         continue;
@@ -293,7 +298,7 @@ export class ServiceBase {
   /**
    * Complete the reference ID for a single entity.
    * @param {object} data - data object to complete the references.
-   * @param {object} options - confiiguration for the search and complete the entity ID.
+   * @param {object} options - configuration for the search and complete the entity ID.
    * @returns {Promise[object]} - the arranged data.
    * 
    * This method is used by the @see completeReferences.
@@ -321,7 +326,7 @@ export class ServiceBase {
         data[idPropertyName] = await service[getIdForName](data[uuidPropertyName]);
       } else if (data[name]?.name && service[getIdForName]) {
         data[idPropertyName] = await service[getIdForName](data[name].name);
-      } else if (typeof data[name] === 'string' && data[name] && service[getIdForName]) {
+      } else if (data[name] && typeof data[name] === 'string' && service[getIdForName]) {
         data[idPropertyName] = await service[getIdForName](data[name], { skipNoRowsError: true });
       } else if (data[name] && typeof data[name] === 'object' && !Array.isArray(data[name])) {
         const childData = data[name];
@@ -378,6 +383,21 @@ export class ServiceBase {
       }
     }
 
+    if (!data[idPropertyName]
+      && (data[uuidPropertyName]
+        || data[Name]
+        || data[name]
+      )
+    ) {
+      throw new NoRowsError(loc => loc._c(
+        'service',
+        'Cannot find the ID for reference "%s", in service "%s" for value: "%s".',
+        name,
+        this.name,
+        data[uuidPropertyName] ?? JSON.stringify(data[name]) ?? JSON.stringify(data[Name]),
+      ));
+    }
+
     delete data[uuidPropertyName];
     delete data[Name];
     delete data[name];
@@ -386,7 +406,7 @@ export class ServiceBase {
   }
 
   /**
-   * Performs the necesary validations.
+   * Performs the necessary validations.
    * @param {object} data - data to update in entity.
    * @param {string} operation - any of values: creation, update or delete.
    * @returns {Promise[data]} - the data.
@@ -397,7 +417,7 @@ export class ServiceBase {
   }
 
   /**
-   * Performs the necesary validations before creation.
+   * Performs the necessary validations before creation.
    * @param {object} data - data to update in entity.
    * @returns {Promise[data]} - the data.
    */
@@ -408,7 +428,7 @@ export class ServiceBase {
   /**
    * Creates a new row into DB.
    * @param {object} data - data for the new row.
-   * @param {object} options - options to pass to creator, for use transacion.
+   * @param {object} options - options to pass to creator, for use transaction.
    * @returns {Promise[row]}
    */
   async create(data, options) {
@@ -556,12 +576,12 @@ export class ServiceBase {
   }
 
   /**
-   * Gets the options to use in getList methos.
+   * Gets the options to use in getList methods.
    * @param {object} options - options for the getList method.
    * @returns {Promise[object]}
    * 
    * Common properties:
-   * - view: show visible peoperties.
+   * - view: show visible properties.
    */
   async getListOptions(options) {
     if (options?.arranged) {
@@ -680,13 +700,13 @@ export class ServiceBase {
         } else if (typeof orderBy === 'object') {
           const keys = Object.keys(orderBy);
           if (keys.length > 1) {
-            throw new QueryError(loc => loc._c('service', 'Unknown order by option format for: "%s". It must be string or two items array or a single property object.', orderBy));
+            throw new QueryError(loc => loc._c('service', 'Unknown order by option format for: "%s". It must be string, two items array, or a single property object.', orderBy));
           }
           orderByParts = [keys[1], orderBy[keys[1]]];
         }
 
         if (orderByParts.length > 2) {
-          throw new QueryError(loc => loc._c('service', 'Unknown order by option format for: "%s". It must be string or two items array or a single property object.', orderBy));
+          throw new QueryError(loc => loc._c('service', 'Unknown order by option format for: "%s". It must be string, two items array, or a single property object.', orderBy));
         }
         let column = orderByParts[0];
         const sort = orderByParts[1] ?? 'ASC';
@@ -872,7 +892,7 @@ export class ServiceBase {
   }
 
   /**
-   * Performs the necesary validations before updating.
+   * Performs the necessary validations before updating.
    * @param {object} data - data to update in entity.
    * @returns {Promise[data]} - the data.
    */

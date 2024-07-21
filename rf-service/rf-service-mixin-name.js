@@ -11,7 +11,7 @@ export const ServiceMixinName = Service => class extends Service {
   }
 
   async validateForCreation(data) {
-    checkParameterStringNotNullOrEmpty(trim(data?.name), loc => loc._('Name'));
+    checkParameterStringNotNullOrEmpty(trim(data?.name), loc => loc._c('service', 'Name'));
     await this.checkNameForConflict(data.name, data);
     return super.validateForCreation(data);
   }
@@ -19,13 +19,13 @@ export const ServiceMixinName = Service => class extends Service {
   async checkNameForConflict(name) {
     const rows = await this.getFor({ name }, { limit: 1 });
     if (rows?.length) {
-      throw new ConflictError(loc => loc._('Exists another row with that name.'));
+      throw new ConflictError(loc => loc._c('service', 'Exists another row with that name.'));
     }
   }
 
   async validateForUpdate(data, where) {
     if (data.name) {
-      throw new CheckError(loc => loc._('Name parameter is forbidden for update.'));
+      throw new CheckError(loc => loc._c('service', 'Name parameter is forbidden for update.'));
     }
 
     return super.validateForUpdate(data, where);
@@ -46,7 +46,7 @@ export const ServiceMixinName = Service => class extends Service {
    */
   async getForName(name, options) {
     if (name === undefined) {
-      throw new InvalidValueError(loc => loc._('Invalid value for name to get row in %s.'));
+      throw new InvalidValueError(loc => loc._c('service', 'Invalid value for name to get row in %s.'));
     }
 
     if (Array.isArray(name)) {

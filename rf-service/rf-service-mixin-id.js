@@ -16,13 +16,13 @@ export const ServiceMixinId = Service => class ServiceId extends Service {
 
   async checkIdForCreation(id) {
     if (id) {
-      throw new CheckError(loc => loc._('ID parameter is forbidden for creation.'));
+      throw new CheckError(loc => loc._c('service', 'ID parameter is forbidden for creation.'));
     }
   }
 
   async validateForUpdate(data, where) {
     if (data?.id) {
-      throw new CheckError(loc => loc._('ID parameter is forbidden for update.'));
+      throw new CheckError(loc => loc._c('service', 'ID parameter is forbidden for update.'));
     }
 
     return super.validateForUpdate(data, where);

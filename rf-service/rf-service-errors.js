@@ -7,17 +7,20 @@ export class ReferenceDefinitionError extends BaseError {
 }
 
 export class NoRowsError extends BaseError {
-  message = loc => loc._('There are no rows.');
+  constructor(options) {
+    super(options);
+    this.message ??= loc => loc._c('service', 'There are no rows.');
+  }
 }
 
 export class NoRowError extends BaseError {
-  message = loc => loc._('There are no rows.');
+  message = loc => loc._c('service', 'There are no rows.');
 }
 
 export class ManyRowsError extends BaseError {
   static noObjectValues = ['length'];
   static visibleProperties = ['message', 'title', 'length'];
-  message = loc => loc._('There are many rows.');
+  message = loc => loc._c('service', 'There are many rows.');
 
   constructor(message, length) {
     super({
@@ -28,7 +31,7 @@ export class ManyRowsError extends BaseError {
 }
 
 export class DisabledRowError extends BaseError {
-  message = loc => loc._('Object is disabled.');
+  message = loc => loc._c('service', 'Object is disabled.');
 
   constructor(message) {
     super({ message });
