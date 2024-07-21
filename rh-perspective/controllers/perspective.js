@@ -30,4 +30,9 @@ export class PerspectiveController extends Controller {
 
     return result;
   }
+
+  'postPermission /switch/:uuid' = 'perspective.switch';
+  async 'post /switch/:uuid'() {
+    throw new Error('TBD');
+  }
 }

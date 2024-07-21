@@ -4,7 +4,7 @@
         "language": "es",
         "context": "perspective",
         "translation": "Marque para habilitar y desmarque para deshabilitar",
-        "ref": "..\\rh-perspective\\services\\perspective.js [27,33]\n..\\rh-perspective\\services\\perspective-menu-item.js [56,33]"
+        "ref": "..\\rh-perspective\\services\\perspective.js [28,33]\n..\\rh-perspective\\services\\perspective-menu-item.js [56,33]"
     },
     {
         "source": "Create perspectives",
@@ -25,7 +25,7 @@
         "language": "es",
         "context": "perspective",
         "translation": "Descripción",
-        "ref": "..\\rh-perspective\\services\\perspective.js [85,33]"
+        "ref": "..\\rh-perspective\\services\\perspective.js [86,33]"
     },
     {
         "source": "Edit perspectives",
@@ -39,7 +39,7 @@
         "language": "es",
         "context": "perspective",
         "translation": "Habilitado",
-        "ref": "..\\rh-perspective\\services\\perspective.js [26,33]\n..\\rh-perspective\\services\\perspective-menu-item.js [55,33]"
+        "ref": "..\\rh-perspective\\services\\perspective.js [27,33]\n..\\rh-perspective\\services\\perspective-menu-item.js [55,33]"
     },
     {
         "source": "Get perspectives",
@@ -60,7 +60,7 @@
         "language": "es",
         "context": "perspective",
         "translation": "Nombre",
-        "ref": "..\\rh-perspective\\services\\perspective.js [57,33]"
+        "ref": "..\\rh-perspective\\services\\perspective.js [58,33]"
     },
     {
         "source": "Options replacements",
@@ -74,14 +74,14 @@
         "language": "es",
         "context": "perspective",
         "translation": "Permiso",
-        "ref": "..\\rh-perspective\\services\\perspective.js [72,37]"
+        "ref": "..\\rh-perspective\\services\\perspective.js [73,37]"
     },
     {
         "source": "Perspective",
         "language": "es",
         "context": "perspective",
         "translation": "Perspectiva",
-        "ref": "..\\rh-perspective\\conf_data.js [25,128]\n..\\rh-perspective\\services\\perspective.js [93,29]\n..\\rh-perspective\\services\\perspective-menu-item.js [26,37]"
+        "ref": "..\\rh-perspective\\conf_data.js [25,129]\n..\\rh-perspective\\services\\perspective.js [94,29]\n..\\rh-perspective\\services\\perspective-menu-item.js [26,37]"
     },
     {
         "source": "Perspective manager",
@@ -98,10 +98,10 @@
         "ref": "..\\rh-perspective\\services\\perspective-menu-item.js [71,29]"
     },
     {
-        "source": "Perspective selector",
+        "source": "Perspective switcher",
         "language": "es",
         "context": "permission",
-        "translation": "Selector de perspectiva",
+        "translation": "Cambiador de perspectiva",
         "ref": "..\\rh-perspective\\conf_data.js [8,48]"
     },
     {
@@ -109,22 +109,14 @@
         "language": "es",
         "context": "perspective",
         "translation": "Perspectivas",
-        "ref": "..\\rh-perspective\\conf_data.js [26,128]\n..\\rh-perspective\\conf_data.js [28,128]\n..\\rh-perspective\\services\\perspective.js [94,29]"
+        "ref": "..\\rh-perspective\\conf_data.js [26,129]\n..\\rh-perspective\\services\\perspective.js [95,29]"
     },
     {
         "source": "Perspectives menu items",
         "language": "es",
         "context": "perspective",
         "translation": "Elementos de menú de perspectivas",
-        "ref": "..\\rh-perspective\\conf_data.js [27,128]\n..\\rh-perspective\\services\\perspective-menu-item.js [72,29]"
-    },
-    {
-        "source": "Select perspectives",
-        "language": "es",
-        "context": "permission",
-        "isDraft": false,
-        "translation": "Seleccionar perspectivas",
-        "ref": "..\\rh-perspective\\conf_data.js [21,46]"
+        "ref": "..\\rh-perspective\\conf_data.js [27,129]\n..\\rh-perspective\\services\\perspective-menu-item.js [72,29]"
     },
     {
         "source": "Select the menu item",
@@ -138,7 +130,7 @@
         "language": "es",
         "context": "perspective",
         "translation": "Seleccione el permiso",
-        "ref": "..\\rh-perspective\\services\\perspective.js [73,37]"
+        "ref": "..\\rh-perspective\\services\\perspective.js [74,37]"
     },
     {
         "source": "Select the perspective",
@@ -160,25 +152,39 @@
         "ref": "rh-perspective-es.js [19,26]"
     },
     {
+        "source": "Switch perspective",
+        "language": "es",
+        "context": "permission",
+        "translation": "Cambiar perspectiva",
+        "ref": "..\\rh-perspective\\conf_data.js [21,46]"
+    },
+    {
+        "source": "Switch perspective",
+        "language": "es",
+        "context": "perspective",
+        "translation": "Cambiar perspectiva",
+        "ref": "..\\rh-perspective\\conf_data.js [28,129]"
+    },
+    {
         "source": "Title",
         "language": "es",
         "context": "perspective",
         "translation": "Título",
-        "ref": "..\\rh-perspective\\services\\perspective.js [34,33]"
+        "ref": "..\\rh-perspective\\services\\perspective.js [35,33]"
     },
     {
         "source": "Type the description here",
         "language": "es",
         "context": "perspective",
         "translation": "Escriba la descripción aquí",
-        "ref": "..\\rh-perspective\\services\\perspective.js [86,33]"
+        "ref": "..\\rh-perspective\\services\\perspective.js [87,33]"
     },
     {
         "source": "Type the name here",
         "language": "es",
         "context": "perspective",
         "translation": "Escriba el nombre aquí",
-        "ref": "..\\rh-perspective\\services\\perspective.js [58,33]"
+        "ref": "..\\rh-perspective\\services\\perspective.js [59,33]"
     },
     {
         "source": "Type the options replacements here in JSON format",
@@ -192,6 +198,6 @@
         "language": "es",
         "context": "perspective",
         "translation": "Escriba el título aquí",
-        "ref": "..\\rh-perspective\\services\\perspective.js [35,33]"
+        "ref": "..\\rh-perspective\\services\\perspective.js [36,33]"
     }
 ]
