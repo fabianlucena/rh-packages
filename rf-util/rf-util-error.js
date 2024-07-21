@@ -96,14 +96,14 @@ export async function getErrorMessage(error, loc) {
   }
 
   if (!message) {
-    return message;
+    return error.toString();
   }
 
   if (typeof message === 'function') {
     message = await message(loc);
   }
 
-  return error.message;
+  return message;
 }
 
 export async function getErrorData(error, loc, options) {
