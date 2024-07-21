@@ -6,6 +6,12 @@ export class ReferenceDefinitionError extends BaseError {
   }
 }
 
+export class ReferenceError extends BaseError {
+  constructor(message) {
+    super({ message });
+  }
+}
+
 export class NoRowsError extends BaseError {
   constructor(options) {
     super(options);

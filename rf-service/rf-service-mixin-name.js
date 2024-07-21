@@ -38,7 +38,7 @@ export const ServiceMixinName = Service => class extends Service {
    * @param {Options} options - Options for the @ref getList function.
    * @returns {Promise[row]}
    * 
-   * If the name parammeter is a string return a single row or throw an exception.
+   * If the name parameter is a string return a single row or throw an exception.
    * But if the name parameter is a array can return a row list.
    * 
    * This function uses @ref getSingle function so the options for getSingle
@@ -74,13 +74,15 @@ export const ServiceMixinName = Service => class extends Service {
    * @returns {Promise[row]}
    */
   async createIfNotExists(data, options) {
-    data = await this.completeReferences(data);
-    const row = await this.getForName(data.name, { skipNoRowsError: true, ...options });
-    if (row) {
-      return row;
-    }
-            
-    return this.create(data, { transacion: options?.transacion });
+    options = {
+      ...options,
+      where: {
+        ...options?.where,
+        name: data.name,
+      },
+    };
+    
+    return super.createIfNotExists(data, options);
   }
 
   async update(data, options) {

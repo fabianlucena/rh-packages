@@ -37,7 +37,7 @@ export class AssignableRolePerRoleService extends Service.OwnerModule {
       return rows;
     }
         
-    data = await this.completeReferences(data);
+    data = await this.completeReferences(data, options);
 
     const row = await this.getForAssignableRoleIdAndRoleId(
       data.assignableRoleId,

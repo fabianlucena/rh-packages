@@ -49,7 +49,7 @@ export class TranslationService extends Service.IdUuidEnable {
   /**
    * Gets the options for use in the getList and getListAndCount methods.
    * @param {Options} options - options for the @see sequelize.findAll method.
-   *  - view: show visible peoperties.
+   *  - view: show visible properties.
    * @returns {options}
    */
   async getListOptions(options) {
@@ -173,7 +173,7 @@ export class TranslationService extends Service.IdUuidEnable {
         domainsId.push(null);
       }
     }
-    if (!domainsId.length || !domainsId.some(domian => domian === null)) {
+    if (!domainsId.length || !domainsId.some(domain => domain === null)) {
       domainsId.push(null);
     }
     domainsId.push(undefined);
@@ -237,12 +237,12 @@ export class TranslationService extends Service.IdUuidEnable {
   }
     
   /**
-   * Creates a new tranlaion row into DB if not exists.
+   * Creates a new translation row into DB if not exists.
    * @param {data} data - data for the new Language @see create.
    * @returns {Promise{Language}}
    */
   async createIfNotExists(data, options) {
-    data = await this.completeReferences(data);
+    data = await this.completeReferences(data, options);
 
     const rows = await this.getList({ where: { languageId: data.languageId, sourceId: data.sourceId, domainId: data.domainId, contextId: data.contextId, ...options?.where }, limit: 1, ...options });
     if (rows.length) {

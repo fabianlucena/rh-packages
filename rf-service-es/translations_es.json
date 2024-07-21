@@ -1,47 +1,5 @@
 [
     {
-        "source": "Can\\'t include \"%s\" because is not reference in service \"%s\".",
-        "language": "es",
-        "context": "service",
-        "translation": "No se puede incluir \"%s\" porque no es una referencia en el servicio \"%s\".",
-        "ref": "..\\rf-service\\rf-service-base.js [666,57]"
-    },
-    {
-        "source": "Cannot find the ID for reference \"%s\", in service \"%s\" for value: \"%s\".",
-        "language": "es",
-        "context": "service",
-        "translation": "No se puede encontrar el ID de la referencia \"%s\", en el servicio \"%s\" para el valor: \"%s\".",
-        "ref": "..\\rf-service\\rf-service-base.js [397,40]"
-    },
-    {
-        "source": "Cannot update referenced data \"%s\", because cannot get ID for local rows (where clause is lost) in service \"%s\".",
-        "language": "es",
-        "context": "service",
-        "translation": "No se puede actualizar el dato de referencia \"%s\", porque no se puede obtener el ID para las filas locales (no hay cláusula where) en el servicio \"%s\".",
-        "ref": "..\\rf-service\\rf-service-base.js [488,57]"
-    },
-    {
-        "source": "Error in reference definition for reference name \"%s\", in service \"%s\".",
-        "language": "es",
-        "context": "service",
-        "translation": "Error en la definición de la referencia para la referencia nombre \"%s\", en el servicio \"%s\".",
-        "ref": "..\\rf-service\\rf-service-base.js [135,55]"
-    },
-    {
-        "source": "Error service name \"%s\", not found for reference \"%s\" in service \"%s\".",
-        "language": "es",
-        "context": "service",
-        "translation": "Error en el nombre de servicio \"%s\", no se encuentra la referencia \"%s\" en el servicio \"%s\".",
-        "ref": "..\\rf-service\\rf-service-base.js [167,61]"
-    },
-    {
-        "source": "Error service name \"%s\", not found for reference through \"%s\" in service \"%s\".",
-        "language": "es",
-        "context": "service",
-        "translation": "Error en el nombre de servicio \"%s\", no se encuentra la referencia \"%s\" en el servicio \"%s\".",
-        "ref": "..\\rf-service\\rf-service-base.js [223,63]"
-    },
-    {
         "source": "Exists another row with that UUID.",
         "language": "es",
         "context": "service",
@@ -130,7 +88,7 @@
         "language": "es",
         "context": "service",
         "translation": "El objeto está deshabilitado.",
-        "ref": "..\\rf-service\\rf-service-errors.js [34,24]"
+        "ref": "..\\rf-service\\rf-service-errors.js [40,24]"
     },
     {
         "source": "Spanish",
@@ -149,14 +107,14 @@
         "language": "es",
         "context": "service",
         "translation": "Hay muchas filas.",
-        "ref": "..\\rf-service\\rf-service-errors.js [23,24]"
+        "ref": "..\\rf-service\\rf-service-errors.js [29,24]"
     },
     {
         "source": "There are no rows.",
         "language": "es",
         "context": "service",
         "translation": "No hay filas.",
-        "ref": "..\\rf-service\\rf-service-errors.js [12,33]\n..\\rf-service\\rf-service-errors.js [17,24]"
+        "ref": "..\\rf-service\\rf-service-errors.js [18,33]\n..\\rf-service\\rf-service-errors.js [23,24]"
     },
     {
         "source": "Title",
@@ -185,12 +143,5 @@
         "context": "service",
         "translation": "El parámetro UUID está prohibido para la modificación.",
         "ref": "..\\rf-service\\rf-service-mixin-uuid.js [23,39]"
-    },
-    {
-        "source": "Unknown order by option format for: \"%s\". It must be string, two items array, or a single property object.",
-        "language": "es",
-        "context": "service",
-        "translation": "Formato desconocido en la opción order by para: \"%s\". Debe ser una cadena (string), dos elementos de una lista (array) o un objeto con una propiedad única.",
-        "ref": "..\\rf-service\\rf-service-base.js [703,45]\n..\\rf-service\\rf-service-base.js [709,43]"
     }
 ]

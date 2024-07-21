@@ -19,8 +19,8 @@ export class UserAccessService extends UserSiteRoleService {
     }
   }
 
-  async completeReferences(data) {
-    data = await super.completeReferences(data);
+  async completeReferences(data, options) {
+    data = await super.completeReferences(data, options);
 
     if (!data.rolesId?.length) {
       if (data.roles?.length) {
@@ -52,8 +52,8 @@ export class UserAccessService extends UserSiteRoleService {
     return super.validateForCreation(data);
   }
 
-  async create(data) {
-    data = await this.completeReferences(data);
+  async create(data, options) {
+    data = await this.completeReferences(data, options);
     data = await this.validateForCreation(data);
 
     const transaction = await this.createTransaction();
@@ -204,7 +204,7 @@ export class UserAccessService extends UserSiteRoleService {
   }
 
   async update(data, options) {
-    data = await this.completeReferences(data);
+    data = await this.completeReferences(data, options);
     if (options?.where) {
       options = { ...options }; 
       options.where = await this.completeReferences(options.where);
