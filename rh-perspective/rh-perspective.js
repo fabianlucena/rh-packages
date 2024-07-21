@@ -7,5 +7,5 @@ export const conf = localConf;
 conf.updateData = async function(global) {
   const perspectiveService =  dependency.get('perspectiveService');
   
-  await runSequentially(global?.data?.perspectives, async data => await perspectiveService.createIfNotExists(data));
+  await runSequentially(global?.data?.perspectives, async data => await perspectiveService.createIfNotExists(data, { skipDeleteExtern: true }));
 };

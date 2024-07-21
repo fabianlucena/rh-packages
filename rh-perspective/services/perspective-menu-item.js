@@ -1,10 +1,11 @@
 import { Service } from 'rf-service';
 
-export class PerspectiveMenuItemService extends Service.IdUuidEnableTranslatable {
+export class PerspectiveMenuItemService extends Service.IdUuidEnableOwnerModuleTranslatable {
   references = {
     perspective: true,
-    menuItem:    true,
+    menuItem:    { whereColumn: 'name' },
   };
+  uniqueColumns = [ 'perspectiveId', 'menuItemId' ];
   defaultTranslationContext = 'perspective';
   viewAttributes = ['id', 'uuid', 'isEnabled'];
   

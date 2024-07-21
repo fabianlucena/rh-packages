@@ -5,7 +5,7 @@ export class PerspectiveService extends Service.IdUuidEnableNameUniqueTitleDescr
     permission: true,
     menuItems: {
       service: 'perspectiveMenuItem',
-      reverse: true,
+      extern: true,
     },
   };
   defaultTranslationContext = 'perspective';
