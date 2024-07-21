@@ -39,12 +39,12 @@ export class ProjectSelectController extends Controller {
     }
 
     const menuItem = {
-      name: 'project-select',
-      parent: 'breadcrumb',
-      action: 'object',
+      name:    'project-select',
+      parent:  'breadcrumb',
+      action:  'object',
       service: 'project-select',
-      label: await loc._('Project: %s', project.title),
-      icon: 'project',
+      label:   await loc._c('projectSelect', 'Project: %s', project.title),
+      icon:    'project',
     };
     const data = {
       count: 1,
@@ -133,17 +133,17 @@ export class ProjectSelectController extends Controller {
       {
         name: 'title',
         type: 'text',
-        label: await loc._('Title'),
+        label: await loc._c('projectSelect', 'Title'),
       },
       {
         name: 'name',
         type: 'text',
-        label: await loc._('Name'),
+        label: await loc._c('projectSelect', 'Name'),
       },
       {
         name: 'description',
         type: 'text',
-        label: await loc._('Description'),
+        label: await loc._c('projectSelect', 'Description'),
       },
     ];
 
@@ -153,7 +153,7 @@ export class ProjectSelectController extends Controller {
     }
 
     const object = {
-      title: await loc._('Select project'),
+      title: await loc._c('projectSelect', 'Select project'),
       load: {
         service: 'project-select',
         method: 'get',
