@@ -4,21 +4,25 @@ export class BaseError extends Error {
   constructor(options) {
     super();
 
-    let arranged = {};
-    for (const name in options) {
-      const value = options[name];
-      if (name == 'message' || name == 'statusCode' || this.constructor?.noObjectValues?.includes(name)) {
-        if (typeof value === 'object' && !Array.isArray(value)) {
-          arranged = { ...arranged, ...value };
-          continue;
+    if (typeof options === 'string' || typeof options === 'function') {
+      this.message = options;
+    } else {
+      let arranged = {};
+      for (const name in options) {
+        const value = options[name];
+        if (name == 'message' || name == 'statusCode' || this.constructor?.noObjectValues?.includes(name)) {
+          if (typeof value === 'object' && !Array.isArray(value)) {
+            arranged = { ...arranged, ...value };
+            continue;
+          }
         }
+
+        arranged[name] = value;
       }
 
-      arranged[name] = value;
-    }
-
-    for (const k in arranged) {
-      this[k] = arranged[k];
+      for (const k in arranged) {
+        this[k] = arranged[k];
+      }
     }
   }
 }
@@ -96,14 +100,14 @@ export async function getErrorMessage(error, loc) {
   }
 
   if (!message) {
-    return message;
+    return error.toString();
   }
 
   if (typeof message === 'function') {
     message = await message(loc);
   }
 
-  return error.message;
+  return message;
 }
 
 export async function getErrorData(error, loc, options) {
@@ -148,7 +152,8 @@ export async function errorHandler(error, loc, showInConsole) {
   if (showInConsole || showInConsole === undefined) {
     console.error(logTitle + data.message);
     if (error.stack) {
-      console.error(error.stack);
+      const stack = error.stack.split('\n    at ').slice(1).join('\n    at ');
+      console.error(stack);
     }
   }
 

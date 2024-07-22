@@ -52,7 +52,7 @@ export class SessionDataService extends Service.Base {
 
   /**
    * Get data for a session.
-   * @param {string} sessionId - Session ID to retrive the data.
+   * @param {string} sessionId - Session ID to retrieve the data.
    * @returns {Promise[Site]}
    */
   async getDataForSessionId(sessionId, options) {
@@ -67,7 +67,7 @@ export class SessionDataService extends Service.Base {
     return this.updateFor(data, { sessionId });
   }
 
-  async updateForSessionIdOrcreate(sessionId, data) {
+  async updateForSessionIdOrCreate(sessionId, data) {
     const rows = await this.getList({ where: { ...data?.where, sessionId }, limit: 1 });
     if (rows?.length) {
       return this.updateForSessionId({ data }, sessionId);
@@ -78,7 +78,7 @@ export class SessionDataService extends Service.Base {
 
   /**
    * Add data to a session.
-   * @param {string} sessionId - Session ID to wich add the data.
+   * @param {string} sessionId - Session ID to which add the data.
    * @param {object} sessionData - Data to add or replace.
    * @returns {Promise[Site]}
    */
@@ -92,12 +92,12 @@ export class SessionDataService extends Service.Base {
   }
     
   /**
-    * Set the data to a session, warinign previus data will be erased..
-    * @param {string} sessionId - Session ID to wich add the data.
+    * Set the data to a session, warning previous data will be erased..
+    * @param {string} sessionId - Session ID to which add the data.
     * @param {object} sessionData - Data to add or replace.
     * @returns {Promise[Site]}
     */
   async setData(sessionId, sessionData) {
-    return this.updateForSessionIdOrcreate(sessionId, sessionData);
+    return this.updateForSessionIdOrCreate(sessionId, sessionData);
   }
 }

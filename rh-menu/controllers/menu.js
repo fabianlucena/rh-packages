@@ -1,6 +1,7 @@
 import { conf } from '../conf.js';
 import { Controller } from 'rh-controller';
 import { runSequentially } from 'rf-util';
+import { makeContext } from 'http-util';
 import { defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
 
@@ -60,9 +61,10 @@ export class MenuController extends Controller {
       return mi;
     });
 
-    const data = { menu };
-    await conf.global.eventBus?.$emit('menuGet', data, { loc, sessionId: req.session?.id, params: req.query });
-    await conf.global.eventBus?.$emit('menuFilter', data, { loc, sessionId: req.session?.id, params: req.query });
+    const data = { menu },
+      eventOptions = { context: makeContext(req, res), loc, sessionId: req.session?.id, params: req.query };
+    await conf.global.eventBus?.$emit('menuGet',    data, eventOptions);
+    await conf.global.eventBus?.$emit('menuFilter', data, eventOptions);
 
     res.status(200).send(data);
   }

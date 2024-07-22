@@ -29,7 +29,7 @@ export class WfTransitionService extends Service.IdUuidEnableNameUniqueTitleOwne
   async checkNameForConflict(title) {
     const rows = await this.getFor({ title }, { limit: 1 });
     if (rows?.length) {
-      throw new ConflictError(loc => loc._('Exists another row with that title.'));
+      throw new ConflictError(loc => loc._c('workflow', 'Exists another row with that title.'));
     }
   }
 }

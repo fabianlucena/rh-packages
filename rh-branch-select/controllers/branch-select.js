@@ -6,15 +6,14 @@ const branchService = conf.global.services.Branch.singleton();
 
 export class BranchSelectController {
   static async post(req, res) {
-    const loc = req.loc;
-
     const branchUuid = req.query?.branchUuid ?? req.params?.branchUuid ?? req.body?.branchUuid;
     if (!branchUuid) {
       throw new MissingParameterError(loc => loc._c('branchSelect', 'Branch UUID'));
     }
 
-    const options = { skipNoRowsError: true };
-    let branch = await branchService.getForUuid(branchUuid, options);
+    const loc = req.loc;
+    const options = { loc, skipNoRowsError: true };
+    let branch = await branchService.getForUuidOrNull(branchUuid, options);
     if (!branch) {
       throw new HttpError(loc => loc._c('branchSelect', 'The selected branch does not exist or you do not have permission to access it.'), 400);
     }
@@ -41,12 +40,7 @@ export class BranchSelectController {
       }
     }
 
-    if (branch.isTranslatable) {
-      branch.title = await loc._(branch.title);
-      branch.description = await loc._(branch.description);
-    }
-
-    delete branch.isTranslatable;
+    branch = await branchService.sanitize(branch);
 
     const menuItem = {
       name: 'branch-select',

@@ -35,7 +35,7 @@
         "ref": "..\\rh-glossary\\services\\glossary_definition.js [28,33]\n..\\rh-glossary\\services\\glossary.js [38,33]\n..\\rh-glossary\\controllers\\glossary-type.js [33,33]\n..\\rh-glossary\\controllers\\glossary-category.js [33,33]"
     },
     {
-        "source": "Create glossarys",
+        "source": "Create glossaries",
         "language": "es",
         "context": "permission",
         "translation": "Crear glosarios",
@@ -59,12 +59,11 @@
         "source": "Definitions",
         "language": "es",
         "context": "menu",
-        "isDraft": false,
         "translation": "Definiciones",
         "ref": "..\\rh-glossary\\conf_data.js [27,122]"
     },
     {
-        "source": "Delete glossarys",
+        "source": "Delete glossaries",
         "language": "es",
         "context": "permission",
         "translation": "Eliminar glosarios",
@@ -78,7 +77,7 @@
         "ref": "..\\rh-glossary\\services\\glossary.js [104,31]\n..\\rh-glossary\\controllers\\glossary-type.js [93,33]\n..\\rh-glossary\\controllers\\glossary-category.js [93,33]"
     },
     {
-        "source": "Edit glossarys",
+        "source": "Edit glossaries",
         "language": "es",
         "context": "permission",
         "translation": "Modificar glosarios",
@@ -92,7 +91,7 @@
         "ref": "..\\rh-glossary\\services\\glossary_definition.js [27,33]\n..\\rh-glossary\\services\\glossary.js [37,33]\n..\\rh-glossary\\controllers\\glossary-type.js [32,33]\n..\\rh-glossary\\controllers\\glossary-category.js [32,33]"
     },
     {
-        "source": "Get glossarys",
+        "source": "Get glossaries",
         "language": "es",
         "context": "permission",
         "translation": "Obtener glosarios",

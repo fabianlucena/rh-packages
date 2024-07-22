@@ -15,7 +15,7 @@ export const ServiceMixinUniqueTitle = Service => class extends Service {
   }
 
   async validateForCreation(data) {
-    checkParameterStringNotNullOrEmpty(trim(data?.title), loc => loc._('Title'));
+    checkParameterStringNotNullOrEmpty(trim(data?.title), loc => loc._c('service', 'Title'));
     await this.checkTitleForConflict(data.title, data);
     return super.validateForCreation(data);
   }
@@ -28,20 +28,25 @@ export const ServiceMixinUniqueTitle = Service => class extends Service {
 
     const rowsCount = await this.countFor(forOption);
     if (rowsCount) {
-      throw new ConflictError(loc => loc._('Exists another row with title %s in %s.', title, this.constructor.name));
+      throw new ConflictError(loc => loc._c(
+        'service',
+        'Exists another row with the title "%s", in "%s".',
+        title,
+        this.name,
+      ));
     }
   }
 
   async validateForUpdate(data, where) {
-    checkParameterStringUndefinedOrNotNullAndNotEmpty(data.title, loc => loc._('Title'));
+    checkParameterStringUndefinedOrNotNullAndNotEmpty(data.title, loc => loc._c('service', 'Title'));
     if (data.title) {
       if (!where) {
-        throw new ConflictError(loc => loc._('Title update without where clause is forbiden.'));
+        throw new ConflictError(loc => loc._c('service', 'Title update without where clause is forbiden.'));
       }
 
       const rowsCount = await this.countFor(where);
       if (rowsCount > 1) {
-        throw new ConflictError(loc => loc._('Title update for many rows is forbiden.'));
+        throw new ConflictError(loc => loc._c('service', 'Title update for many rows is forbiden.'));
       }
 
       await this.checkTitleForConflict(data.title, data, where);
@@ -65,7 +70,7 @@ export const ServiceMixinUniqueTitle = Service => class extends Service {
    */
   async getForTitle(title, options) {
     if (title === undefined) {
-      throw new InvalidValueError(loc => loc._('Invalid value for title to get row'));
+      throw new InvalidValueError(loc => loc._c('service', 'Invalid value for title to get row'));
     }
 
     if (Array.isArray(title)) {

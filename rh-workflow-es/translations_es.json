@@ -2,47 +2,51 @@
     {
         "source": "Assignee",
         "language": "es",
+        "context": "workflow",
+        "isDraft": false,
         "translation": "Encargado",
-        "ref": "..\\rh-workflow\\models\\wf-workflow.js [105,25]"
+        "ref": "..\\rh-workflow\\models\\wf-workflow.js [105,32]"
     },
     {
         "source": "Create workflows",
         "language": "es",
-        "context": "permission",
+        "context": "workflow",
         "translation": "Crear flujos de trabajos",
         "ref": "..\\rh-workflow\\conf_data.js [16,43]"
     },
     {
         "source": "Delete workflows",
         "language": "es",
-        "context": "permission",
+        "context": "workflow",
         "translation": "Eliminar flujos de trabajos",
         "ref": "..\\rh-workflow\\conf_data.js [18,43]"
     },
     {
         "source": "Edit workflows",
         "language": "es",
-        "context": "permission",
+        "context": "workflow",
         "translation": "Modificar flujos de trabajos",
         "ref": "..\\rh-workflow\\conf_data.js [17,43]"
     },
     {
         "source": "Exists another row with that title.",
         "language": "es",
+        "context": "workflow",
+        "isDraft": false,
         "translation": "Existe otra fila con ese título.",
-        "ref": "..\\rh-workflow\\services\\wf-transition.js [33,35]"
+        "ref": "..\\rh-workflow\\services\\wf-transition.js [32,42]"
     },
     {
         "source": "From parameter is missing or from status does not exist.",
         "language": "es",
         "context": "workflow",
         "translation": "El parámetro desde (from) está perdido o el estado desde (from) no existe.",
-        "ref": "..\\rh-workflow\\services\\wf-transition.js [20,32]"
+        "ref": "..\\rh-workflow\\services\\wf-transition.js [19,39]"
     },
     {
         "source": "Get workflows",
         "language": "es",
-        "context": "permission",
+        "context": "workflow",
         "translation": "Obtener flujos de trabajos",
         "ref": "..\\rh-workflow\\conf_data.js [15,43]"
     },
@@ -63,18 +67,19 @@
         "language": "es",
         "context": "workflow",
         "translation": "No se encuentra el parámetro hasta (to) o el estado hasta (to) no existe.",
-        "ref": "..\\rh-workflow\\services\\wf-transition.js [24,32]"
+        "ref": "..\\rh-workflow\\services\\wf-transition.js [23,39]"
     },
     {
         "source": "Workflow",
         "language": "es",
+        "context": "workflow",
         "translation": "Flujo de trabajo",
-        "ref": "..\\rh-workflow\\models\\wf-workflow.js [125,25]"
+        "ref": "..\\rh-workflow\\conf_data.js [22,116]\n..\\rh-workflow\\models\\wf-workflow.js [125,32]"
     },
     {
         "source": "Workflow manager",
         "language": "es",
-        "context": "role",
+        "context": "workflow",
         "translation": "Administrador de flujos de trabajos",
         "ref": "..\\rh-workflow\\conf_data.js [7,43]"
     },
@@ -83,13 +88,13 @@
         "language": "es",
         "context": "workflow",
         "translation": "No se encuentra el parámetro tipo de flujo de trabajo (workflow type) o el tipo de flujo de trabajo (workflow type) no existe.",
-        "ref": "..\\rh-workflow\\services\\wf-transition.js [16,32]"
+        "ref": "..\\rh-workflow\\services\\wf-transition.js [15,39]"
     },
     {
         "source": "Workflows",
         "language": "es",
-        "context": "menu",
+        "context": "workflow",
         "translation": "Flujos de trabajos",
-        "ref": "..\\rh-workflow\\conf_data.js [15,172]"
+        "ref": "..\\rh-workflow\\conf_data.js [23,116]"
     }
 ]

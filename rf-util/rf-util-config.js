@@ -1,6 +1,12 @@
 import { loadJson } from './rf-util-json.js';
 import { underscorize } from './rf-util-string.js';
 
+function dateFormat(date) {
+  date ??= new Date;
+
+  return date.getFullYear() + '-' + ((date.getMonth() + 1) + '').padStart(2, '0') + '-' + (date.getDate() + '').padStart(2, '0') + ' ' + date.toLocaleTimeString() + '.' + (date.getMilliseconds() + '').padStart(3, '0');
+}
+
 export async function loadHttpConfig(options) {
   options ??= {};
   options.defaults ??= {};
@@ -13,7 +19,17 @@ export async function loadHttpConfig(options) {
   config.suffix ??= config.env;
 
   if (config?.db?.logging == 'withAllParameters') {
-    config.db.logging = (...msg) => console.log(msg);
+    config.db.logging = (sql, queryObject) => {
+      if (queryObject.type === 'INSERT' && queryObject.model.name === 'Log') {
+        return;
+      }
+      
+      const prefix = dateFormat() + ' - SQL - ';
+      console.log(prefix + 'query - ' + sql.substring(21));
+      if (queryObject.bind) {
+        console.log(queryObject.bind);
+      }
+    };
   }
 
   return config;

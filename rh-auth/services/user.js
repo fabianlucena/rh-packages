@@ -26,7 +26,7 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
     data ??= {};
 
     if (!data.typeId) {
-      data.typeId = await this.userTypeService.getIdForName('user');
+      data.typeId = await this.userTypeService.getSingleIdForName('user');
     }
 
     checkParameter(
@@ -91,13 +91,11 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
    * @returns {Promise{User}}
    */
   async getForUsername(username, options) {
-    options = { ...options, where: { ...options?.where, username }};
+    return this.getList({ ...options, where: { ...options?.where, username }});
+  }
 
-    if (Array.isArray(username)) {
-      return this.getList(options);
-    }
-
-    return this.getSingle(options);
+  async getSingleForUsername(username, options) {
+    return this.getSingle({ ...options, where: { ...options?.where, username }});
   }
 
   /**
@@ -126,18 +124,18 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
    * @returns {Promise[BigInt|Array[BigInt]]}
    */
   async getIdForUsername(username, options) {
-    const result = await this.getForUsername(username, { attributes: ['id'], ...options });
-    if (Array.isArray(username)) {
-      return result.map(row => row.id);
-    }
-        
-    return result?.id;
+    return (await this.getForUsername(username, { attributes: ['id'], ...options }))
+      .map(row => row.id);
+  }
+
+  async getSingleIdForUsername(username, options) {
+    return (await this.getSingleForUsername(username, { attributes: ['id'], ...options })).id;
   }
 
   /**
    * Checks for an existent and enabled user. If the user exists and is enabled resolve, otherwise fail.
    * @param {User} user - user model object to check.
-   * @param {*string} username - username only for result message purpuose.
+   * @param {*string} username - username only for result message purpose.
    * @returns 
    */
   async checkEnabledUser(user, username) {

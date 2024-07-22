@@ -1,7 +1,7 @@
 import { Op, Column } from './rf-service-op.js';
 import { NoRowsError, ManyRowsError, ReferenceDefinitionError, QueryError } from './rf-service-errors.js';
 import { ucfirst, lcfirst } from 'rf-util/rf-util-string.js';
-import { trim, _Error } from 'rf-util';
+import { trim } from 'rf-util';
 import dependency from 'rf-dependency';
 
 /**
@@ -13,7 +13,12 @@ export class ServiceBase {
   hiddenColumns = [];
 
   /**
-   * Here are spicifed the references for properties. The referencers have the form proeprtyName: options.
+   * List of columns that together make up a unique multivalued key
+   */
+  uniqueColumns = undefined;
+
+  /**
+   * Here are specified the references for properties. The references have the form propertyName: options.
    * {
    *  user: {
    *      service: conf.global.services.User,
@@ -25,21 +30,22 @@ export class ServiceBase {
    * The options for each reference are:
    *  - idPropertyName: the name for ID property to use in reference and in the data set. If this options is not defined a "reference name + 'Id'" will be used".
    *  - service: the service to get the value of the reference.
-   *  - uuidPropertyName: the name for UUID property to get the refence from the service. If this options is not defined a "reference name + 'Uuid'" will be used".
+   *  - uuidPropertyName: the name for UUID property to get the reference from the service. If this options is not defined a "reference name + 'Uuid'" will be used".
    *  - name: the name form the property and for search in the service.
    *  - Name: the name for the nested object in the data set. In this object the search of: ID, UUID, and name will be performed.
    *  - otherName: another name for te property name to search in the service.
    *  - createIfNotExists: if it's true and no object ID founded, the system will create with a create if not exists.
    *  - getIdForName: method name for get the ID from name from the service.
-   *  - clean: if it's true, the properties uuidPropertyName, name, and Name, will be erased from the data set.
+   *  - extern: true when the reference is external, useful for one to many relationships
+   *  - externIdPropertyName: the name for ID property in the extern table for the property reference. If this options is not defined a "this service name + 'Id'" will be used".
    *  - through: service for use as interposed table for many to many relationships
    *  - idThroughLocal: the name for ID property in the interposed table to reference this table. If this options is not defined a "this service name + 'Id'" will be used".
    *  - idThroughReference: the name for ID property in the interposed table to reference the foreign table. If this options is not defined a "reference name + 'Id'" will be used".
    * 
    * For each reference a check for idPropertyName is performed. If the idPropertyName is not defined, the system will try to get the ID from the service using the uuidPropertyName.
    * If the uuidPropertyName is not defined the the system will try to use the "name" in the service. 
-   * But if the "name" is not defined the "Name" as nested object, looking for the Nameid, Name.uuid, or Name.name.  
-   * If all of the previus alternatives fail, and the otherName is defined an attempt to looking for name = otherName in the service will be running.
+   * But if the "name" is not defined the "Name" as nested object, looking for the Name.id, Name.uuid, or Name.name.  
+   * If all of the previous alternatives fail, and the otherName is defined an attempt to looking for name = otherName in the service will be running.
    * If the reference ID is still missing and createIfNotExists is true, the system will try to create the referenced object using:
    *  - the data[Name] object as the first try,
    *  - the {name: data.name} object as the second try, and
@@ -51,7 +57,7 @@ export class ServiceBase {
 
   /**
    * Holds a list of error for this instance.
-   * Wrning, if this is a singleton, this list contains error for all of the threads.
+   * Warning, if this is a singleton, this list contains error for all of the threads.
    */
   lastErrors = [];
 
@@ -127,7 +133,7 @@ export class ServiceBase {
       }
                 
       if (typeof reference !== 'object') {
-        throw new Error(loc => loc._c(
+        throw new ReferenceDefinitionError(loc => loc._c(
           'service',
           'Error in reference definition for reference name "%s", in service "%s".',
           name,
@@ -158,7 +164,7 @@ export class ServiceBase {
 
           if (!service) {
             if (!reference.optional) {
-              throw new Error(loc => loc._c(
+              throw new ReferenceDefinitionError(loc => loc._c(
                 'service',
                 'Error service name "%s", not found for reference "%s" in service "%s".',
                 serviceName,
@@ -190,6 +196,10 @@ export class ServiceBase {
       reference.getIdForName ??= 'getIdOrNullForName';
       reference.getIdForUuid ??= 'getIdOrNullForUuid';
 
+      if (reference.extern) {
+        reference.externIdPropertyName ??= this.name + 'Id';
+      }
+
       if (reference.createIfNotExists === true) {
         reference.createIfNotExists = 'createIfNotExists';
       }
@@ -214,7 +224,7 @@ export class ServiceBase {
 
             if (!service) {
               if (!reference.optional) {
-                throw new Error(loc => loc._c(
+                throw new ReferenceDefinitionError(loc => loc._c(
                   'service',
                   'Error service name "%s", not found for reference through "%s" in service "%s".',
                   serviceName,
@@ -267,7 +277,7 @@ export class ServiceBase {
   }
     
   /**
-   * Completes the references for a data, and, optionally, cleans the value referenced data.
+   * Completes the references for a data and cleans the value referenced data.
    * @param {object} data - data object to complete the references.
    * @returns {Promise[object]} - the arranged data.
    */
@@ -275,6 +285,11 @@ export class ServiceBase {
     data = { ...data };
     for (const name in this.references) {
       const reference = this.references[name];
+
+      if (reference.extern || reference.through) {
+        continue;
+      }
+
       if (reference.function) {
         await reference.function(data);
         continue;
@@ -293,7 +308,7 @@ export class ServiceBase {
   /**
    * Complete the reference ID for a single entity.
    * @param {object} data - data object to complete the references.
-   * @param {object} options - confiiguration for the search and complete the entity ID.
+   * @param {object} options - configuration for the search and complete the entity ID.
    * @returns {Promise[object]} - the arranged data.
    * 
    * This method is used by the @see completeReferences.
@@ -321,7 +336,7 @@ export class ServiceBase {
         data[idPropertyName] = await service[getIdForName](data[uuidPropertyName]);
       } else if (data[name]?.name && service[getIdForName]) {
         data[idPropertyName] = await service[getIdForName](data[name].name);
-      } else if (typeof data[name] === 'string' && data[name] && service[getIdForName]) {
+      } else if (data[name] && typeof data[name] === 'string' && service[getIdForName]) {
         data[idPropertyName] = await service[getIdForName](data[name], { skipNoRowsError: true });
       } else if (data[name] && typeof data[name] === 'object' && !Array.isArray(data[name])) {
         const childData = data[name];
@@ -378,6 +393,21 @@ export class ServiceBase {
       }
     }
 
+    if (!data[idPropertyName]
+      && (data[uuidPropertyName]
+        || data[Name]
+        || data[name]
+      )
+    ) {
+      throw new NoRowsError(loc => loc._c(
+        'service',
+        'Cannot find the ID for reference "%s", in service "%s" for value: "%s".',
+        name,
+        this.name,
+        data[uuidPropertyName] ?? JSON.stringify(data[name]) ?? JSON.stringify(data[Name]),
+      ));
+    }
+
     delete data[uuidPropertyName];
     delete data[Name];
     delete data[name];
@@ -386,7 +416,7 @@ export class ServiceBase {
   }
 
   /**
-   * Performs the necesary validations.
+   * Performs the necessary validations.
    * @param {object} data - data to update in entity.
    * @param {string} operation - any of values: creation, update or delete.
    * @returns {Promise[data]} - the data.
@@ -397,7 +427,7 @@ export class ServiceBase {
   }
 
   /**
-   * Performs the necesary validations before creation.
+   * Performs the necessary validations before creation.
    * @param {object} data - data to update in entity.
    * @returns {Promise[data]} - the data.
    */
@@ -408,11 +438,11 @@ export class ServiceBase {
   /**
    * Creates a new row into DB.
    * @param {object} data - data for the new row.
-   * @param {object} options - options to pass to creator, for use transacion.
+   * @param {object} options - options to pass to creator, for use transaction.
    * @returns {Promise[row]}
    */
   async create(data, options) {
-    data = await this.completeReferences(data);
+    data = await this.completeReferences(data, options);
     data = await this.validateForCreation(data);
 
     let transaction;
@@ -425,7 +455,8 @@ export class ServiceBase {
     try {
       await this.emit('creating', options?.emitEvent, data, options, this);
       let row = await this.model.create(data, options, this);
-      await this.updateThroughTables({ ...data, ...row }, options);
+      await this.updateExternData({ ...data, ...row }, options);
+      await this.updateThroughData({ ...data, ...row }, options);
       await this.emit('created', options?.emitEvent, row, data, options, this);
 
       await transaction?.commit();
@@ -444,7 +475,76 @@ export class ServiceBase {
     }
   }
 
-  async updateThroughTables(data, options) {
+  async updateExternData(data, options) {
+    if (options?.skipUpdateExtern) {
+      return;
+    }
+
+    for (const referenceName in this.references) {
+      const reference = this.references[referenceName],
+        extern = reference.extern;
+      if (!extern) {
+        continue;
+      }
+
+      let referenceDataList = data[referenceName];
+      if (referenceDataList) {
+        if (!Array.isArray(referenceDataList)) {
+          referenceDataList = [ referenceDataList ];
+        }
+      } else {
+        referenceDataList = [];
+      }
+
+      let localIds = data.id;
+      if (!localIds) {
+        if (!options.where) {
+          throw new ReferenceDefinitionError(loc => loc._c(
+            'service',
+            'Cannot update referenced data "%s", because cannot get ID for local rows (where clause is lost) in service "%s".',
+            referenceName,
+            this.name
+          ));
+        }
+
+        localIds = await this.getIdFor(options.where);
+        if (!localIds.length) {
+          continue;
+        }
+      } else if (!Array.isArray(localIds)) {
+        localIds = [ localIds ];
+      }
+
+      const queryOptions = { transaction: options.transaction };
+      for (const localId of localIds) {
+        const referenceIds = [];
+        for (const referenceData of referenceDataList) {
+          const thisData = {
+            ...referenceData,
+            [reference.externIdPropertyName]: localId,
+          };
+          const [ row ] = await reference.service.findOrCreate(thisData, queryOptions);
+          referenceIds.push(row.id);
+        }
+
+        if (!options?.skipDeleteExtern) {
+          await reference.service.deleteFor(
+            {
+              [reference.externIdPropertyName]: localId,
+              id: { [Op.notIn]: referenceIds },
+            },
+            queryOptions
+          );
+        }
+      }
+    }
+  }
+
+  async updateThroughData(data, options) {
+    if (options?.skipUpdateExtern) {
+      return;
+    }
+
     for (const referenceName in this.references) {
       const reference = this.references[referenceName],
         through = reference.through;
@@ -460,7 +560,7 @@ export class ServiceBase {
       let localIds = data.id;
       if (!localIds) {
         if (!options.where) {
-          throw new Error(loc => loc._c(
+          throw new ReferenceDefinitionError(loc => loc._c(
             'service',
             'Cannot update referenced data "%s", because cannot get ID for local rows (where clause is lost) in service "%s".',
             referenceName,
@@ -486,12 +586,14 @@ export class ServiceBase {
           await through.service.createIfNotExists(thisData, queryOptions);
         }
 
-        await through.service.deleteFor(
-          {
-            [through.idLocalPropertyName]: localId,
-            [through.idReferencePropertyName]: { [Op.notIn]: referenceIds },
-          }, { transaction: options.transaction }
-        );
+        if (!options?.skipDeleteExtern) {
+          await through.service.deleteFor(
+            {
+              [through.idLocalPropertyName]: localId,
+              [through.idReferencePropertyName]: { [Op.notIn]: referenceIds },
+            }, { transaction: options.transaction }
+          );
+        }
       }
     }
   }
@@ -556,12 +658,12 @@ export class ServiceBase {
   }
 
   /**
-   * Gets the options to use in getList methos.
+   * Gets the options to use in getList methods.
    * @param {object} options - options for the getList method.
    * @returns {Promise[object]}
    * 
    * Common properties:
-   * - view: show visible peoperties.
+   * - view: show visible properties.
    */
   async getListOptions(options) {
     if (options?.arranged) {
@@ -604,6 +706,16 @@ export class ServiceBase {
                   value = { [reference.whereColumn]: value };
                 }
               }
+            } else if (typeof value === 'string'
+              || Array.isArray(value)
+            ) {
+              throw new ReferenceError(loc => loc._c(
+                'service',
+                'Invalid value "%s" for referenced where, where column is not defined, in reference "%s", in service "%s".',
+                JSON.stringify(value),
+                key,
+                this.name,
+              ));
             }
 
             if (!include.where) {
@@ -638,7 +750,7 @@ export class ServiceBase {
 
         const reference = this.references[includedName];
         if (!reference) {
-          throw new Error(loc => loc._c(
+          throw new ReferenceDefinitionError(loc => loc._c(
             'service',
             'Can\'t include "%s" because is not reference in service "%s".',
             includedName,
@@ -680,13 +792,13 @@ export class ServiceBase {
         } else if (typeof orderBy === 'object') {
           const keys = Object.keys(orderBy);
           if (keys.length > 1) {
-            throw new QueryError(loc => loc._c('service', 'Unknown order by option format for: "%s". It must be string or two items array or a single property object.', orderBy));
+            throw new QueryError(loc => loc._c('service', 'Unknown order by option format for: "%s". It must be string, two items array, or a single property object.', orderBy));
           }
           orderByParts = [keys[1], orderBy[keys[1]]];
         }
 
         if (orderByParts.length > 2) {
-          throw new QueryError(loc => loc._c('service', 'Unknown order by option format for: "%s". It must be string or two items array or a single property object.', orderBy));
+          throw new QueryError(loc => loc._c('service', 'Unknown order by option format for: "%s". It must be string, two items array, or a single property object.', orderBy));
         }
         let column = orderByParts[0];
         const sort = orderByParts[1] ?? 'ASC';
@@ -872,7 +984,7 @@ export class ServiceBase {
   }
 
   /**
-   * Performs the necesary validations before updating.
+   * Performs the necessary validations before updating.
    * @param {object} data - data to update in entity.
    * @returns {Promise[data]} - the data.
    */
@@ -887,7 +999,7 @@ export class ServiceBase {
    * @returns {Promise[integer]} updated rows count.
    */
   async update(data, options) {
-    data = await this.completeReferences(data);
+    data = await this.completeReferences(data, options);
     data = await this.validateForUpdate(data, options?.where);
 
     await this.emit('updating', options?.emitEvent, data, options, this);
@@ -895,7 +1007,8 @@ export class ServiceBase {
     if (result.length) {
       result = result[0];
     }
-    await this.updateThroughTables(data, options);
+    await this.updateExternData(data, options);
+    await this.updateThroughData(data, options);
     await this.emit('updated', options?.emitEvent, result, data, options, this);
 
     return result;
@@ -1014,10 +1127,16 @@ export class ServiceBase {
   }
 
   async findOrCreate(data, options) {
+    data = await this.completeReferences(data, options);
     options = { ...options };
     if (!options.where) {
       if (data.id) {
         options.where = { id: data.id };
+      } if (this.uniqueColumns) {
+        options.where = {};
+        for (const columnName of this.uniqueColumns) {
+          options.where[columnName] = data[columnName];
+        }
       } else {
         options.where = { ...data };
       }
@@ -1025,10 +1144,12 @@ export class ServiceBase {
 
     let row = await this.getSingle({ ...options, skipNoRowsError: true });
     if (row) {
+      await this.updateExternData({  ...data, ...row }, options);
+      await this.updateThroughData({ ...data, ...row }, options);
       return [row, false];
     }
 
-    row = await this.create(data);
+    row = await this.create(data, options);
     return [row, true];
   }
 
@@ -1051,7 +1172,7 @@ export class ServiceBase {
         options.where = { name: data.name };
         updateData = { ...data, name: undefined };
       } else {
-        throw new Error('No criteria for find the row.');
+        throw new QueryError('No criteria for find the row.');
       }
     }
 

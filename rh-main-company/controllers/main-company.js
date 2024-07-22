@@ -9,8 +9,8 @@ const siteService = conf.global.services.Site.singleton();
 
 export class MainCompanyController {
   static async checkUuid(req, uuid) {
-    const maincompany = await mainCompanyService.getForUuid(uuid, { skipNoRowsError: true });
-    if (!maincompany) {
+    const mainCompany = await mainCompanyService.getSingleOrNullForUuid(uuid, { skipNoRowsError: true });
+    if (!mainCompany) {
       throw new HttpError(loc => loc._c('mainCompany', 'The main company with UUID %s does not exists.'), 404, uuid);
     }
 

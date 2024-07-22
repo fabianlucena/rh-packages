@@ -31,7 +31,7 @@ export class EavAttributeService extends Service.IdUuidEnableNameUniqueTitleDesc
       throw new AttributeDefinitionError(loc => loc._c('No type defined for attribute "%s".', data.name));
     }
 
-    const type = await this.eavAttributeTypeService.getNameForId(data.typeId);
+    const type = await this.eavAttributeTypeService.getSingleNameForId(data.typeId);
     if (type === 'select' || type === 'tags') {
       if (!data.categoryId) {
         let category = await this.eavAttributeCategoryService.getSingleOrNullForName(data.name);

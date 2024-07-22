@@ -340,6 +340,7 @@ export class Controller {
 
     const options = await getOptions(req, res, next);
     options.context ??= makeContext(req, res);
+    options.loc = options.context.loc;
 
     let result = await this.service.getListAndCount(options);
     if (result) {
@@ -421,7 +422,7 @@ export class Controller {
   async checkUuid(req, res) {
     const loc = req.loc ?? defaultLoc;
     const uuid = await getUuidFromRequest(req);
-    const item = await this.service.getForUuid(uuid, { skipNoRowsError: true, loc, context: makeContext(req, res) });
+    const item = await this.service.getSingleOrNullForUuid(uuid, { skipNoRowsError: true, loc, context: makeContext(req, res) });
     if (!item) {
       throw new HttpError(loc => loc._c('controller', 'The item with UUID %s does not exists.'), 404, uuid);
     }

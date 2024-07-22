@@ -2,85 +2,80 @@
     {
         "source": "Description",
         "language": "es",
+        "context": "projectSelect",
+        "isDraft": false,
         "translation": "Descripción",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [161,54]"
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [146,26]"
     },
     {
         "source": "Name",
         "language": "es",
+        "context": "projectSelect",
+        "isDraft": false,
         "translation": "Nombre",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [156,47]"
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [141,26]"
     },
     {
         "source": "Project UUID",
         "language": "es",
         "context": "projectSelect",
         "translation": "UUID de proyecto",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [13,85]"
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [22,50]"
     },
     {
         "source": "Project: %s",
         "language": "es",
+        "context": "projectSelect",
+        "isDraft": false,
         "translation": "Proyecto: %s",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [60,61]"
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [46,24]"
     },
     {
         "source": "Select project",
         "language": "es",
-        "context": "menu",
+        "context": "projectSelect",
         "translation": "Seleccionar proyecto",
-        "ref": "..\\rh-project-select\\conf_data.js [7,181]"
-    },
-    {
-        "source": "Select project",
-        "language": "es",
-        "context": "permission",
-        "translation": "Seleccionar proyecto",
-        "ref": "..\\rh-project-select\\conf_data.js [7,87]"
-    },
-    {
-        "source": "Select project",
-        "language": "es",
-        "translation": "Seleccionar proyecto",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [138,49]"
+        "ref": "..\\rh-project-select\\conf_data.js [9,31]\n..\\rh-project-select\\conf_data.js [14,33]\n..\\rh-project-select\\controllers\\project-select.js [156,24]"
     },
     {
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-project-select-es.js [18,41]"
+        "ref": "rh-project-select-es.js [18,20]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-project-select-es.js [19,57]"
+        "ref": "rh-project-select-es.js [19,26]"
     },
     {
         "source": "The selected project does not exist or you do not have permission to access it.",
         "language": "es",
         "context": "projectSelect",
         "translation": "El proyecto seleccionado no existe o usted no tiene permiso para accederlo.",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [19,141]"
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [28,38]"
     },
     {
         "source": "The selected project is disabled.",
         "language": "es",
         "context": "projectSelect",
         "translation": "El proyecto seleccionado está deshabilitado.",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [23,95]"
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [32,38]"
     },
     {
         "source": "Title",
         "language": "es",
+        "context": "projectSelect",
+        "isDraft": false,
         "translation": "Título",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [151,48]"
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [136,26]"
     },
     {
         "source": "You do not have permission to select this project.",
         "language": "es",
         "context": "projectSelect",
         "translation": "Usted no tiene permiso para seleccionar este proyecto.",
-        "ref": "..\\rh-project-select\\controllers\\project-select.js [32,112]\n..\\rh-project-select\\controllers\\project-select.js [44,116]"
+        "ref": "..\\rh-project-select\\controllers\\project-select.js [37,40]"
     }
 ]

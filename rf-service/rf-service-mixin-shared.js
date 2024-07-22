@@ -23,7 +23,7 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
 
   async validateForCreation(data) {
     if (!data.owner && !data.ownerId && !this.skipNoOwnerCheck) {
-      throw new CheckError(loc => loc._('No owner specified.'));
+      throw new CheckError(loc => loc._c('service', 'No owner specified.'));
     }
 
     return super.validateForCreation(data);
@@ -85,14 +85,16 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
    */
   async addCollaborator(data, options) {
     if (!this.shareObject) {
-      throw new NoSharedObjectError(loc => loc._(
+      throw new NoSharedObjectError(loc => loc._c(
+        'service', 
         'No shareObject defined in %s.',
         this.constructor.name,
       ));
     }
 
     if (!this.shareService) {
-      throw new NoSharedServiceError(loc => loc._(
+      throw new NoSharedServiceError(loc => loc._c(
+        'service', 
         'No shareService defined in %s.',
         this.constructor.name,
       ));

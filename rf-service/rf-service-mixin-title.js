@@ -1,5 +1,4 @@
 import { checkParameterStringNotNullOrEmpty, trim } from 'rf-util';
-import { loc } from 'rf-locale';
 
 export const ServiceMixinTitle = Service => class extends Service {
   constructor() {
@@ -13,7 +12,7 @@ export const ServiceMixinTitle = Service => class extends Service {
   }
 
   async validateForCreation(data) {
-    checkParameterStringNotNullOrEmpty(trim(data?.title), loc._f('Title'));
+    checkParameterStringNotNullOrEmpty(trim(data?.title), loc => loc._c('service', 'Title'));
     return super.validateForCreation(data);
   }
 
@@ -32,7 +31,7 @@ export const ServiceMixinTitle = Service => class extends Service {
    */
   async getForTitle(title, options) {
     if (title === undefined) {
-      throw new Error(loc._f('Invalid value for title to get row'));
+      throw new Error(loc => loc._c('service', 'Invalid value for title to get row'));
     }
 
     if (Array.isArray(title)) {

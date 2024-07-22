@@ -11,7 +11,7 @@ export const ServiceMixinName = Service => class extends Service {
   }
 
   async validateForCreation(data) {
-    checkParameterStringNotNullOrEmpty(trim(data?.name), loc => loc._('Name'));
+    checkParameterStringNotNullOrEmpty(trim(data?.name), loc => loc._c('service', 'Name'));
     await this.checkNameForConflict(data.name, data);
     return super.validateForCreation(data);
   }
@@ -19,13 +19,13 @@ export const ServiceMixinName = Service => class extends Service {
   async checkNameForConflict(name) {
     const rows = await this.getFor({ name }, { limit: 1 });
     if (rows?.length) {
-      throw new ConflictError(loc => loc._('Exists another row with that name.'));
+      throw new ConflictError(loc => loc._c('service', 'Exists another row with that name.'));
     }
   }
 
   async validateForUpdate(data, where) {
     if (data.name) {
-      throw new CheckError(loc => loc._('Name parameter is forbidden for update.'));
+      throw new CheckError(loc => loc._c('service', 'Name parameter is forbidden for update.'));
     }
 
     return super.validateForUpdate(data, where);
@@ -38,7 +38,7 @@ export const ServiceMixinName = Service => class extends Service {
    * @param {Options} options - Options for the @ref getList function.
    * @returns {Promise[row]}
    * 
-   * If the name parammeter is a string return a single row or throw an exception.
+   * If the name parameter is a string return a single row or throw an exception.
    * But if the name parameter is a array can return a row list.
    * 
    * This function uses @ref getSingle function so the options for getSingle
@@ -46,25 +46,26 @@ export const ServiceMixinName = Service => class extends Service {
    */
   async getForName(name, options) {
     if (name === undefined) {
-      throw new InvalidValueError(loc => loc._('Invalid value for name to get row in %s.'));
+      throw new InvalidValueError(loc => loc._c('service', 'Invalid value for name to get row in %s.'));
     }
 
-    if (Array.isArray(name)) {
-      return this.getList({ ...options, where: { ...options?.where, name }});
+    return this.getList({ ...options, where: { ...options?.where, name }});
+  }
+
+  async getSingleForName(name, options) {
+    if (name === undefined) {
+      throw new InvalidValueError(loc => loc._c('service', 'Invalid value for name to get row in %s.'));
     }
-            
-    return this.getSingleFor({ name }, options);
+
+    return this.getSingle({ ...options, where: { ...options?.where, name }});
   }
 
   async getSingleOrNullForName(name, options) {
-    return this.getForName(
-      name,
-      {
-        ...options,
-        skipNoRowsError: true,
-        nullOnManyRowsError: true,
-      },
-    );
+    if (name === undefined) {
+      throw new InvalidValueError(loc => loc._c('service', 'Invalid value for name to get row in %s.'));
+    }
+    
+    return this.getSingleForName(name, { skipNoRowsError: true, nullOnManyRowsError: true, ...options });
   }
 
   /**
@@ -74,13 +75,15 @@ export const ServiceMixinName = Service => class extends Service {
    * @returns {Promise[row]}
    */
   async createIfNotExists(data, options) {
-    data = await this.completeReferences(data);
-    const row = await this.getForName(data.name, { skipNoRowsError: true, ...options });
-    if (row) {
-      return row;
-    }
-            
-    return this.create(data, { transacion: options?.transacion });
+    options = {
+      ...options,
+      where: {
+        ...options?.where,
+        name: data.name,
+      },
+    };
+    
+    return super.createIfNotExists(data, options);
   }
 
   async update(data, options) {

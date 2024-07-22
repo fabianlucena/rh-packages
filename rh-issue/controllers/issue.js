@@ -27,9 +27,9 @@ export class IssueController extends Controller {
     data ??= {};
     if (!data.projectId) {
       if (data.projectUuid) {
-        data.projectId = await this.projectService.getIdForUuid(data.projectUuid);
+        data.projectId = await this.projectService.getSingleIdForUuid(data.projectUuid);
       } else if (data.projectName) {
-        data.projectId = await this.projectService.getIdForName(data.projectName);
+        data.projectId = await this.projectService.getSingleIdForName(data.projectName);
       } else {
         data.projectId = await conf.filters.getCurrentProjectId(req) ?? null;
         return data.projectId;
@@ -51,7 +51,7 @@ export class IssueController extends Controller {
   async checkUuid(req) {
     const loc = req.loc ?? defaultLoc;
     const uuid = await getUuidFromRequest(req);
-    const issue = await this.service.getForUuid(uuid, { skipNoRowsError: true, loc });
+    const issue = await this.service.getSingleOrNullForUuid(uuid, { skipNoRowsError: true, loc });
     if (!issue) {
       throw new HttpError(loc => loc._c('issue', 'The issue with UUID %s does not exists.'), 404, uuid);
     }

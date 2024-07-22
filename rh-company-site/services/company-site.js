@@ -26,8 +26,8 @@ export class CompanySiteService extends Service.OwnerModule {
    * }} data - data for the new CompanySite.
    * @returns {Promise[CompanySite]}
    */
-  async create(data) {
-    data = await this.completeReferences(data);
+  async create(data, options) {
+    data = await this.completeReferences(data, options);
 
     let company;
     if (!data.companyId) {
@@ -71,7 +71,7 @@ export class CompanySiteService extends Service.OwnerModule {
    * @returns {Promise[CompanySite]}
    */
   async createIfNotExists(data, options) {
-    data = await this.completeReferences(data);
+    data = await this.completeReferences(data, options);
         
     const rows = await this.getList({
       ...options,
