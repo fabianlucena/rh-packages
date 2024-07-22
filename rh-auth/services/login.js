@@ -30,7 +30,7 @@ export class LoginService {
   async forUsernamePasswordDeviceTokenAndSessionIndex(username, password, deviceToken, sessionIndex, loc) {
     const userService = UserService.singleton();
 
-    const user = await userService.getForUsername(username);
+    const user = await userService.getSingleForUsername(username);
     if (!user) {
       throw new NoUserError(loc => loc._c('login', 'Error to get user to create session'));
     }

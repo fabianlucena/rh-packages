@@ -53,7 +53,7 @@ export const ServiceMixinUuid = Service => class ServiceUuid extends Service {
       throw new InvalidValueError(loc => loc._c('service', 'Invalid value for UUID to get row in %s.'));
     }
 
-    return this.getSingleFor({ ...options, where: { ...options?.where, uuid }});
+    return this.getSingle({ ...options, where: { ...options?.where, uuid }});
   }
 
   async getSingleOrNullForUuid(uuid, options) {

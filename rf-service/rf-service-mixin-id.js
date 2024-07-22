@@ -54,7 +54,7 @@ export const ServiceMixinId = Service => class ServiceId extends Service {
       throw new InvalidValueError(loc => loc._c('service', 'Invalid value for ID to get row in %s.'));
     }
 
-    return this.getSingleFor({ ...options, where: { ...options?.where, id }});
+    return this.getSingle({ ...options, where: { ...options?.where, id }});
   }
 
   async getSingleOrNullForId(id, options) {

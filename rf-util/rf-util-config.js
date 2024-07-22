@@ -20,6 +20,10 @@ export async function loadHttpConfig(options) {
 
   if (config?.db?.logging == 'withAllParameters') {
     config.db.logging = (sql, queryObject) => {
+      if (queryObject.type === 'INSERT' && queryObject.model.name === 'Log') {
+        return;
+      }
+      
       const prefix = dateFormat() + ' - SQL - ';
       console.log(prefix + 'query - ' + sql.substring(21));
       if (queryObject.bind) {

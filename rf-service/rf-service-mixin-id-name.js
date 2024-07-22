@@ -39,14 +39,16 @@ export const ServiceMixinIdName = Service => class ServiceIdName extends Service
    * @returns {Promise[ID]}
    */
   async getIdOrCreateForName(name, options) {
-    if (Array.isArray(name)) {
-      const ids = [];
-      for (const thisName of name)
-        ids.push((await this.createIfNotExists({ name: thisName, title: thisName }, { ...options, attributes: ['id'] })).id);
-
-      return ids;
+    if (!Array.isArray(name)) {
+      name = [ name ];
     }
-    else
-      return (await this.createIfNotExists({ name, title: name }, { ...options, attributes: ['id'] })).id;
+
+    const ids = [];
+    for (const thisName of name) {
+      const [ row ] = await this.findOrCreate({ name: thisName, title: thisName }, { ...options, attributes: ['id'] });
+      ids.push(row.id);
+    }
+
+    return ids;
   }
 };
