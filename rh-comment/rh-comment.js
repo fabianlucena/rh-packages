@@ -63,9 +63,9 @@ async function checkClearCache(entity) {
   return;
 }
 
-async function getEnityTypeId(entity, options) {
+async function getEntityTypeId(entity, options) {
   if (conf.modelEntityNameCache[entity] === undefined) {
-    conf.modelEntityNameCache[entity] = await conf.modelEntityNameService.getIdForName(entity, options);
+    conf.modelEntityNameCache[entity] = await conf.modelEntityNameService.getSingleIdForName(entity, options);
   }
 
   return conf.modelEntityNameCache[entity];
@@ -247,7 +247,7 @@ async function getted(entity, result, options) {
     result = await result;
   }
 
-  const modelEntityNameId = await getEnityTypeId(entity, { loc: options?.loc });
+  const modelEntityNameId = await getEntityTypeId(entity, { loc: options?.loc });
 
   const rows = result.rows || result;
   for (const i in rows) {
@@ -342,7 +342,7 @@ async function updateValues(entity, entityIds, data, options) {
     return;
   }
 
-  const modelEntityNameId = await getEnityTypeId(entity, queryOptions);
+  const modelEntityNameId = await getEntityTypeId(entity, queryOptions);
 
   let fieldName,
     value;
@@ -385,7 +385,7 @@ async function deleting(entity, options, service) {
     return;
   }
 
-  const modelEntityNameId = await getEnityTypeId(entity, queryOptions);
+  const modelEntityNameId = await getEntityTypeId(entity, queryOptions);
 
   const rows = await service.getList({
     ...options,

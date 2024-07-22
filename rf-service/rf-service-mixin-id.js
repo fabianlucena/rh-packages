@@ -1,4 +1,4 @@
-import { CheckError } from './rf-service-errors.js';
+import { CheckError, InvalidValueError } from './rf-service-errors.js';
 
 export const ServiceMixinId = Service => class ServiceId extends Service {
   init() {
@@ -35,24 +35,34 @@ export const ServiceMixinId = Service => class ServiceId extends Service {
    * @param {Options} options - Options for the @ref getList function.
    * @returns {Promise[row]}
    * 
-   * If the name parammeter is a string return a single row or throw an exception.
+   * If the name parameter is a string return a single row or throw an exception.
    * But if the name parameter is a array can return a row list.
    * 
    * This function uses @ref getSingle function so the options for getSingle
    * function can be specified.
    */
   async getForId(id, options) {
-    if (Array.isArray(id)) {
-      return this.getList({ ...options, where: { ...options?.where, id }});
+    if (id === undefined) {
+      throw new InvalidValueError(loc => loc._c('service', 'Invalid value for ID to get row in %s.'));
     }
-            
-    const rows = await this.getList({ limit: 2, ...options, where: { ...options?.where, id }});
 
-    return this.getSingleFromRows(rows, options);
+    return this.getList({ ...options, where: { ...options?.where, id }});
   }
 
-  async getForIdOrNull(id, options) {
-    return this.getForId(id, { ...options, skipNoRowsError: true });
+  async getSingleForId(id, options) {
+    if (id === undefined) {
+      throw new InvalidValueError(loc => loc._c('service', 'Invalid value for ID to get row in %s.'));
+    }
+
+    return this.getSingleFor({ ...options, where: { ...options?.where, id }});
+  }
+
+  async getSingleOrNullForId(id, options) {
+    if (id === undefined) {
+      throw new InvalidValueError(loc => loc._c('service', 'Invalid value for ID to get row in %s.'));
+    }
+    
+    return this.getSingleForId(id, { skipNoRowsError: true, ...options });
   }
 
   /**

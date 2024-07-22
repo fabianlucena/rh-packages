@@ -19,9 +19,9 @@ export class BranchController extends Controller {
             
     if (!data.companyId) {
       if (data.companyUuid) {
-        data.companyId = await this.companyService.getIdForUuid(data.companyUuid);
+        data.companyId = await this.companyService.getSingleIdForUuid(data.companyUuid);
       } else if (data.companyName) {
-        data.companyId = await this.companyService.getIdForName(data.companyName);
+        data.companyId = await this.companyService.getSingleIdForName(data.companyName);
       } else {
         data.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
         return data.companyId;
@@ -41,7 +41,7 @@ export class BranchController extends Controller {
   }
 
   async checkUuid(req, uuid) {
-    const branch = await this.service.getForUuid(uuid, { skipNoRowsError: true });
+    const branch = await this.service.getSingleOrNullForUuid(uuid, { skipNoRowsError: true });
     if (!branch) {
       throw new HttpError(loc => loc._c('branch', 'The branch with UUID %s does not exists.'), 404, uuid);
     }

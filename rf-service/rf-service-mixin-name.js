@@ -49,22 +49,23 @@ export const ServiceMixinName = Service => class extends Service {
       throw new InvalidValueError(loc => loc._c('service', 'Invalid value for name to get row in %s.'));
     }
 
-    if (Array.isArray(name)) {
-      return this.getList({ ...options, where: { ...options?.where, name }});
+    return this.getList({ ...options, where: { ...options?.where, name }});
+  }
+
+  async getSingleForName(name, options) {
+    if (name === undefined) {
+      throw new InvalidValueError(loc => loc._c('service', 'Invalid value for name to get row in %s.'));
     }
-            
-    return this.getSingleFor({ name }, options);
+
+    return this.getSingleFor({ ...options, where: { ...options?.where, name }});
   }
 
   async getSingleOrNullForName(name, options) {
-    return this.getForName(
-      name,
-      {
-        ...options,
-        skipNoRowsError: true,
-        nullOnManyRowsError: true,
-      },
-    );
+    if (name === undefined) {
+      throw new InvalidValueError(loc => loc._c('service', 'Invalid value for name to get row in %s.'));
+    }
+    
+    return this.getSingleForName(name, { skipNoRowsError: true, nullOnManyRowsError: true, ...options });
   }
 
   /**

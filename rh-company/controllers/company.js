@@ -10,9 +10,9 @@ export class CompanyController {
     if (conf.filters?.getCurrentCompanyId) {
       if (!data.id) {
         if (data.uuid) {
-          data.id = await conf.global.services.Company.singleton().getIdForUuid(data.uuid);
+          data.id = await conf.global.services.Company.singleton().getSingleIdForUuid(data.uuid);
         } else if (data.name) {
-          data.id = await conf.global.services.Company.singleton().getIdForName(data.name);
+          data.id = await conf.global.services.Company.singleton().getSingleIdForName(data.name);
         } else {
           return;
         }
@@ -33,7 +33,7 @@ export class CompanyController {
 
   static async checkUuid(req) {
     const uuid = await getUuidFromRequest(req);
-    const company = await companyService.getForUuid(uuid, { skipNoRowsError: true });
+    const company = await companyService.getSingleOrNullForUuid(uuid, { skipNoRowsError: true });
     if (!company) {
       throw new HttpError(loc => loc._c('company', 'The company with UUID %s does not exists.'), 404, uuid);
     }

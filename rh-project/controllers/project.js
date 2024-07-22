@@ -20,9 +20,9 @@ export class ProjectController extends Controller {
     data ??= {};
     if (!data.companyId) {
       if (data.companyUuid) {
-        data.companyId = await this.companyService.getIdForUuid(data.companyUuid);
+        data.companyId = await this.companyService.getSingleIdForUuid(data.companyUuid);
       } else if (data.companyName) {
-        data.companyId = await this.companyService.getIdForName(data.companyName);
+        data.companyId = await this.companyService.getSingleIdForName(data.companyName);
       } else {
         data.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
         return data.companyId;
@@ -43,7 +43,7 @@ export class ProjectController extends Controller {
 
   async checkUuid(req) {
     const uuid = await getUuidFromRequest(req);
-    const project = await this.service.getForUuid(uuid, { skipNoRowsError: true, loc: req.loc });
+    const project = await this.service.getSingleOrNullForUuid(uuid, { skipNoRowsError: true, loc: req.loc });
     if (!project) {
       throw new HttpError(loc => loc._c('project', 'The project with UUID %s does not exists.'), 404, uuid);
     }

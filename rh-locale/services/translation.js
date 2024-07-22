@@ -217,7 +217,7 @@ export class TranslationService extends Service.IdUuidEnable {
         break;
       }
 
-      languageData = await LanguageService.singleton().getForId(languageData.parentId);
+      languageData = await LanguageService.singleton().getSingleForId(languageData.parentId);
     }
 
     return { translation: text, isTranslated: false, isDraft: true };

@@ -23,7 +23,7 @@ export class ProjectSelectController extends Controller {
     }
 
     const options = { skipNoRowsError: true, loc };
-    let project = await this.projectService.getForUuid(projectUuid, options);
+    let project = await this.projectService.getSingleOrNullForUuid(projectUuid, options);
     if (!project) {
       throw new HttpError(loc => loc._c('projectSelect', 'The selected project does not exist or you do not have permission to access it.'), 400);
     }

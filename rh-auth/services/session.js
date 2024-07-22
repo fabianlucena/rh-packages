@@ -64,7 +64,7 @@ export class SessionService extends Service.IdUuid {
   /**
    * Gets the options for use in the getList and getListAndCount methods.
    * @param {object} options - options for the @see sequelize.findAll method.
-   *  - view: show visible peoperties.
+   *  - view: show visible properties.
    * @returns {t}
    */
   async getListOptions(options) {
@@ -152,7 +152,7 @@ export class SessionService extends Service.IdUuid {
   async closeForId(id) {
     check(id, { message: loc => loc._c('session', 'There is no id for session') });
 
-    const session = await this.getForId(id);
+    const session = await this.getSingleForId(id);
     const authToken = session.authToken;
     if (conf.sessionCache[authToken]) {
       delete conf.sessionCache[authToken];
@@ -167,7 +167,7 @@ export class SessionService extends Service.IdUuid {
    * @returns {Promise[integer]}
    */
   async deleteForUuid(uuid, options) {
-    const session = await this.getForUuid(uuid, options);
+    const session = await this.getSingleOrNullForUuid(uuid, options);
     if (!session) {
       return 0;
     }

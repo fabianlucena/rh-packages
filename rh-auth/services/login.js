@@ -92,7 +92,7 @@ export class LoginService {
     }
 
     if (oldSession.close) {
-      throw new InvalidTokenError(loc => loc._c('login', 'The auto login token is invalid becasuse the session is closed'));
+      throw new InvalidTokenError(loc => loc._c('login', 'The auto login token is invalid because the session is closed'));
     }
 
     const device = await DeviceService.singleton().getForToken(deviceToken);
@@ -105,7 +105,7 @@ export class LoginService {
     }
 
     const userService = UserService.singleton();
-    const user = await userService.getForId(oldSession.userId);
+    const user = await userService.getSingleForId(oldSession.userId);
     await userService.checkEnabledUser(user, user.username);
 
     await sessionService.closeForId(oldSession.id);

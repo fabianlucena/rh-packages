@@ -51,7 +51,7 @@ export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescription
   }
 
   async autoRelatedForId(id) {
-    const issue = await this.getForId(id);
+    const issue = await this.getSingleForId(id);
     const criteria = [];
     for (const word of issue.description.split(/[\s.,;:]+/)) {
       if (word.length < 2) {
@@ -72,7 +72,7 @@ export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescription
       return;
     }
 
-    const relationshipId = await this.issueRelationshipService.getIdForName('related');
+    const relationshipId = await this.issueRelationshipService.getSingleIdForName('related');
 
     for (const candidate of candidates) {
       await this.issueRelatedService.create({

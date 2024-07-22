@@ -26,7 +26,7 @@ export class UserAccessService extends UserSiteRoleService {
       if (data.roles?.length) {
         for (const role of data.roles) {
           if (!role.id) {
-            role.id = await this.roleService.getIdForUuid(role.uuid);
+            role.id = await this.roleService.getSingleIdForUuid(role.uuid);
           }
         }
 
@@ -60,7 +60,7 @@ export class UserAccessService extends UserSiteRoleService {
     try {
       let user;
       if (data.userId) {
-        user = await this.userService.getForId(data.userId, { transaction });
+        user = await this.userService.getSingleOrNullForId(data.userId, { transaction });
       } else {
         user = await this.userService.create(data.user, { transaction });
       }

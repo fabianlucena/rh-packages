@@ -48,7 +48,7 @@ export class ShareService extends Service.EnableOwnerModuleTranslatable {
   }
 
   async deleteForModelEntityNameAndId(modelEntityName, objectId) {
-    const objectNameId = await this.references.ObjectName.getIdForName(modelEntityName);
+    const objectNameId = await this.references.ObjectName.getSingleIdForName(modelEntityName);
     return this.deleteFor({ objectNameId, objectId });
   }
 }

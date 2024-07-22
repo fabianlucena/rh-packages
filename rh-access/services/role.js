@@ -22,8 +22,8 @@ export class RoleService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleT
 
   /**
    * Gets the direct (first level) roles for a given username and site name.
-   * @param {string} username - username for the user to retrive its roles.
-   * @param {string} siteName - siteName in wich the user has the roles.
+   * @param {string} username - username for the user to retrieve its roles.
+   * @param {string} siteName - siteName in which the user has the roles.
    * @param {Options} options - Options for the @ref getList method.
    * @returns {Promise{RoleList}}
    */
@@ -42,8 +42,8 @@ export class RoleService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleT
 
   /**
    * Gets the direct (first level) role names for a given username and site name.
-   * @param {string} username - username for the user to retrive its roles.
-   * @param {string} siteName - siteName in wich the user has the roles.
+   * @param {string} username - username for the user to retrieve its roles.
+   * @param {string} siteName - siteName in which the user has the roles.
    * @param {Options} options - Options for the @ref getList method.
    * @returns {Promise{[]string}}
    */
@@ -54,15 +54,15 @@ export class RoleService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleT
 
   /**
    * Gets all of the roles ID for a given username and site name.
-   * @param {string} username - username for the user to retrive its roles.
-   * @param {string} siteName - siteName in wich the user has the roles.
+   * @param {string} username - username for the user to retrieve its roles.
+   * @param {string} siteName - siteName in which the user has the roles.
    * @param {Options} options - Options for the @ref getList method.
    * @returns {Promise{RoleList}}
    */
   async getAllIdsForUsernameAndSiteName(username, siteName, options) {
     const isEnabled = options?.isEnabled ?? true;
 
-    const siteId = await this.siteService.getIdForName(siteName, { isEnabled });
+    const siteId = await this.siteService.getSingleIdForName(siteName, { isEnabled });
     if (!siteId || (Array.isArray(siteId) && !siteId.length)) {
       return;
     }
@@ -103,8 +103,8 @@ export class RoleService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleT
 
   /**
    * Gets all of the roles for a given username and site name.
-   * @param {string} username - username for the user to retrive its roles.
-   * @param {string} siteName - siteName in wich the user has the roles.
+   * @param {string} username - username for the user to retrieve its roles.
+   * @param {string} siteName - siteName in which the user has the roles.
    * @param {Options} options - Options for the @ref getList method.
    * @returns {Promise{RoleList}}
    */
@@ -115,8 +115,8 @@ export class RoleService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleT
 
   /**
    * Gets all of the role names for a given username and site name.
-   * @param {string} username - username for the user to retrive its roles.
-   * @param {string} siteName - siteName in wich the user has the roles.
+   * @param {string} username - username for the user to retrieve its roles.
+   * @param {string} siteName - siteName in which the user has the roles.
    * @param {Options} options - Options for the @ref getList method.
    * @returns {Promise{[]string}}
    */

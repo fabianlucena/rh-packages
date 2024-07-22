@@ -138,7 +138,7 @@ export class OAuth2ClientRedirectionService {
       return user;
     }
 
-    return await this.userService.getForId(identity.userId);
+    return await this.userService.getSingleForId(identity.userId);
   }
 
   async loginFromCode(data, options) {

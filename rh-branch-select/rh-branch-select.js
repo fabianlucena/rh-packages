@@ -15,7 +15,7 @@ async function init() {
   branchService = conf.global.services.Branch.singleton();
 }
 
-export async function getAvailableBranchsId(req) {
+export async function getAvailableBranchesId(req) {
   if (!conf.filters.getCurrentCompanyId) {
     return null;
   }
