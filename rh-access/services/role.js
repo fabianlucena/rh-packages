@@ -62,7 +62,7 @@ export class RoleService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleT
   async getAllIdsForUsernameAndSiteName(username, siteName, options) {
     const isEnabled = options?.isEnabled ?? true;
 
-    const siteId = await this.siteService.getSingleIdForName(siteName, { isEnabled });
+    const siteId = await this.siteService.getIdForName(siteName, { isEnabled });
     if (!siteId || (Array.isArray(siteId) && !siteId.length)) {
       return;
     }
