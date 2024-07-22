@@ -23,7 +23,7 @@ async function login(data, options) {
   }
 
   const sessionId = options.sessionId;
-  await sessionDataService.addData(sessionId, oldData);
+  await sessionDataService.updateData(sessionId, oldData);
 
   return sessionDataService.getDataIfExistsForSessionId(sessionId);
 }

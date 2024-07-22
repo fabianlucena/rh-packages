@@ -53,7 +53,11 @@ export class PerspectiveController extends Controller {
 
     const sessionId = req.session.id;
 
-    const data = {
+    await this.sessionDataService.updateData(sessionId, { perspective });
+
+    req.log?.info(`Perspective switched to: ${perspective.title}.`, { sessionId, perspectiveName: perspective.name });
+
+    return {
       count: 1,
       rows: perspective,
       api: {
@@ -62,15 +66,5 @@ export class PerspectiveController extends Controller {
         },
       },
     };
-
-    const sessionData = await this.sessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
-
-    sessionData.perspective = perspective;
-
-    await this.sessionDataService.setData(sessionId, sessionData);
-
-    req.log?.info(`Perspective switched to: ${perspective.title}.`, { sessionId, perspectiveName: perspective.name });
-
-    return data;
   }
 }
