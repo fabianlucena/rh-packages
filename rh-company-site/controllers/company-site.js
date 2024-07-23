@@ -1,5 +1,5 @@
 import { conf } from '../conf.js';
-import { getOptionsFromParamsAndOData, HttpError } from 'http-util';
+import { getOptionsFromParamsAndOData, HttpError, makeContext } from 'http-util';
 import { checkParameterUuid, MissingParameterError } from 'rf-util';
 import { Controller } from 'rh-controller';
 import dependency from 'rf-dependency';
@@ -14,7 +14,7 @@ export class CompanySiteController extends Controller {
   }
 
   postPermission = 'company-site.switch';
-  async post(req) {
+  async post(req, res) {
     const loc = req.loc;
 
     const companyUuid = req.query?.companyUuid ?? req.params?.companyUuid ?? req.body?.companyUuid;
@@ -109,8 +109,10 @@ export class CompanySiteController extends Controller {
     data.count = 1;
     data.rows = companySite;
 
-    await conf.global.eventBus?.$emit('companySwitch', data, { sessionId });
-    await conf.global.eventBus?.$emit('sessionUpdated', sessionId);
+    const context = makeContext(req, res),
+      eventOptions = { entity: 'CompanySite', context, sessionId };
+    await conf.global.eventBus?.$emit('companySwitch', { ...eventOptions, data });
+    await conf.global.eventBus?.$emit('sessionUpdated', eventOptions);
 
     req.log?.info(`Company switched to: ${companySite.company.title}.`, { sessionId, siteId, companyName: companySite.company.name });
 

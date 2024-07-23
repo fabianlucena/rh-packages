@@ -35,8 +35,8 @@ async function getCurrentPerspective({ context }) {
   return sessionData?.perspective;
 }
 
-async function menuFilter(data, { context, loc }) {
-  const perspectives = await perspectiveService.getList({ loc });
+async function menuFilter({ data, context }) {
+  const perspectives = await perspectiveService.getList({ loc: context.loc });
   if (!perspectives.length) {
     return;
   }

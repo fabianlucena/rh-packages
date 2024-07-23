@@ -36,11 +36,11 @@ async function configure(global, options) {
 
   global.eventBus?.$on('interface.grid.get', interfaceGridGet);
   global.eventBus?.$on('interface.form.get', interfaceFormGet);
-  global.eventBus?.$on('getted', getted);
-  global.eventBus?.$on('created', created);
-  global.eventBus?.$on('updated', updated);
+  global.eventBus?.$on('getted',   getted);
+  global.eventBus?.$on('created',  created);
+  global.eventBus?.$on('updated',  updated);
   global.eventBus?.$on('deleting', deleting);
-  global.eventBus?.$on('deleted', deleted);
+  global.eventBus?.$on('deleted',  deleted);
 }
 
 async function init() {
@@ -130,7 +130,7 @@ async function getAttributes(entity, options) {
   return attributesCache[language];
 }
 
-async function interfaceFormGet(form, options) {
+async function interfaceFormGet({ form, options }) {
   const entity = options?.entity;
   if (!entity) {
     return;
@@ -181,7 +181,7 @@ async function interfaceFormGet(form, options) {
   form.fields.push(...fieldsCache[language]);
 }
 
-async function interfaceGridGet(grid, options) {
+async function interfaceGridGet({ grid, options }) {
   const entity = options?.entity;
   if (!entity) {
     return;
@@ -237,7 +237,7 @@ async function interfaceGridGet(grid, options) {
   grid.details.push(...detailsCache[language]);
 }
 
-async function getted(entity, result, options) {
+async function getted({ entity, result, options }) {
   if (!entity) {
     return result;
   }
@@ -313,7 +313,7 @@ async function getted(entity, result, options) {
   return result;
 }
 
-async function created(entity, result, data, options) {
+async function created({ entity, result, data, options }) {
   if (!entity) {
     return;
   }
@@ -330,10 +330,10 @@ async function created(entity, result, data, options) {
 
   const entityIds = [result.id];
 
-  await updateValues(entity, entityIds, data, options);
+  await updateValues({ entity, entityIds, data, options });
 }
 
-async function updated(entity, result, data, options, service) {
+async function updated({ entity, result, data, options, service }) {
   if (!entity) {
     return;
   }
@@ -363,10 +363,10 @@ async function updated(entity, result, data, options, service) {
     entityIds.push(entityId);
   }
 
-  await updateValues(entity, entityIds, data, options);
+  await updateValues({ entity, entityIds, data, options });
 }
 
-async function updateValues(entity, entityIds, data, options) {
+async function updateValues({ entity, entityIds, data, options }) {
   const queryOptions = { loc: options?.loc, transaction: options?.transaction };
   const attributes = await getAttributes(entity, queryOptions);
   if (!attributes?.length) {
@@ -401,7 +401,7 @@ async function updateValues(entity, entityIds, data, options) {
   }
 }
 
-async function deleting(entity, options, service) {
+async function deleting({ entity, options, service }) {
   const queryOptions = { loc: options?.loc, transaction: options?.transaction };
   const attributes = await getAttributes(entity, queryOptions);
   if (!attributes?.length) {
@@ -440,7 +440,7 @@ async function deleting(entity, options, service) {
   }
 }
 
-async function deleted(entity) {
+async function deleted({ entity }) {
   if (!entity) {
     return;
   }

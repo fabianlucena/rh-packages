@@ -11,7 +11,7 @@ function configure (global) {
   global.eventBus?.$on('menuGet', menuGet);
 }
 
-async function login(data, options) {
+async function login({ options }) {
   if (!options?.sessionId || !options?.oldSessionId) {
     return;
   }
@@ -28,7 +28,7 @@ async function login(data, options) {
   return sessionDataService.getDataIfExistsForSessionId(sessionId);
 }
 
-async function menuGet(data, options) {
+async function menuGet({ data, options }) {
   if (!options?.sessionId) {
     return;
   }

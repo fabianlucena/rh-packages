@@ -260,11 +260,18 @@ export class ServiceBase {
     return error;
   }
 
-  async emit(eventSubName, condition, result, ...params) {
-    if (condition !== false && this.eventBus && this.eventName) {
-      let result1 = await this.eventBus?.$emit(this.eventName + '.' + eventSubName, result, ...params) ?? [];
-      let result2 = await this.eventBus?.$emit(eventSubName, this.eventName, result, ...params) ?? [];
+  async emit(eventSubName, params) {
+    if (this.eventBus && this.eventName) {
+      params = { entity: this.Name, service: this, ...params };
+      let result1 = await this.eventBus?.$emit(this.eventName + '.' + eventSubName, params) ?? [];
+      let result2 = await this.eventBus?.$emit(eventSubName, { event: this.eventName, ...params }) ?? [];
       return [...result1, ...result2];
+    }
+  }
+
+  async conditionalEmit(eventSubName, condition, params) {
+    if (condition !== false) {
+      return this.emit(eventSubName, params);
     }
   }
 
@@ -453,11 +460,11 @@ export class ServiceBase {
     }
 
     try {
-      await this.emit('creating', options?.emitEvent, data, options, this);
+      await this.conditionalEmit('creating', options?.emitEvent, { data, options });
       let row = await this.model.create(data, options, this);
       await this.updateExternData({ ...data, ...row }, options);
       await this.updateThroughData({ ...data, ...row }, options);
-      await this.emit('created', options?.emitEvent, row, data, options, this);
+      await this.conditionalEmit('created', options?.emitEvent, { row, data, options });
 
       await transaction?.commit();
 
@@ -821,7 +828,7 @@ export class ServiceBase {
    */
   async getList(options) {
     options = await this.getListOptions(options);
-    await this.emit('getting', options?.emitEvent, options, this);
+    await this.conditionalEmit('getting', options?.emitEvent, { options });
     let result = this.model.get(options, this);
     if (!options) {
       result = await result;
@@ -832,7 +839,7 @@ export class ServiceBase {
       result = await result;
       result = result.map(r => new this.dto(r));
     }
-    await this.emit('getted', options?.emitEvent, result, options, this);
+    await this.conditionalEmit('getted', options?.emitEvent, { result, options });
 
     return result;
   }
@@ -972,9 +979,9 @@ export class ServiceBase {
       }
     }
         
-    await this.emit('gettingCount', options?.emitEvent, options);
+    await this.conditionalEmit('gettingCount', options?.emitEvent, { options });
     const result = await this.model.count(options, this);
-    await this.emit('gettingCount', options?.emitEvent, result, options);
+    await this.conditionalEmit('gettingCount', options?.emitEvent, { result, options });
 
     return result;
   }
@@ -1002,14 +1009,14 @@ export class ServiceBase {
     data = await this.completeReferences(data, options);
     data = await this.validateForUpdate(data, options?.where);
 
-    await this.emit('updating', options?.emitEvent, data, options, this);
+    await this.conditionalEmit('updating', options?.emitEvent, { data, options });
     let result = await this.model.update(data, options, this);
     if (result.length) {
       result = result[0];
     }
     await this.updateExternData(data, options);
     await this.updateThroughData(data, options);
-    await this.emit('updated', options?.emitEvent, result, data, options, this);
+    await this.conditionalEmit('updated', options?.emitEvent, { result, data, options });
 
     return result;
   }
@@ -1034,9 +1041,9 @@ export class ServiceBase {
     options = { ...options };
     options.where = await this.completeReferences(options.where);
 
-    await this.emit('deleting', options?.emitEvent, options, this);
+    await this.conditionalEmit('deleting', options?.emitEvent, { options });
     const result = await this.model.delete(options, this);
-    await this.emit('deleted', options?.emitEvent, result, options, this);
+    await this.conditionalEmit('deleted', options?.emitEvent, { result, options });
 
     return result;
   }
@@ -1053,16 +1060,16 @@ export class ServiceBase {
 
   async sanitize(result, options) {
     if (result.rows) {
-      await this.emit('sanitizing', options?.emitEvent, result.rows, options, this);
+      await this.conditionalEmit('sanitizing', options?.emitEvent, { rows: result.rows, options });
       result.rows = await Promise.all(result.rows.map(row => this.sanitizeRow(row, options)));
-      const eventResult = await this.emit('sanitized', options?.emitEvent, result.rows, options, this);
+      const eventResult = await this.conditionalEmit('sanitized', options?.emitEvent, { rows: result.rows, options });
       if (eventResult?.length) {
         result.rows = eventResult[eventResult.length - 1];
       }
     } else {
-      await this.emit('sanitizing', options?.emitEvent, result, options, this);
+      await this.conditionalEmit('sanitizing', options?.emitEvent, { result, options });
       result = await Promise.all(result.map(row => this.sanitizeRow(row, options)));
-      const eventResult = await this.emit('sanitized', options?.emitEvent, result, options, this);
+      const eventResult = await this.conditionalEmit('sanitized', options?.emitEvent, { result, options });
       if (eventResult?.length) {
         result = eventResult[eventResult.length - 1];
       }
@@ -1072,7 +1079,7 @@ export class ServiceBase {
   }
 
   async sanitizeRow(row, options) {
-    await this.emit('sanitizingRow', options?.emitEvent, row, options, this);
+    await this.conditionalEmit('sanitizingRow', options?.emitEvent, { row, options });
 
     if (this.hiddenColumns?.length) {
       row = { ...row };
@@ -1121,7 +1128,7 @@ export class ServiceBase {
       }
     }
 
-    await this.emit('sanitizedRow', options?.emitEvent, row, options, this);
+    await this.conditionalEmit('sanitizedRow', options?.emitEvent, { row, options });
 
     return row;
   }

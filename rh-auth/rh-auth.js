@@ -78,6 +78,6 @@ async function updateData(global) {
   await runSequentially(data?.identities,    async data => await identityService.    createIfNotExists(data));
 }
 
-async function sessionUpdated(sessionId) {
+async function sessionUpdated({ sessionId }) {
   conf.sessionService.deleteFromCacheForSessionId(sessionId);
 }

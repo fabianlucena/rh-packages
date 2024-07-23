@@ -1,5 +1,5 @@
 import { conf } from '../conf.js';
-import { HttpError } from 'http-util';
+import { HttpError, makeContext } from 'http-util';
 import { checkParameter } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
 import { Controller } from 'rh-controller';
@@ -96,8 +96,9 @@ export class LoginController extends Controller {
 
       await conf.global.eventBus?.$emit(
         'login',
-        result,
         {
+          result,
+          context: makeContext(req, res),
           sessionId: session.id,
           oldSessionId: session.oldSessionId,
           autoLogin: !!req.body.autoLoginToken

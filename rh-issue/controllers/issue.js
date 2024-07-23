@@ -79,7 +79,7 @@ export class IssueController extends Controller {
   }
 
   getPermission = 'issue.get';
-  async getData(req) {
+  async getData(req, res) {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = {
@@ -113,9 +113,11 @@ export class IssueController extends Controller {
       options.where.projectId = await conf.filters.getCurrentProjectId(req) ?? null;
     }
 
-    await conf.global.eventBus?.$emit('Issue.response.getting', options);
+    const context = makeContext(req, res),
+      eventOptions = { entity: 'Issue', context, options };
+    await conf.global.eventBus?.$emit('Issue.response.getting', eventOptions);
     let result = await this.service.getListAndCount(options);
-    await conf.global.eventBus?.$emit('Issue.response.getted', result, options);
+    await conf.global.eventBus?.$emit('Issue.response.getted', { ...eventOptions, result });
     for (const row of result.rows) {
       row.related = [
         ...row.relatedTo.  map(i => ({ ...i, issue: i.to   })),

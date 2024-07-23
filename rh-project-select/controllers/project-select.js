@@ -1,6 +1,6 @@
 import { dependency } from 'rf-dependency';
 import { conf } from '../conf.js';
-import { getOptionsFromParamsAndOData, HttpError } from 'http-util';
+import { getOptionsFromParamsAndOData, HttpError, makeContext } from 'http-util';
 import { checkParameter, MissingParameterError } from 'rf-util';
 import { Controller } from 'rh-controller';
 import { getFiltersFromRequest } from '../rh-project-select.js';
@@ -14,7 +14,7 @@ export class ProjectSelectController extends Controller {
   }
 
   postPermission = 'project-select.switch';
-  async post(req) {
+  async post(req, res) {
     const loc = req.loc;
 
     const projectUuid = req.query?.projectUuid ?? req.params?.projectUuid ?? req.body?.projectUuid;
@@ -75,8 +75,11 @@ export class ProjectSelectController extends Controller {
     }
 
     if (this.eventBus) {
-      await this.eventBus.$emit('projectSwitch', data, { sessionId });
-      await this.eventBus.$emit('sessionUpdated', sessionId);
+      const context = makeContext(req, res),
+        eventOptions = { entity: 'ProjectSelect', context, sessionId };
+
+      await this.eventBus.$emit('projectSwitch', { ...eventOptions, data });
+      await this.eventBus.$emit('sessionUpdated', eventOptions);
     }
 
     req.log?.info(`Project switched to: ${project.title}.`, { sessionId, projectName: project.name });

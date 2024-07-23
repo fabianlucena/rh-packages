@@ -62,9 +62,15 @@ export class MenuController extends Controller {
     });
 
     const data = { menu },
-      eventOptions = { context: makeContext(req, res), loc, sessionId: req.session?.id, params: req.query };
-    await conf.global.eventBus?.$emit('menuGet',    data, eventOptions);
-    await conf.global.eventBus?.$emit('menuFilter', data, eventOptions);
+      eventOptions = {
+        entity: 'Menu',
+        context: makeContext(req, res),
+        sessionId: req.session?.id,
+        params: req.query,
+        data,
+      };
+    await conf.global.eventBus?.$emit('menuGet',    eventOptions);
+    await conf.global.eventBus?.$emit('menuFilter', eventOptions);
 
     res.status(200).send(data);
   }

@@ -136,7 +136,7 @@ async function getWorkflowsForEntity(entity, options) {
   return workflowsCache[language];
 }
 
-async function interfaceGridGet(grid, options) {
+async function interfaceGridGet({ grid, options }) {
   const entity = options?.entity;
   if (!entity) {
     return;
@@ -183,7 +183,7 @@ async function interfaceGridGet(grid, options) {
   grid.fields.push(...fieldsCache[language]);
 }
 
-async function getted(entity, result, options) {
+async function getted({ entity, result, options }) {
   if (!entity) {
     return result;
   }
