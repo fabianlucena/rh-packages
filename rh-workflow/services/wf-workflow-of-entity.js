@@ -293,7 +293,7 @@ export class WfWorkflowOfEntityService extends Service.IdUuidEnableNameUniqueTit
         method:  'get',
       },
       getDefaultValues: true,
-      action: 'workflow',
+      action: 'workflow-of-entity',
       gridActions,
       fields,
     };

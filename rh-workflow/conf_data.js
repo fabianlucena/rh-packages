@@ -19,10 +19,10 @@ export const data = {
   ],
   
   menuItems: [
-    { name: 'workflow.admin',          parent: 'administration', ownerModule: name, permissions: 'workflow.get', label: loc._cf('workflow', 'Workflow'),            isTranslatable: true, translationContext: 'workflow', icon: 'perspective' },
-    { name: 'workflow.get',            parent: 'workflow.admin', ownerModule: name, permissions: 'workflow.get', label: loc._cf('workflow', 'Workflows'),           isTranslatable: true, translationContext: 'workflow', icon: 'workflow',   action: 'grid', service: 'workflow' },
-    { name: 'workflow-of-entity.get',  parent: 'workflow.admin', ownerModule: name, permissions: 'workflow.get', label: loc._cf('workflow', 'Workflows in entity'), isTranslatable: true, translationContext: 'workflow', icon: 'workflow',   action: 'grid', service: 'workflow-of-entity' },
-    { name: 'workflow-status.get',     parent: 'workflow.admin', ownerModule: name, permissions: 'workflow.get', label: loc._cf('workflow', 'Workflows in entity'), isTranslatable: true, translationContext: 'workflow', icon: 'workflow',   action: 'grid', service: 'workflow-status' },
-    { name: 'workflow-transition.get', parent: 'workflow.admin', ownerModule: name, permissions: 'workflow.get', label: loc._cf('workflow', 'Workflows in entity'), isTranslatable: true, translationContext: 'workflow', icon: 'workflow',   action: 'grid', service: 'workflow-transition' },
+    { name: 'workflow.admin',          parent: 'administration', ownerModule: name, permissions: 'workflow.get', label: loc._cf('workflow', 'Workflow'),              isTranslatable: true, translationContext: 'workflow', icon: 'workflow' },
+    { name: 'workflow.get',            parent: 'workflow.admin', ownerModule: name, permissions: 'workflow.get', label: loc._cf('workflow', 'Workflows'),             isTranslatable: true, translationContext: 'workflow', icon: 'workflow',            action: 'grid', service: 'workflow' },
+    { name: 'workflow-of-entity.get',  parent: 'workflow.admin', ownerModule: name, permissions: 'workflow.get', label: loc._cf('workflow', 'Workflows of entities'), isTranslatable: true, translationContext: 'workflow', icon: 'workflow-of-entity',  action: 'grid', service: 'workflow-of-entity' },
+    { name: 'workflow-status.get',     parent: 'workflow.admin', ownerModule: name, permissions: 'workflow.get', label: loc._cf('workflow', 'Statuses'),              isTranslatable: true, translationContext: 'workflow', icon: 'workflow-status',     action: 'grid', service: 'workflow-status' },
+    { name: 'workflow-transition.get', parent: 'workflow.admin', ownerModule: name, permissions: 'workflow.get', label: loc._cf('workflow', 'Transitions'),           isTranslatable: true, translationContext: 'workflow', icon: 'workflow-transition', action: 'grid', service: 'workflow-transition' },
   ],
 };

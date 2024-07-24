@@ -3,7 +3,7 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class WfWorkflow extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Module, { as: 'ownerModule', foreignKey: 'ownerModuleId' });
+      this.belongsTo(models.Module, { as: 'ownerModule', foreignKey: { name: 'ownerModuleId', allowNull: true }});
     }
   }
   WfWorkflow.init({
@@ -43,10 +43,6 @@ export default (sequelize, DataTypes) => {
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    ownerModuleId: {
-      type: DataTypes.BIGINT,
       allowNull: true,
     },
   }, {
