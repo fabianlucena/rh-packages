@@ -101,7 +101,7 @@ export class LoginController extends Controller {
           context: makeContext(req, res),
           sessionId: session.id,
           oldSessionId: session.oldSessionId,
-          autoLogin: !!req.body.autoLoginToken
+          autoLogin: !!req?.body?.autoLoginToken
         }
       );
 
