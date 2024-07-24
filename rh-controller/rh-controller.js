@@ -126,14 +126,26 @@ export class Controller {
     await checkPermissionHandler(req, res, next);
   }
 
-  async sanitizeInterface(interfaceName, result, req) {
+  getPlainFields(fields) {
+    const result = [];
+    for (const field of fields) {
+      result.push(field);
+      if (field.fields) {
+        result.push(...this.getPlainFields(field.fields));
+      }
+    }
+
+    return result;
+  }
+
+  async sanitizeInterface(interfaceType, result, req) {
     const loc = req.loc ?? defaultLoc,
       translationContext = this.translationContext,
       options = {
         loc,
         translationContext: this.translationContext,
         ...result.fieldsFilter,
-        interface: interfaceName,
+        interface: interfaceType,
         entity: this.getName(),
       };
     delete result.fieldsFilter;
@@ -166,10 +178,10 @@ export class Controller {
       );
     }
 
-    if (interfaceName) {
+    if (interfaceType) {
       const substitutions = [ 'title' ];
-      for (const dst in substitutions) {
-        const src = interfaceName + ucfirst(dst);
+      for (const dst of substitutions) {
+        const src = interfaceType + ucfirst(dst);
         if (result[src] === undefined) {
           continue;
         }
@@ -181,6 +193,12 @@ export class Controller {
 
     if (typeof result.title === 'function') {
       result.title = await result.title(loc, translationContext);
+    }
+
+    if (interfaceType === 'grid') {
+      if (result.fields) {
+        result.fields = this.getPlainFields(result.fields);
+      }
     }
 
     return result;
