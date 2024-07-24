@@ -16,12 +16,13 @@ export class SessionController extends Controller {
     return async (req, res, next) => {
       const authorization = req.header('Authorization');
       if (!authorization || authorization.length < 8 || authorization.slice(0, 7).toLowerCase() !== 'bearer ') {
-        if (!authorization) {
-          this.log.info('no authorization token');
-        } else if (authorization.length < 8 || authorization.slice(0, 7).toLowerCase() !== 'bearer ') {
-          this.log.info('invalid authorization token scheme');
-        }
+        // this.log.info('no authorization token');
+        next();
+        return;
+      }
 
+      if (authorization.length < 8 || authorization.slice(0, 7).toLowerCase() !== 'bearer ') {
+        this.log.info('invalid authorization token scheme');
         next();
         return;
       }
@@ -78,7 +79,7 @@ export class SessionController extends Controller {
     this.service = dependency.get('sessionService');
   }
 
-  getPermission = ['ownsession.get', 'session.get'];
+  getPermission = ['ownSession.get', 'session.get'];
   async getData(req) {
     const definitions = { uuid: 'uuid', open: 'date', close: 'date', authToken: 'string', index: 'int' };
     let options = { view: true, limit: 10, offset: 0 };
