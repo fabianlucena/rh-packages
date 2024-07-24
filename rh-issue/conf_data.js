@@ -58,7 +58,7 @@ export const data = {
       currentStatusTitle: loc._cf('issue', 'Status'),
       assigneeTitle:      loc._cf('issue', 'Assignee'),
       workflowTitle:      loc._cf('issue', 'Workflow'),
-      type: {
+      workflow: {
         name: 'minimalist',
         title: loc._cf('issue', 'Minimalist'),
         isTranslatable: true,
@@ -85,7 +85,6 @@ export const data = {
         transitions: [
           {
             name: 'close',
-            type: 'minimalist',
             from: 'open',
             to: 'closed',
             title: loc._cf('issue', 'Close'),
