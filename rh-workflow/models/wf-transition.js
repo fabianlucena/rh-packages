@@ -3,10 +3,10 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class WfTransition extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Module,   { as: 'ownerModule', foreignKey: 'ownerModuleId' });
-      this.belongsTo(models.WfType,   { as: 'type',        foreignKey: 'typeId'        });
-      this.belongsTo(models.WfStatus, { as: 'from',        foreignKey: 'fromId'        });
-      this.belongsTo(models.WfStatus, { as: 'to',          foreignKey: 'toId'          });
+      this.belongsTo(models.Module,     { as: 'ownerModule', foreignKey: { name: 'ownerModuleId', allowNull: true }});
+      this.belongsTo(models.WfWorkflow, { as: 'workflow',    foreignKey: { name: 'workflowId',    allowNull: false }});
+      this.belongsTo(models.WfStatus,   { as: 'from',        foreignKey: { name: 'fromId',        allowNull: false }});
+      this.belongsTo(models.WfStatus,   { as: 'to',          foreignKey: { name: 'toId',          allowNull: false }});
     }
   }
   WfTransition.init({
@@ -27,18 +27,6 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: true,
     },
-    typeId: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-    },
-    fromId: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-    },
-    toId: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -58,10 +46,6 @@ export default (sequelize, DataTypes) => {
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    ownerModuleId: {
-      type: DataTypes.BIGINT,
       allowNull: true,
     },
   }, {

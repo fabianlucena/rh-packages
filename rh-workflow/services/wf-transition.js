@@ -4,7 +4,7 @@ import { ConflictError } from 'http-util';
 
 export class WfTransitionService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleDescriptionTranslatable {
   references = {
-    type: 'wfTypeService',
+    type: 'wfWorkflowService',
     from: 'wfStatusService',
     to:   'wfStatusService',
   };

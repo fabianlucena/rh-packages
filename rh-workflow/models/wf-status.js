@@ -3,8 +3,8 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class WfStatus extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Module, { as: 'ownerModule', foreignKey: 'ownerModuleId' });
-      this.belongsTo(models.WfType, { as: 'type',        foreignKey: 'typeId'        });
+      this.belongsTo(models.Module,     { as: 'ownerModule', foreignKey: { name: 'ownerModuleId', allowNull: true }});
+      this.belongsTo(models.WfWorkflow, { as: 'workflow',    foreignKey: { name: 'workflowId',    allowNull: false }});
     }
   }
   WfStatus.init({
@@ -25,10 +25,6 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: true,
     },
-    typeId: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -48,10 +44,6 @@ export default (sequelize, DataTypes) => {
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    ownerModuleId: {
-      type: DataTypes.BIGINT,
       allowNull: true,
     },
   }, {

@@ -1,11 +1,52 @@
 [
     {
+        "source": "As column",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Como columna",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [162,37]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [206,37]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [216,37]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [250,37]"
+    },
+    {
+        "source": "As detail",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Como detalle",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [172,37]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [260,37]"
+    },
+    {
         "source": "Assignee",
         "language": "es",
         "context": "workflow",
-        "isDraft": false,
         "translation": "Encargado",
-        "ref": "..\\rh-workflow\\models\\wf-workflow.js [105,32]"
+        "ref": "..\\rh-workflow\\models\\wf-workflow-of-entity.js [93,32]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [199,34]"
+    },
+    {
+        "source": "Check for enable or uncheck for disable",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Marque para habilitar o desmarque para deshabilitar",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [76,33]"
+    },
+    {
+        "source": "Check for show or uncheck for hide as column grid",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Marque para mostrar o desmarque para ocultar como columna de grilla",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [163,37]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [207,37]"
+    },
+    {
+        "source": "Check for show or uncheck for hide as detail grid",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Marque para mostrar o desmarque para ocultar como detalle de grilla",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [173,37]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [217,37]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [251,37]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [261,37]"
+    },
+    {
+        "source": "Create workflow case",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Crear caso de flujo de trabajo",
+        "ref": "..\\rh-workflow\\rh-workflow.js [231,70]"
     },
     {
         "source": "Create workflows",
@@ -15,11 +56,25 @@
         "ref": "..\\rh-workflow\\conf_data.js [16,43]"
     },
     {
+        "source": "Current status",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Estado actual",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [155,34]"
+    },
+    {
         "source": "Delete workflows",
         "language": "es",
         "context": "workflow",
         "translation": "Eliminar flujos de trabajos",
         "ref": "..\\rh-workflow\\conf_data.js [18,43]"
+    },
+    {
+        "source": "Description",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Descripción",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [149,33]"
     },
     {
         "source": "Edit workflows",
@@ -29,10 +84,16 @@
         "ref": "..\\rh-workflow\\conf_data.js [17,43]"
     },
     {
+        "source": "Enabled",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Habilitado",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [75,33]"
+    },
+    {
         "source": "Exists another row with that title.",
         "language": "es",
         "context": "workflow",
-        "isDraft": false,
         "translation": "Existe otra fila con ese título.",
         "ref": "..\\rh-workflow\\services\\wf-transition.js [32,42]"
     },
@@ -51,6 +112,41 @@
         "ref": "..\\rh-workflow\\conf_data.js [15,43]"
     },
     {
+        "source": "Model entity",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Entidad de modelo",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [136,37]"
+    },
+    {
+        "source": "Name",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Nombre",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [106,33]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [181,37]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [225,37]"
+    },
+    {
+        "source": "No workflow case",
+        "language": "es",
+        "context": "workflow",
+        "translation": "No hay caso de flujo de trabajo",
+        "ref": "..\\rh-workflow\\rh-workflow.js [235,50]"
+    },
+    {
+        "source": "Select the model entity",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Seleccione la entidad de modelo",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [137,37]"
+    },
+    {
+        "source": "Select the workflow",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Seleccione el flujo de trabajo",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [122,37]"
+    },
+    {
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
@@ -63,6 +159,13 @@
         "ref": "rh-workflow-es.js [19,26]"
     },
     {
+        "source": "Title",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Título",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [83,33]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [190,37]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [234,37]"
+    },
+    {
         "source": "To parameter is missing or to status does not exist.",
         "language": "es",
         "context": "workflow",
@@ -70,11 +173,74 @@
         "ref": "..\\rh-workflow\\services\\wf-transition.js [23,39]"
     },
     {
+        "source": "Type the assignee field title here",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Escriba aquí el título del campo encargado",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [235,37]"
+    },
+    {
+        "source": "Type the assignee name here",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Escriba aquí el nombre del campo encargado",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [226,37]"
+    },
+    {
+        "source": "Type the current status field title here",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Escriba aquí el título del campo estado actual",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [191,37]"
+    },
+    {
+        "source": "Type the current status property name here",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Escriba aquí el nombre del campo estado actual",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [182,37]"
+    },
+    {
+        "source": "Type the description here",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Escriba aquí la descripción",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [150,33]"
+    },
+    {
+        "source": "Type the name here",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Escriba aquí el nombre",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [107,33]"
+    },
+    {
+        "source": "Type the title here",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Escriba aquí el título",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [84,33]"
+    },
+    {
+        "source": "Type the workflow field title here",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Escriba aquí el nombre del campo título del flujo de trabajo",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [279,37]"
+    },
+    {
+        "source": "Type the workflow name here",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Escriba aquí el nombre del del flujo de trabajo",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [270,37]"
+    },
+    {
         "source": "Workflow",
         "language": "es",
         "context": "workflow",
         "translation": "Flujo de trabajo",
-        "ref": "..\\rh-workflow\\conf_data.js [22,116]\n..\\rh-workflow\\models\\wf-workflow.js [125,32]"
+        "ref": "..\\rh-workflow\\conf_data.js [22,125]\n..\\rh-workflow\\models\\wf-workflow-of-entity.js [113,32]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [121,37]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [243,34]"
     },
     {
         "source": "Workflow manager",
@@ -82,6 +248,27 @@
         "context": "workflow",
         "translation": "Administrador de flujos de trabajos",
         "ref": "..\\rh-workflow\\conf_data.js [7,43]"
+    },
+    {
+        "source": "Workflow name",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Nombre del flujo de trabajo",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [269,37]"
+    },
+    {
+        "source": "Workflow of entity",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Flujo de trabajo de la entidad",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [289,29]"
+    },
+    {
+        "source": "Workflow title",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Título del flujo de trabajo",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [278,37]"
     },
     {
         "source": "Workflow type parameter is missing or workflow type does not exist.",
@@ -95,6 +282,21 @@
         "language": "es",
         "context": "workflow",
         "translation": "Flujos de trabajos",
-        "ref": "..\\rh-workflow\\conf_data.js [23,116]"
+        "ref": "..\\rh-workflow\\conf_data.js [23,125]"
+    },
+    {
+        "source": "Workflows in entity",
+        "language": "es",
+        "context": "workflow",
+        "isDraft": false,
+        "translation": "Flujo de trabajo en entidad",
+        "ref": "..\\rh-workflow\\conf_data.js [24,125]\n..\\rh-workflow\\conf_data.js [25,125]\n..\\rh-workflow\\conf_data.js [26,125]"
+    },
+    {
+        "source": "Workflows of entities",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Flujo de trabajo de entidad",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [290,29]"
     }
 ]

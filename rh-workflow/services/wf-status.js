@@ -3,7 +3,7 @@ import dependency from 'rf-dependency';
 
 export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleDescriptionTranslatable {
   references = {
-    type: 'wfTypeService',
+    type: 'wfWorkflowService',
   };
   defaultTranslationContext = 'workflow';
 

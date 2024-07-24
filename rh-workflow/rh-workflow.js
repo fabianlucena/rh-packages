@@ -1,6 +1,7 @@
 import { conf as localConf } from './conf.js';
 import { runSequentially } from 'rf-util';
 import dependency from 'rf-dependency';
+import { defaultLoc } from 'rf-locale';
 
 export const conf = localConf;
 
@@ -27,32 +28,51 @@ async function configure(global, options) {
 }
 
 async function init() {
-  conf.modelEntityNameService = dependency.get('modelEntityNameService');
-  conf.wfWorkflowService =      dependency.get('wfWorkflowService');
-  conf.wfTypeService =          dependency.get('wfTypeService');
-  conf.wfStatusService =        dependency.get('wfStatusService');
-  conf.wfTransitionService =    dependency.get('wfTransitionService');
-  conf.wfCaseService =          dependency.get('wfCaseService');
+  conf.modelEntityNameService =    dependency.get('modelEntityNameService');
+  conf.wfWorkflowOfEntityService = dependency.get('wfWorkflowOfEntityService');
+  conf.wfWorkflow =                dependency.get('wfWorkflowService');
+  conf.wfStatusService =           dependency.get('wfStatusService');
+  conf.wfTransitionService =       dependency.get('wfTransitionService');
+  conf.wfCaseService =             dependency.get('wfCaseService');
 }
 
 async function updateData(global) {
   const data = global?.data;
 
-  await runSequentially(data?.workflowsTypes,       async data => updateWfType(data));
+  await runSequentially(data?.workflows,            async data => updateWfWorkflow(data));
   await runSequentially(data?.workflowsStatuses,    async data => updateWfStatus(data));
   await runSequentially(data?.workflowsTransitions, async data => updateWfTransition(data));
-  await runSequentially(data?.workflows,            async data => updateWfWorkflow(data));
+  await runSequentially(data?.workflowsOfEntities,  async data => updateWfWorkflowOfEntity(data));
+}
+
+async function updateWfWorkflowOfEntity(workflowOfEntity) {
+  const defaultData = { ownerModule: workflowOfEntity.ownerModule };
+  
+  if (typeof workflowOfEntity.workflow === 'object') {
+    await updateWfWorkflow({ ...defaultData, ...workflowOfEntity.workflow });
+    workflowOfEntity = { ...workflowOfEntity, workflow: workflowOfEntity.workflow.name };
+  }
+
+  defaultData.workflow = workflowOfEntity.workflow;
+
+  if (workflowOfEntity.statuses) {
+    await runSequentially(workflowOfEntity.statuses, async data => updateWfStatus({ ...defaultData, ...data }));
+  }
+
+  if (workflowOfEntity.transitions) {
+    await runSequentially(workflowOfEntity.transitions, async data => updateWfTransition({ ...defaultData, ...data }));
+  }
+
+  await conf.wfWorkflowOfEntityService.createIfNotExists(workflowOfEntity);
 }
 
 async function updateWfWorkflow(workflow) {
-  const defaultData = { ownerModule: workflow.ownerModule };
-    
-  if (typeof workflow.type === 'object') {
-    await updateWfType({ ...defaultData, ...workflow.type });
-    workflow = { ...workflow, type: workflow.type.name };
-  }
+  await conf.wfWorkflowService.createIfNotExists(workflow);
 
-  defaultData.type = workflow.type;
+  const defaultData = {
+    workflow:    workflow.name,
+    ownerModule: workflow.ownerModule,
+  };
 
   if (workflow.statuses) {
     await runSequentially(workflow.statuses, async data => updateWfStatus({ ...defaultData, ...data }));
@@ -61,32 +81,13 @@ async function updateWfWorkflow(workflow) {
   if (workflow.transitions) {
     await runSequentially(workflow.transitions, async data => updateWfTransition({ ...defaultData, ...data }));
   }
-
-  await conf.wfWorkflowService.createIfNotExists(workflow);
-}
-
-async function updateWfType(type) {
-  await conf.wfTypeService.createIfNotExists(type);
-
-  const defaultData = {
-    type:        type.name,
-    ownerModule: type.ownerModule,
-  };
-
-  if (type.statuses) {
-    await runSequentially(type.statuses, async data => updateWfStatus({ ...defaultData, ...data }));
-  }
-
-  if (type.transitions) {
-    await runSequentially(type.transitions, async data => updateWfTransition({ ...defaultData, ...data }));
-  }
 }
 
 async function updateWfStatus(workflowStatus) {
   await conf.wfStatusService.createIfNotExists(workflowStatus);
 
   const defaultData = {
-    type:        workflowStatus.type,
+    workflow:    workflowStatus.workflow,
     ownerModule: workflowStatus.ownerModule,
   };
 
@@ -97,7 +98,7 @@ async function updateWfStatus(workflowStatus) {
 
 async function updateWfTransition(workflowTransition) {
   const defaultData = {
-    type:        workflowTransition.type,
+    workflow:    workflowTransition.workflow,
     ownerModule: workflowTransition.ownerModule,
   };
 
@@ -122,10 +123,10 @@ async function getWorkflowsForEntity(entity, options) {
   if (workflowsCache[language] === undefined) {
     workflowsCache[language] = {};
         
-    const workflows = await conf.wfWorkflowService.getForEntityName(
+    const workflows = await conf.wfWorkflowOfEntityService.getForEntityName(
       entity,
       {
-        include: { type: true },
+        include: { workflow: true },
         loc: options.loc,
       }
     );
@@ -136,8 +137,7 @@ async function getWorkflowsForEntity(entity, options) {
   return workflowsCache[language];
 }
 
-async function interfaceGridGet({ grid, options }) {
-  const entity = options?.entity;
+async function interfaceGridGet({ entity, context, grid }) {
   if (!entity) {
     return;
   }
@@ -145,8 +145,8 @@ async function interfaceGridGet({ grid, options }) {
   conf.fieldsCache[entity] ||= {};
   const fieldsCache = conf.fieldsCache[entity];
 
-  const loc = options?.loc;
-  const language = loc?.language;
+  const loc = context?.loc,
+    language = loc?.language;
   if (fieldsCache[language] === undefined) {
     fieldsCache[language] = [];
 
@@ -193,6 +193,7 @@ async function getted({ entity, result, options }) {
     return result;
   }
 
+  const loc = options?.loc ?? defaultLoc;
   result = await result;
   for (const iRow in result) {
     let row = result[iRow];
@@ -213,7 +214,7 @@ async function getted({ entity, result, options }) {
             //assignee: true,
           },
           skipNoRowsError: true,
-          loc: options.loc,
+          loc,
         },
       );
 
@@ -224,6 +225,14 @@ async function getted({ entity, result, options }) {
 
         if (workflow.assigneeName) {
           row[workflow.assigneeName] = wfCase?.CurrentStatus?.Assignee?.displayName;
+        }
+      } else {
+        if (workflow.currentStatusName) {
+          row[workflow.currentStatusName] = `<a href="#">${await loc._c('workflow', 'Create workflow case')}</a>`;
+        }
+
+        if (workflow.assigneeName) {
+          row[workflow.assigneeName] = await loc._c('workflow', 'No workflow case');
         }
       }
 
