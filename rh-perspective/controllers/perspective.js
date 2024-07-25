@@ -53,7 +53,7 @@ export class PerspectiveController extends Controller {
 
     const sessionId = req.session.id;
 
-    await this.sessionDataService.updateData(sessionId, { perspective });
+    await this.sessionDataService.addData(sessionId, { perspective });
 
     req.log?.info(`Perspective switched to: ${perspective.title}.`, { sessionId, perspectiveName: perspective.name });
 
