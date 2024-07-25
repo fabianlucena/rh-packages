@@ -45,52 +45,17 @@ export default (sequelize, DataTypes) => {
       defaultValue: false,
     },
     translationContext: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
       allowNull: true,
     },
     description: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    showCurrentStatusInColumn: {
-      type: DataTypes.BOOLEAN,
+    modelUuidProperty: {
+      type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: true,
-    },
-    showCurrentStatusInDetail: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-    currentStatusName: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      defaultValue: 'currentStatus',
-    },
-    currentStatusTitle: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      defaultValue: 'Status',
-    },
-    showAssigneeInColumn: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
-    },
-    showAssigneeInDetail: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-    assigneeName: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      defaultValue: 'assignee',
-    },
-    assigneeTitle: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      defaultValue: defaultLoc._cf('workflow', 'Assignee'),
+      defaultValue: 'uuid',
     },
     showWorkflowInColumn: {
       type: DataTypes.BOOLEAN,
@@ -103,14 +68,54 @@ export default (sequelize, DataTypes) => {
       defaultValue: true,
     },
     workflowName: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
       allowNull: false,
       defaultValue: 'workflow',
     },
     workflowTitle: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
       allowNull: false,
       defaultValue: defaultLoc._cf('workflow', 'Workflow'),
+    },
+    showCurrentStatusInColumn: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
+    showCurrentStatusInDetail: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    currentStatusName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'currentStatuses',
+    },
+    currentStatusTitle: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: defaultLoc._cf('workflow', 'Statuses'),
+    },
+    showAssigneeInColumn: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
+    showAssigneeInDetail: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    assigneeName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: 'assignees',
+    },
+    assigneeTitle: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: defaultLoc._cf('workflow', 'Assignees'),
     },
   }, {
     sequelize,

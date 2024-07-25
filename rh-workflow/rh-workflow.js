@@ -154,26 +154,25 @@ async function interfaceGridGet({ entity, context, grid }) {
     for (const workflow of workflows) {
       fieldsCache[language].push(
         {
-          isColumn:  workflow.showCurrentStatusInColumn,
-          isDetail:  workflow.showCurrentStatusInDetail,
-          name:      workflow.currentStatusName,
-          label:     workflow.currentStatusTitle,
-          type:      'text',
-          className: 'framed',
-        },
-        {
-          isColumn:  workflow.showAssigneeInColumn,
-          isDetail:  workflow.showAssigneeInDetail,
-          name:      workflow.assigneeName,
-          label:     workflow.assigneeTitle,
-          type:      'text',
-        },
-        {
-          isColumn:  workflow.showWorkflowInColumn,
-          isDetail:  workflow.showWorkflowInDetail,
           name:      workflow.workflowName,
           label:     workflow.workflowTitle,
           type:      'text',
+          isColumn:  workflow.showWorkflowInColumn,
+          isDetail:  workflow.showWorkflowInDetail,
+        },
+        {
+          name:      workflow.currentStatusName,
+          label:     workflow.currentStatusTitle,
+          type:      'list',
+          isColumn:  workflow.showCurrentStatusInColumn,
+          isDetail:  workflow.showCurrentStatusInDetail,
+        },
+        {
+          name:      workflow.assigneeName,
+          label:     workflow.assigneeTitle,
+          type:      'list',
+          isColumn:  workflow.showAssigneeInColumn,
+          isDetail:  workflow.showAssigneeInDetail,
         },
       );
     }
@@ -203,6 +202,10 @@ async function getted({ entity, result, options }) {
     }
 
     for (const workflow of workflows) {
+      if (workflow.workflowName) {
+        row[workflow.workflowName] = workflow.title;
+      }
+
       const wfCase = await conf.wfCaseService.getSingleFor(
         {
           workflowId: workflow.id,
@@ -210,38 +213,52 @@ async function getted({ entity, result, options }) {
         },
         {
           include: {
-            //status:   true,
-            //assignee: true,
+            branches: {
+              include: {
+                status:   true,
+                assignee: true,
+              },
+            },
           },
           skipNoRowsError: true,
           loc,
         },
       );
 
-      if (workflow.currentStatusName) {
-        if (wfCase && wfCase?.branches?.length) {
+      if (wfCase) {
+        if (workflow.currentStatusName && wfCase.branches?.length) {
           row[workflow.currentStatusName] = wfCase.branches
-            .map(b => b.status?.title)
-            .filter(i => !i)
-            .join(', ');
-        } else {
-          row[workflow.currentStatusName] = `<a href="#">${await loc._c('workflow', 'Create workflow case')}</a>`;
-        }
-      }
+            .map(b => {
+              if (!b.status) {
+                return;
 
-      if (workflow.assigneeName) {
-        if (wfCase && wfCase?.branches?.length) {
+              }
+
+              return `${b.status.title}: ${b.assignee.displayName}`;
+            })
+            .filter(i => !!i);
+        }
+
+        if (workflow.assigneeName && wfCase.branches?.length) {
           row[workflow.assigneeName] = wfCase.branches
-            .map(b => b.assignee?.displayName)
-            .filter(i => !i)
-            .join(', ');
-        } else {
-          row[workflow.assigneeName] = await loc._c('workflow', 'No workflow case');
+            .map(b => {
+              if (!b.status) {
+                return;
+
+              }
+
+              return `${b.assignee.displayName} (${b.status.title})`;
+            })
+            .filter(i => !!i);
         }
       }
 
-      if (workflow.workflowName) {
-        row[workflow.workflowName] = workflow.title;
+      if (!row[workflow.currentStatusName]) {
+        row[workflow.currentStatusName] = [`<a href="#">${await loc._c('workflow', 'Create workflow case')}</a>`];
+      }
+
+      if (!row[workflow.assigneeName]) {
+        row[workflow.assigneeName] = [await loc._c('workflow', 'No workflow case')];
       }
     }
   }

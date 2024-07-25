@@ -3,8 +3,7 @@ import { Service } from 'rf-service';
 export class WfCaseService extends Service.IdUuidEnableTranslatable {
   references = {
     workflow: 'wfWorkflowOfEntityService',
-    //status:   'wfStatusService',
-    //assignee: 'userService',
+    branches: 'wfBranchService',
   };
   defaultTranslationContext = 'workflow';
 

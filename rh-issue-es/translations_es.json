@@ -1,10 +1,11 @@
 [
     {
-        "source": "Assignee",
+        "source": "Assignees",
         "language": "es",
         "context": "issue",
-        "translation": "Encargado",
-        "ref": "..\\rh-issue\\conf_data.js [59,31]"
+        "isDraft": false,
+        "translation": "Encargados",
+        "ref": "..\\rh-issue\\conf_data.js [64,31]"
     },
     {
         "source": "Blocker",
@@ -32,14 +33,14 @@
         "language": "es",
         "context": "issue",
         "translation": "Cerrar",
-        "ref": "..\\rh-issue\\conf_data.js [90,24]"
+        "ref": "..\\rh-issue\\conf_data.js [94,24]"
     },
     {
         "source": "Close a ticket.",
         "language": "es",
         "context": "issue",
         "translation": "Cierra una incidencia.",
-        "ref": "..\\rh-issue\\conf_data.js [93,30]"
+        "ref": "..\\rh-issue\\conf_data.js [97,30]"
     },
     {
         "source": "Close reason",
@@ -53,7 +54,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Cerrado",
-        "ref": "..\\rh-issue\\conf_data.js [78,24]"
+        "ref": "..\\rh-issue\\conf_data.js [82,24]"
     },
     {
         "source": "Company productivity has stopped until this is resolved.",
@@ -179,7 +180,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Minimalista",
-        "ref": "..\\rh-issue\\conf_data.js [53,18]\n..\\rh-issue\\conf_data.js [63,20]"
+        "ref": "..\\rh-issue\\conf_data.js [53,31]\n..\\rh-issue\\conf_data.js [67,20]"
     },
     {
         "source": "Name",
@@ -193,7 +194,7 @@
         "language": "es",
         "context": "issue",
         "translation": "Abierto",
-        "ref": "..\\rh-issue\\conf_data.js [70,24]"
+        "ref": "..\\rh-issue\\conf_data.js [74,24]"
     },
     {
         "source": "Priority",
@@ -221,7 +222,15 @@
         "language": "es",
         "context": "issue",
         "translation": "Relacionado",
-        "ref": "..\\rh-issue\\conf_data.js [44,31]\n..\\rh-issue\\controllers\\issue.js [263,32]"
+        "ref": "..\\rh-issue\\conf_data.js [44,31]"
+    },
+    {
+        "source": "Related issues",
+        "language": "es",
+        "context": "issue",
+        "isDraft": false,
+        "translation": "Incidencias relacionadas",
+        "ref": "..\\rh-issue\\controllers\\issue.js [263,32]"
     },
     {
         "source": "Relationship",
@@ -271,11 +280,12 @@
         "ref": "rh-issue-es.js [19,26]"
     },
     {
-        "source": "Status",
+        "source": "Statuses",
         "language": "es",
         "context": "issue",
-        "translation": "Estado",
-        "ref": "..\\rh-issue\\conf_data.js [58,31]"
+        "isDraft": false,
+        "translation": "Estados",
+        "ref": "..\\rh-issue\\conf_data.js [62,31]"
     },
     {
         "source": "Task",
@@ -303,7 +313,7 @@
         "language": "es",
         "context": "issue",
         "translation": "La incidencia está cerrada.",
-        "ref": "..\\rh-issue\\conf_data.js [81,30]"
+        "ref": "..\\rh-issue\\conf_data.js [85,30]"
     },
     {
         "source": "The issue is important and must be solved.",
@@ -331,7 +341,7 @@
         "language": "es",
         "context": "issue",
         "translation": "La incidencia está abierta.",
-        "ref": "..\\rh-issue\\conf_data.js [73,30]"
+        "ref": "..\\rh-issue\\conf_data.js [77,30]"
     },
     {
         "source": "The issue is very important and must be resolved as soon as possible..",
@@ -379,8 +389,8 @@
         "source": "The minimalist workflow only support open and close status.",
         "language": "es",
         "context": "issue",
-        "translation": "El flujo de trabajo minimalista unicamente admite los estados abierto y cerrado.",
-        "ref": "..\\rh-issue\\conf_data.js [66,26]"
+        "translation": "El proceso minimalista únicamente admite los estados abierto y cerrado.",
+        "ref": "..\\rh-issue\\conf_data.js [70,26]"
     },
     {
         "source": "The project does not exist or you do not have permission to access it.",
@@ -449,7 +459,7 @@
         "source": "Workflow",
         "language": "es",
         "context": "issue",
-        "translation": "Flujo de trabajo",
+        "translation": "Proceso",
         "ref": "..\\rh-issue\\conf_data.js [60,31]"
     }
 ]

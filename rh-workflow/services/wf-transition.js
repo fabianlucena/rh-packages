@@ -117,10 +117,9 @@ export class WfTransitionService extends Service.IdUuidEnableNameUniqueTitleOwne
     return result;
   }
 
-
   async validateForCreation(data) {
-    if (!data?.typeId) {
-      throw new CheckError(loc => loc._c('workflow', 'Workflow type parameter is missing or workflow type does not exist.'));
+    if (!data?.workflowId) {
+      throw new CheckError(loc => loc._c('workflow', 'Workflow parameter is missing or workflow does not exist.'));
     }
 
     if (!data?.fromId) {

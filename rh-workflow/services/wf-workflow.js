@@ -77,7 +77,6 @@ export class WfWorkflowService extends Service.IdUuidEnableNameUniqueTitleOwnerM
         service: 'workflow',
         method:  'get',
       },
-      getDefaultValues: true,
       action: 'workflow',
       gridActions,
       fields,

@@ -4,14 +4,36 @@
         "language": "es",
         "context": "workflow",
         "translation": "Encargado",
-        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [199,34]\n..\\rh-workflow\\models\\wf-workflow-of-entity.js [93,32]"
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [199,34]"
+    },
+    {
+        "source": "Assignees",
+        "language": "es",
+        "context": "workflow",
+        "isDraft": false,
+        "translation": "Encargados",
+        "ref": "..\\rh-workflow\\models\\wf-workflow-of-entity.js [118,32]"
+    },
+    {
+        "source": "Case",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Caso",
+        "ref": "..\\rh-workflow\\services\\wf-case.js [52,29]"
+    },
+    {
+        "source": "Cases",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Casos",
+        "ref": "..\\rh-workflow\\conf_data.js [28,125]\n..\\rh-workflow\\services\\wf-case.js [53,29]"
     },
     {
         "source": "Check for enable or uncheck for disable",
         "language": "es",
         "context": "workflow",
         "translation": "Marque para habilitar o desmarque para deshabilitar",
-        "ref": "..\\rh-workflow\\services\\wf-workflow.js [23,33]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [76,33]\n..\\rh-workflow\\services\\wf-transition.js [25,33]\n..\\rh-workflow\\services\\wf-status.js [32,33]"
+        "ref": "..\\rh-workflow\\services\\wf-workflow.js [23,33]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [76,33]\n..\\rh-workflow\\services\\wf-transition.js [25,33]\n..\\rh-workflow\\services\\wf-status.js [32,33]\n..\\rh-workflow\\services\\wf-case.js [23,33]"
     },
     {
         "source": "Check for show or uncheck for hide as column grid",
@@ -38,14 +60,14 @@
         "source": "Create workflow case",
         "language": "es",
         "context": "workflow",
-        "translation": "Crear caso de flujo de trabajo",
-        "ref": "..\\rh-workflow\\rh-workflow.js [231,70]"
+        "translation": "Crear caso de proceso",
+        "ref": "..\\rh-workflow\\rh-workflow.js [257,69]"
     },
     {
         "source": "Create workflows",
         "language": "es",
         "context": "workflow",
-        "translation": "Crear flujos de trabajos",
+        "translation": "Crear procesos",
         "ref": "..\\rh-workflow\\conf_data.js [16,43]"
     },
     {
@@ -59,7 +81,7 @@
         "source": "Delete workflows",
         "language": "es",
         "context": "workflow",
-        "translation": "Eliminar flujos de trabajos",
+        "translation": "Eliminar procesos",
         "ref": "..\\rh-workflow\\conf_data.js [18,43]"
     },
     {
@@ -80,7 +102,7 @@
         "source": "Edit workflows",
         "language": "es",
         "context": "workflow",
-        "translation": "Modificar flujos de trabajos",
+        "translation": "Modificar procesos",
         "ref": "..\\rh-workflow\\conf_data.js [17,43]"
     },
     {
@@ -88,14 +110,21 @@
         "language": "es",
         "context": "workflow",
         "translation": "Habilitado",
-        "ref": "..\\rh-workflow\\services\\wf-workflow.js [22,33]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [75,33]\n..\\rh-workflow\\services\\wf-transition.js [24,33]\n..\\rh-workflow\\services\\wf-status.js [31,33]"
+        "ref": "..\\rh-workflow\\services\\wf-workflow.js [22,33]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [75,33]\n..\\rh-workflow\\services\\wf-transition.js [24,33]\n..\\rh-workflow\\services\\wf-status.js [31,33]\n..\\rh-workflow\\services\\wf-case.js [22,33]"
+    },
+    {
+        "source": "Entity UUID",
+        "language": "es",
+        "context": "workflow",
+        "translation": "UUID de entidad",
+        "ref": "..\\rh-workflow\\services\\wf-case.js [45,33]"
     },
     {
         "source": "Exists another row with that title.",
         "language": "es",
         "context": "workflow",
         "translation": "Existe otra fila con ese título.",
-        "ref": "..\\rh-workflow\\services\\wf-transition.js [141,42]"
+        "ref": "..\\rh-workflow\\services\\wf-transition.js [139,42]"
     },
     {
         "source": "Final",
@@ -116,13 +145,13 @@
         "language": "es",
         "context": "workflow",
         "translation": "El parámetro desde (from) está perdido o el estado desde (from) no existe.",
-        "ref": "..\\rh-workflow\\services\\wf-transition.js [128,39]"
+        "ref": "..\\rh-workflow\\services\\wf-transition.js [126,39]"
     },
     {
         "source": "Get workflows",
         "language": "es",
         "context": "workflow",
-        "translation": "Obtener flujos de trabajos",
+        "translation": "Obtener procesos",
         "ref": "..\\rh-workflow\\conf_data.js [15,43]"
     },
     {
@@ -150,8 +179,8 @@
         "source": "No workflow case",
         "language": "es",
         "context": "workflow",
-        "translation": "No hay caso de flujo de trabajo",
-        "ref": "..\\rh-workflow\\rh-workflow.js [235,50]"
+        "translation": "No hay caso de proceso",
+        "ref": "..\\rh-workflow\\rh-workflow.js [261,49]"
     },
     {
         "source": "Select the model entity",
@@ -178,8 +207,8 @@
         "source": "Select the workflow",
         "language": "es",
         "context": "workflow",
-        "translation": "Seleccione el flujo de trabajo",
-        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [122,37]\n..\\rh-workflow\\services\\wf-status.js [78,37]"
+        "translation": "Seleccione el proceso",
+        "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [122,37]\n..\\rh-workflow\\services\\wf-status.js [78,37]\n..\\rh-workflow\\services\\wf-case.js [33,37]"
     },
     {
         "source": "Spanish",
@@ -205,7 +234,7 @@
         "language": "es",
         "context": "workflow",
         "translation": "Estados",
-        "ref": "..\\rh-workflow\\conf_data.js [25,125]\n..\\rh-workflow\\services\\wf-status.js [115,29]"
+        "ref": "..\\rh-workflow\\conf_data.js [25,125]\n..\\rh-workflow\\services\\wf-status.js [115,29]\n..\\rh-workflow\\models\\wf-workflow-of-entity.js [98,32]"
     },
     {
         "source": "Title",
@@ -226,13 +255,12 @@
         "language": "es",
         "context": "workflow",
         "translation": "No se encuentra el parámetro hasta (to) o el estado hasta (to) no existe.",
-        "ref": "..\\rh-workflow\\services\\wf-transition.js [132,39]"
+        "ref": "..\\rh-workflow\\services\\wf-transition.js [130,39]"
     },
     {
         "source": "Transition",
         "language": "es",
         "context": "workflow",
-        "isDraft": false,
         "translation": "Transición",
         "ref": "..\\rh-workflow\\services\\wf-transition.js [106,29]"
     },
@@ -296,56 +324,57 @@
         "source": "Type the workflow field title here",
         "language": "es",
         "context": "workflow",
-        "translation": "Escriba aquí el nombre del campo título del flujo de trabajo",
+        "translation": "Escriba aquí el nombre del campo título del proceso",
         "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [279,37]"
     },
     {
         "source": "Type the workflow name here",
         "language": "es",
         "context": "workflow",
-        "translation": "Escriba aquí el nombre del del flujo de trabajo",
+        "translation": "Escriba aquí el nombre del del proceso",
         "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [270,37]"
     },
     {
         "source": "Workflow",
         "language": "es",
         "context": "workflow",
-        "translation": "Flujo de trabajo",
-        "ref": "..\\rh-workflow\\conf_data.js [22,125]\n..\\rh-workflow\\services\\wf-workflow.js [74,29]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [121,37]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [243,34]\n..\\rh-workflow\\services\\wf-status.js [77,37]\n..\\rh-workflow\\models\\wf-workflow-of-entity.js [113,32]"
+        "translation": "Proceso",
+        "ref": "..\\rh-workflow\\conf_data.js [22,125]\n..\\rh-workflow\\services\\wf-workflow.js [74,29]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [121,37]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [243,34]\n..\\rh-workflow\\services\\wf-status.js [77,37]\n..\\rh-workflow\\services\\wf-case.js [32,37]\n..\\rh-workflow\\models\\wf-workflow-of-entity.js [78,32]"
     },
     {
         "source": "Workflow manager",
         "language": "es",
         "context": "workflow",
-        "translation": "Administrador de flujos de trabajos",
+        "translation": "Administrador de procesos",
         "ref": "..\\rh-workflow\\conf_data.js [7,43]"
     },
     {
         "source": "Workflow of entity",
         "language": "es",
         "context": "workflow",
-        "translation": "Flujo de trabajo de entidad",
+        "translation": "Proceso de entidad",
         "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [289,29]"
     },
     {
-        "source": "Workflow type parameter is missing or workflow type does not exist.",
+        "source": "Workflow parameter is missing or workflow does not exist.",
         "language": "es",
         "context": "workflow",
-        "translation": "No se encuentra el parámetro tipo de flujo de trabajo (workflow type) o el tipo de flujo de trabajo (workflow type) no existe.",
-        "ref": "..\\rh-workflow\\services\\wf-transition.js [124,39]"
+        "isDraft": false,
+        "translation": "No se encuentra el parámetro proceso (workflow) o el proceso (workflow) no existe.",
+        "ref": "..\\rh-workflow\\services\\wf-transition.js [122,39]"
     },
     {
         "source": "Workflows",
         "language": "es",
         "context": "workflow",
-        "translation": "Flujos de trabajos",
+        "translation": "Procesos",
         "ref": "..\\rh-workflow\\conf_data.js [23,125]\n..\\rh-workflow\\services\\wf-workflow.js [75,29]"
     },
     {
         "source": "Workflows of entities",
         "language": "es",
         "context": "workflow",
-        "translation": "Flujo de trabajo de entidad",
+        "translation": "Proceso de entidad",
         "ref": "..\\rh-workflow\\conf_data.js [24,125]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [290,29]"
     }
 ]

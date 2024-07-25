@@ -260,7 +260,7 @@ export class IssueController extends Controller {
       {
         name:        'related',
         type:        'list',
-        label:       await loc._c('issue', 'Related'),
+        label:       await loc._c('issue', 'Related issues'),
         isField:     false,
         isDetail:    true,
         properties: [

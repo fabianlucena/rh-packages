@@ -49,15 +49,19 @@ export const data = {
 
   workflows: [
     {
-      name: 'issueMinimalistic',
-      title: loc._cf('issue', 'Minimalist'),
-      isTranslatable: true,
+      name:               'issueMinimalistic',
+      title:              loc._cf('issue', 'Minimalist'),
+      isTranslatable:     true,
       translationContext: 'issue',
-      modelEntityName: 'Issue',
-      ownerModule: name,
-      currentStatusTitle: loc._cf('issue', 'Status'),
-      assigneeTitle:      loc._cf('issue', 'Assignee'),
+      ownerModule:        name,
+      modelEntityName:    'Issue',
+      modelUuidProperty:  'uuid',
+      workflowName:       'workflow',
       workflowTitle:      loc._cf('issue', 'Workflow'),
+      currentStatusName:  'statuses',
+      currentStatusTitle: loc._cf('issue', 'Statuses'),
+      assigneeName:       'assignees',
+      assigneeTitle:      loc._cf('issue', 'Assignees'),
       workflow: {
         name: 'minimalist',
         title: loc._cf('issue', 'Minimalist'),
