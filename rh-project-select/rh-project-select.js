@@ -74,7 +74,7 @@ async function getCurrentProjectId(req, res) {
     return;
   }
 
-  const sessionData = await sessionDataService?.getDataIfExistsForSessionId(sessionId);
+  const sessionData = await sessionDataService?.getDataOrNullForSessionId(sessionId);
   if (sessionData) {
     if (sessionData.project?.id) {
       return sessionData.project.id;

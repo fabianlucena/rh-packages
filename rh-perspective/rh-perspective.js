@@ -31,7 +31,7 @@ async function getCurrentPerspective({ context }) {
     return;
   }
 
-  const sessionData = await sessionDataService.getDataIfExistsForSessionId(context.sessionId);
+  const sessionData = await sessionDataService.getDataOrNullForSessionId(context.sessionId);
   return sessionData?.perspective;
 }
 

@@ -61,7 +61,7 @@ export class BranchSelectController {
       menu: [menuItem],
     };
 
-    const sessionData = await sessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
+    const sessionData = await sessionDataService.getDataOrNullForSessionId(sessionId) ?? {};
 
     sessionData.api ??= {};
     sessionData.api.data ??= {};

@@ -59,7 +59,7 @@ export class ProjectSelectController extends Controller {
 
     const sessionId = req.session.id;
     if (this.sessionDataService) {
-      const sessionData = await this.sessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
+      const sessionData = await this.sessionDataService.getDataOrNullForSessionId(sessionId) ?? {};
 
       sessionData.project = project;
       sessionData.projectId = project.id;

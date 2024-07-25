@@ -93,7 +93,7 @@ export class CompanySiteController extends Controller {
     };
 
     if (this.sessionDataService) {
-      const sessionData = await this.sessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
+      const sessionData = await this.sessionDataService.getDataOrNullForSessionId(sessionId) ?? {};
 
       sessionData.api ??= {};
       sessionData.api.data = {};
