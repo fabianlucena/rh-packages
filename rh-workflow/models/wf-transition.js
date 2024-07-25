@@ -3,10 +3,9 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class WfTransition extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Module,     { as: 'ownerModule', foreignKey: { name: 'ownerModuleId', allowNull: true }});
-      this.belongsTo(models.WfWorkflow, { as: 'workflow',    foreignKey: { name: 'workflowId',    allowNull: false }});
-      this.belongsTo(models.WfStatus,   { as: 'from',        foreignKey: { name: 'fromId',        allowNull: false }});
-      this.belongsTo(models.WfStatus,   { as: 'to',          foreignKey: { name: 'toId',          allowNull: false }});
+      this.belongsTo(models.Module,   { as: 'ownerModule', foreignKey: { name: 'ownerModuleId', allowNull: true }});
+      this.belongsTo(models.WfStatus, { as: 'from',        foreignKey: { name: 'fromId',        allowNull: false }});
+      this.belongsTo(models.WfStatus, { as: 'to',          foreignKey: { name: 'toId',          allowNull: false }});
     }
   }
   WfTransition.init({

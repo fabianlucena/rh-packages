@@ -85,6 +85,22 @@ export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerMod
         },
       },
       {
+        name:        'isInitial',
+        type:        'checkbox',
+        gridType:    'check',
+        label:       loc => loc._c('workflow', 'Initial'),
+        isField:     true,
+        isColumn:    true,
+      },
+      {
+        name:        'isFinal',
+        type:        'checkbox',
+        gridType:    'check',
+        label:       loc => loc._c('workflow', 'Final'),
+        isField:     true,
+        isColumn:    true,
+      },
+      {
         name:        'description',
         type:        'textArea',
         label:       loc => loc._c('workflow', 'Description'),
@@ -92,30 +108,15 @@ export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerMod
         isField:     true,
         isDetail:    true,
       },
-      {
-        name:        'isInitial',
-        type:        'check',
-        label:       loc => loc._c('workflow', 'Initial'),
-        isField:     true,
-        isColumn:    true,
-      },
-      {
-        name:        'isFinal',
-        type:        'check',
-        label:       loc => loc._c('workflow', 'Final'),
-        isField:     true,
-        isColumn:    true,
-      },
     ];
 
     const result = {
-      title:     loc => loc._c('workflow', 'Workflow'),
-      gridTitle: loc => loc._c('workflow', 'Workflows'),
+      title:     loc => loc._c('workflow', 'Status'),
+      gridTitle: loc => loc._c('workflow', 'Statuses'),
       load: {
         service: 'workflow-status',
         method:  'get',
       },
-      getDefaultValues: true,
       action: 'workflow-status',
       gridActions,
       fields,
