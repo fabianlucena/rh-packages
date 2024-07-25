@@ -1,14 +1,14 @@
 import { conf } from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-  class WfCurrentStatus extends sequelize.Sequelize.Model {
+  class WfBranch extends sequelize.Sequelize.Model {
     static associate(models) {
       this.belongsTo(models.WfCase,   { as: 'case',     foreignKey: 'caseId' });
       this.belongsTo(models.WfStatus, { as: 'status',   foreignKey: 'statusId' });
       this.belongsTo(models.User,     { as: 'assignee', foreignKey: 'assigneeId' });
     }
   }
-  WfCurrentStatus.init({
+  WfBranch.init({
     caseId: {
       type: DataTypes.BIGINT,
       primaryKey: true,
@@ -26,8 +26,8 @@ export default (sequelize, DataTypes) => {
   }, {
     sequelize,
     timestamps: true,
-    tableName: 'CurrentStatus',
+    tableName: 'Branch',
     schema: conf.schema,
   });
-  return WfCurrentStatus;
+  return WfBranch;
 };

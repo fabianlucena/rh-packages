@@ -206,7 +206,7 @@ async function getted({ entity, result, options }) {
       const wfCase = await conf.wfCaseService.getSingleFor(
         {
           workflowId: workflow.id,
-          entityId: row.id
+          entityUuid: row.uuid
         },
         {
           include: {
@@ -218,20 +218,24 @@ async function getted({ entity, result, options }) {
         },
       );
 
-      if (wfCase) {
-        if (workflow.currentStatusName) {
-          row[workflow.currentStatusName] = wfCase?.CurrentStatus?.Status?.title;
-        }
-
-        if (workflow.assigneeName) {
-          row[workflow.assigneeName] = wfCase?.CurrentStatus?.Assignee?.displayName;
-        }
-      } else {
-        if (workflow.currentStatusName) {
+      if (workflow.currentStatusName) {
+        if (wfCase && wfCase?.branches?.length) {
+          row[workflow.currentStatusName] = wfCase.branches
+            .map(b => b.status?.title)
+            .filter(i => !i)
+            .join(', ');
+        } else {
           row[workflow.currentStatusName] = `<a href="#">${await loc._c('workflow', 'Create workflow case')}</a>`;
         }
+      }
 
-        if (workflow.assigneeName) {
+      if (workflow.assigneeName) {
+        if (wfCase && wfCase?.branches?.length) {
+          row[workflow.assigneeName] = wfCase.branches
+            .map(b => b.assignee?.displayName)
+            .filter(i => !i)
+            .join(', ');
+        } else {
           row[workflow.assigneeName] = await loc._c('workflow', 'No workflow case');
         }
       }
