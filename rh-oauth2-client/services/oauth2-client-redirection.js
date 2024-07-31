@@ -31,7 +31,7 @@ export class OAuth2ClientRedirectionService {
   }
 
   async getOAuth2ClientForData(data) {
-    const oAuth2Client = await this.oAuth2ClientService.getForName(data.name);
+    const oAuth2Client = await this.oAuth2ClientService.getSingleForName(data.name);
     if (!oAuth2Client) {
       throw new NotFoundError(await data.loc._c('oauth2Client', 'Client %s not found', data.name));
     }
@@ -59,7 +59,7 @@ export class OAuth2ClientRedirectionService {
       state: data.state,
     });
     if (!oAuth2State) {
-      throw new NotFoundError(await data.loc._c('oauth2Client', 'State %s does not exis in client', data.state, data.name));
+      throw new NotFoundError(await data.loc._c('oauth2Client', 'State %s does not exist in client', data.state, data.name));
     }
   }
 

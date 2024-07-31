@@ -1132,7 +1132,7 @@ export class ServiceBase {
     if (!options.where) {
       if (data.id) {
         options.where = { id: data.id };
-      } if (this.uniqueColumns) {
+      } else if (this.uniqueColumns) {
         options.where = {};
         for (const columnName of this.uniqueColumns) {
           options.where[columnName] = data[columnName];

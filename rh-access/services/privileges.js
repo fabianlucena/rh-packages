@@ -117,10 +117,6 @@ export class PrivilegesService extends Service.Base {
    * @returns {Promise{privileges}}
    */
   async getJSONForUsernameAndSessionIdCached(username, sessionId) {
-    if (!username || !sessionId) {
-      return;
-    }
-    
     let site;
     if (sessionId) {
       if (conf.privilegesCache && conf.privilegesCache[sessionId]) {

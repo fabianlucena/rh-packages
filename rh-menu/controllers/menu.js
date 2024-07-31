@@ -13,7 +13,6 @@ export class MenuController extends Controller {
   }
 
   async get(req, res) {
-    const permissions = req?.permissions;
     const options = {
       loc: req.loc,
       view: true,
@@ -21,7 +20,7 @@ export class MenuController extends Controller {
         parent: true,
         parentMenuItems: true,
       },
-      where: { permission: { name: permissions }},
+      where: { permission: { name: req.permissions ?? null }},
       skipDeleteIsTranslatable: true,
     };
 
