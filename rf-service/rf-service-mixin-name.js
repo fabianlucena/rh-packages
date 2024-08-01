@@ -10,6 +10,14 @@ export const ServiceMixinName = Service => class extends Service {
     this.searchColumns.push('name');
   }
 
+  init() {
+    super.init();
+    this.uniqueColumns ??= [];
+    if (!this.uniqueColumns.contains('name')) {
+      this.uniqueColumns.push('name');
+    }
+  }
+
   async validateForCreation(data) {
     checkParameterStringNotNullOrEmpty(trim(data?.name), loc => loc._c('service', 'Name'));
     await this.checkNameForConflict(data.name, data);

@@ -72,7 +72,7 @@ export class EavAttributeService extends Service.IdUuidEnableNameUniqueTitleDesc
   }
 
   async createOrUpdate(data) {
-    const attribute = await this.createIfNotExists(data);
+    const [attribute,] = await this.findOrCreate(data);
     const commonData = {
       categoryId: attribute.categoryId,
     };
