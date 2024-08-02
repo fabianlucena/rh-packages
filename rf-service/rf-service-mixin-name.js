@@ -13,7 +13,7 @@ export const ServiceMixinName = Service => class extends Service {
   init() {
     super.init();
     this.uniqueColumns ??= [];
-    if (!this.uniqueColumns.contains('name')) {
+    if (!this.uniqueColumns.includes('name')) {
       this.uniqueColumns.push('name');
     }
   }
