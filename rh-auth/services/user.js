@@ -36,7 +36,7 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
         displayName: loc => loc._c('user', 'Display name'),
       }
     );
-    if (await this.getForUsername(data.username, { check: false, skipNoRowsError: true })) {
+    if (await this.getForUsername(data.username, { check: false, skipNoRowsError: true })?.length) {
       throw new ConflictError(loc => loc._c('user', 'Another user with the same username already exists.'));
     }
 
@@ -58,8 +58,9 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
     if (data.password) {
       await IdentityService.singleton().createLocal(
         {
-          password: data.password,
+          isEnabled: true,
           userId: user.id,
+          password: data.password,
         },
         options
       );
@@ -186,8 +187,8 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
    */
   async createIfNotExists(data, options) {
     const row = await this.getForUsername(data.username, { attributes: ['id'], foreign: { module: { attributes:[] }}, skipNoRowsError: true, ...options });
-    if (row) {
-      return row;
+    if (row && row.length > 0) {
+      return row[0];
     }
 
     return this.create(data);
