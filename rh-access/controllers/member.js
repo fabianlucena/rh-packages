@@ -55,7 +55,7 @@ export class MemberController {
       if (row.roles?.length) {
         if (row.roles.every(role => role.isEnabled)) { // all are true
           row.isEnabled = true;
-        } else if (row.roles.every(role => role.isEnabled === false)) { // all are folse
+        } else if (row.roles.every(role => role.isEnabled === false)) { // all are false
           row.isEnabled = false;
         }
       }
@@ -326,20 +326,19 @@ export class MemberController {
     let sites = await dependency.get('siteService').getForUserId(userId);
     sites = sites.filter(site => site.name !== 'system');
     if (sites.length !== 1)
-      throw new HttpError(loc => loc._c('member', 'You cannot change the member password because the member has another accesses. Please contact the asministrator.', 403));
+      throw new HttpError(loc => loc._c('member', 'You cannot change the member password because the member has another accesses. Please contact the administrator.', 403));
 
     const site = sites[0];
     if (sites[0].id !== req.site.id)
-      throw new HttpError(loc => loc._c('member', 'You cannot change the member password because the member the user belongs to another site. Please contact the asministrator.', 403));
+      throw new HttpError(loc => loc._c('member', 'You cannot change the member password because the member the user belongs to another site. Please contact the administrator.', 403));
 
-    const user = (await dependency.get('userService').getForId(userId));
-
+    const user = (await dependency.get('userService').getSingleForId(userId));
     const rolesId = await dependency.get('roleService').getAllIdsForUsernameAndSiteName(user.username, site.name);
     const assignableRolesId = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
 
     for (const roleId of rolesId) {
       if (!assignableRolesId.includes(roleId)) {
-        res.status(403).send(loc._c('member', 'You cannot change the member password because the member has another accesses. Please contact the asministrator.'));
+        res.status(403).send(loc._c('member', 'You cannot change the member password because the member has another accesses. Please contact the administrator.'));
         return false;
       }
     }

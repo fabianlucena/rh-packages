@@ -102,7 +102,7 @@ export default (sequelize, DataTypes) => {
     assigneeTitle: {
       type: DataTypes.TEXT,
       allowNull: false,
-      defaultValue: defaultLoc._f('Assignee'),
+      defaultValue: defaultLoc._cf('workflow', 'Assignee'),
     },
     showWorkflowInColumn: {
       type: DataTypes.BOOLEAN,
@@ -122,7 +122,7 @@ export default (sequelize, DataTypes) => {
     workflowTitle: {
       type: DataTypes.TEXT,
       allowNull: false,
-      defaultValue: defaultLoc._f('Workflow'),
+      defaultValue: defaultLoc._cf('workflow', 'Workflow'),
     },
   }, {
     sequelize,

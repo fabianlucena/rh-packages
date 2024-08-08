@@ -1,5 +1,6 @@
 import { CheckError, checkValidUuidOrNull } from 'rf-util';
 import { ConflictError } from 'http-util';
+import { InvalidValueError } from './rf-service-errors.js';
 
 export const ServiceMixinUuid = Service => class ServiceUuid extends Service {
   async validateForCreation(data) {
@@ -12,15 +13,15 @@ export const ServiceMixinUuid = Service => class ServiceUuid extends Service {
   }
 
   async checkUuidForConflict(uuid) {
-    const rows = await this.getForUuid(uuid, { skipNoRowsError: true });
+    const rows = await this.getSingleOrNullForUuid(uuid, { skipNoRowsError: true });
     if (rows?.length) {
-      throw new ConflictError(loc => loc._('Exists another row with that UUID.'));
+      throw new ConflictError(loc => loc._c('service', 'Exists another row with that UUID.'));
     }
   }
 
   async validateForUpdate(data, where) {
     if (data.uuid) {
-      throw new CheckError(loc => loc._('UUID parameter is forbidden for update.'));
+      throw new CheckError(loc => loc._c('service', 'UUID parameter is forbidden for update.'));
     }
 
     return super.validateForUpdate(data, where);
@@ -33,18 +34,34 @@ export const ServiceMixinUuid = Service => class ServiceUuid extends Service {
    * @param {Options} options - Options for the @ref getList function.
    * @returns {Promise[row]}
    * 
-   * If the name parammeter is a string return a single row or throw an exception.
+   * If the name parameter is a string return a single row or throw an exception.
    * But if the name parameter is a array can return a row list.
    * 
    * This function uses @ref getSingle function so the options for getSingle
    * function can be specified.
    */
   async getForUuid(uuid, options) {
-    if (Array.isArray(uuid)) {
-      return this.getList({ ...options, where: { ...options?.where, uuid }});
+    if (uuid === undefined) {
+      throw new InvalidValueError(loc => loc._c('service', 'Invalid value for UUID to get row in %s.'));
     }
-            
-    return this.getSingleFor({ uuid }, options);
+
+    return this.getList({ ...options, where: { ...options?.where, uuid }});
+  }
+
+  async getSingleForUuid(uuid, options) {
+    if (uuid === undefined) {
+      throw new InvalidValueError(loc => loc._c('service', 'Invalid value for UUID to get row in %s.'));
+    }
+
+    return this.getSingle({ ...options, where: { ...options?.where, uuid }});
+  }
+
+  async getSingleOrNullForUuid(uuid, options) {
+    if (uuid === undefined) {
+      throw new InvalidValueError(loc => loc._c('service', 'Invalid value for UUID to get row in %s.'));
+    }
+    
+    return this.getSingleForUuid(uuid, { skipNoRowsError: true, ...options });
   }
 
   async update(data, options) {

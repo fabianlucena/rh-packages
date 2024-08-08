@@ -17,7 +17,7 @@ export class SwitchSiteController {
       options = { view: true, limit: 10, offset: 0 };
 
     getOptionsFromParamsAndOData(req?.query, definitions, options)
-      .then(options => this.service.getForId(siteId, options))
+      .then(options => this.service.getSingleForId(siteId, options))
       .then(element => res.status(200).send(element))
       .catch(httpErrorHandler(req, res));
   }

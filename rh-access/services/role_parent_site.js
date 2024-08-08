@@ -30,7 +30,7 @@ export class RoleParentSiteService extends Service.OwnerModuleTranslatable {
    * @returns {Promise{Role}}
    */
   async createIfNotExists(data, options) {
-    data = await this.completeReferences(data);
+    data = await this.completeReferences(data, options);
     await checkDataForMissingProperties(data, 'RoleParentSiteService', 'roleId', 'parentId', 'siteId');
         
     const rows = await this.getList({

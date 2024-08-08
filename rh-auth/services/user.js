@@ -26,7 +26,7 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
     data ??= {};
 
     if (!data.typeId) {
-      data.typeId = await this.userTypeService.getIdForName('user');
+      data.typeId = await this.userTypeService.getSingleIdForName('user');
     }
 
     checkParameter(
@@ -36,7 +36,7 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
         displayName: loc => loc._c('user', 'Display name'),
       }
     );
-    if (await this.getForUsername(data.username, { check: false, skipNoRowsError: true })) {
+    if (await this.getForUsername(data.username, { check: false, skipNoRowsError: true })?.length) {
       throw new ConflictError(loc => loc._c('user', 'Another user with the same username already exists.'));
     }
 
@@ -58,8 +58,9 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
     if (data.password) {
       await IdentityService.singleton().createLocal(
         {
-          password: data.password,
+          isEnabled: true,
           userId: user.id,
+          password: data.password,
         },
         options
       );
@@ -91,13 +92,11 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
    * @returns {Promise{User}}
    */
   async getForUsername(username, options) {
-    options = { ...options, where: { ...options?.where, username }};
+    return this.getList({ ...options, where: { ...options?.where, username }});
+  }
 
-    if (Array.isArray(username)) {
-      return this.getList(options);
-    }
-
-    return this.getSingle(options);
+  async getSingleForUsername(username, options) {
+    return this.getSingle({ ...options, where: { ...options?.where, username }});
   }
 
   /**
@@ -126,18 +125,18 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
    * @returns {Promise[BigInt|Array[BigInt]]}
    */
   async getIdForUsername(username, options) {
-    const result = await this.getForUsername(username, { attributes: ['id'], ...options });
-    if (Array.isArray(username)) {
-      return result.map(row => row.id);
-    }
-        
-    return result?.id;
+    return (await this.getForUsername(username, { attributes: ['id'], ...options }))
+      .map(row => row.id);
+  }
+
+  async getSingleIdForUsername(username, options) {
+    return (await this.getSingleForUsername(username, { attributes: ['id'], ...options })).id;
   }
 
   /**
    * Checks for an existent and enabled user. If the user exists and is enabled resolve, otherwise fail.
    * @param {User} user - user model object to check.
-   * @param {*string} username - username only for result message purpuose.
+   * @param {*string} username - username only for result message purpose.
    * @returns 
    */
   async checkEnabledUser(user, username) {
@@ -188,8 +187,8 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
    */
   async createIfNotExists(data, options) {
     const row = await this.getForUsername(data.username, { attributes: ['id'], foreign: { module: { attributes:[] }}, skipNoRowsError: true, ...options });
-    if (row) {
-      return row;
+    if (row && row.length > 0) {
+      return row[0];
     }
 
     return this.create(data);

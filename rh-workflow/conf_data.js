@@ -4,7 +4,7 @@ const name = 'rhWorkflow';
 
 export const data = {
   roles: [
-    { name: 'workflowManager', title: loc._cf('role', 'Workflow manager'), isTranslatable: true, ownerModule: name },
+    { name: 'workflowManager', title: loc._cf('workflow', 'Workflow manager'), isTranslatable: true, translationContext: 'workflow', ownerModule: name },
   ],
 
   rolesParentsSites: [
@@ -12,9 +12,14 @@ export const data = {
   ],
 
   permissions: [
-    { name: 'workflow.get',    title: loc._cf('permission', 'Get workflows'),    isTranslatable: true, roles: 'workflowManager', ownerModule: name, menuItem: { label: loc._cf('menu', 'Workflows'), isTranslatable: true, icon: 'workflow', parent: 'administration', action: 'grid', service: 'workflow' }},
-    { name: 'workflow.create', title: loc._cf('permission', 'Create workflows'), isTranslatable: true, roles: 'workflowManager', ownerModule: name, },
-    { name: 'workflow.edit',   title: loc._cf('permission', 'Edit workflows'),   isTranslatable: true, roles: 'workflowManager', ownerModule: name, },
-    { name: 'workflow.delete', title: loc._cf('permission', 'Delete workflows'), isTranslatable: true, roles: 'workflowManager', ownerModule: name, },
+    { name: 'workflow.get',    title: loc._cf('workflow', 'Get workflows'),    isTranslatable: true, translationContext: 'workflow', roles: 'workflowManager', ownerModule: name },
+    { name: 'workflow.create', title: loc._cf('workflow', 'Create workflows'), isTranslatable: true, translationContext: 'workflow', roles: 'workflowManager', ownerModule: name },
+    { name: 'workflow.edit',   title: loc._cf('workflow', 'Edit workflows'),   isTranslatable: true, translationContext: 'workflow', roles: 'workflowManager', ownerModule: name },
+    { name: 'workflow.delete', title: loc._cf('workflow', 'Delete workflows'), isTranslatable: true, translationContext: 'workflow', roles: 'workflowManager', ownerModule: name },
+  ],
+  
+  menuItems: [
+    { name: 'workflow.admin', parent: 'administration', ownerModule: name, permissions: 'workflow.get', label: loc._cf('workflow', 'Workflow'),  isTranslatable: true, translationContext: 'workflow', icon: 'perspective' },
+    { name: 'workflow.get',   parent: 'workflow.admin', ownerModule: name, permissions: 'workflow.get', label: loc._cf('workflow', 'Workflows'), isTranslatable: true, translationContext: 'workflow', icon: 'workflow',   action: 'grid', service: 'workflow' }
   ],
 };

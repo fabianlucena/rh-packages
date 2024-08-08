@@ -22,7 +22,7 @@ export class PageService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleS
   async validateForCreation(data) {
     checkParameterStringNotNullOrEmpty(data.content, loc => loc._c('page', 'Content'));
     if (!data.formatId) {
-      data.formatId = await this.pageFormatService.getIdForName('plain');
+      data.formatId = await this.pageFormatService.getSingleIdForName('plain');
     }
 
     return super.validateForCreation(data);

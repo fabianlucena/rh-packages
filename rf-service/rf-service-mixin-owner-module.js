@@ -6,6 +6,7 @@ export const ServiceMixinOwnerModule = Service => class ServiceModule extends Se
       this.references.ownerModule = {
         service: 'moduleService',
         createIfNotExists: true,
+        whereColumn: 'name',
       };
     }
 

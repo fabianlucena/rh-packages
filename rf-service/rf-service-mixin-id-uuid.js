@@ -6,39 +6,21 @@ export const ServiceMixinIdUuid = Service => class ServiceIdUUID extends Service
    * @param {Options} options - Options for the @ref getList function.
    * @returns {ID}
    * 
-   * If the uuid parammeter is a string return a single ID or throw an exception.
+   * If the uuid parameter is a string return a single ID or throw an exception.
    * But if the name parameter is a array can return a ID list.
    * 
    * This function uses @ref getForUUID function so the options for getForUUID
    * function can be specified.
    */
   async getIdForUuid(uuid, options) {
-    if (Array.isArray(uuid)) {
-      return (await this.getForUuid(uuid, { attributes: ['id'], ...options })).map(row => row.id);
-    }
-        
-    return (await this.getForUuid(uuid, { attributes: ['id'], ...options })).id;
+    return (await this.getForUuid(uuid, { attributes: ['id'], ...options })).map(row => row.id);
+  }
+
+  async getSingleIdForUuid(uuid, options) {
+    return (await this.getSingleForUuid(uuid, { attributes: ['id'], ...options })).id;
   }
 
   async getIdOrNullForUuid(uuid, options) {
-    return this.getIdForUuid(
-      uuid,
-      {
-        ...options,
-        skipNoRowsError: true,
-        nullOnManyRowsError: true,
-      },
-    );
-  }
-
-  async getSingleOrNullForUuid(uuid, options) {
-    return this.getForUuid(
-      uuid,
-      {
-        ...options,
-        skipNoRowsError: true,
-        nullOnManyRowsError: true,
-      },
-    );
+    return (await this.getSingleOrNullForUuid(uuid, { attributes: ['id'], ...options }))?.id;
   }
 };

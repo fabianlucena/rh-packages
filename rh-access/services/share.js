@@ -22,7 +22,7 @@ export class ShareService extends Service.EnableOwnerModuleTranslatable {
    * @returns {Promise{ShareType}}
    */
   async createIfNotExists(data, options) {
-    data = this.completeReferences(data);
+    data = this.completeReferences(data, options);
     await checkDataForMissingProperties(data, 'Share', 'objectNameId', 'objectId', 'userId', 'typeId');
 
     const rows = await ShareService.getList(
@@ -48,7 +48,7 @@ export class ShareService extends Service.EnableOwnerModuleTranslatable {
   }
 
   async deleteForModelEntityNameAndId(modelEntityName, objectId) {
-    const objectNameId = await this.references.ObjectName.getIdForName(modelEntityName);
+    const objectNameId = await this.references.ObjectName.getSingleIdForName(modelEntityName);
     return this.deleteFor({ objectNameId, objectId });
   }
 }

@@ -2,7 +2,7 @@ import { conf } from '../conf.js';
 import { Service } from 'rf-service';
 import { complete } from 'rf-util';
 import dependency from 'rf-dependency';
-import { ForbidenMethodError } from './errors.js';
+import { ForbiddenMethodError } from './errors.js';
 
 complete(
   conf,
@@ -49,19 +49,19 @@ export class PrivilegesService extends Service.Base {
   }
 
   async create() {
-    throw new ForbidenMethodError(loc => loc._c('privileges', 'Cannot create privileges, privileges is a container not an entity.'));
+    throw new ForbiddenMethodError(loc => loc._c('privileges', 'Cannot create privileges, privileges is a container not an entity.'));
   }
 
   async getList() {
-    throw new ForbidenMethodError(loc => loc._c('privileges', 'Cannot get privileges, privileges is a container not an entity.'));
+    throw new ForbiddenMethodError(loc => loc._c('privileges', 'Cannot get privileges, privileges is a container not an entity.'));
   }
 
   async update() {
-    throw new ForbidenMethodError(loc => loc._c('privileges', 'Cannot update privileges, privileges is a container not an entity.'));
+    throw new ForbiddenMethodError(loc => loc._c('privileges', 'Cannot update privileges, privileges is a container not an entity.'));
   }
 
   async delete() {
-    throw new ForbidenMethodError(loc => loc._c('privileges', 'Cannot delete privileges, privileges is a container not an entity.'));
+    throw new ForbiddenMethodError(loc => loc._c('privileges', 'Cannot delete privileges, privileges is a container not an entity.'));
   }
 
   /**
@@ -120,9 +120,9 @@ export class PrivilegesService extends Service.Base {
     let site;
     if (sessionId) {
       if (conf.privilegesCache && conf.privilegesCache[sessionId]) {
-        const provilegeData = conf.privilegesCache[sessionId];
-        provilegeData.lastUse = Date.now();
-        return provilegeData.privileges;
+        const privilegeData = conf.privilegesCache[sessionId];
+        privilegeData.lastUse = Date.now();
+        return privilegeData.privileges;
       }
 
       if (this.siteService) {

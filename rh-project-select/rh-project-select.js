@@ -114,5 +114,5 @@ async function getCurrentProject(req) {
     return;
   }
 
-  return this.projectService.getForId(projectId);
+  return this.projectService.getSingleForId(projectId);
 }

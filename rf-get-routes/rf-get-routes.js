@@ -1,6 +1,6 @@
 /**
  * This class extracts routes from statics and non statics class methods.
- * The class from the metods are extracted is called the controller.
+ * The class from the methods are extracted is called the controller.
  * 
  * First of all a base path for all of the endpoints is defined. The path is 
  * taken  from the non static (preferred) or static path property, if no path 
@@ -23,15 +23,15 @@
  * Also an "all" static method can be defined in the class for hands the rest 
  * or all of the HTTP methods, this value will be checked at the last.
  * 
- * A middlewares and permission checker can be defined using, theese word as 
- * sufix:
+ * A middlewares and permission checker can be defined using, these word as 
+ * suffix:
  *    postMiddleware(req, res, next) { middleware body}
  *    postPermission = 'create';
  *    post(req, res) {...}
  * 
  * For defining custom subpath a especial syntax can be used. The name of the 
  * method must be the same as above but with a suffix with the path separated 
- * by a blanck space. For Javascript limitations the name must be in quotes 
+ * by a black space. For Javascript limitations the name must be in quotes 
  * and square brackets.
  *    static 'post new-path'(...) {...}
  *    static 'get /:id'(...) {...}
@@ -75,7 +75,7 @@
  * The cors is a list of items to be used to CORS policy configuration. 
  * Each item contains:
  * - path: the path for the policy.
- * - httpMethods: a list of uppercased methods under this path.
+ * - httpMethods: a list of upcased methods under this path.
  * 
  * 
  * Extraction options:
@@ -98,7 +98,7 @@
  *   The first one will search for getData method name in the controller class, 
  *    and will generate a route for the HTTP method GET, using the defaultGet 
  *    method as handler: This minds that defaultGet will call to getData. This 
- *    extraction can be combined con subpath, premissions, and middlewares. 
+ *    extraction can be combined con subpath, permissions, and middlewares. 
  *    In this case, if you override the get method remember to call 
  *    this.defaultGet after return to properly handle.
  *  The second one will search of a postEnableForUuid or postEnableForUuidPermission

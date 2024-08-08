@@ -38,32 +38,14 @@ export class MainCompanyService {
     return result;
   }
 
-  async getForId(id, options) {
-    return this.companySiteService.getSingleFor({ companyId: id }, options);
-  }
-
-  async getForUuid(uuid, options) {
-    const id = await this.companyService.getIdForUuid(uuid);
-    return this.companySiteService.getFor({ companyId: id }, options);
-  }
-
-  async getForName(name, options) {
-    const id = await this.companyService.getIdForName(name);
-    return this.companySiteService.getFor({ companyId: id }, options);
-  }
-
-  async getIdForUuid(uuid, options) {
-    return this.companyService.getIdForUuid(uuid, options);
-  }
-
-  async getSiteIdForId(id, options) {
-    const companySite = await this.getForId(id, options);
+  async getSingleSiteIdForId(id, options) {
+    const companySite = await this.getSingleForId(id, options);
     return companySite.siteId;
   }
 
   async deleteForUuid(uuid, options) {
-    const companyId = await this.getIdForUuid(uuid);
-    const siteId = await this.getSiteIdForId(companyId);
+    const companyId = await this.getSingleIdForUuid(uuid);
+    const siteId = await this.getSingleSiteIdForId(companyId);
 
     await this.companySiteService.deleteFor({ companyId }, options);
     await this.companyService.deleteForId(companyId);
@@ -71,24 +53,24 @@ export class MainCompanyService {
   }
 
   async enableForUuid(uuid, options) {
-    let id = await this.getIdForUuid(uuid);
+    let id = await this.getSingleIdForUuid(uuid);
     this.companyService.update({ isEnabled: true }, { ...options, where: { ...options?.where, id }});
 
-    id = await this.getSiteIdForId(id);
+    id = await this.getSingleSiteIdForId(id);
     return this.siteService.update({ isEnabled: true }, { ...options, where: { ...options?.where, id }});
   }
     
   async disableForUuid(uuid, options) {
-    let id = await this.getIdForUuid(uuid);
+    let id = await this.getSingleIdForUuid(uuid);
     this.companyService.update({ isEnabled: false }, { ...options, where: { ...options?.where, id }});
 
-    id = await this.getSiteIdForId(id);
+    id = await this.getSingleSiteIdForId(id);
     return this.siteService.update({ isEnabled: true }, { ...options, where: { ...options?.where, id }});
   }
 
   async updateForUuid(data, uuid, options) {
-    const companyId = await this.getIdForUuid(uuid);
-    const siteId = await this.getSiteIdForId(companyId);
+    const companyId = await this.getSingleIdForUuid(uuid);
+    const siteId = await this.getSingleSiteIdForId(companyId);
 
     const sanitizedData = { ...data, uuid: undefined };
 

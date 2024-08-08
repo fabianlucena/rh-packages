@@ -93,11 +93,11 @@ export class NoUUIDError extends BaseError {
 
 export class ConflictError extends BaseError {
   static visibleProperties = ['message'];
-  message = loc => loc._('Conflict.');
   statusCode = 409;
 
   constructor(message) {
-    super({ message });
+    super(message);
+    this.message ??= loc => loc._('Conflict.');
   }
 }
 
@@ -116,7 +116,7 @@ function log(message) {
 
 log.error = (message) => log({ type: 'error', message });
 log.info = (message) => log({ type: 'info', message });
-log.warining = (message) => log({ type: 'warning', message });
+log.warning = (message) => log({ type: 'warning', message });
 
 export const maxRowsInResult = 100;
 export const defaultRowsInResult = 20;
@@ -160,7 +160,7 @@ export async function httpUtilConfigure(global, ...modules) {
     await beforeSync(global);
     await syncDB(global);
   } else {
-    log?.info('.. Skip DB sinchronization.');
+    log?.info('.. Skip DB synchronization.');
   }
   if (global.postConfigureModels) {
     log?.info('.. Post configuring modules.');
@@ -168,7 +168,7 @@ export async function httpUtilConfigure(global, ...modules) {
   } else {
     log?.info('.. Skip post configuring modules.');
   }
-  log?.info('.. After sinchronization DB.');
+  log?.info('.. After synchronization DB.');
   await afterSync(global);
   log?.info('.. After config.');
   await afterConfig(global);
@@ -906,7 +906,7 @@ export async function configureSwagger(global) {
         info: {
           title:'Rofa HTTP API',
           version:'1.0.0',
-          descrition: 'System to use accontable accounts',
+          description: 'System to use accountable accounts',
         },
         servers: [{ url: '/api' }],
         components: {
@@ -1079,7 +1079,7 @@ export async function getUuidFromRequest(req) {
     if (uuid === undefined) {
       uuid = req.params.uuid;
     } else if (uuid.toUpperCase() !== req.params.uuid.toUpperCase()) {
-      throw new HttpError(loc => loc._('UUID inconsistence. Many UUIDs were received but they are different.'), 400, uuid);
+      throw new HttpError(loc => loc._('UUID inconsistency. Many UUIDs were received but they are different.'), 400, uuid);
     }
   }
 
@@ -1087,7 +1087,7 @@ export async function getUuidFromRequest(req) {
     if (uuid === undefined) {
       uuid = req.query.uuid;
     } else if (uuid.toUpperCase() !== req.query.uuid.toUpperCase()) {
-      throw new HttpError(loc => loc._('UUID inconsistence. Many UUIDs were received but they are different.'), 400, uuid);
+      throw new HttpError(loc => loc._('UUID inconsistency. Many UUIDs were received but they are different.'), 400, uuid);
     }
   }
 
@@ -1095,7 +1095,7 @@ export async function getUuidFromRequest(req) {
     if (uuid === undefined) {
       uuid = req.body.uuid;
     } else if (uuid.toUpperCase() !== req.body.uuid.toUpperCase()) {
-      throw new HttpError(loc => loc._('UUID inconsistence. Many UUIDs were received but they are different.'), 400, uuid);
+      throw new HttpError(loc => loc._('UUID inconsistency. Many UUIDs were received but they are different.'), 400, uuid);
     }
   }
 
@@ -1110,5 +1110,6 @@ export function makeContext(req, res) {
     res,
     loc: req.loc,
     user: req.user,
+    sessionId: req.sessionId ?? req.session?.id,
   };
 }

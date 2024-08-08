@@ -18,7 +18,7 @@ export class RolePermissionService extends Service.OwnerModuleTranslatable {
    * @returns {Promise{Permission}}
    */
   async createIfNotExists(data, options) {
-    data = await this.completeReferences(data);
+    data = await this.completeReferences(data, options);
     await checkDataForMissingProperties(data, 'Permission', 'roleId', 'permissionId');
 
     options = {

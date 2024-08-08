@@ -21,7 +21,7 @@ export class ResourceService extends Service.IdUuidEnableNameTranslatable {
   async validateForCreation(data) {
     checkNotNullNotEmptyAndNotUndefined(data.content, loc => loc._c('resource', 'Content'));
     if (!data.typeId) {
-      data.typeId = await this.resourceTypeService.getIdForName('raw');
+      data.typeId = await this.resourceTypeService.getSingleIdForName('raw');
     }
 
     return super.validateForCreation(data);

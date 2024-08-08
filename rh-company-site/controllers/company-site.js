@@ -125,7 +125,8 @@ export class CompanySiteController extends Controller {
     options = await getOptionsFromParamsAndOData(req?.query, definitions, options);
     if (!req.roles.includes('admin')) {
       options.where ??= {};
-      options.where.siteName = req?.sites ?? null;
+      options.where.site ??= {};
+      options.where.site.name = req?.sites ?? null;
     }
 
     options.include = {

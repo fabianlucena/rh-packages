@@ -49,7 +49,7 @@ export class Log {
             this.ref = (Log.refSeed++);
           }
         }
-      } catch(e) {
+      } catch {
         if (!Log.refSeed) {
           Log.refSeed = 1;
         }
@@ -162,7 +162,7 @@ export class Log {
         this.cache.push(line);
         this.checkCache = true;
       }
-    } catch(e) {
+    } catch {
       this.cache.push(line);
       this.checkCache = true;
     }
