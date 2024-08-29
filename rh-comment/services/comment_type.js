@@ -2,7 +2,7 @@ import { conf } from '../conf.js';
 import { runSequentially } from 'rf-util';
 import { Service } from 'rf-service';
 
-export class CommentTypeService extends Service.IdUuidEnableNameUniqueTitleDescriptionTranslatable {
+export class CommentTypeService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleDescriptionTranslatable {
   references = {
     modelEntityName: {
       createIfNotExists: true,
@@ -25,7 +25,7 @@ export class CommentTypeService extends Service.IdUuidEnableNameUniqueTitleDescr
   async checkTitleForConflict() {}
 
   async createOrUpdate(data) {
-    const attribute = await this.createIfNotExists(data);
+    const [attribute,] = await this.findOrCreate(data);
     const attributeId = attribute.id;
     await runSequentially(
       data.options,

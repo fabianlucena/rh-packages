@@ -20,6 +20,7 @@ export class MenuController extends Controller {
         parent: true,
         parentMenuItems: true,
       },
+      where: { permission: { name: req.permissions ?? null }},
       skipDeleteIsTranslatable: true,
     };
 

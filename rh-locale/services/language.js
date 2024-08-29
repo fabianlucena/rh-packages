@@ -11,7 +11,7 @@ export class LanguageService extends Service.IdUuidEnableNameTranslatable {
     await checkDataForMissingProperties(data, 'name');
 
     const row = await this.getForName(data.name, { skipNoRowsError: true });
-    if (row) {
+    if (row && row.length > 0) {
       throw new ConflictError(loc => loc._('Cannot create the language because already exists.'));
     }
 

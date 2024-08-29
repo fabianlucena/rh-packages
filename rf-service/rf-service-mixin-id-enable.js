@@ -1,19 +1,19 @@
 export const ServiceMixinIdEnable = Service => class ServiceIdEnable extends Service {
   /**
    * Enables a row for a given ID.
-   * @param {string} uuid - ID for the row to enable.
+   * @param {string} id - ID for the row to enable.
    * @returns {Promise[integer]} enabled rows count.
    */
-  async enableForId(uuid) {
-    return await this.updateForId({ isEnabled: true }, uuid);
+  async enableForId(id) {
+    return await this.updateForId({ isEnabled: true }, id);
   }
 
   /**
    * Disables a row for a given ID.
-   * @param {string} uuid - ID for the row to disable.
+   * @param {string} id - ID for the row to disable.
    * @returns {Promise[integer]} disabled rows count.
    */
-  async disableForId(uuid) {
-    return await this.updateForId({ isEnabled: false }, uuid);
+  async disableForId(id) {
+    return await this.updateForId({ isEnabled: false }, id);
   }
 };

@@ -200,8 +200,8 @@ export class ServiceBase {
         reference.externIdPropertyName ??= this.name + 'Id';
       }
 
-      if (reference.createIfNotExists === true) {
-        reference.createIfNotExists = 'createIfNotExists';
+      if (reference.createIfNotExists === true && !reference.findOrCreate) {
+        reference.findOrCreate = 'findOrCreate';
       }
 
       if (!reference.otherName && reference.name !== name) {
@@ -361,18 +361,18 @@ export class ServiceBase {
           data[idPropertyName] = await service[getIdForName](data[otherName], { skipNoRowsError: true });
         }
 
-        if (!data[idPropertyName] && reference.createIfNotExists) {
+        if (!data[idPropertyName] && reference.createIfNotExists && reference.findOrCreate) {
           let object;
           if (typeof data[name] === 'object' && data[name]) {
-            object = await service[reference.createIfNotExists](data[name]);
+            [object] = await service[reference.findOrCreate](data[name]);
           } else if (typeof data[name] === 'string' && data[name]) {
-            object = await service[reference.createIfNotExists]({ name: data[name] });
+            [object] = await service[reference.findOrCreate]({ name: data[name] });
           } else if (typeof data[Name] === 'object' && data[Name]) {
-            object = await service[reference.createIfNotExists](data[Name]);
+            [object] = await service[reference.findOrCreate](data[Name]);
           } else if (typeof data[Name] === 'string' && data[Name]) {
-            object = await service[reference.createIfNotExists]({ name: data[Name] });
+            [object] = await service[reference.findOrCreate]({ name: data[Name] });
           } else if (typeof data[otherName] === 'string' && data[otherName]) {
-            object = await service[reference.createIfNotExists]({ name: data[otherName] });
+            [object] = await service[reference.findOrCreate]({ name: data[otherName] });
           }
 
           if (object) {
@@ -390,7 +390,7 @@ export class ServiceBase {
             if (list?.length) {
               const id = [];
               for (const item of list) {
-                id.push((await service[reference.createIfNotExists]({ name: item })).id);
+                id.push((await service[reference.findOrCreate]({ name: item }))[0].id);
               }
                             
               data[idPropertyName] = id;
@@ -1139,7 +1139,7 @@ export class ServiceBase {
     if (!options.where) {
       if (data.id) {
         options.where = { id: data.id };
-      } if (this.uniqueColumns) {
+      } else if (this.uniqueColumns) {
         options.where = {};
         for (const columnName of this.uniqueColumns) {
           options.where[columnName] = data[columnName];

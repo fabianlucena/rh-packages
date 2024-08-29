@@ -4,7 +4,8 @@ import { CheckError } from 'rf-util';
 import { ConflictError } from 'http-util';
 import dependency from 'rf-dependency';
 
-export class ProjectService extends Service.IdUuidEnableNameUniqueTitleSharedTranslatable {
+// TODO: Add Shared, and make it work when updating DB
+export class ProjectService extends Service.IdUuidEnableNameUniqueTitleTranslatable {
   references = {
     company: OptionalService({
       attribute: ['uuid', 'name', 'title'],

@@ -68,12 +68,12 @@ export class IdentityService extends Service.IdUuidEnable {
 
   /**
    * Creates a local identity, this method set the type property of data to 'local' and then calls create method.
-   * @param {{isEnabled: boolean, data: JSON, userId: integer}} data - data to pass to create method.
-   * @param {object} options - options to pass to creator, for use transacion.
+   * @param {{isEnabled: boolean, password: string, userId: integer}} data - data to pass to create method.
+   * @param {object} options - options to pass to creator, for use transaction.
    * @returns {Promise[data]}
    */
   async createLocal(data, options) {
-    if (!data.data) {
+    if (!data.password) {
       throw new MissingPropertyError('Identity', 'password');
     }
     

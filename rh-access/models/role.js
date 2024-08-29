@@ -45,8 +45,7 @@ export default (sequelize, DataTypes) => {
     },
     translationContext: {
       type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
+      allowNull: true,
     },
     description: {
       type: DataTypes.TEXT,
