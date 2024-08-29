@@ -28,7 +28,7 @@
         "ref": "..\\rh-glossary\\controllers\\glossary-category.js [101,25]"
     },
     {
-        "source": "Check for enable and uncheck for disable",
+        "source": "Check for enable or uncheck for disable",
         "language": "es",
         "context": "glossary",
         "translation": "Marque para habilitar y desmarque para deshabilitar",

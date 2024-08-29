@@ -13,7 +13,7 @@ export class IssueController extends Controller {
     this.issueTypeService =        dependency.get('issueTypeService');
     this.issuePriorityService =    dependency.get('issuePriorityService');
     this.issueCloseReasonService = dependency.get('issueCloseReasonService');
-    this.wfWorkflowService =       dependency.get('wfWorkflowService');
+    this.wfWorkflowOfEntityService = dependency.get('wfWorkflowOfEntityService');
     this.wfStatusService =         dependency.get('wfStatusService');
     this.wfTransitionService =     dependency.get('wfTransitionService');
     this.userService =             dependency.get('userService');
@@ -79,7 +79,7 @@ export class IssueController extends Controller {
   }
 
   getPermission = 'issue.get';
-  async getData(req) {
+  async getData(req, res) {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = {
@@ -113,9 +113,11 @@ export class IssueController extends Controller {
       options.where.projectId = await conf.filters.getCurrentProjectId(req) ?? null;
     }
 
-    await conf.global.eventBus?.$emit('Issue.response.getting', options);
+    const context = makeContext(req, res),
+      eventOptions = { entity: 'Issue', context, options };
+    await conf.global.eventBus?.$emit('Issue.response.getting', eventOptions);
     let result = await this.service.getListAndCount(options);
-    await conf.global.eventBus?.$emit('Issue.response.getted', result, options);
+    await conf.global.eventBus?.$emit('Issue.response.getted', { ...eventOptions, result });
     for (const row of result.rows) {
       row.related = [
         ...row.relatedTo.  map(i => ({ ...i, issue: i.to   })),
@@ -235,7 +237,7 @@ export class IssueController extends Controller {
         name:        'isEnabled',
         type:        'checkbox',
         label:       await loc._c('issue', 'Enabled'),
-        placeholder: await loc._c('issue', 'Check for enable and uncheck for disable'),
+        placeholder: await loc._c('issue', 'Check for enable or uncheck for disable'),
         value:       true,
         isField:     true,
       },
@@ -258,7 +260,7 @@ export class IssueController extends Controller {
       {
         name:        'related',
         type:        'list',
-        label:       await loc._c('issue', 'Related'),
+        label:       await loc._c('issue', 'Related issues'),
         isField:     false,
         isDetail:    true,
         properties: [
@@ -355,7 +357,7 @@ export class IssueController extends Controller {
     let options = { view: true, limit: 10, offset: 0, loc };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    const result = await this.wfWorkflowService.getListAndCount(options);
+    const result = await this.wfWorkflowOfEntityService.getListAndCount(options);
 
     res.status(200).send(result);
   }

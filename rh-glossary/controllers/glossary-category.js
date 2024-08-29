@@ -30,7 +30,7 @@ export class GlossaryCategoryController extends Controller {
         name:        'isEnabled',
         type:        'checkbox',
         label:       loc => loc._c('glossary', 'Enabled'),
-        placeholder: loc => loc._c('glossary', 'Check for enable and uncheck for disable'),
+        placeholder: loc => loc._c('glossary', 'Check for enable or uncheck for disable'),
         value:       true,
         isField:     true,
       },

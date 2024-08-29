@@ -14,9 +14,9 @@ async function configure(global, options) {
   }
 
   global.eventBus?.$on('Login.interface.form.get', loginInterfaceFormGet);
-  global.eventBus?.$on('OAuth2Client.created', clearCache);
-  global.eventBus?.$on('OAuth2Client.updated', clearCache);
-  global.eventBus?.$on('OAuth2Client.deleted', clearCache);
+  global.eventBus?.$on('OAuth2Client.created',     clearCache);
+  global.eventBus?.$on('OAuth2Client.updated',     clearCache);
+  global.eventBus?.$on('OAuth2Client.deleted',     clearCache);
 }
 
 async function init() {
@@ -24,7 +24,7 @@ async function init() {
   conf.oAuth2StateService =  dependency.get('oAuth2StateService');
 }
 
-async function loginInterfaceFormGet(form, options) {
+async function loginInterfaceFormGet({ form, options }) {
   const items = await getFieldsFromCache(options);
   for (const item of items) {
     const clientState = await conf.oAuth2StateService.create({ oAuth2ClientId: item.client.id });

@@ -1,3 +1,4 @@
+import { makeContext } from 'http-util';
 import { conf } from '../conf.js';
 import dependency from 'rf-dependency';
 
@@ -10,7 +11,7 @@ export class LogoutController {
 
     const logoutService = dependency.get('logoutService');
     await logoutService.logout(req.session);
-    await conf.global.eventBus?.$emit('logout', req.session.id);
+    await conf.global.eventBus?.$emit('logout', { sessionId: req.session.id, context: makeContext(req, res) });
     req.log?.info('Logout session closed.', { sessionId: req.session.id });
 
     delete req.session;

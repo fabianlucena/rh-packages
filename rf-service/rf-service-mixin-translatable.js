@@ -32,6 +32,7 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
 
     if (!options?.skipDeleteIsTranslatable) {
       delete row.isTranslatable;
+      delete row.translationContext;
     }
 
     for (const name in this.references) {

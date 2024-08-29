@@ -25,7 +25,7 @@ export async function sanitizeFields(items, options) {
         'type',
         'name',
       ];
-      for (const dst in substitutions) {
+      for (const dst of substitutions) {
         const src = interfaceName + ucfirst(dst);
         if (item[src] === undefined) {
           continue;
@@ -36,11 +36,14 @@ export async function sanitizeFields(items, options) {
       }
     }
     
-    
-    for (const t of ['label', 'title', 'placeholder']) {
+    for (const t of ['label', 'title', 'placeholder', 'legend']) {
       if (typeof item[t] === 'function') {
         item[t] = await item[t](loc, translationContext);
       }
+    }
+
+    if (item.fields) {
+      item.fields = await sanitizeFields(item.fields, options);
     }
 
     filtered.push(item);

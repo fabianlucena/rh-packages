@@ -1,5 +1,5 @@
 import { conf } from '../conf.js';
-import { getOptionsFromParamsAndOData, HttpError, getUuidFromRequest } from 'http-util';
+import { getOptionsFromParamsAndOData, HttpError, getUuidFromRequest, makeContext } from 'http-util';
 import { checkParameter, sanitizeFields } from 'rf-util';
 import { Controller } from 'rh-controller';
 import { dependency } from 'rf-dependency';
@@ -101,7 +101,10 @@ export class ProjectController extends Controller {
       options.where.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
     }
 
-    await conf.global.eventBus?.$emit('Project.response.getting', options);
+    const context = makeContext(req, res),
+      eventOptions = { entity: 'Project', context, options };
+    await conf.global.eventBus?.$emit('Project.response.getting', eventOptions);
+    await conf.global.eventBus?.$emit('response.getting', eventOptions);
 
     const result = await this.service.getListAndCount(options);
 
@@ -113,7 +116,8 @@ export class ProjectController extends Controller {
       });
     }
 
-    await conf.global.eventBus?.$emit('Project.response.getted', result, options);
+    await conf.global.eventBus?.$emit('Project.response.getted', { ...eventOptions, result });
+    await conf.global.eventBus?.$emit('response.getted', { ...eventOptions, result });
 
     res.status(200).send(result);
   }
@@ -270,8 +274,10 @@ export class ProjectController extends Controller {
       ),
     };
 
-    await conf.global.eventBus?.$emit('Project.interface.form.get', form, { loc });
-    await conf.global.eventBus?.$emit('interface.form.get', form, { loc, entity: 'Project' });
+    const context = makeContext(req, res),
+      eventOptions = { entity: 'Project', context, form };
+    await conf.global.eventBus?.$emit('Project.interface.form.get', eventOptions);
+    await conf.global.eventBus?.$emit('interface.form.get', eventOptions);
         
     res.status(200).send(form);
   }

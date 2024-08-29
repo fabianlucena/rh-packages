@@ -11,29 +11,29 @@ function configure (global) {
   global.eventBus?.$on('menuGet', menuGet);
 }
 
-async function login(data, options) {
+async function login({ options }) {
   if (!options?.sessionId || !options?.oldSessionId) {
     return;
   }
 
   const sessionDataService = SessionDataService.singleton();
-  const oldData = await sessionDataService.getDataIfExistsForSessionId(options.oldSessionId);
+  const oldData = await sessionDataService.getDataOrNullForSessionId(options.oldSessionId);
   if (!oldData) {
     return;
   }
 
   const sessionId = options.sessionId;
-  await sessionDataService.updateData(sessionId, oldData);
+  await sessionDataService.addData(sessionId, oldData);
 
-  return sessionDataService.getDataIfExistsForSessionId(sessionId);
+  return sessionDataService.getDataOrNullForSessionId(sessionId);
 }
 
-async function menuGet(data, options) {
+async function menuGet({ data, options }) {
   if (!options?.sessionId) {
     return;
   }
 
-  const thisData = await SessionDataService.singleton().getDataIfExistsForSessionId(options.sessionId);
+  const thisData = await SessionDataService.singleton().getDataOrNullForSessionId(options.sessionId);
   deepComplete(data, thisData);
 
   return thisData;

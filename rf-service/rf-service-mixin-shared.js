@@ -49,7 +49,7 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
     }
 
     try {
-      await this.emit('creating', options?.emitEvent, data, options, this);
+      await this.conditionalEmit('creating', options?.emitEvent, { data, options });
       const row = await super.create(data, { ...options, emitEvent: false });
       if (addShare) {
         await this.addCollaborator(
@@ -63,7 +63,7 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
         );
       }
 
-      await this.emit('created', options?.emitEvent, row, data, options, this);
+      await this.conditionalEmit('created', options?.emitEvent, { row, data, options });
 
       await transaction?.commit();
 

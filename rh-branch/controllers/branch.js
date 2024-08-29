@@ -1,5 +1,5 @@
 import { conf } from '../conf.js';
-import { getOptionsFromParamsAndOData, HttpError, ConflictError } from 'http-util';
+import { getOptionsFromParamsAndOData, HttpError, ConflictError, makeContext } from 'http-util';
 import { checkParameter, checkParameterUuid, sanitizeFields } from 'rf-util';
 import Controller from 'rh-controller';
 import dependency from 'rf-dependency';
@@ -96,7 +96,9 @@ export class BranchController extends Controller {
       options.where.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
     }
 
-    await conf.global.eventBus?.$emit('Branch.response.getting', options);
+    const context = makeContext(req, res),
+      eventOptions = { entity: 'Branch', options, context };
+    await conf.global.eventBus?.$emit('Branch.response.getting', eventOptions);
 
     const result = await this.service.getListAndCount(options);
 
@@ -105,7 +107,8 @@ export class BranchController extends Controller {
       return row;
     });
 
-    await conf.global.eventBus?.$emit('Branch.response.getted', result, options);
+    eventOptions.result = result;
+    await conf.global.eventBus?.$emit('Branch.response.getted', eventOptions);
 
     res.status(200).send(result);
   }
@@ -162,7 +165,10 @@ export class BranchController extends Controller {
       ),
     };
 
-    await conf.global.eventBus?.$emit('Branch.interface.grid.get', grid, { loc });
+    const context = makeContext(req, res),
+      eventOptions = { entity: 'Branch', context, grid };
+    await conf.global.eventBus?.$emit('Branch.interface.grid.get', eventOptions);
+    await conf.global.eventBus?.$emit('interface.grid.get', eventOptions);
 
     res.status(200).send(grid);
   }
@@ -247,8 +253,10 @@ export class BranchController extends Controller {
       ),
     };
 
-    await conf.global.eventBus?.$emit('interface.form.get', form, { loc, entity: 'Branch' });
-    await conf.global.eventBus?.$emit('Branch.interface.form.get', form, { loc });
+    const context = makeContext(req, res),
+      eventOptions = { entity: 'Branch', context, form };
+    await conf.global.eventBus?.$emit('interface.form.get', eventOptions);
+    await conf.global.eventBus?.$emit('Branch.interface.form.get', form);
 
     res.status(200).send(form);
   }
