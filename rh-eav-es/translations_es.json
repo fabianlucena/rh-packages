@@ -4,7 +4,8 @@
         "language": "es",
         "context": "eav",
         "translation": "Atributo",
-        "ref": "..\\rh-eav\\services\\value_tag.js [31,63]\n..\\rh-eav\\services\\attribute_tag.js [11,63]"
+        "ref": "..\\rh-eav\\services\\value_tag.js [31,63]\n..\\rh-eav\\services\\attribute_tag.js [11,63]",
+        "isDraft": false
     },
     {
         "source": "Attributes",
@@ -25,14 +26,14 @@
         "language": "es",
         "context": "eav",
         "translation": "No se puede actualizar la opción porque el dato ID de atributo está ausente o es vacío.",
-        "ref": "..\\rh-eav\\services\\value_text.js [13,54]\n..\\rh-eav\\services\\value_tag.js [99,54]\n..\\rh-eav\\services\\value_option.js [41,62]"
+        "ref": "..\\rh-eav\\services\\value_text.js [13,54]\n..\\rh-eav\\services\\value_tag.js [99,54]\n..\\rh-eav\\services\\value_option.js [41,62]\n..\\rh-eav\\services\\value_number.js [13,54]\n..\\rh-eav\\services\\value_check.js [13,54]"
     },
     {
         "source": "Cannot update option value because entityId data is missing or empty",
         "language": "es",
         "context": "eav",
         "translation": "No se puede actualizar la opción porque el dato de ID de entidad (entidadId) está vacío o no se encuentra.",
-        "ref": "..\\rh-eav\\services\\value_text.js [17,54]\n..\\rh-eav\\services\\value_tag.js [103,54]\n..\\rh-eav\\services\\value_option.js [45,62]"
+        "ref": "..\\rh-eav\\services\\value_text.js [17,54]\n..\\rh-eav\\services\\value_tag.js [103,54]\n..\\rh-eav\\services\\value_option.js [45,62]\n..\\rh-eav\\services\\value_number.js [17,54]\n..\\rh-eav\\services\\value_check.js [17,54]"
     },
     {
         "source": "Category",
@@ -40,6 +41,14 @@
         "context": "eav",
         "translation": "Categoría",
         "ref": "..\\rh-eav\\services\\attribute.js [193,32]"
+    },
+    {
+        "source": "Check",
+        "language": "es",
+        "context": "eav",
+        "isDraft": false,
+        "translation": "Verificación",
+        "ref": "..\\rh-eav\\conf_data.js [27,34]"
     },
     {
         "source": "Check for enable or uncheck for disable",
@@ -143,7 +152,6 @@
         "source": "Edit attributes types",
         "language": "es",
         "context": "eav",
-        "isDraft": false,
         "translation": "Modificar tipos de atributos",
         "ref": "..\\rh-eav\\conf_data.js [16,51]"
     },
@@ -166,7 +174,7 @@
         "language": "es",
         "context": "eav",
         "translation": "Error tipo de atributo %s desconocido",
-        "ref": "..\\rh-eav\\rh-eav.js [308,61]"
+        "ref": "..\\rh-eav\\rh-eav.js [334,61]"
     },
     {
         "source": "Exists another attribute with that title for this entity.",
@@ -250,7 +258,7 @@
         "language": "es",
         "context": "eav",
         "translation": "Selección",
-        "ref": "..\\rh-eav\\conf_data.js [27,34]"
+        "ref": "..\\rh-eav\\conf_data.js [28,34]"
     },
     {
         "source": "Select the category",
@@ -297,7 +305,7 @@
         "language": "es",
         "context": "eav",
         "translation": "Etiquetas",
-        "ref": "..\\rh-eav\\conf_data.js [28,34]"
+        "ref": "..\\rh-eav\\conf_data.js [29,34]"
     },
     {
         "source": "Text",
@@ -312,6 +320,14 @@
         "context": "eav",
         "translation": "La etiqueta ya está vinculada a la entidad.",
         "ref": "..\\rh-eav\\services\\value_tag.js [36,42]"
+    },
+    {
+        "source": "The value is a check.",
+        "language": "es",
+        "context": "eav",
+        "isDraft": false,
+        "translation": "El valor es una verificación.",
+        "ref": "..\\rh-eav\\conf_data.js [27,73]"
     },
     {
         "source": "The value is a free text.",
@@ -332,14 +348,14 @@
         "language": "es",
         "context": "eav",
         "translation": "El valor debe seleccionarse desde un conjunto de opciones.",
-        "ref": "..\\rh-eav\\conf_data.js [27,73]"
+        "ref": "..\\rh-eav\\conf_data.js [28,73]"
     },
     {
         "source": "The values are tags, free to add and select.",
         "language": "es",
         "context": "eav",
         "translation": "Los valores son etiquetas, para agregar libremente y seleccionar.",
-        "ref": "..\\rh-eav\\conf_data.js [28,73]"
+        "ref": "..\\rh-eav\\conf_data.js [29,73]"
     },
     {
         "source": "Title",
