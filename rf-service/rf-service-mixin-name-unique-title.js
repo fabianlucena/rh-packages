@@ -1,6 +1,6 @@
 export const ServiceMixinNameUniqueTitle = Service => class extends Service {
   async validateForCreation(data) {
-    if (data.title === undefined) {
+    if (typeof data.title === 'undefined') {
       data.title = data.name;
     }
 
