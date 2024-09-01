@@ -1,0 +1,390 @@
+components:
+  schemas:
+    Asset:
+      type: object
+      properties:
+        isEnabled:
+          type: boolean
+        name:
+          type: string
+          required: true
+          example: admin
+        title:
+          type: string
+          required: true
+          example: Admin
+        Project:
+          type: object
+          properties:
+            name:
+              type: string
+              required: true
+              example: admin
+            title:
+              type: string
+              required: true
+              example: Admin
+        Type:
+          type: object
+          properties:
+            name:
+              type: string
+              required: true
+              example: admin
+            title:
+              type: string
+              required: true
+              example: Admin
+        description:
+          type: string
+          required: true
+          example: Admin
+
+    Error:
+      properties:
+        error:
+          type: string
+          example: Example error
+
+    Type:
+      properties:
+        uuid:
+          type: string
+          required: true
+        title:
+          type: string
+          required: true
+
+    Project:
+      properties:
+        uuid:
+          type: string
+          required: true
+        title:
+          type: string
+          required: true
+
+/asset:
+  post:
+    tags:
+      - Asset
+    summary: Create a asset
+    description: Add a new asset to the database
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Asset'
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/components/schemas/Error'
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+
+  get:
+    tags:
+      - Asset
+    summary: Get asset or a asset list
+    description: If the UUID or name params is provided this endpoint returns a single asset otherwise returns a list of assets
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+      - name: name
+        in: query
+        type: string
+      - name: limit
+        in: query
+        type: integer
+      - name: offset
+        in: query
+        type: integer
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/components/schemas/Asset'
+      '204':
+        description: Success no asset
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+  delete:
+    tags:
+      - Asset
+    summary: Delete a asset
+    description: Delete a asset from its UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        required: true
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+    responses:
+      '204':
+        description: Success
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+  patch:
+    tags:
+      - Asset
+    summary: Update a asset
+    description: Update a asset from its UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Asset'
+    responses:
+      '204':
+        description: Success
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+/asset/enable:
+  post:
+    tags:
+      - Asset
+    summary: Enable a asset
+    description: Enable a asset from its UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        required: true
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+    responses:
+      '204':
+        description: Success
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+/asset/disable:
+  post:
+    tags:
+      - Asset
+    summary: Disable a asset
+    description: Disable a asset from its UUID
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        required: true
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+    responses:
+      '204':
+        description: Success
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+/asset/project:
+  get:
+    tags:
+      - Asset
+    summary: Get list of projects available to select in a asset
+    description: If the UUID or name params is provided this endpoint returns a single project otherwise returns a list of projects
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+      - name: name
+        in: query
+        type: string
+      - name: limit
+        in: query
+        type: integer
+      - name: offset
+        in: query
+        type: integer
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/components/schemas/Project'
+      '204':
+        description: Success no project
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
+
+/asset/type:
+  get:
+    tags:
+      - Asset
+    summary: Get list of types available to select in a asset
+    description: If the UUID or name params is provided this endpoint returns a single type otherwise returns a list of types
+    security:
+      - bearerAuth: []
+    produces:
+      - application/json
+    parameters:
+      - name: uuid
+        in: query
+        type: string
+        format: UUID
+        example: 018DDC35-FB33-415C-B14B-5DBE49B1E9BC
+      - name: name
+        in: query
+        type: string
+      - name: limit
+        in: query
+        type: integer
+      - name: offset
+        in: query
+        type: integer
+    responses:
+      '200':
+        description: Success
+        schema:
+          $ref: '#/components/schemas/Type'
+      '204':
+        description: Success no type
+      '400':
+        description: Missing parameters or parameters error
+        schema:
+          $ref: '#/components/schemas/Error'
+      '401':
+        description: Unauthorized
+        schema:
+          $ref: '#/components/schemas/Error'
+      '403':
+        description: Forbidden
+        schema:
+          $ref: '#/components/schemas/Error'
+      '500':
+        description: Internal server error
+        schema:
+          $ref: '#/components/schemas/Error'
