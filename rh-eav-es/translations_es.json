@@ -11,14 +11,14 @@
         "language": "es",
         "context": "eav",
         "translation": "Atributos",
-        "ref": "..\\rh-eav\\conf_data.js [17,202]\n..\\rh-eav\\services\\attribute.js [215,24]"
+        "ref": "..\\rh-eav\\conf_data.js [18,202]\n..\\rh-eav\\services\\attribute.js [215,24]"
     },
     {
         "source": "Attributes types",
         "language": "es",
         "context": "eav",
         "translation": "Tipos de atributos",
-        "ref": "..\\rh-eav\\conf_data.js [15,202]\n..\\rh-eav\\services\\attribute_type.js [60,24]"
+        "ref": "..\\rh-eav\\conf_data.js [15,202]\n..\\rh-eav\\services\\attribute_type.js [44,24]"
     },
     {
         "source": "Cannot update option value because attributeId data is missing or empty",
@@ -52,7 +52,6 @@
         "source": "Check for show as column or uncheck for not",
         "language": "es",
         "context": "eav",
-        "isDraft": false,
         "translation": "Tilde para mostrar como columna o destilde para que no se muestre como columna.",
         "ref": "..\\rh-eav\\services\\attribute.js [153,32]"
     },
@@ -60,7 +59,6 @@
         "source": "Check for show as detail or uncheck for not",
         "language": "es",
         "context": "eav",
-        "isDraft": false,
         "translation": "Tilde para mostrar como detalle o destilde para que no se muestre como detalle.",
         "ref": "..\\rh-eav\\services\\attribute.js [163,32]"
     },
@@ -68,7 +66,6 @@
         "source": "Check for show as field or uncheck for not",
         "language": "es",
         "context": "eav",
-        "isDraft": false,
         "translation": "Tilde para mostrar como campo o destilde para que no se muestre como campo.",
         "ref": "..\\rh-eav\\services\\attribute.js [143,32]"
     },
@@ -83,7 +80,6 @@
         "source": "Check for use with multiple values or uncheck for not",
         "language": "es",
         "context": "eav",
-        "isDraft": false,
         "translation": "Tilde para usar con valore múltiples o destilde para usar con valor único.",
         "ref": "..\\rh-eav\\services\\attribute.js [183,32]"
     },
@@ -99,14 +95,14 @@
         "language": "es",
         "context": "eav",
         "translation": "Crear atributos",
-        "ref": "..\\rh-eav\\conf_data.js [18,51]"
+        "ref": "..\\rh-eav\\conf_data.js [19,51]"
     },
     {
         "source": "Delete attributes",
         "language": "es",
         "context": "eav",
         "translation": "Eliminar atributos",
-        "ref": "..\\rh-eav\\conf_data.js [20,51]"
+        "ref": "..\\rh-eav\\conf_data.js [21,51]"
     },
     {
         "source": "Delete without where is forbiden.",
@@ -120,7 +116,7 @@
         "language": "es",
         "context": "eav",
         "translation": "Descripcion",
-        "ref": "..\\rh-eav\\services\\attribute_type.js [52,32]\n..\\rh-eav\\services\\attribute.js [207,32]"
+        "ref": "..\\rh-eav\\services\\attribute_type.js [36,32]\n..\\rh-eav\\services\\attribute.js [207,32]"
     },
     {
         "source": "Detail",
@@ -141,7 +137,15 @@
         "language": "es",
         "context": "eav",
         "translation": "Modificar atributos",
-        "ref": "..\\rh-eav\\conf_data.js [19,51]"
+        "ref": "..\\rh-eav\\conf_data.js [20,51]"
+    },
+    {
+        "source": "Edit attributes types",
+        "language": "es",
+        "context": "eav",
+        "isDraft": false,
+        "translation": "Modificar tipos de atributos",
+        "ref": "..\\rh-eav\\conf_data.js [16,51]"
     },
     {
         "source": "Enabled",
@@ -190,7 +194,7 @@
         "language": "es",
         "context": "eav",
         "translation": "Obtener atributos",
-        "ref": "..\\rh-eav\\conf_data.js [17,51]"
+        "ref": "..\\rh-eav\\conf_data.js [18,51]"
     },
     {
         "source": "Get attributes types",
@@ -211,7 +215,7 @@
         "language": "es",
         "context": "eav",
         "translation": "Nombre",
-        "ref": "..\\rh-eav\\services\\attribute_type.js [39,32]\n..\\rh-eav\\services\\attribute.js [73,32]"
+        "ref": "..\\rh-eav\\services\\attribute_type.js [27,32]\n..\\rh-eav\\services\\attribute.js [73,32]"
     },
     {
         "source": "No attribute for tag creation.",
@@ -225,7 +229,7 @@
         "language": "es",
         "context": "eav",
         "translation": "Número",
-        "ref": "..\\rh-eav\\conf_data.js [25,34]"
+        "ref": "..\\rh-eav\\conf_data.js [26,34]"
     },
     {
         "source": "Order",
@@ -246,7 +250,7 @@
         "language": "es",
         "context": "eav",
         "translation": "Selección",
-        "ref": "..\\rh-eav\\conf_data.js [26,34]"
+        "ref": "..\\rh-eav\\conf_data.js [27,34]"
     },
     {
         "source": "Select the category",
@@ -293,14 +297,14 @@
         "language": "es",
         "context": "eav",
         "translation": "Etiquetas",
-        "ref": "..\\rh-eav\\conf_data.js [27,34]"
+        "ref": "..\\rh-eav\\conf_data.js [28,34]"
     },
     {
         "source": "Text",
         "language": "es",
         "context": "eav",
         "translation": "Texto",
-        "ref": "..\\rh-eav\\conf_data.js [24,34]"
+        "ref": "..\\rh-eav\\conf_data.js [25,34]"
     },
     {
         "source": "The tag is already linked to the entity.",
@@ -314,35 +318,35 @@
         "language": "es",
         "context": "eav",
         "translation": "El valor es un texto libre.",
-        "ref": "..\\rh-eav\\conf_data.js [24,73]"
+        "ref": "..\\rh-eav\\conf_data.js [25,73]"
     },
     {
         "source": "The value is a number.",
         "language": "es",
         "context": "eav",
         "translation": "El valor es un número.",
-        "ref": "..\\rh-eav\\conf_data.js [25,73]"
+        "ref": "..\\rh-eav\\conf_data.js [26,73]"
     },
     {
         "source": "The value must be select from a set of options.",
         "language": "es",
         "context": "eav",
         "translation": "El valor debe seleccionarse desde un conjunto de opciones.",
-        "ref": "..\\rh-eav\\conf_data.js [26,73]"
+        "ref": "..\\rh-eav\\conf_data.js [27,73]"
     },
     {
         "source": "The values are tags, free to add and select.",
         "language": "es",
         "context": "eav",
         "translation": "Los valores son etiquetas, para agregar libremente y seleccionar.",
-        "ref": "..\\rh-eav\\conf_data.js [27,73]"
+        "ref": "..\\rh-eav\\conf_data.js [28,73]"
     },
     {
         "source": "Title",
         "language": "es",
         "context": "eav",
         "translation": "Título",
-        "ref": "..\\rh-eav\\services\\attribute_type.js [16,32]\n..\\rh-eav\\services\\attribute.js [50,32]"
+        "ref": "..\\rh-eav\\services\\attribute_type.js [18,32]\n..\\rh-eav\\services\\attribute.js [50,32]"
     },
     {
         "source": "Type",
@@ -356,7 +360,7 @@
         "language": "es",
         "context": "eav",
         "translation": "Escriba aquí la descripción",
-        "ref": "..\\rh-eav\\services\\attribute_type.js [53,32]\n..\\rh-eav\\services\\attribute.js [208,32]"
+        "ref": "..\\rh-eav\\services\\attribute_type.js [37,32]\n..\\rh-eav\\services\\attribute.js [208,32]"
     },
     {
         "source": "Type the field name here",
@@ -370,7 +374,7 @@
         "language": "es",
         "context": "eav",
         "translation": "Escriba aquí el nombre",
-        "ref": "..\\rh-eav\\services\\attribute_type.js [40,32]\n..\\rh-eav\\services\\attribute.js [74,32]"
+        "ref": "..\\rh-eav\\services\\attribute_type.js [28,32]\n..\\rh-eav\\services\\attribute.js [74,32]"
     },
     {
         "source": "Type the order here",
@@ -384,6 +388,6 @@
         "language": "es",
         "context": "eav",
         "translation": "Escriba aquí el título",
-        "ref": "..\\rh-eav\\services\\attribute_type.js [17,32]\n..\\rh-eav\\services\\attribute.js [51,32]"
+        "ref": "..\\rh-eav\\services\\attribute_type.js [19,32]\n..\\rh-eav\\services\\attribute.js [51,32]"
     }
 ]

@@ -5,8 +5,10 @@ export class EavAttributeTypeService extends Service.IdUuidEnableNameUniqueTitle
   defaultTranslationContext = 'eav';
   viewAttributes = ['uuid', 'isEnabled', 'name', 'title', 'isTranslatable', 'description'];
 
-  async getInterface({ loc }) {
-    const gridActions = ['search', 'paginate'];
+  async getInterface({ permissions, loc }) {
+    const gridActions = [];
+    if (permissions.includes('eavAttribute.edit'))   gridActions.push('enableDisable', 'edit');
+    gridActions.push('search', 'paginate');
         
     loc ??= defaultLoc;
     const fields = [
@@ -17,21 +19,7 @@ export class EavAttributeTypeService extends Service.IdUuidEnableNameUniqueTitle
         placeholder: await loc._c('eav', 'Type the title here'),
         isField:     true,
         isColumn:    true,
-        required:    true,
-        onValueChanged: {
-          mode: {
-            create:       true,
-            defaultValue: false,
-          },
-          action:   'setValues',
-          override: false,
-          map: {
-            name: {
-              source:   'title',
-              sanitize: 'dasherize',
-            },
-          },
-        },
+        disabled:    true,
       },
       {
         name:       'name',
@@ -40,11 +28,7 @@ export class EavAttributeTypeService extends Service.IdUuidEnableNameUniqueTitle
         placeholder: await loc._c('eav', 'Type the name here'),
         isField:     true,
         isColumn:    true,
-        required:    true,
-        disabled: {
-          create:      false,
-          defaultValue: true,
-        },
+        disabled:    true,
       },
       {
         name:        'description',
@@ -52,7 +36,7 @@ export class EavAttributeTypeService extends Service.IdUuidEnableNameUniqueTitle
         label:       await loc._c('eav', 'Description'),
         placeholder: await loc._c('eav', 'Type the description here'),
         isField:     true,
-        isDetail:    true,
+        isColumn:    true,
       },
     ];
 

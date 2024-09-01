@@ -27,14 +27,14 @@ export class EavAttributeService extends Service.IdUuidEnableNameUniqueTitleDesc
     this.eavAttributeTagService =      EavAttributeTagService.     singleton();
   }
 
-  async getInterface(req) {
+  async getInterface({ permissions, loc }) {
     const gridActions = [];
-    if (req.permissions.includes('eavAttribute.create')) gridActions.push('create');
-    if (req.permissions.includes('eavAttribute.edit'))   gridActions.push('enableDisable', 'edit');
-    if (req.permissions.includes('eavAttribute.delete')) gridActions.push('delete');
+    if (permissions.includes('eavAttribute.create')) gridActions.push('create');
+    if (permissions.includes('eavAttribute.edit'))   gridActions.push('enableDisable', 'edit');
+    if (permissions.includes('eavAttribute.delete')) gridActions.push('delete');
     gridActions.push('search', 'paginate');
         
-    const loc = req.loc ?? defaultLoc;
+    loc ??= defaultLoc;
     const fields = [
       {
         name:        'isEnabled',
