@@ -313,22 +313,25 @@ async function getted({ entity, result, options }) {
   return result;
 }
 
-async function created({ entity, result, data, options }) {
+async function created({ entity, row, data, options }) {
   if (!entity) {
     return;
   }
 
   await checkClearCache(entity);
 
-  if (result.then) {
-    result = await result;
-  }
-
-  if (!result) {
+  if (!row) {
     return;
   }
 
-  const entityIds = [result.id];
+  if (row.then) {
+    row = await row;
+    if (!row) {
+      return;
+    }
+  }
+
+  const entityIds = [row.id];
 
   await updateValues({ entity, entityIds, data, options });
 }

@@ -222,7 +222,7 @@ export class Controller {
       } else if (typeof this.constructor.getInterface === 'function') {
         func = this.constructor.getInterface;
       } else if (this.service?.getInterface) {
-        func = (...args) => this.service.getInterface({ context: makeContext(...args) });
+        func = (...args) => this.service.getInterface(makeContext(...args));
       }
 
       permissions.push('getGrid', 'get');
@@ -239,7 +239,7 @@ export class Controller {
       } else if (typeof this.constructor.getInterface === 'function') {
         func = this.constructor.getInterface;
       } else if (this.service?.getInterface) {
-        func = (...args) => this.service.getInterface({ context: makeContext(...args) });
+        func = (...args) => this.service.getInterface(makeContext(...args));
       }
 
       permissions.push('getForm', 'get');
@@ -256,7 +256,7 @@ export class Controller {
       } else if (typeof this.constructor.getInterface === 'function') {
         func = this.constructor.getInterface;
       } else if (this.service?.getInterface) {
-        func = (...args) => this.service.getInterface({ context: makeContext(...args) });
+        func = (...args) => this.service.getInterface(makeContext(...args));
       }
 
       permissions.push('getObject', 'get');
@@ -269,7 +269,7 @@ export class Controller {
       } else if (typeof this.constructor.getInterface === 'function') {
         func = this.constructor.getInterface;
       } else if (this.service?.getInterface) {
-        func = (...args) => this.service.getInterface({ context: makeContext(...args) });
+        func = (...args) => this.service.getInterface(makeContext(...args));
       }
 
       permissions.push('getInterface', 'get');
