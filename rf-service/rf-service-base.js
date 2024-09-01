@@ -400,19 +400,29 @@ export class ServiceBase {
       }
     }
 
-    if (!data[idPropertyName]
-      && (data[uuidPropertyName]
-        || data[Name]
-        || data[name]
-      )
-    ) {
-      throw new NoRowsError(loc => loc._c(
-        'service',
-        'Cannot find the ID for reference "%s", in service "%s" for value: "%s".',
-        name,
-        this.name,
-        data[uuidPropertyName] ?? JSON.stringify(data[name]) ?? JSON.stringify(data[Name]),
-      ));
+    if (!data[idPropertyName]) {
+      let error;
+      if (data[uuidPropertyName]) {
+        error = true;
+      } else {
+        const child = data[name] ?? data[Name];
+        for (const k in child) {
+          if (child[k] !== null) {
+            error = true;
+            break;
+          }
+        }
+      }
+
+      if (error) {
+        throw new NoRowsError(loc => loc._c(
+          'service',
+          'Cannot find the ID for reference "%s", in service "%s" for value: "%s".',
+          name,
+          this.name,
+          data[uuidPropertyName] ?? JSON.stringify(data[name]) ?? JSON.stringify(data[Name]),
+        ));
+      }
     }
 
     delete data[uuidPropertyName];
