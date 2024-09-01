@@ -97,7 +97,7 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false,
     },
-    isRequeired: {
+    isRequired: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
