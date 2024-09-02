@@ -81,19 +81,6 @@ export class EavAttributeService extends Service.IdUuidEnableNameUniqueTitleDesc
         },
       },
       {
-        name:       'fieldName',
-        type:       'text',
-        label:       await loc._c('eav', 'Field'),
-        placeholder: await loc._c('eav', 'Type the field name here'),
-        isField:     true,
-        isColumn:    true,
-        required:    true,
-        disabled: {
-          create:      false,
-          defaultValue: true,
-        },
-      },
-      {
         name:        'type.uuid',
         gridName:    'type.title',
         type:        'select',
@@ -124,6 +111,27 @@ export class EavAttributeService extends Service.IdUuidEnableNameUniqueTitleDesc
           value:   'uuid',
           text:    'name',
           title:   'description',
+        },
+      },
+      {
+        name:        'condition',
+        type:        'textArea',
+        label:       await loc._c('eav', 'Condition'),
+        placeholder: await loc._c('eav', 'Type the condition here'),
+        isField:     true,
+        isDetail:    true,
+      },
+      {
+        name:       'fieldName',
+        type:       'text',
+        label:       await loc._c('eav', 'Field'),
+        placeholder: await loc._c('eav', 'Type the field name here'),
+        isField:     true,
+        isColumn:    true,
+        required:    true,
+        disabled: {
+          create:      false,
+          defaultValue: true,
         },
       },
       {

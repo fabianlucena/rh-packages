@@ -22,4 +22,8 @@ export const data = {
     { name: 'asset.edit',       title: loc._cf('asset', 'Edit assets'),         isTranslatable: true, translationContext: 'asset', roles: 'assetManager', ownerModule: name, },
     { name: 'asset.delete',     title: loc._cf('asset', 'Delete assets'),       isTranslatable: true, translationContext: 'asset', roles: 'assetManager', ownerModule: name, },
   ],
+
+  modelsEntitiesNames: [
+    { name: 'Asset' },
+  ],
 };
