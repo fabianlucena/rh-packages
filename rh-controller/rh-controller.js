@@ -1,5 +1,5 @@
 import { getRoutes } from 'rf-get-routes';
-import { deleteHandler, getUuidFromRequest, HttpError, enableHandler, disableHandler, patchHandler, makeContext } from 'http-util';
+import { deleteHandler, getUuidFromRequest, HttpError, enableHandler, disableHandler, patchHandler, makeContext, getOptionsFromParamsAndOData } from 'http-util';
 import { defaultLoc } from 'rf-locale';
 import { dependency } from 'rf-dependency';
 import { sanitizeFields, ucfirst } from 'rf-util';
@@ -336,7 +336,7 @@ export class Controller {
 
     if (this.eventBus) {
       const context = makeContext(req, res),
-        eventOptions = { entity, result, context };
+        eventOptions = { entity, result, loc: context.loc, context };
 
       if (eventOptionsResultName) {
         eventOptions[eventOptionsResultName] = result;
@@ -404,13 +404,18 @@ export class Controller {
   }
 
   async defaultGetOptions(req, res) {
-    const options = { view: true };
+    const options = await getOptionsFromParamsAndOData(
+      { ...req.query, ...req.params },
+      { uuid: 'uuid' },
+    );
+    options.context = makeContext(req, res);
+    options.view ??= true;
     if (!this.service) {
       return options;
     }
 
     if (this.service.getOptions) {
-      return this.service.getOptions({ context: makeContext(req, res) });
+      return this.service.getOptions(options);
     }
     
     if (this.service.references) {

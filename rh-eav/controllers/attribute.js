@@ -13,7 +13,8 @@ export class AttributeController extends Controller {
     this.entityService =   dependency.get('modelEntityNameService');
   }
 
-  getPermission = 'eavAttribute.get';
+  getPermission =  'eavAttribute.get';
+  postPermission = 'eavAttribute.create';
 
   'getPermission /type' = 'eavAttribute.edit';
   async 'get /type'(req) {

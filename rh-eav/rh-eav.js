@@ -91,11 +91,11 @@ async function checkClearCache(entity) {
   return;
 }
 
-async function getAttributes(entity, options) {
+async function getAttributes(entity, { loc }) {
   conf.attributesCache[entity] ||= {};
   const attributesCache = conf.attributesCache[entity];
 
-  const language = options?.loc?.language;
+  const language = loc?.language;
   if (attributesCache[language] === undefined) {
     attributesCache[language] = {};
         
@@ -103,7 +103,7 @@ async function getAttributes(entity, options) {
       entity,
       {
         include: { type: true },
-        loc: options.loc,
+        loc,
       }
     );
 
@@ -112,9 +112,7 @@ async function getAttributes(entity, options) {
     for (const attribute of attributes) {
       const attrOptions = await conf.eavAttributeOptionService.getFor(
         { categoryId: attribute.categoryId },
-        {
-          loc: options.loc,
-        },
+        { loc },
       );
 
       if (attrOptions?.length) {
@@ -136,8 +134,7 @@ async function getAttributes(entity, options) {
   return attributesCache[language];
 }
 
-async function interfaceFormGet({ form, options }) {
-  const entity = options?.entity;
+async function interfaceFormGet({ form, entity, loc }) {
   if (!entity) {
     return;
   }
@@ -145,11 +142,11 @@ async function interfaceFormGet({ form, options }) {
   conf.fieldsCache[entity] ||= {};
   const fieldsCache = conf.fieldsCache[entity];
 
-  const language = options?.loc?.language;
+  const language = loc?.language;
   if (fieldsCache[language] === undefined) {
     fieldsCache[language] = [];
 
-    const attributes = await getAttributes(entity, options);
+    const attributes = await getAttributes(entity, { loc });
     if (!attributes?.length) {
       return;
     }
@@ -164,6 +161,7 @@ async function interfaceFormGet({ form, options }) {
         name: attribute.name,
         label: attribute.title,
         type: attribute.htmlType,
+        condition: attribute.condition,
       };
 
       if (attribute.type === 'select') {
