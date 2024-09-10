@@ -49,6 +49,10 @@ if (options.safe) {
     /console\s*\./,
     /fetch\s*\(/,
   );
+
+  context.require ??= null;
+  context.console ??= null;
+  context.fetch   ??= null;
 }
 
 for (const pat of options.exclude) {
