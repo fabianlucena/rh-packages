@@ -3,7 +3,6 @@
         "source": "Assignees",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "Encargados",
         "ref": "..\\rh-issue\\conf_data.js [64,31]"
     },
@@ -180,7 +179,15 @@
         "language": "es",
         "context": "issue",
         "translation": "Minimalista",
-        "ref": "..\\rh-issue\\conf_data.js [53,31]\n..\\rh-issue\\conf_data.js [67,20]"
+        "ref": "..\\rh-issue\\conf_data.js [67,20]"
+    },
+    {
+        "source": "Minimalist for issues",
+        "language": "es",
+        "context": "issue",
+        "isDraft": false,
+        "translation": "Minimalista para incidencias",
+        "ref": "..\\rh-issue\\conf_data.js [53,31]"
     },
     {
         "source": "Name",
@@ -228,7 +235,6 @@
         "source": "Related issues",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "Incidencias relacionadas",
         "ref": "..\\rh-issue\\controllers\\issue.js [263,32]"
     },
@@ -283,7 +289,6 @@
         "source": "Statuses",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "Estados",
         "ref": "..\\rh-issue\\conf_data.js [62,31]"
     },

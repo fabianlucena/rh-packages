@@ -50,7 +50,7 @@ export const data = {
   workflows: [
     {
       name:               'issueMinimalistic',
-      title:              loc._cf('issue', 'Minimalist'),
+      title:              loc._cf('issue', 'Minimalist for issues'),
       isTranslatable:     true,
       translationContext: 'issue',
       ownerModule:        name,

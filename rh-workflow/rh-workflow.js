@@ -30,7 +30,7 @@ async function configure(global, options) {
 async function init() {
   conf.modelEntityNameService =    dependency.get('modelEntityNameService');
   conf.wfWorkflowOfEntityService = dependency.get('wfWorkflowOfEntityService');
-  conf.wfWorkflow =                dependency.get('wfWorkflowService');
+  conf.wfWorkflowService =         dependency.get('wfWorkflowService');
   conf.wfStatusService =           dependency.get('wfStatusService');
   conf.wfTransitionService =       dependency.get('wfTransitionService');
   conf.wfCaseService =             dependency.get('wfCaseService');
