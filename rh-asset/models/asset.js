@@ -1,12 +1,18 @@
 import { conf } from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-  class WfType extends sequelize.Sequelize.Model {
+  class Asset extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.Module, { as: 'ownerModule', foreignKey: 'ownerModuleId' });
+      if (!models.Project) {
+        throw new Error('There is no Project model. Try adding RH Project module to the project.');
+      }
+        
+      this.belongsTo(models.Project,   { as: 'project', foreignKey: 'projectId' });
+      this.belongsTo(models.AssetType, { as: 'type',    foreignKey: 'typeId' });
     }
   }
-  WfType.init({
+
+  Asset.init({
     id: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
@@ -41,19 +47,23 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    typeId: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    projectId: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
     description: {
       type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    ownerModuleId: {
-      type: DataTypes.BIGINT,
       allowNull: true,
     },
   }, {
     sequelize,
     timestamps: true,
-    tableName: 'Type',
+    tableName: 'Asset',
     schema: conf.schema,
   });
-  return WfType;
+  return Asset;
 };

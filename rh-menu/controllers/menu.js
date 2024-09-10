@@ -24,6 +24,11 @@ export class MenuController extends Controller {
       skipDeleteIsTranslatable: true,
     };
 
+    const permissions = req?.permissions;
+    if (permissions) {
+      options.where = { permission: { name: permissions }};
+    }
+
     const rows = await this.menuItemService.getList(options);
     const loc = req.loc ?? defaultLoc;
     const menu = await runSequentially(rows, async menuItem => {
@@ -61,9 +66,15 @@ export class MenuController extends Controller {
     });
 
     const data = { menu },
-      eventOptions = { context: makeContext(req, res), loc, sessionId: req.session?.id, params: req.query };
-    await conf.global.eventBus?.$emit('menuGet',    data, eventOptions);
-    await conf.global.eventBus?.$emit('menuFilter', data, eventOptions);
+      eventOptions = {
+        entity: 'Menu',
+        context: makeContext(req, res),
+        sessionId: req.session?.id,
+        params: req.query,
+        data,
+      };
+    await conf.global.eventBus?.$emit('menuGet',    eventOptions);
+    await conf.global.eventBus?.$emit('menuFilter', eventOptions);
 
     res.status(200).send(data);
   }

@@ -1,5 +1,6 @@
 import dependency from 'rf-dependency';
 import { conf as localConf } from './conf.js';
+import { makeContext } from 'http-util';
 
 export const conf = localConf;
 
@@ -67,13 +68,13 @@ async function getAvailableProjectsIdForRequest(req) {
   return projectService.getIdFor(await getFiltersFromRequest(req), options);
 }
 
-async function getCurrentProjectId(req) {
+async function getCurrentProjectId(req, res) {
   const sessionId = req?.session?.id;
   if (!sessionId) {
     return;
   }
 
-  const sessionData = await sessionDataService?.getDataIfExistsForSessionId(sessionId);
+  const sessionData = await sessionDataService?.getDataOrNullForSessionId(sessionId);
   if (sessionData) {
     if (sessionData.project?.id) {
       return sessionData.project.id;
@@ -86,7 +87,11 @@ async function getCurrentProjectId(req) {
 
   if (eventBus) {
     const data = {};
-    await eventBus.$emit('getCurrentProject', data, { sessionId });
+    
+    const context = makeContext(req, res),
+      eventOptions = { entity: 'ProjectSelect', context, sessionId, data };
+
+    await eventBus.$emit('getCurrentProject', eventOptions);
     if (data?.project?.id) {
       if (sessionData) {
         sessionData.project = data.project;
@@ -96,7 +101,7 @@ async function getCurrentProjectId(req) {
       return data.project.id;
     }
 
-    await eventBus.$emit('getCurrentProject', data, { sessionId });
+    await eventBus.$emit('getCurrentProjectId', eventOptions);
     if (data?.projectId) {
       if (sessionData) {
         sessionData.projectId = data.projectId;

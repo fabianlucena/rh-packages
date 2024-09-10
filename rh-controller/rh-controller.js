@@ -1,5 +1,5 @@
 import { getRoutes } from 'rf-get-routes';
-import { deleteHandler, getUuidFromRequest, HttpError, enableHandler, disableHandler, patchHandler, makeContext } from 'http-util';
+import { deleteHandler, getUuidFromRequest, HttpError, enableHandler, disableHandler, patchHandler, makeContext, getOptionsFromParamsAndOData } from 'http-util';
 import { defaultLoc } from 'rf-locale';
 import { dependency } from 'rf-dependency';
 import { sanitizeFields, ucfirst } from 'rf-util';
@@ -126,14 +126,26 @@ export class Controller {
     await checkPermissionHandler(req, res, next);
   }
 
-  async sanitizeInterface(interfaceName, result, req) {
+  getPlainFields(fields) {
+    const result = [];
+    for (const field of fields) {
+      result.push(field);
+      if (field.fields) {
+        result.push(...this.getPlainFields(field.fields));
+      }
+    }
+
+    return result;
+  }
+
+  async sanitizeInterface(interfaceType, result, req) {
     const loc = req.loc ?? defaultLoc,
       translationContext = this.translationContext,
       options = {
         loc,
         translationContext: this.translationContext,
         ...result.fieldsFilter,
-        interface: interfaceName,
+        interface: interfaceType,
         entity: this.getName(),
       };
     delete result.fieldsFilter;
@@ -166,10 +178,10 @@ export class Controller {
       );
     }
 
-    if (interfaceName) {
+    if (interfaceType) {
       const substitutions = [ 'title' ];
-      for (const dst in substitutions) {
-        const src = interfaceName + ucfirst(dst);
+      for (const dst of substitutions) {
+        const src = interfaceType + ucfirst(dst);
         if (result[src] === undefined) {
           continue;
         }
@@ -183,12 +195,19 @@ export class Controller {
       result.title = await result.title(loc, translationContext);
     }
 
+    if (interfaceType === 'grid') {
+      if (result.fields) {
+        result.fields = this.getPlainFields(result.fields);
+      }
+    }
+
     return result;
   }
 
   async defaultGet(req, res, next) {
     let func,
-      sanitize;
+      sanitize,
+      eventOptionsResultName;
     const permissions = [],
       events = [],
       entity = this.getName();
@@ -203,11 +222,12 @@ export class Controller {
       } else if (typeof this.constructor.getInterface === 'function') {
         func = this.constructor.getInterface;
       } else if (this.service?.getInterface) {
-        func = (...args) => this.service.getInterface({ context: makeContext(...args) });
+        func = (...args) => this.service.getInterface(makeContext(...args));
       }
 
       permissions.push('getGrid', 'get');
       events.push('interface.grid.get', `${entity}.interface.grid.get`);
+      eventOptionsResultName = 'grid';
       sanitize = (...params) => this.sanitizeInterface('grid', ...params);
     } else if ('$form' in req.query) {
       if (typeof this.getForm === 'function') {
@@ -219,11 +239,12 @@ export class Controller {
       } else if (typeof this.constructor.getInterface === 'function') {
         func = this.constructor.getInterface;
       } else if (this.service?.getInterface) {
-        func = (...args) => this.service.getInterface({ context: makeContext(...args) });
+        func = (...args) => this.service.getInterface(makeContext(...args));
       }
 
       permissions.push('getForm', 'get');
       events.push('interface.form.get', `${entity}.interface.form.get`);
+      eventOptionsResultName = 'form';
       sanitize = (...params) => this.sanitizeInterface('form', ...params);
     } else if ('$object' in req.query) {
       if (typeof this.getObject === 'function') {
@@ -235,11 +256,12 @@ export class Controller {
       } else if (typeof this.constructor.getInterface === 'function') {
         func = this.constructor.getInterface;
       } else if (this.service?.getInterface) {
-        func = (...args) => this.service.getInterface({ context: makeContext(...args) });
+        func = (...args) => this.service.getInterface(makeContext(...args));
       }
 
       permissions.push('getObject', 'get');
       events.push('interface.object.get', `${entity}.interface.object.get`);
+      eventOptionsResultName = 'object';
       sanitize = (...params) => this.sanitizeInterface('object', ...params);
     } else if ('$interface' in req.query) {
       if (typeof this.getInterface === 'function') {
@@ -247,11 +269,12 @@ export class Controller {
       } else if (typeof this.constructor.getInterface === 'function') {
         func = this.constructor.getInterface;
       } else if (this.service?.getInterface) {
-        func = (...args) => this.service.getInterface({ context: makeContext(...args) });
+        func = (...args) => this.service.getInterface(makeContext(...args));
       }
 
       permissions.push('getInterface', 'get');
       events.push('interface.get', `${entity}.interface.get`);
+      eventOptionsResultName = 'interface';
       sanitize = (...params) => this.sanitizeInterface('interface', ...params);
     } else if ('$default' in req.query) {
       if (typeof this.getDefault === 'function') {
@@ -263,7 +286,8 @@ export class Controller {
       }
 
       permissions.push('getData', 'get');
-      events.push('interface.default.get', `${entity}.interface.default.get`);
+      events.push('default.get', `${entity}.default.get`);
+      eventOptionsResultName = 'default';
     } else {
       if (typeof this.getData === 'function') {
         func = (...args) => this.getData(...args);
@@ -283,7 +307,8 @@ export class Controller {
       }
 
       permissions.push('getData', 'get');
-      events.push('interface.data.get', `${entity}.interface.data.get`);
+      events.push('data.get', `${entity}.data.get`);
+      eventOptionsResultName = 'data';
     }
 
     if (!func) {
@@ -310,9 +335,15 @@ export class Controller {
     }
 
     if (this.eventBus) {
-      const loc = req.loc;
+      const context = makeContext(req, res),
+        eventOptions = { entity, result, loc: context.loc, context };
+
+      if (eventOptionsResultName) {
+        eventOptions[eventOptionsResultName] = result;
+      }
+    
       for (let i = 0; i < events.length; i++) {
-        await this.eventBus.$emit(events[i], result, { loc, entity });
+        await this.eventBus.$emit(events[i], eventOptions);
       }
     }
 
@@ -373,13 +404,18 @@ export class Controller {
   }
 
   async defaultGetOptions(req, res) {
-    const options = { view: true };
+    const options = await getOptionsFromParamsAndOData(
+      { ...req.query, ...req.params },
+      { uuid: 'uuid' },
+    );
+    options.context = makeContext(req, res);
+    options.view ??= true;
     if (!this.service) {
       return options;
     }
 
     if (this.service.getOptions) {
-      return this.service.getOptions({ context: makeContext(req, res) });
+      return this.service.getOptions(options);
     }
     
     if (this.service.references) {

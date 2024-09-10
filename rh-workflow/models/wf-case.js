@@ -3,11 +3,8 @@ import { conf } from '../conf.js';
 export default (sequelize, DataTypes) => {
   class WfCase extends sequelize.Sequelize.Model {
     static associate(models) {
-      this.belongsTo(models.WfWorkflow,  { as: 'workflow', foreignKey: 'workflowId' });
-    }
-
-    static postAssociate(models) {
-      this.hasOne(models.WfCurrentStatus, { as: 'currentStatus', foreignKey: 'caseId' });
+      this.belongsTo(models.WfWorkflowOfEntity, { as: 'workflow', foreignKey: { name: 'workflowId', allowNull: false }});
+      this.hasMany(  models.WfBranch,           { as: 'branches', foreignKey: 'caseId' });
     }
   }
   WfCase.init({
@@ -28,12 +25,8 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: true,
     },
-    workflowId: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-    },
-    entityId: {
-      type: DataTypes.BIGINT,
+    entityUuid: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
   }, {

@@ -90,7 +90,7 @@ async function updateData(global) {
   await runSequentially(data?.assignableRolesPerRoles, async data => await assignableRolePerRoleService.createIfNotExists(data));
 }
 
-async function login(data, options) {
+async function login({ options }) {
   if (!options?.sessionId || !options?.oldSessionId) {
     return;
   }
@@ -109,7 +109,7 @@ async function login(data, options) {
   await conf.sessionSiteService.createOrUpdate({ sessionId, siteId: oldSite[0].siteId });
 }
 
-async function sessionUpdated(sessionId) {
+async function sessionUpdated({ sessionId }) {
   await conf.privilegesService.deleteFromCacheForSessionId(sessionId);
 }
 

@@ -31,12 +31,12 @@ async function getCurrentPerspective({ context }) {
     return;
   }
 
-  const sessionData = await sessionDataService.getDataIfExistsForSessionId(context.sessionId);
+  const sessionData = await sessionDataService.getDataOrNullForSessionId(context.sessionId);
   return sessionData?.perspective;
 }
 
-async function menuFilter(data, { context, loc }) {
-  const perspectives = await perspectiveService.getList({ loc });
+async function menuFilter({ data, context }) {
+  const perspectives = await perspectiveService.getList({ loc: context.loc });
   if (!perspectives.length) {
     return;
   }

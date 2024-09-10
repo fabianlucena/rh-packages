@@ -40,6 +40,10 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false
     },
+    translationContext: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     description: {
       type: DataTypes.TEXT,
       allowNull: true,

@@ -1,20 +1,35 @@
 import { defaultLoc } from 'rf-locale';
 import { ucfirst } from './rf-util-string.js';
+import { Unsafe } from 'rf-unsafe';
 
-export async function sanitizeFields(items, options) {
-  const filtered = [],
+const unsafe = new Unsafe;
+unsafe.options.safe = true;
+unsafe.options.timeout = 500;
+
+export async function sanitizeFields(rawFields, options) {
+  const sanitizedFields = [],
     filter = options?.filter,
     interfaceName = options?.interface,
     loc = options?.loc ?? defaultLoc,
-    translationContext = options.translationContext;
-  for (const item of items) {
-    let hideValue = filter?.hide?.[item.name];
+    translationContext = options.translationContext,
+    row = options?.row;
+  for (let field of rawFields) {
+    let hideValue = filter?.hide?.[field.name];
     if (typeof hideValue === 'function') {
       hideValue = await hideValue(options);
     }
         
     if (hideValue) {
       continue;
+    }
+
+    field = { ...field };
+
+    if (field.condition) {
+      const res = await unsafe.exec(field.condition, { row });
+      if (!res) {
+        continue;
+      }
     }
 
     if (interfaceName) {
@@ -25,26 +40,29 @@ export async function sanitizeFields(items, options) {
         'type',
         'name',
       ];
-      for (const dst in substitutions) {
+      for (const dst of substitutions) {
         const src = interfaceName + ucfirst(dst);
-        if (item[src] === undefined) {
+        if (field[src] === undefined) {
           continue;
         }
 
-        item[dst] = item[src];
-        delete item[src];
+        field[dst] = field[src];
+        delete field[src];
       }
     }
     
-    
-    for (const t of ['label', 'title', 'placeholder']) {
-      if (typeof item[t] === 'function') {
-        item[t] = await item[t](loc, translationContext);
+    for (const t of ['label', 'title', 'placeholder', 'legend']) {
+      if (typeof field[t] === 'function') {
+        field[t] = await field[t](loc, translationContext);
       }
     }
 
-    filtered.push(item);
+    if (field.fields) {
+      field.fields = await sanitizeFields(field.fields, options);
+    }
+
+    sanitizedFields.push(field);
   }
 
-  return filtered;
+  return sanitizedFields;
 }

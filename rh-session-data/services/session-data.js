@@ -59,7 +59,7 @@ export class SessionDataService extends Service.Base {
     return (await this.getForSessionId(sessionId, options)).data;
   }
 
-  async getDataIfExistsForSessionId(sessionId, options) {
+  async getDataOrNullForSessionId(sessionId, options) {
     return (await this.getForSessionId(sessionId, { ...options, skipNoRowsError: true }))?.data;
   }
 
@@ -84,7 +84,7 @@ export class SessionDataService extends Service.Base {
    */
   async addData(sessionId, sessionData) {
     const mergedData = deepMerge(
-      await this.getDataIfExistsForSessionId(sessionId) ?? {},
+      await this.getDataOrNullForSessionId(sessionId) ?? {},
       sessionData
     );
 

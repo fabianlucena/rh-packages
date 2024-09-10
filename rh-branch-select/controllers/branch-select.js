@@ -1,5 +1,5 @@
 import { conf } from '../conf.js';
-import { getOptionsFromParamsAndOData, HttpError } from 'http-util';
+import { getOptionsFromParamsAndOData, HttpError, makeContext } from 'http-util';
 import { checkParameter, MissingParameterError } from 'rf-util';
 
 const branchService = conf.global.services.Branch.singleton();
@@ -61,7 +61,7 @@ export class BranchSelectController {
       menu: [menuItem],
     };
 
-    const sessionData = await sessionDataService.getDataIfExistsForSessionId(sessionId) ?? {};
+    const sessionData = await sessionDataService.getDataOrNullForSessionId(sessionId) ?? {};
 
     sessionData.api ??= {};
     sessionData.api.data ??= {};
@@ -73,8 +73,10 @@ export class BranchSelectController {
 
     await sessionDataService.setData(sessionId, sessionData);
 
-    await conf.global.eventBus?.$emit('branchSwitch', data, { sessionId });
-    await conf.global.eventBus?.$emit('sessionUpdated', sessionId);
+    const context = makeContext(req, res),
+      eventOptions = { entity: 'Branch', context, sessionId };
+    await conf.global.eventBus?.$emit('branchSwitch', { ...eventOptions, data });
+    await conf.global.eventBus?.$emit('sessionUpdated', eventOptions);
 
     req.log?.info(`Branch switched to: ${branch.title}.`, { sessionId, branchName: branch.name });
 

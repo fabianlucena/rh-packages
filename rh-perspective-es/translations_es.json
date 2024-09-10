@@ -1,6 +1,6 @@
 [
     {
-        "source": "Check for enable and uncheck for disable",
+        "source": "Check for enable or uncheck for disable",
         "language": "es",
         "context": "perspective",
         "translation": "Marque para habilitar y desmarque para deshabilitar",
@@ -84,6 +84,13 @@
         "ref": "..\\rh-perspective\\conf_data.js [25,129]\n..\\rh-perspective\\services\\perspective.js [94,29]\n..\\rh-perspective\\services\\perspective-menu-item.js [26,37]"
     },
     {
+        "source": "Perspective UUID",
+        "language": "es",
+        "context": "perspective",
+        "translation": "UUID de perspectiva",
+        "ref": "..\\rh-perspective\\controllers\\perspective.js [40,50]"
+    },
+    {
         "source": "Perspective manager",
         "language": "es",
         "context": "permission",
@@ -164,6 +171,20 @@
         "context": "perspective",
         "translation": "Cambiar perspectiva",
         "ref": "..\\rh-perspective\\conf_data.js [28,129]"
+    },
+    {
+        "source": "The selected perspective does not exist or you do not have permission to access it.",
+        "language": "es",
+        "context": "perspective",
+        "translation": "La perspectiva seleccionada no existe o usted no tiene permiso para accederla.",
+        "ref": "..\\rh-perspective\\controllers\\perspective.js [47,38]"
+    },
+    {
+        "source": "The selected perspective is disabled.",
+        "language": "es",
+        "context": "perspective",
+        "translation": "La perspectiva seleccionada está deshabilitada.",
+        "ref": "..\\rh-perspective\\controllers\\perspective.js [51,38]"
     },
     {
         "source": "Title",

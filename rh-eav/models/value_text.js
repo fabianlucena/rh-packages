@@ -29,7 +29,6 @@ export default (sequelize, DataTypes) => {
     },
     value: {
       type: DataTypes.TEXT,
-      allowNull: false,
     },
   }, {
     sequelize,

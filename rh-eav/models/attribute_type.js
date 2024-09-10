@@ -16,6 +16,11 @@ export default (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4,
       unique: true,
     },
+    isEnabled: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,

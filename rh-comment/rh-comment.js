@@ -2,6 +2,7 @@ import { CommentTypeService } from './services/comment_type.js';
 import { CommentService } from './services/comment.js';
 import { conf as localConf } from './conf.js';
 import { runSequentially } from 'rf-util';
+import { defaultLoc } from 'rf-locale';
 
 export const conf = localConf;
 
@@ -92,8 +93,7 @@ async function getCommentTypesForEntity(entity, options) {
   return commentTypesCache[language];
 }
 
-async function interfaceFormGet(form, options) {
-  const entity = options?.entity;
+async function interfaceFormGet({ form, entity, context }) {
   if (!entity) {
     return;
   }
@@ -101,16 +101,16 @@ async function interfaceFormGet(form, options) {
   conf.fieldsCache[entity] ||= {};
   const fieldsCache = conf.fieldsCache[entity];
 
-  const language = options?.loc?.language;
+  const loc = context?.loc ?? defaultLoc,
+    language = loc?.language;
   if (fieldsCache[language] === undefined) {
     fieldsCache[language] = [];
 
-    const commentTypes = await getCommentTypesForEntity(entity, options);
+    const commentTypes = await getCommentTypesForEntity(entity, { loc });
     if (!commentTypes?.length) {
       return;
     }
 
-    const loc = options?.loc;
     const fields = [];
     for (const commentType of commentTypes) {
       if (!commentType.isField) {
@@ -160,8 +160,7 @@ async function interfaceFormGet(form, options) {
   form.fields.push(...fieldsCache[language]);
 }
 
-async function interfaceGridGet(grid, options) {
-  const entity = options?.entity;
+async function interfaceGridGet({ grid, entity, context }) {
   if (!entity) {
     return;
   }
@@ -172,13 +171,13 @@ async function interfaceGridGet(grid, options) {
   const columnsCache = conf.columnsCache[entity];
   const detailsCache = conf.detailsCache[entity];
 
-  const loc = options?.loc;
-  const language = options?.loc?.language;
+  const loc = context?.loc ?? defaultLoc,
+    language = loc?.language;
   if (columnsCache[language] === undefined) {
     columnsCache[language] = [];
     detailsCache[language] = [];
 
-    const commentTypes = await getCommentTypesForEntity(entity, options);
+    const commentTypes = await getCommentTypesForEntity(entity, { loc });
     const columns = [];
     const details = [];
     for (const commentType of commentTypes) {
@@ -214,10 +213,12 @@ async function interfaceGridGet(grid, options) {
       };
 
       if (commentType.isColumn) {
+        field.isColumn = true;
         columns.push(field);
       }
             
       if (commentType.isDetail) {
+        field.isDetail = true;
         details.push(field);
       }
     }
@@ -226,19 +227,29 @@ async function interfaceGridGet(grid, options) {
     detailsCache[language].push(...details);
   }
 
-  grid.columns ??= [];
-  grid.details ??= [];
+  if (grid.columns) {
+    grid.columns.push(...columnsCache[language]);
+  }
 
-  grid.columns.push(...columnsCache[language]);
-  grid.details.push(...detailsCache[language]);
+  if (grid.details) {
+    grid.details.push(...detailsCache[language]);
+  }
+
+  if (grid.fields) {
+    grid.fields.push(
+      ...columnsCache[language],
+      ...detailsCache[language]
+    );
+  }
 }
 
-async function getted(entity, result, options) {
+async function getted({ entity, result, options }) {
   if (!entity) {
     return result;
   }
 
-  const commentTypes = await getCommentTypesForEntity(entity, { loc: options?.loc });
+  const loc = options?.loc ?? defaultLoc;
+  const commentTypes = await getCommentTypesForEntity(entity, { loc });
   if (!commentTypes?.length) {
     return result;
   }
@@ -247,7 +258,7 @@ async function getted(entity, result, options) {
     result = await result;
   }
 
-  const modelEntityNameId = await getEntityTypeId(entity, { loc: options?.loc });
+  const modelEntityNameId = await getEntityTypeId(entity, { loc });
 
   const rows = result.rows || result;
   for (const i in rows) {
@@ -273,7 +284,7 @@ async function getted(entity, result, options) {
           include: {
             user: { attributes: [ 'displayName' ] },
           },
-          loc: options?.loc,
+          loc,
         },
       );
     }
@@ -282,27 +293,30 @@ async function getted(entity, result, options) {
   return result;
 }
 
-async function created(entity, result, data, options) {
+async function created({ entity, row, data, options }) {
   if (!entity) {
     return;
   }
 
   await checkClearCache(entity);
 
-  if (result.then) {
-    result = await result;
-  }
-
-  if (!result) {
+  if (!row) {
     return;
   }
 
-  const entityIds = [result.id];
+  if (row.then) {
+    row = await row;
+    if (!row) {
+      return;
+    }
+  }
 
-  await updateValues(entity, entityIds, data, options);
+  const entityIds = [row.id];
+
+  await updateValues({ entity, entityIds, data, options });
 }
 
-async function updated(entity, result, data, options, service) {
+async function updated({ entity, result, data, options, service }) {
   if (!entity) {
     return;
   }
@@ -332,10 +346,10 @@ async function updated(entity, result, data, options, service) {
     entityIds.push(entityId);
   }
 
-  await updateValues(entity, entityIds, data, options);
+  await updateValues({ entity, entityIds, data, options });
 }
 
-async function updateValues(entity, entityIds, data, options) {
+async function updateValues({ entity, entityIds, data, options }) {
   const queryOptions = { loc: options?.loc, transaction: options?.transaction };
   const commentTypes = await getCommentTypesForEntity(entity, queryOptions);
   if (!commentTypes?.length) {
@@ -378,7 +392,7 @@ async function updateValues(entity, entityIds, data, options) {
   }
 }
 
-async function deleting(entity, options, service) {
+async function deleting({ entity, options, service }) {
   const queryOptions = { loc: options?.loc, transaction: options?.transaction };
   const commentTypes = await getCommentTypesForEntity(entity, queryOptions);
   if (!commentTypes?.length) {
@@ -409,7 +423,7 @@ async function deleting(entity, options, service) {
   }
 }
 
-async function deleted(entity) {
+async function deleted({ entity }) {
   if (!entity) {
     return;
   }
@@ -417,7 +431,7 @@ async function deleted(entity) {
   await checkClearCache(entity);
 }
 
-async function sanitized(entity, rows, options) {
+async function sanitized({ entity, rows, options }) {
   const commentTypes = await getCommentTypesForEntity(entity);
   if (!commentTypes?.length) {
     return;

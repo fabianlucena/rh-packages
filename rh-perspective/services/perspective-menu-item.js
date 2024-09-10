@@ -53,7 +53,7 @@ export class PerspectiveMenuItemService extends Service.IdUuidEnableOwnerModuleT
         name:        'isEnabled',
         type:        'checkbox',
         label:       loc => loc._c('perspective', 'Enabled'),
-        placeholder: loc => loc._c('perspective', 'Check for enable and uncheck for disable'),
+        placeholder: loc => loc._c('perspective', 'Check for enable or uncheck for disable'),
         value:       true,
         isField:     true,
       },

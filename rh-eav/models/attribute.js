@@ -43,10 +43,6 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    fieldName: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
     isTranslatable: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -60,13 +56,21 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    typeId: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
     modelEntityNameId: {
       type: DataTypes.BIGINT,
       allowNull: false,
     },
-    typeId: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
+    condition: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    fieldName: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     categoryId: {
       type: DataTypes.BIGINT,
@@ -97,7 +101,7 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false,
     },
-    isRequeired: {
+    isRequired: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,

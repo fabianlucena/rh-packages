@@ -56,7 +56,7 @@ export class ModelSequelize {
 
   getSanitizedOptions(options, service) {
     if (!options) {
-      return;
+      return {};
     }
 
     /*
@@ -283,7 +283,13 @@ export class ModelSequelize {
   }
 
   async create(data, options, service) {
-    return this.model.create(data, this.getSanitizedOptions(options, service));
+    const sanitizedOptions = this.getSanitizedOptions(options, service);
+    let row = await this.model.create(data, sanitizedOptions);
+    if (!sanitizedOptions.raw) {
+      row = row.toJSON();
+    }
+
+    return row;
   }
 
   async get(options, service) {
