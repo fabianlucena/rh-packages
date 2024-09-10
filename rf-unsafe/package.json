@@ -1,0 +1,14 @@
+{
+  "name": "rf-unsafe",
+  "version": "1.0.0",
+  "main": "rf-unsafe.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "exec": "node exec.js"
+  },
+  "keywords": [],
+  "author": "Fabian Lucena",
+  "license": "ISC",
+  "description": ""
+}

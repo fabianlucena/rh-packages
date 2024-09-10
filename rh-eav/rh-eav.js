@@ -3,6 +3,8 @@ import { EavAttributeTypeService } from './services/attribute_type.js';
 import { EavAttributeOptionService } from './services/attribute_option.js';
 import { EavAttributeTagService } from './services/attribute_tag.js';
 import { EavValueTextService } from './services/value_text.js';
+import { EavValueNumberService } from './services/value_number.js';
+import { EavValueCheckService } from './services/value_check.js';
 import { EavValueOptionService } from './services/value_option.js';
 import { EavValueTagService } from './services/value_tag.js';
 import { conf as localConf } from './conf.js';
@@ -31,6 +33,8 @@ async function configure(global, options) {
   dependency.addSingleton('attributeOptionService', EavAttributeOptionService);
   dependency.addSingleton('attributeTagService',    EavAttributeTagService);
   dependency.addSingleton('valueTextService',       EavValueTextService);
+  dependency.addSingleton('valueNumberService',     EavValueNumberService);
+  dependency.addSingleton('valueCheckService',      EavValueCheckService);
   dependency.addSingleton('valueOptionService',     EavValueOptionService);
   dependency.addSingleton('valueTagService',        EavValueTagService);
 
@@ -54,6 +58,8 @@ async function init() {
   conf.eavAttributeTagService =    EavAttributeTagService.singleton();
   conf.modelEntityNameService =    conf?.global?.services?.ModelEntityName?.singleton();
   conf.eavValueTextService =       EavValueTextService.singleton();
+  conf.eavValueNumberService =     EavValueNumberService.singleton();
+  conf.eavValueCheckService =      EavValueCheckService.singleton();
   conf.eavValueOptionService =     EavValueOptionService.singleton();
   conf.eavValueTagService =        EavValueTagService.singleton();
 }
@@ -85,11 +91,11 @@ async function checkClearCache(entity) {
   return;
 }
 
-async function getAttributes(entity, options) {
+async function getAttributes(entity, { loc }) {
   conf.attributesCache[entity] ||= {};
   const attributesCache = conf.attributesCache[entity];
 
-  const language = options?.loc?.language;
+  const language = loc?.language;
   if (attributesCache[language] === undefined) {
     attributesCache[language] = {};
         
@@ -97,7 +103,7 @@ async function getAttributes(entity, options) {
       entity,
       {
         include: { type: true },
-        loc: options.loc,
+        loc,
       }
     );
 
@@ -106,9 +112,7 @@ async function getAttributes(entity, options) {
     for (const attribute of attributes) {
       const attrOptions = await conf.eavAttributeOptionService.getFor(
         { categoryId: attribute.categoryId },
-        {
-          loc: options.loc,
-        },
+        { loc },
       );
 
       if (attrOptions?.length) {
@@ -130,8 +134,7 @@ async function getAttributes(entity, options) {
   return attributesCache[language];
 }
 
-async function interfaceFormGet({ form, options }) {
-  const entity = options?.entity;
+async function interfaceFormGet({ form, entity, loc }) {
   if (!entity) {
     return;
   }
@@ -139,11 +142,11 @@ async function interfaceFormGet({ form, options }) {
   conf.fieldsCache[entity] ||= {};
   const fieldsCache = conf.fieldsCache[entity];
 
-  const language = options?.loc?.language;
+  const language = loc?.language;
   if (fieldsCache[language] === undefined) {
     fieldsCache[language] = [];
 
-    const attributes = await getAttributes(entity, options);
+    const attributes = await getAttributes(entity, { loc });
     if (!attributes?.length) {
       return;
     }
@@ -158,6 +161,7 @@ async function interfaceFormGet({ form, options }) {
         name: attribute.name,
         label: attribute.title,
         type: attribute.htmlType,
+        condition: attribute.condition,
       };
 
       if (attribute.type === 'select') {
@@ -279,6 +283,26 @@ async function getted({ entity, result, options }) {
         );
         row[fieldName] = valueRow?.value;
       } break;
+      case 'number': {
+        const valueRow = await conf.eavValueNumberService.getSingleFor(
+          where,
+          {
+            loc: options?.loc,
+            skipNoRowsError: true,
+          }
+        );
+        row[fieldName] = valueRow?.value;
+      } break;
+      case 'check': {
+        const valueRow = await conf.eavValueCheckService.getSingleFor(
+          where,
+          {
+            loc: options?.loc,
+            skipNoRowsError: true,
+          }
+        );
+        row[fieldName] = valueRow?.value;
+      } break;
       case 'select': {
         const valueRows = await conf.eavValueOptionService.getFor(
           where,
@@ -313,22 +337,25 @@ async function getted({ entity, result, options }) {
   return result;
 }
 
-async function created({ entity, result, data, options }) {
+async function created({ entity, row, data, options }) {
   if (!entity) {
     return;
   }
 
   await checkClearCache(entity);
 
-  if (result.then) {
-    result = await result;
-  }
-
-  if (!result) {
+  if (!row) {
     return;
   }
 
-  const entityIds = [result.id];
+  if (row.then) {
+    row = await row;
+    if (!row) {
+      return;
+    }
+  }
+
+  const entityIds = [row.id];
 
   await updateValues({ entity, entityIds, data, options });
 }
@@ -392,6 +419,10 @@ async function updateValues({ entity, entityIds, data, options }) {
         await conf.eavValueOptionService.updateValue(optionData, queryOptions);
       } else if (attribute.type === 'text') {
         await conf.eavValueTextService.updateValue(optionData, queryOptions);
+      } else if (attribute.type === 'number') {
+        await conf.eavValueNumberService.updateValue(optionData, queryOptions);
+      } else if (attribute.type === 'check') {
+        await conf.eavValueCheckService.updateValue(optionData, queryOptions);
       } else if (attribute.type === 'tags') {
         await conf.eavValueTagService.updateValue(optionData, queryOptions);
       } else {
@@ -429,6 +460,10 @@ async function deleting({ entity, options, service }) {
         valueService = conf.eavValueOptionService;
       } else if (attribute.type === 'text') {
         valueService = conf.eavValueTextService;
+      } else if (attribute.type === 'number') {
+        valueService = conf.eavValueNumberService;
+      } else if (attribute.type === 'check') {
+        valueService = conf.eavValueCheckService;
       } else if (attribute.type === 'tags') {
         valueService = conf.eavValueTagService;
       } else {

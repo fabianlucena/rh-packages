@@ -1,15 +1,15 @@
 import url from 'url';
 import path from 'path';
 
-const name = 'rhEav';
+const name = 'rhAsset';
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export const conf = {
   name,
-  title: 'RH EAV',
+  title: 'RH Asset',
   version: '0.1',
   path: dirname,
-  schema: 'eav',
+  schema: 'asset',
   modelsPath: dirname + '/models',
   servicesPath: dirname + '/services',
   controllersPath: dirname + '/controllers',

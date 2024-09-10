@@ -1,9 +1,18 @@
 import { conf } from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-  class EavAttributeType extends sequelize.Sequelize.Model {
+  class Asset extends sequelize.Sequelize.Model {
+    static associate(models) {
+      if (!models.Project) {
+        throw new Error('There is no Project model. Try adding RH Project module to the project.');
+      }
+        
+      this.belongsTo(models.Project,   { as: 'project', foreignKey: 'projectId' });
+      this.belongsTo(models.AssetType, { as: 'type',    foreignKey: 'typeId' });
+    }
   }
-  EavAttributeType.init({
+
+  Asset.init({
     id: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
@@ -38,6 +47,14 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    typeId: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    projectId: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
     description: {
       type: DataTypes.TEXT,
       allowNull: true,
@@ -45,8 +62,8 @@ export default (sequelize, DataTypes) => {
   }, {
     sequelize,
     timestamps: true,
-    tableName: 'AttributeType',
+    tableName: 'Asset',
     schema: conf.schema,
   });
-  return EavAttributeType;
+  return Asset;
 };

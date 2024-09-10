@@ -1,12 +1,12 @@
 import { conf } from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-  class EavValueText extends sequelize.Sequelize.Model {
+  class EavValueCheck extends sequelize.Sequelize.Model {
     static associate(models) {
       this.belongsTo(models.EavAttribute, { as: 'attribute', foreignKey: 'attributeId' });
     }
   }
-  EavValueText.init({
+  EavValueCheck.init({
     id: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
@@ -28,13 +28,13 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
     },
     value: {
-      type: DataTypes.TEXT,
+      type: DataTypes.BOOLEAN,
     },
   }, {
     sequelize,
     timestamps: true,
-    tableName: 'ValueText',
+    tableName: 'ValueCheck',
     schema: conf.schema,
   });
-  return EavValueText;
+  return EavValueCheck;
 };
