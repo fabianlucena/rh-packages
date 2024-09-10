@@ -18,10 +18,10 @@ export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerMod
 
   async getInterface(options) {
     const gridActions = [],
-      permissions = options?.context?.req?.permissions;
-    if (permissions.includes('workflow.create')) gridActions.push('create');
-    if (permissions.includes('workflow.edit'))   gridActions.push('enableDisable', 'edit');
-    if (permissions.includes('workflow.delete')) gridActions.push('delete');
+      permissions = options?.permissions;
+    if (permissions?.includes('workflow.create')) gridActions.push('create');
+    if (permissions?.includes('workflow.edit'))   gridActions.push('enableDisable', 'edit');
+    if (permissions?.includes('workflow.delete')) gridActions.push('delete');
     gridActions.push('search', 'paginate');
         
     const fields = [
