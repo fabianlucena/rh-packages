@@ -1,18 +1,12 @@
 import { defaultLoc } from 'rf-locale';
 import { ucfirst } from './rf-util-string.js';
-import { Unsafe } from 'rf-unsafe';
-
-const unsafe = new Unsafe;
-unsafe.options.safe = true;
-unsafe.options.timeout = 500;
 
 export async function sanitizeFields(rawFields, options) {
   const sanitizedFields = [],
     filter = options?.filter,
     interfaceName = options?.interface,
     loc = options?.loc ?? defaultLoc,
-    translationContext = options.translationContext,
-    row = options?.row;
+    translationContext = options.translationContext;
   for (let field of rawFields) {
     let hideValue = filter?.hide?.[field.name];
     if (typeof hideValue === 'function') {
@@ -24,13 +18,6 @@ export async function sanitizeFields(rawFields, options) {
     }
 
     field = { ...field };
-
-    if (field.condition) {
-      const res = await unsafe.exec(field.condition, { row });
-      if (!res) {
-        continue;
-      }
-    }
 
     if (interfaceName) {
       const substitutions = [
