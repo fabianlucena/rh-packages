@@ -3,7 +3,7 @@ import { EavAttributeCategoryService } from './attribute_category.js';
 import { EavAttributeOptionService } from './attribute_option.js';
 import { EavAttributeTagService } from './attribute_tag.js';
 import { runSequentially } from 'rf-util';
-import { Service } from 'rf-service';
+import { Op, Service } from 'rf-service';
 import { ConflictError } from 'http-util';
 import { AttributeDefinitionError } from './error.js';
 import { defaultLoc } from 'rf-locale';
@@ -263,15 +263,19 @@ export class EavAttributeService extends Service.IdUuidEnableNameUniqueTitleDesc
     return super.validateForCreation(data); 
   }
 
-  async checkTitleForConflict(title, data) {
+  async checkTitleForConflict(title, data, where) {
+    if (where) {
+      where = { [Op.not]: where };
+    } else {
+      where = {};
+    }
+
+    where.title = title;
+    where.modelEntityNameId = data.modelEntityNameId;
+
     const rows = await this.getFor(
-      {
-        title,
-        modelEntityNameId: data.modelEntityNameId,
-      },
-      {
-        limit: 1,
-      }
+      where,
+      { limit: 1 }
     );
     if (rows?.length) {
       throw new ConflictError(loc => loc._c('eav', 'Exists another attribute with that title for this entity.'));

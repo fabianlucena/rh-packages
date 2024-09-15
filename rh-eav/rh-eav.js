@@ -185,8 +185,7 @@ async function interfaceFormGet({ form, entity, loc }) {
   form.fields.push(...fieldsCache[language]);
 }
 
-async function interfaceGridGet({ grid, options }) {
-  const entity = options?.entity;
+async function interfaceGridGet({ grid, entity, loc }) {
   if (!entity) {
     return;
   }
@@ -197,12 +196,12 @@ async function interfaceGridGet({ grid, options }) {
   const columnsCache = conf.columnsCache[entity];
   const detailsCache = conf.detailsCache[entity];
 
-  const language = options?.loc?.language;
+  const language = loc?.language;
   if (columnsCache[language] === undefined) {
     columnsCache[language] = [];
     detailsCache[language] = [];
 
-    const attributes = await getAttributes(entity, options);
+    const attributes = await getAttributes(entity, { loc });
     const columns = [];
     const details = [];
     for (const attribute of attributes) {
