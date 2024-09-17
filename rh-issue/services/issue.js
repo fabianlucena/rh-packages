@@ -53,7 +53,7 @@ export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescription
   async autoRelatedForId(id) {
     const issue = await this.getSingleForId(id);
     const criteria = [];
-    for (const word of issue.description.split(/[\s.,;:]+/)) {
+    for (const word of issue.description?.split(/[\s.,;:]+/) ?? []) {
       if (word.length < 2) {
         continue;
       }

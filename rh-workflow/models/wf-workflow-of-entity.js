@@ -100,12 +100,12 @@ export default (sequelize, DataTypes) => {
     showAssigneeInColumn: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: true,
+      defaultValue: false,
     },
     showAssigneeInDetail: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false,
+      defaultValue: true,
     },
     assigneeName: {
       type: DataTypes.STRING,

@@ -62,4 +62,29 @@ export class WfCaseService extends Service.IdUuidEnableTranslatable {
 
     return result;
   }
+
+  async createForWorkflowIdAndEnrityUuid(workflowId, entityUuid) {
+    return this.create({ workflowId, entityUuid });
+  }
+
+  async getForWorkflowIdAndEnrityUuid(workflowId, entityUuid, { loc }) {
+    return this.getSingleFor(
+      {
+        workflowId,
+        entityUuid,
+      },
+      {
+        include: {
+          branches: {
+            include: {
+              status:   true,
+              assignee: true,
+            },
+          },
+        },
+        skipNoRowsError: true,
+        loc,
+      },
+    );
+  };
 }

@@ -20,20 +20,30 @@ async function configure(global, options) {
   global.eventBus?.$on('interface.grid.get', interfaceGridGet);
   //global.eventBus?.$on('interface.form.get', interfaceFormGet);
   global.eventBus?.$on('getted', getted);
-  /*global.eventBus?.$on('created', created);
-    global.eventBus?.$on('updated', updated);
+  global.eventBus?.$on('created', created);
+  /*global.eventBus?.$on('updated', updated);
     global.eventBus?.$on('deleting', deleting);
     global.eventBus?.$on('deleted', deleted);
     global.eventBus?.$on('sanitized', sanitized);*/
 }
 
+let 
+  //modelEntityNameService,
+  wfWorkflowOfEntityService,
+  wfWorkflowService,
+  wfStatusService,
+  wfTransitionService,
+  wfCaseService,
+  wfBranchService;
+
 async function init() {
-  conf.modelEntityNameService =    dependency.get('modelEntityNameService');
-  conf.wfWorkflowOfEntityService = dependency.get('wfWorkflowOfEntityService');
-  conf.wfWorkflowService =         dependency.get('wfWorkflowService');
-  conf.wfStatusService =           dependency.get('wfStatusService');
-  conf.wfTransitionService =       dependency.get('wfTransitionService');
-  conf.wfCaseService =             dependency.get('wfCaseService');
+  //modelEntityNameService =    dependency.get('modelEntityNameService');
+  wfWorkflowOfEntityService = dependency.get('wfWorkflowOfEntityService');
+  wfWorkflowService =         dependency.get('wfWorkflowService');
+  wfStatusService =           dependency.get('wfStatusService');
+  wfTransitionService =       dependency.get('wfTransitionService');
+  wfCaseService =             dependency.get('wfCaseService');
+  wfBranchService =           dependency.get('wfBranchService');
 }
 
 async function updateData(global) {
@@ -63,11 +73,11 @@ async function updateWfWorkflowOfEntity(workflowOfEntity) {
     await runSequentially(workflowOfEntity.transitions, async data => updateWfTransition({ ...defaultData, ...data }));
   }
 
-  await conf.wfWorkflowOfEntityService.createIfNotExists(workflowOfEntity);
+  await wfWorkflowOfEntityService.createIfNotExists(workflowOfEntity);
 }
 
 async function updateWfWorkflow(workflow) {
-  await conf.wfWorkflowService.createIfNotExists(workflow);
+  await wfWorkflowService.createIfNotExists(workflow);
 
   const defaultData = {
     workflow:    workflow.name,
@@ -84,7 +94,7 @@ async function updateWfWorkflow(workflow) {
 }
 
 async function updateWfStatus(workflowStatus) {
-  await conf.wfStatusService.createIfNotExists(workflowStatus);
+  await wfStatusService.createIfNotExists(workflowStatus);
 
   const defaultData = {
     workflow:    workflowStatus.workflow,
@@ -112,7 +122,7 @@ async function updateWfTransition(workflowTransition) {
     workflowTransition = { ...workflowTransition, to: workflowTransition.to.name };
   }
 
-  await conf.wfTransitionService.createIfNotExists(workflowTransition);
+  await wfTransitionService.createIfNotExists(workflowTransition);
 }
 
 async function getWorkflowsForEntity(entity, options) {
@@ -123,7 +133,7 @@ async function getWorkflowsForEntity(entity, options) {
   if (workflowsCache[language] === undefined) {
     workflowsCache[language] = {};
         
-    const workflows = await conf.wfWorkflowOfEntityService.getForEntityName(
+    const workflows = await wfWorkflowOfEntityService.getForEntityName(
       entity,
       {
         include: { workflow: true },
@@ -196,8 +206,7 @@ async function getted({ entity, result, options }) {
   result = await result;
   for (const iRow in result) {
     let row = result[iRow];
-    const entityId = row.id;
-    if (entityId === undefined) {
+    if (!row.uuid) {
       continue;
     }
 
@@ -206,62 +215,89 @@ async function getted({ entity, result, options }) {
         row[workflow.workflowName] = workflow.title;
       }
 
-      const wfCase = await conf.wfCaseService.getSingleFor(
-        {
-          workflowId: workflow.id,
-          entityUuid: row.uuid
-        },
-        {
-          include: {
-            branches: {
-              include: {
-                status:   true,
-                assignee: true,
-              },
-            },
-          },
-          skipNoRowsError: true,
-          loc,
-        },
+      let wfCase = await wfCaseService.getForWorkflowIdAndEnrityUuid(
+        workflow.id,
+        row.uuid,
+        { loc },
       );
 
+      if (!wfCase) {
+        await wfCaseService.createForWorkflowIdAndEnrityUuid(workflow.id, row.uuid);
+        wfCase = await wfCaseService.getForWorkflowIdAndEnrityUuid(
+          workflow.id,
+          row.uuid,
+          { loc },
+        );
+      }
+
       if (wfCase) {
-        if (workflow.currentStatusName && wfCase.branches?.length) {
-          row[workflow.currentStatusName] = wfCase.branches
-            .map(b => {
-              if (!b.status) {
-                return;
+        if (workflow.currentStatusName) {
+          let branches = wfCase.branches;
+          if (!branches?.length) {
+            await wfBranchService.createForWorkflowIdAndCaseId(workflow.id, wfCase.id);
+            branches = await wfBranchService.getForCaseId(wfCase.id);
+          }
 
-              }
+          if (branches?.length) {
+            row[workflow.currentStatusName] = await Promise.all(branches
+              .map(async b => {
+                if (!b.status) {
+                  return;
+                }
 
-              return `${b.status.title}: ${b.assignee.displayName}`;
-            })
-            .filter(i => !!i);
-        }
+                return `${b.status.title}: ${b.assignee?.displayName ?? await loc._c(workflow.transitionContext || 'workflow', '{Unasigned}')}`;
+              })
+              .filter(i => !!i)
+            );
+          }
 
-        if (workflow.assigneeName && wfCase.branches?.length) {
-          row[workflow.assigneeName] = wfCase.branches
-            .map(b => {
-              if (!b.status) {
-                return;
+          if (workflow.assigneeName && branches?.length) {
+            row[workflow.assigneeName] = await Promise.all(branches
+              .map(async b => {
+                if (!b.status) {
+                  return;
+                }
 
-              }
-
-              return `${b.assignee.displayName} (${b.status.title})`;
-            })
-            .filter(i => !!i);
+                return `${b.assignee?.displayName ?? await loc._c(workflow.transitionContext || 'workflow', '{Unasigned}')} (${b.status.title})`;
+              })
+              .filter(i => !!i)
+            );
+          }
         }
       }
 
       if (!row[workflow.currentStatusName]) {
-        row[workflow.currentStatusName] = [`<a href="#">${await loc._c('workflow', 'Create workflow case')}</a>`];
+        row[workflow.currentStatusName] = [await loc._c('workflow', 'Error in workflow')];
       }
 
       if (!row[workflow.assigneeName]) {
-        row[workflow.assigneeName] = [await loc._c('workflow', 'No workflow case')];
+        row[workflow.assigneeName] = [await loc._c('workflow', 'Error in workflow')];
       }
     }
   }
 
   return result;
+}
+
+async function created({ entity, rows, options }) {
+  if (!entity) {
+    return;
+  }
+
+  const workflows = await getWorkflowsForEntity(entity, options);
+  if (!workflows.length) {
+    return;
+  }
+
+  for (const iRow in rows) {
+    let row = rows[iRow];
+    if (!row.uuid) {
+      continue;
+    }
+
+    for (const workflow of workflows) {
+      const wfCase = await wfCaseService.createForWorkflowIdAndEnrityUuid(workflow.id, row.uuid);
+      await wfBranchService.createForWorkflowIdAndCaseId(workflow.id, wfCase.id);
+    }
+  }
 }
