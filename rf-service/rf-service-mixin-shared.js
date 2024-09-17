@@ -63,7 +63,7 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
         );
       }
 
-      await this.conditionalEmit('created', options?.emitEvent, { row, data, options });
+      await this.conditionalEmit('created', options?.emitEvent, { rows: [row], data, options });
 
       await transaction?.commit();
 
