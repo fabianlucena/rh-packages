@@ -293,27 +293,21 @@ async function getted({ entity, result, options }) {
   return result;
 }
 
-async function created({ entity, row, data, options }) {
+async function created({ entity, rows, data, options }) {
   if (!entity) {
     return;
   }
 
   await checkClearCache(entity);
 
-  if (!row) {
+  if (!rows?.length) {
     return;
   }
 
-  if (row.then) {
-    row = await row;
-    if (!row) {
-      return;
-    }
+  for (const row of rows) {
+    const entityIds = [row.id];
+    await updateValues({ entity, entityIds, data, options });
   }
-
-  const entityIds = [row.id];
-
-  await updateValues({ entity, entityIds, data, options });
 }
 
 async function updated({ entity, result, data, options, service }) {
