@@ -1191,6 +1191,8 @@ export class ServiceBase {
       } else {
         throw new QueryError('No criteria for find the row.');
       }
+    } else {
+      updateData = {...data};
     }
 
     let row = await this.getSingle({ ...options, skipNoRowsError: true });
