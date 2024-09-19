@@ -179,7 +179,7 @@ export class Controller {
     }
 
     if (interfaceType) {
-      const substitutions = [ 'title' ];
+      const substitutions = [ 'title', 'name' ];
       for (const dst of substitutions) {
         const src = interfaceType + ucfirst(dst);
         if (result[src] === undefined) {
