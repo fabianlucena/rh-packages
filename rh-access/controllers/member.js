@@ -102,12 +102,12 @@ export class MemberController {
       actions: actions,
       columns: [
         {
-          name: 'User.displayName',
+          name: 'user.displayName',
           type: 'text',
           label: await loc._c('member', 'Display name'),
         },
         {
-          name: 'User.username',
+          name: 'user.username',
           type: 'text',
           label: await loc._c('member', 'Username'),
         },
@@ -124,7 +124,7 @@ export class MemberController {
       action: 'member',
       fields: [
         {
-          name: 'User.displayName',
+          name: 'user.displayName',
           type: 'text',
           label: await loc._c('member', 'Display name'),
           placeholder: await loc._c('member', 'Type the display name here'),

@@ -138,7 +138,7 @@ async function interfaceFormGet({ form, entity, context }) {
             className: 'small',
           },
           {
-            name: 'User.displayName',
+            name: 'user.displayName',
             label: await loc._c('comment', 'User'),
             className: 'framed detail small',
           },
