@@ -13,7 +13,6 @@ export class IssueController extends Controller {
     this.issueTypeService =        dependency.get('issueTypeService');
     this.issuePriorityService =    dependency.get('issuePriorityService');
     this.issueCloseReasonService = dependency.get('issueCloseReasonService');
-    this.issueRelatedService =     dependency.get('issueRelatedService');
     this.wfWorkflowOfEntityService = dependency.get('wfWorkflowOfEntityService');
     this.wfStatusService =         dependency.get('wfStatusService');
     this.wfTransitionService =     dependency.get('wfTransitionService');
