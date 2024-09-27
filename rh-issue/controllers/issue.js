@@ -292,22 +292,6 @@ export class IssueController extends Controller {
     return result;
   }
 
-  async delete(req, res) {
-    const { uuid } = await this.checkUuid(req);
-    await this.issueRelatedService.deleteFor({
-      from: { uuid },
-    });
-    await this.issueRelatedService.deleteFor({
-      to: { uuid },
-    });
-    const rowsDeleted = await this.service.deleteForUuid(uuid);
-    if (!rowsDeleted) {
-      throw new HttpError(loc => loc._c('testSession', 'Issue with UUID %s does not exists.'), 403, uuid);
-    }
-
-    res.sendStatus(204);
-  }
-
   deleteForUuidPermission =      'issue.delete';
   postEnableForUuidPermission =  'issue.edit';
   postDisableForUuidPermission = 'issue.edit';
