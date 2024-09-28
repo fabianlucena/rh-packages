@@ -82,4 +82,14 @@ export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescription
       });     
     }
   }
+
+  async delete(options) {
+    await this.issueRelatedService.deleteFor({
+      from: { ...options.where }
+    });
+    await this.issueRelatedService.deleteFor({
+      to: { ...options.where },
+    });
+    return super.delete(options);
+  }
 }
