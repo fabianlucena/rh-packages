@@ -185,8 +185,7 @@ async function interfaceFormGet({ form, entity, loc }) {
   form.fields.push(...fieldsCache[language]);
 }
 
-async function interfaceGridGet({ grid, options }) {
-  const entity = options?.entity;
+async function interfaceGridGet({ grid, entity, loc }) {
   if (!entity) {
     return;
   }
@@ -197,12 +196,12 @@ async function interfaceGridGet({ grid, options }) {
   const columnsCache = conf.columnsCache[entity];
   const detailsCache = conf.detailsCache[entity];
 
-  const language = options?.loc?.language;
+  const language = loc?.language;
   if (columnsCache[language] === undefined) {
     columnsCache[language] = [];
     detailsCache[language] = [];
 
-    const attributes = await getAttributes(entity, options);
+    const attributes = await getAttributes(entity, { loc });
     const columns = [];
     const details = [];
     for (const attribute of attributes) {
@@ -337,27 +336,21 @@ async function getted({ entity, result, options }) {
   return result;
 }
 
-async function created({ entity, row, data, options }) {
+async function created({ entity, rows, data, options }) {
   if (!entity) {
     return;
   }
 
   await checkClearCache(entity);
 
-  if (!row) {
+  if (!rows.length) {
     return;
   }
 
-  if (row.then) {
-    row = await row;
-    if (!row) {
-      return;
-    }
+  for (const row of rows) {
+    const entityIds = [row.id];
+    await updateValues({ entity, entityIds, data, options });
   }
-
-  const entityIds = [row.id];
-
-  await updateValues({ entity, entityIds, data, options });
 }
 
 async function updated({ entity, result, data, options, service }) {

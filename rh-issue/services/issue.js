@@ -53,7 +53,7 @@ export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescription
   async autoRelatedForId(id) {
     const issue = await this.getSingleForId(id);
     const criteria = [];
-    for (const word of issue.description.split(/[\s.,;:]+/)) {
+    for (const word of issue.description?.split(/[\s.,;:]+/) ?? []) {
       if (word.length < 2) {
         continue;
       }
@@ -81,5 +81,15 @@ export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescription
         relationshipId,
       });     
     }
+  }
+
+  async delete(options) {
+    await this.issueRelatedService.deleteFor({
+      from: { ...options.where }
+    });
+    await this.issueRelatedService.deleteFor({
+      to: { ...options.where },
+    });
+    return super.delete(options);
   }
 }

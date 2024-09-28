@@ -141,6 +141,10 @@ export class MenuItemService extends Service.IdUuidEnableNameOwnerModuleTranslat
       delete mi.id;
       delete mi.uuid;
       delete mi.name;
+      if (mi.parentId && mi.parent === null) {
+        mi.parentId = null;
+      }
+      
       result += await this.updateForId(mi, id, arrangedOptions);
     }
 

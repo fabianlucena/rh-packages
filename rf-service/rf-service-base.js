@@ -474,7 +474,7 @@ export class ServiceBase {
       let row = await this.model.create(data, options, this);
       await this.updateExternData({ ...data, ...row }, options);
       await this.updateThroughData({ ...data, ...row }, options);
-      await this.conditionalEmit('created', options?.emitEvent, { row, data, options });
+      await this.conditionalEmit('created', options?.emitEvent, { rows: [row], data, options });
 
       await transaction?.commit();
 
@@ -1191,6 +1191,8 @@ export class ServiceBase {
       } else {
         throw new QueryError('No criteria for find the row.');
       }
+    } else {
+      updateData = { ...data };
     }
 
     let row = await this.getSingle({ ...options, skipNoRowsError: true });

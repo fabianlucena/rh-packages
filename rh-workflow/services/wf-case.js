@@ -9,10 +9,10 @@ export class WfCaseService extends Service.IdUuidEnableTranslatable {
 
   async getInterface(options) {
     const gridActions = [],
-      permissions = options?.context?.req?.permissions;
-    if (permissions.includes('workflow.create')) gridActions.push('create');
-    if (permissions.includes('workflow.edit'))   gridActions.push('enableDisable', 'edit');
-    if (permissions.includes('workflow.delete')) gridActions.push('delete');
+      permissions = options?.permissions;
+    if (permissions?.includes('workflow.create')) gridActions.push('create');
+    if (permissions?.includes('workflow.edit'))   gridActions.push('enableDisable', 'edit');
+    if (permissions?.includes('workflow.delete')) gridActions.push('delete');
     gridActions.push('search', 'paginate');
         
     const fields = [
@@ -62,4 +62,29 @@ export class WfCaseService extends Service.IdUuidEnableTranslatable {
 
     return result;
   }
+
+  async createForWorkflowIdAndEnrityUuid(workflowId, entityUuid) {
+    return this.create({ workflowId, entityUuid });
+  }
+
+  async getForWorkflowIdAndEnrityUuid(workflowId, entityUuid, { loc }) {
+    return this.getSingleFor(
+      {
+        workflowId,
+        entityUuid,
+      },
+      {
+        include: {
+          branches: {
+            include: {
+              status:   true,
+              assignee: true,
+            },
+          },
+        },
+        skipNoRowsError: true,
+        loc,
+      },
+    );
+  };
 }

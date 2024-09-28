@@ -6,6 +6,7 @@ import * as uuid from 'uuid';
 import fs from 'fs';
 import path from 'path';
 import url from 'url';
+import { Op } from 'rf-service';
 
 export class HttpError extends BaseError {
   constructor(message, statusCode, ...params) {
@@ -364,8 +365,11 @@ export async function getOptionsFromOData(params, options) {
         throw new HttpError(loc => loc._('Error to compile filter in part "%s".'), 400, filter);
       }
 
-      if (parts[1] !== 'eq') {
-        throw new HttpError(loc => loc._('Error to compile filter in part "%s", only the "eq" operator is supported.'), 400, filter);
+      let operator;
+      switch (parts[1]) {
+      case 'eq': operator = Op.eq; break;
+      case 'gt': operator = Op.gt; break;
+      default: throw new HttpError(loc => loc._('Error to compile filter in part "%s", operator is supported.'), 400, filter);
       }
 
       let value = parts.slice(2).join(' ');
@@ -379,7 +383,7 @@ export async function getOptionsFromOData(params, options) {
         value = stripQuotes(value);
       }
 
-      where[parts[0]] = value;
+      where[parts[0]] = { [operator]: value };
     }
 
     options.where = { ...options.where, ...where };

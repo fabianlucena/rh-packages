@@ -11,7 +11,7 @@ export class AssetService extends Service.IdUuidEnableNameUniqueTitleDescription
     type:    'assetType',
   };
   defaultTranslationContext = 'asset';
-  viewAttributes = ['uuid', 'isEnabled', 'name', 'title', 'isTranslatable', 'description'];
+  viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'isTranslatable', 'description'];
   eventBus = conf.global.eventBus;
 
   init() {
@@ -75,18 +75,18 @@ export class AssetService extends Service.IdUuidEnableNameUniqueTitleDescription
         },
       },
       {
-        name:        'type.uuid',
-        gridName:    'type.title',
-        type:        'select',
-        gridType:    'text',
-        label:       await loc._c('asset', 'Type'),
-        placeholder: await loc._c('asset', 'Select the type'),
-        isField:     true,
-        isColumn:    true,
-        required:    true,
+        name:            'type',
+        gridName:        'type.title',
+        type:            'select',
+        gridType:        'text',
+        label:           await loc._c('asset', 'Type'),
+        placeholder:     await loc._c('asset', 'Select the type'),
+        isField:         true,
+        isColumn:        true,
+        required:        true,
+        valueProperty:   'uuid',
         loadOptionsFrom: {
           service: 'asset/type',
-          value:   'uuid',
           text:    'title',
           title:   'description',
         },
