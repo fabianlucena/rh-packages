@@ -1,12 +1,10 @@
 import { PageService } from '../services/page.js';
 import { getOptionsFromParamsAndOData, HttpError } from 'http-util';
-import { defaultLoc } from 'rf-locale';
 
 const page = PageService.singleton();
 
 export class PageController {
   static async get(req, res) {
-    const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
     const options = await getOptionsFromParamsAndOData(
       {
@@ -18,6 +16,7 @@ export class PageController {
         view: true,
         limit: 10,
         offset: 0,
+        include: { format: true },
       },
     );
 
@@ -27,8 +26,8 @@ export class PageController {
     }
 
     result.rows = result.rows.map(row => {
-      if (row.Format?.name) {
-        row.format = row.Format?.name;
+      if (row.format?.name) {
+        row.format = row.format?.name;
       }
 
       return row;
