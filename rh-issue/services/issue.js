@@ -50,39 +50,6 @@ export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescription
     }
   }
 
-  async autoRelatedForId(id) {
-    const issue = await this.getSingleForId(id);
-    const criteria = [];
-    for (const word of issue.description?.split(/[\s.,;:]+/) ?? []) {
-      if (word.length < 2) {
-        continue;
-      }
-
-      criteria.push({ [Op.like]: `%${word}%` });
-    }
-    if (!criteria.length) {
-      return;
-    }
-
-    const candidates = await this.getFor({
-      id: { [Op.ne]: id },
-      description: { [Op.or]: criteria },
-    });
-    if (!candidates.length) {
-      return;
-    }
-
-    const relationshipId = await this.issueRelationshipService.getSingleIdForName('related');
-
-    for (const candidate of candidates) {
-      await this.issueRelatedService.create({
-        fromId: id,
-        toId:   candidate.id,
-        relationshipId,
-      });     
-    }
-  }
-
   async delete(options) {
     await this.issueRelatedService.deleteFor({
       from: { ...options.where }
