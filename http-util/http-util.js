@@ -1077,12 +1077,16 @@ export function corsSimplePreflight(methods) {
   return corsPreflight({ headers: 'Content-Type,Authorization', methods });
 }
 
-export async function getUuidFromRequest(req) {
+export async function getUuidFromRequest(req, defaultResult) {
   let uuid;
   if (req.params?.uuid) {
     if (uuid === undefined) {
       uuid = req.params.uuid;
     } else if (uuid.toUpperCase() !== req.params.uuid.toUpperCase()) {
+      if (typeof defaultResult !== 'undefined') {
+        return defaultResult;
+      }
+
       throw new HttpError(loc => loc._('UUID inconsistency. Many UUIDs were received but they are different.'), 400, uuid);
     }
   }
@@ -1091,6 +1095,10 @@ export async function getUuidFromRequest(req) {
     if (uuid === undefined) {
       uuid = req.query.uuid;
     } else if (uuid.toUpperCase() !== req.query.uuid.toUpperCase()) {
+      if (typeof defaultResult !== 'undefined') {
+        return defaultResult;
+      }
+
       throw new HttpError(loc => loc._('UUID inconsistency. Many UUIDs were received but they are different.'), 400, uuid);
     }
   }
@@ -1099,7 +1107,17 @@ export async function getUuidFromRequest(req) {
     if (uuid === undefined) {
       uuid = req.body.uuid;
     } else if (uuid.toUpperCase() !== req.body.uuid.toUpperCase()) {
+      if (typeof defaultResult !== 'undefined') {
+        return defaultResult;
+      }
+
       throw new HttpError(loc => loc._('UUID inconsistency. Many UUIDs were received but they are different.'), 400, uuid);
+    }
+  }
+
+  if (!uuid) {
+    if (typeof defaultResult !== 'undefined') {
+      return defaultResult;
     }
   }
 
