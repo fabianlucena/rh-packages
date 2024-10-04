@@ -160,8 +160,9 @@ async function interfaceFormGet({ form, entity, loc }) {
         continue;
       }
 
+      const fieldName = attribute.fieldName ?? attribute.name;
       const field = {
-        name: attribute.name,
+        name: fieldName,
         label: attribute.title,
         type: attribute.htmlType,
         condition: attribute.condition,
@@ -398,8 +399,8 @@ async function updateValues({ entity, entityIds, data, options }) {
 
   for (const entityId of entityIds) {
     for (const attribute of attributes) {
-      const name = attribute.name;
-      const value = data[name];
+      const fieldName = attribute.fieldName ?? attribute.name;
+      const value = data[fieldName];
       if (value === undefined) {
         continue;
       }
