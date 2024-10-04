@@ -295,7 +295,7 @@ export function asyncHandler(methodContainer, method) {
   };
 }
 
-export async function getOptionsFromOData(params, options) {
+export function getOptionsFromOData(params, options) {
   options = { ...options };
   if (!params) {
     return options;
@@ -402,35 +402,35 @@ export async function getOptionsFromOData(params, options) {
   return options;
 }
 
-export async function getWhereOptionsFromParams(params, definitions, options) {
-  options = { ...options };
-
+export function getWhereFromParams(params, definitions, where) {
   if (!params || !definitions) {
-    return options;
+    return where;
   }
 
   for (const name in definitions) {
-    const value = params[name];
-    if (value !== undefined) {
-      const def = definitions[name];
-      switch (def) {
-      case 'uuid':
-        if (!uuid.validate(params.uuid)) {
-          throw new NoUUIDError(name);
-        }
-      }
-        
-      options.where ??= {};
-      options.where[name] = value;
+    let value = params[name];
+    if (value === undefined) {
+      return;
     }
+
+    const def = definitions[name];
+    if (def.endsWith('uuid')) {
+      if (!uuid.validate(value)) {
+        throw new NoUUIDError(name);
+      }
+    }
+
+    where ??= {};
+    where[name] = value;
   }
 
-  return options;
+  return where;
 }
 
-export async function getOptionsFromParamsAndOData(params, definitions, options) {
-  options = await getOptionsFromOData(params, options);
-  return await getWhereOptionsFromParams(params, definitions, options);
+export function getOptionsFromParamsAndOData(params, definitions, options) {
+  options = getOptionsFromOData(params, options);
+  options.where = getWhereFromParams(params, definitions, options.where);
+  return options;
 }
 
 export class NoRowsError extends BaseError {

@@ -102,7 +102,10 @@ async function getAttributes(entity, { loc }) {
     const attributes = await conf.eavAttributeService.getForEntityName(
       entity,
       {
-        include: { type: true },
+        include: {
+          type: true,
+          category: true,
+        },
         loc,
       }
     );
@@ -169,9 +172,9 @@ async function interfaceFormGet({ form, entity, loc }) {
         field.valueProperty = 'uuid';
       } else if (attribute.type === 'tags') {
         field.loadOptionsFrom = {
-          service: 'eav/tags',
+          service: 'tags',
           query: {
-            attributeUuid: attribute.uuid,
+            'category.uuid': attribute.category.uuid,
           },
         };
       }   

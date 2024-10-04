@@ -41,11 +41,7 @@ export class EavValueTagService extends Service.IdUuidTranslatable {
 
   async getListOptions(options) {
     if (options.where?.attributeTagUuid) {
-      throw new Error('options.where.attributeTagUuid is deprecated in EavValueTagService.');
-    }
-    
-    if (options.where?.tagId) {
-      throw new Error('options.where.attributeTagUuid is deprecated in EavValueTagService.');
+      throw new Error(loc => loc._c('eav', 'options.where.attributeTagUuid is deprecated in EavValueTagService, use options.where.attributeTag.uuid instead.'));
     }
 
     return super.getListOptions(options);
@@ -131,7 +127,7 @@ export class EavValueTagService extends Service.IdUuidTranslatable {
       const tagsId = [];
       for (const tag of tags) {
         const tagRow = await this.eavAttributeTagService.getOrCreate({
-          attributeId: data.attributeId,
+          categoryId: data.categoryId,
           name: tag,
         });
 

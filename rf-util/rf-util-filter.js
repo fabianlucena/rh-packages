@@ -6,7 +6,7 @@ export async function sanitizeFields(rawFields, options) {
     filter = options?.filter,
     interfaceName = options?.interface,
     loc = options?.loc ?? defaultLoc,
-    translationContext = options.translationContext;
+    translationContext = options?.translationContext;
   for (let field of rawFields) {
     let hideValue = filter?.hide?.[field.name];
     if (typeof hideValue === 'function') {

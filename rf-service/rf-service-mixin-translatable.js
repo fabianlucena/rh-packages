@@ -2,7 +2,7 @@ import { defaultLoc } from 'rf-locale';
 
 export const ServiceMixinTranslatable = Service => class ServiceTranslatable extends Service {
   async getList(options) {
-    let result = super.getList(options);
+    let result = await super.getList(options);
 
     if (options?.translate === false) {
       return result;
@@ -10,7 +10,7 @@ export const ServiceMixinTranslatable = Service => class ServiceTranslatable ext
 
     const loc = options?.loc ?? defaultLoc;
     if (loc) {
-      result = await this.translateRows(await result, loc, options);
+      result = await this.translateRows(result, loc, options);
     } else if (options?.translate) {
       console.warn('Cannot translate because no localization (loc) defined.');
     }
