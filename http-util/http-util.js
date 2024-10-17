@@ -730,7 +730,7 @@ export function installControllerRoutes(global) {
         global.router,
         routes,
         {
-          checkPermission: global.checkPermission,
+          checkPermission: global.checkRoutePermission ?? global.checkPermission,
         },
       );
     }
