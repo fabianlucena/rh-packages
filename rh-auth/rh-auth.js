@@ -60,6 +60,12 @@ function getCheckPermissionHandler(chain) {
       return;
     }
 
+    for (let permission in requiredPermissions) {
+      if (permission === true) {
+        return;
+      }
+    }
+
     throw new NoPermissionError({ permissions: requiredPermissions });
   };
 }
