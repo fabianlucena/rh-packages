@@ -52,6 +52,10 @@ function getCheckPermissionHandler(chain) {
       }
     }
 
+    if (!requiredPermissions.length) {
+      return;
+    }
+
     if (await chain(req, ...requiredPermissions)) {
       return;
     }
