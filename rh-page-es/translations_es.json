@@ -79,7 +79,7 @@
         "source": "There are many resources for that criteria.",
         "language": "es",
         "context": "resource",
-        "translation": "Hay mucho recursos para ese criterio.",
+        "translation": "Hay muchos recursos para ese criterio.",
         "ref": "..\\rh-page\\controllers\\resource.js [46,104]"
     }
 ]
