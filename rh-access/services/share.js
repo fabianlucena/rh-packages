@@ -1,3 +1,4 @@
+import dependency from 'rf-dependency';
 import { Service } from 'rf-service';
 import { checkDataForMissingProperties } from 'sql-util';
 
@@ -10,6 +11,12 @@ export class ShareService extends Service.EnableOwnerModuleTranslatable {
     user: true,
     type: { service: 'shareTypeService' },
   };
+
+  init() {
+    super.init();
+
+    this.userService = dependency.get('userService');
+  }
     
   async validateForCreation(data) {
     await checkDataForMissingProperties(data, 'Share', 'objectNameId', 'objectId', 'userId', 'typeId');
@@ -50,5 +57,9 @@ export class ShareService extends Service.EnableOwnerModuleTranslatable {
   async deleteForModelEntityNameAndId(modelEntityName, objectId) {
     const objectNameId = await this.references.ObjectName.getSingleIdForName(modelEntityName);
     return this.deleteFor({ objectNameId, objectId });
+  }
+
+  async getIdForUsername(username, options) {
+    return this.userService.getForUsernameOrNull(username, options);
   }
 }
