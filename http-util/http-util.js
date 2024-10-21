@@ -410,7 +410,7 @@ export function getWhereFromParams(params, definitions, where) {
   for (const name in definitions) {
     let value = params[name];
     if (value === undefined) {
-      return where;
+      continue;
     }
 
     const def = definitions[name];
