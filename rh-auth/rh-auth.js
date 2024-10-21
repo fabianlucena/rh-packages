@@ -60,7 +60,7 @@ function getCheckPermissionHandler(chain) {
       return;
     }
 
-    for (let permission in requiredPermissions) {
+    for (let permission of requiredPermissions) {
       if (permission === true) {
         return;
       }

@@ -36,6 +36,12 @@ function getCheckPermissionHandler(chain) {
     if (await chain(req, ...requiredPermissions)) {
       return;
     }
+    
+    for (let permission of requiredPermissions) {
+      if (permission === true) {
+        return;
+      }
+    }
 
     throw new NoPermissionError({ permissions: requiredPermissions });
   };
