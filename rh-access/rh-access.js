@@ -42,6 +42,10 @@ function getCheckPermissionHandler(chain) {
 }
 
 async function checkPermissionForUsernameAndSiteName(privileges, ...requiredPermissions) {
+  if (!requiredPermissions.length) {
+    return true;
+  }
+
   if (!privileges) {
     return false;
   }
