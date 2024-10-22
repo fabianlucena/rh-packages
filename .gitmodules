@@ -1,0 +1,3 @@
+[submodule "crquery"]
+	path = crquery
+	url = https://github.com/fabianlucena/crquery

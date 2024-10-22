@@ -11,7 +11,10 @@ export const ServiceMixinShared = Service => class ServiceShared extends Service
 
   prepareReferences() {
     if (!this.references.owner) {
-      this.references.owner = { service: 'shareService' };
+      this.references.owner = { 
+        service: 'shareService',
+        getIdForName: 'getIdForUsername'
+      };
     }
 
     if (!this.references.share) {

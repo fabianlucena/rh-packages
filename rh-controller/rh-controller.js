@@ -44,8 +44,9 @@ export class Controller {
       this,
       {
         appendHandlers: [
-          { name: 'get',                httpMethod: 'get',    handler: 'defaultGet',  inPathParam: 'uuid' },
-          { name: 'getData',            httpMethod: 'get',    handler: 'defaultGet',  inPathParam: 'uuid' },
+          { name: 'get',                httpMethod: 'get',    handler: 'defaultGet',        inPathParam: 'uuid' },
+          { name: 'getData',            httpMethod: 'get',    handler: 'defaultGet',        inPathParam: 'uuid' },
+          { name: 'getForUuid',         httpMethod: 'get',    handler: 'defaultGetForUuid', inPathParam: 'uuid' },
           { name: 'getGrid',            httpMethod: 'get',    handler: 'defaultGet' },
           { name: 'getForm',            httpMethod: 'get',    handler: 'defaultGet' },
           { name: 'getObject',          httpMethod: 'get',    handler: 'defaultGet' },
@@ -289,20 +290,38 @@ export class Controller {
       events.push('default.get', `${entity}.default.get`);
       eventOptionsResultName = 'default';
     } else {
-      if (typeof this.getData === 'function') {
-        func = (...args) => this.getData(...args);
-      } else if (typeof this.constructor.getData === 'function') {
-        func = this.constructor.getData;
-      } else if (this.service) {
-        func = (...args) => this.defaultGetData(...args);
-      } else {
-        if (this.getGrid || this.constructor.getGrid
-          || this.getForm || this.constructor.getForm
-          || this.getObject || this.constructor.getObject
-          || this.getDefault || this.constructor.getDefault
-        ) {
-          res.status(400).send({ error: 'Missing parameters.' });
-          return;
+      const uuid = await getUuidFromRequest(req, null);
+      if (uuid) {
+        if (typeof this.getForUuid === 'function') {
+          func = (...args) => this.getForUuid(...args);
+        } else if (typeof this.constructor.getForUuid === 'function') {
+          func = this.constructor.getForUuid;
+        }
+
+        permissions.push('getForUuid', 'get');
+      }
+      
+      if (!func) {
+        if (typeof this.getData === 'function') {
+          func = (...args) => this.getData(...args);
+        } else if (typeof this.constructor.getData === 'function') {
+          func = this.constructor.getData;
+        } else if (this.service) {
+          if (uuid) {
+            permissions.push('getForUuid', 'get');
+            func = (...args) => this.defaultGetForUuid(...args);
+          } else {
+            func = (...args) => this.defaultGetData(...args);
+          }
+        } else {
+          if (this.getGrid || this.constructor.getGrid
+            || this.getForm || this.constructor.getForm
+            || this.getObject || this.constructor.getObject
+            || this.getDefault || this.constructor.getDefault
+          ) {
+            res.status(400).send({ error: 'Missing parameters.' });
+            return;
+          }
         }
       }
 
@@ -477,6 +496,42 @@ export class Controller {
     await this.service.create(data, { context: makeContext(req, res) });
 
     res.status(204).send();
+  }
+
+  async defaultGetForUuid(req, res, next) {
+    if (!this.service) {
+      res.status(405).send({ error: 'HTTP method not allowed.' });
+      return;
+    }
+
+    await this.checkPermissionsFromProperty(req, res, next, 'getForUuidPermission');
+
+    const { uuid } = await this.checkUuid(req);
+    
+    let getOptions;
+    if (typeof this.getOptions === 'function') {
+      getOptions = (...args) => this.getOptions(...args);
+    } else if (typeof this.constructor.getOptions === 'function') {
+      getOptions = this.constructor.getOptions;
+    } else {
+      getOptions = (...args) => this.defaultGetOptions(...args);
+    }
+
+    const options = await getOptions(req, res, next);
+    options.context ??= makeContext(req, res);
+    options.loc = options.context.loc;
+    options.where = { ...options.where, uuid };
+
+    let result = await this.service.getListAndCount(options);
+    if (result) {
+      result = await this.service.sanitize(result);
+    }
+
+    for (const row of result.rows) {
+      this.addUuidList(row, row, '');
+    }
+
+    return result;
   }
 
   async defaultDeleteForUuid(req, res, next) {

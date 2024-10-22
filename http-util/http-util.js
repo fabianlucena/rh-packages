@@ -295,7 +295,7 @@ export function asyncHandler(methodContainer, method) {
   };
 }
 
-export async function getOptionsFromOData(params, options) {
+export function getOptionsFromOData(params, options) {
   options = { ...options };
   if (!params) {
     return options;
@@ -402,35 +402,35 @@ export async function getOptionsFromOData(params, options) {
   return options;
 }
 
-export async function getWhereOptionsFromParams(params, definitions, options) {
-  options = { ...options };
-
+export function getWhereFromParams(params, definitions, where) {
   if (!params || !definitions) {
-    return options;
+    return where;
   }
 
   for (const name in definitions) {
-    const value = params[name];
-    if (value !== undefined) {
-      const def = definitions[name];
-      switch (def) {
-      case 'uuid':
-        if (!uuid.validate(params.uuid)) {
-          throw new NoUUIDError(name);
-        }
-      }
-        
-      options.where ??= {};
-      options.where[name] = value;
+    let value = params[name];
+    if (value === undefined) {
+      continue;
     }
+
+    const def = definitions[name];
+    if (def.endsWith('uuid')) {
+      if (!uuid.validate(value)) {
+        throw new NoUUIDError(name);
+      }
+    }
+
+    where ??= {};
+    where[name] = value;
   }
 
-  return options;
+  return where;
 }
 
-export async function getOptionsFromParamsAndOData(params, definitions, options) {
-  options = await getOptionsFromOData(params, options);
-  return await getWhereOptionsFromParams(params, definitions, options);
+export function getOptionsFromParamsAndOData(params, definitions, options) {
+  options = getOptionsFromOData(params, options);
+  options.where = getWhereFromParams(params, definitions, options.where);
+  return options;
 }
 
 export class NoRowsError extends BaseError {
@@ -730,7 +730,7 @@ export function installControllerRoutes(global) {
         global.router,
         routes,
         {
-          checkPermission: global.checkPermission,
+          checkPermission: global.checkRoutePermission ?? global.checkPermission,
         },
       );
     }
@@ -1077,12 +1077,16 @@ export function corsSimplePreflight(methods) {
   return corsPreflight({ headers: 'Content-Type,Authorization', methods });
 }
 
-export async function getUuidFromRequest(req) {
+export async function getUuidFromRequest(req, defaultResult) {
   let uuid;
   if (req.params?.uuid) {
     if (uuid === undefined) {
       uuid = req.params.uuid;
     } else if (uuid.toUpperCase() !== req.params.uuid.toUpperCase()) {
+      if (typeof defaultResult !== 'undefined') {
+        return defaultResult;
+      }
+
       throw new HttpError(loc => loc._('UUID inconsistency. Many UUIDs were received but they are different.'), 400, uuid);
     }
   }
@@ -1091,6 +1095,10 @@ export async function getUuidFromRequest(req) {
     if (uuid === undefined) {
       uuid = req.query.uuid;
     } else if (uuid.toUpperCase() !== req.query.uuid.toUpperCase()) {
+      if (typeof defaultResult !== 'undefined') {
+        return defaultResult;
+      }
+
       throw new HttpError(loc => loc._('UUID inconsistency. Many UUIDs were received but they are different.'), 400, uuid);
     }
   }
@@ -1099,7 +1107,17 @@ export async function getUuidFromRequest(req) {
     if (uuid === undefined) {
       uuid = req.body.uuid;
     } else if (uuid.toUpperCase() !== req.body.uuid.toUpperCase()) {
+      if (typeof defaultResult !== 'undefined') {
+        return defaultResult;
+      }
+
       throw new HttpError(loc => loc._('UUID inconsistency. Many UUIDs were received but they are different.'), 400, uuid);
+    }
+  }
+
+  if (!uuid) {
+    if (typeof defaultResult !== 'undefined') {
+      return defaultResult;
     }
   }
 
