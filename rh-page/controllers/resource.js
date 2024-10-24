@@ -1,10 +1,23 @@
+import { Controller } from 'rh-controller';
 import { ResourceService } from '../services/resource.js';
 import { getOptionsFromParamsAndOData, HttpError } from 'http-util';
+import fs from 'fs/promises';
+import fileUpload from 'express-fileupload';
+import dependency from 'rf-dependency';
+import { conf } from '../conf.js';
+import { defaultLoc } from 'rf-locale';
 
-const resource = ResourceService.singleton();
+const upload = fileUpload({ createParentPath: true });
 
-export class ResourceController {
-  static async get(req, res) {
+export class ResourceController extends Controller {
+  constructor() {
+    super();
+    this.service = dependency.get('resourceService');
+  }
+
+  getPermission = 'resource.get'
+  async getData(req, res) {
+    const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
     const options = await getOptionsFromParamsAndOData(
       { ...req.query, ...req.params },
@@ -16,8 +29,27 @@ export class ResourceController {
         include: { type: true },
       },
     );
+    let result = await this.service.getListAndCount(options);
+    result = await this.service.sanitize(result);
 
-    const result = await resource.getListAndCount(options);
+    return result;
+  }
+
+  async 'get /:name'(req, res) {
+    const definitions = { uuid: 'uuid', name: 'string' };
+    const options = await getOptionsFromParamsAndOData(
+      { ...req.query, ...req.params },
+      definitions,
+      {
+        attributes: ['content'],
+        view: true,
+        limit: 10,
+        offset: 0,
+        include: { type: true },
+      },
+    );
+
+    const result = await this.service.getListAndCount(options);
     if (!result?.count) {
       throw new HttpError(loc => loc._c('resource', 'Resource not found.'), 404);
     }
@@ -39,5 +71,81 @@ export class ResourceController {
 
     res.writeHead(200, headers);
     res.end(data);
+  }
+
+  async getInterface(req) {
+    const loc = req.loc ?? defaultLoc;
+    const gridActions = [];
+    gridActions.push('create');
+    gridActions.push('search', 'paginate');
+    return {
+      title: await loc._c('resource', 'Resource'),
+      action: 'resource',
+      method: 'POST',
+      progress: true,
+      gridActions,
+      fields: [
+        {
+          name:        'name',
+          type:        'text',
+          label:       await loc._c('resource', 'Name'),
+          isField:     false,
+          isColumn:    true,
+        },
+        {
+          name:        'title',
+          type:        'text',
+          label:       await loc._c('resource', 'Title'),
+          placeholder: await loc._c('resource', 'Type the title here'),
+          isField:     true,
+          isColumn:    true,
+          required:    true,
+        },
+        {
+          name: 'file',
+          type: 'file',
+          isField: true,
+          isColumn: false,
+          label: await loc._c('resource', 'File'),
+        },
+      ],
+    }
+  }
+
+  posPermission = 'resource.create';
+  postMiddleware = upload;
+  async post(req, res) {
+    checkParameter(
+      req?.body,
+      {
+        title:  loc => loc._c('resource', 'Title'),
+        file:   loc => loc._c('resource', 'File'),
+      },
+    );
+
+    const log = req.log;
+    const uploadedFile = req.files?.file;
+
+    await this.service.checkNameForConflict(uploadedFile.name);
+
+    const filename = conf.global.config.server.resourcesUploadsPath + uploadedFile.name;
+    log.info(`Archivo recibido: ${uploadedFile.name}, MD5: ${uploadedFile.md5}.`);
+
+    await uploadedFile.mv(filename);
+    log.info(`Archivo movido: ${uploadedFile.name} -> ${filename}.`);
+    try {
+      const resource = {
+        name: uploadedFile.name,
+        language: 'en',
+        type: uploadedFile.mimetype,
+        title: req.body.title,
+        content: Buffer.from(await fs.readFile(filename, 'binary'), 'binary'),
+      };
+  
+      await this.service.create(resource); 
+    } catch(ex) {
+      await fs.unlink(filename);
+      throw ex;
+    }
   }
 }
