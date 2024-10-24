@@ -112,7 +112,7 @@ export class ResourceController extends Controller {
     }
   }
 
-  posPermission = 'resource.create';
+  postPermission = 'resource.create';
   postMiddleware = upload;
   async post(req, res) {
     checkParameter(
