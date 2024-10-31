@@ -10,7 +10,7 @@ export class ResourceService extends Service.IdUuidEnableNameTranslatable {
     },
     language: true,
   };
-  viewAttributes = ['uuid', 'name', 'title', 'content'];
+  viewAttributes = ['uuid', 'name', 'title'];
   
   init() {
     super.init();
