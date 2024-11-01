@@ -1043,17 +1043,23 @@ function checkCors(req, res, requestName, acceptable, responseName, sanitizeMeth
 
   const requestRaw = req.header(requestName);
   if (requestRaw) {
-    const acceptableList = reduceToSingleArray(acceptable, sanitizeMethod);
-    if (acceptableList) {
+    if (acceptable.includes('*')) {
       const requestList = reduceToSingleArray(requestRaw);
-      const negotiated = [];
-      for (const value of requestList) {
-        if (acceptableList.includes(sanitizeMethod(value))) {
-          negotiated.push(value);
-        }
-      }
-
+      const negotiated = [...requestList];
       res.header(responseName, negotiated.join(', '));
+    } else {
+      const acceptableList = reduceToSingleArray(acceptable, sanitizeMethod);
+      if (acceptableList) {
+        const requestList = reduceToSingleArray(requestRaw);
+        const negotiated = [];
+        for (const value of requestList) {
+          if (acceptableList.includes(sanitizeMethod(value))) {
+            negotiated.push(value);
+          }
+        }
+
+        res.header(responseName, negotiated.join(', '));
+      }
     }
   }
 }
