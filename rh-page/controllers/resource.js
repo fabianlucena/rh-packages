@@ -75,7 +75,11 @@ export class ResourceController extends Controller {
   async getInterface(req) {
     const loc = req.loc ?? defaultLoc;
     const gridActions = [];
-    gridActions.push('create');
+
+    if (req.permissions.includes('resource.create')) {
+      gridActions.push('create');
+    }
+
     gridActions.push('search', 'paginate');
     return {
       title: await loc._c('resource', 'Resource'),
