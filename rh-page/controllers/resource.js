@@ -1,6 +1,6 @@
 import { Controller } from 'rh-controller';
-import { ResourceService } from '../services/resource.js';
 import { getOptionsFromParamsAndOData, HttpError } from 'http-util';
+import { checkParameter } from 'rf-util';
 import fs from 'fs/promises';
 import fileUpload from 'express-fileupload';
 import dependency from 'rf-dependency';
@@ -15,9 +15,8 @@ export class ResourceController extends Controller {
     this.service = dependency.get('resourceService');
   }
 
-  getPermission = 'resource.get'
-  async getData(req, res) {
-    const loc = req.loc ?? defaultLoc;
+  getPermission = 'resource.get';
+  async getData(req) {
     const definitions = { uuid: 'uuid', name: 'string' };
     const options = await getOptionsFromParamsAndOData(
       { ...req.query, ...req.params },
@@ -109,12 +108,12 @@ export class ResourceController extends Controller {
           label: await loc._c('resource', 'File'),
         },
       ],
-    }
+    };
   }
 
   postPermission = 'resource.create';
   postMiddleware = upload;
-  async post(req, res) {
+  async post(req) {
     checkParameter(
       req?.body,
       {
