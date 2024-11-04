@@ -15,7 +15,6 @@ export class ResourceController extends Controller {
     this.service = dependency.get('resourceService');
   }
 
-  getPermission = 'resource.get'
   async getData(req, res) {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
