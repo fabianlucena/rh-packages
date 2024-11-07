@@ -5,7 +5,7 @@ import dependency from 'rf-dependency';
 export class UserSiteRoleService extends Service.EnableOwnerModuleTranslatable {
   references = {
     user: {
-      getIdForName: 'getIdForUsername',
+      getIdForName: 'getSingleIdForUsername',
       otherName: 'username',
       attributes: ['uuid', 'username', 'displayName', 'isTranslatable', 'isEnabled'],
     },

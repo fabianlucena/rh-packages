@@ -345,6 +345,8 @@ export class ServiceBase {
         data[idPropertyName] = await service[getIdForName](data[name].name);
       } else if (data[name] && typeof data[name] === 'string' && service[getIdForName]) {
         data[idPropertyName] = await service[getIdForName](data[name], { skipNoRowsError: true });
+      } else if(data[name] && Array.isArray(data[name])) {
+        data[idPropertyName] = await Promise.all(data[name].map(x => service.completeReferences(x)));
       } else if (data[name] && typeof data[name] === 'object' && !Array.isArray(data[name])) {
         const childData = data[name];
         if (childData.id) {
