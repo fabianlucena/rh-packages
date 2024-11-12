@@ -923,6 +923,16 @@ export class ServiceBase {
   }
 
   /**
+ * Gets a row for a given criteria.
+ * @param {object} where - criteria to get the row list (where object).
+ * @param {object} options - Options for the @ref getList method.
+ * @returns {Promise[Array[row]]}
+ */
+  async getListFor(where, options) {
+    return this.getList({ ...options, where: { ...options?.where, ...where }});
+  }
+
+  /**
    * Gets a row for a given criteria.
    * @param {object} where - criteria to get the row list (where object).
    * @param {object} options - Options for the @ref getList method.
