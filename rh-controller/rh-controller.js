@@ -52,7 +52,6 @@ export class Controller {
           { name: 'getObject',          httpMethod: 'get',    handler: 'defaultGet' },
           { name: 'getInterface',       httpMethod: 'get',    handler: 'defaultGet' },
           { name: 'getDefault',         httpMethod: 'get',    handler: 'defaultGet' },
-          { name: 'getInterface',       httpMethod: 'get',    handler: 'defaultGet' },
           { name: 'post',               httpMethod: 'post',   handler: 'defaultPost' },
           { name: 'deleteForUuid',      httpMethod: 'delete', handler: 'defaultDeleteForUuid',      inPathParam: 'uuid' },
           { name: 'patchForUuid',       httpMethod: 'patch',  handler: 'defaultPatchForUuid',       inPathParam: 'uuid' },
