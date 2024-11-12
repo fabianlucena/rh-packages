@@ -11,5 +11,6 @@ export const conf = {
   path: dirname,
   schema: 'project',
   controllersPath: `${dirname}/controllers`,
+  servicesPath: dirname + '/services',
   iconsPath: `${dirname}/icons`,
 };
