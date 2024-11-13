@@ -10,7 +10,8 @@ export class ProjectSelectService extends Service.Base {
   init() {
     super.init();
 
-    this.projectService = dependency.get('projectService', null);
+    this.projectService =     dependency.get('projectService');
+    this.sessionDataService = dependency.get('sessionDataService', null);
   }
 
   async selectForUuid(projectUuid, { context }) {

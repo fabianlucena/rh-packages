@@ -59,7 +59,7 @@ export async function getFiltersFromRequest(req) {
   return where;
 }
 
-async function getAvailableProjectsIdForRequest(req) {
+export async function getAvailableProjectsIdForRequest(req) {
   const options = {
     isEnabled: true,
     skipNoRowsError: true,
@@ -68,7 +68,7 @@ async function getAvailableProjectsIdForRequest(req) {
   return projectService.getIdFor(await getFiltersFromRequest(req), options);
 }
 
-async function getCurrentProjectId(req, res) {
+export async function getCurrentProjectId(req, res) {
   const sessionId = req?.session?.id;
   if (!sessionId) {
     return;
@@ -113,7 +113,7 @@ async function getCurrentProjectId(req, res) {
   }
 }
 
-async function getCurrentProject(req) {
+export async function getCurrentProject(req) {
   const projectId = await getCurrentProjectId(req);
   if (!projectId) {
     return;
