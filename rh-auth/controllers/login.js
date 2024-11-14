@@ -133,6 +133,7 @@ export class LoginController extends Controller {
         result,
         context: makeContext(req, res),
         sessionId: session.id,
+        checkLogin: true,
       },
     );
 
