@@ -128,7 +128,7 @@ export class GlossaryService extends Service.IdUuidEnableNameUniqueTitleDescript
     const row = {};
 
     if (options?.context?.req && this.projectService && this.getCurrentProject) {
-      const project = await this.getCurrentProject(options.context.req);
+      const project = await this.getCurrentProject(options.context);
       if (project) {
         row.project = { uuid: project.uuid };
       }

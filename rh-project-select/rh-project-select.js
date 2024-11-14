@@ -1,6 +1,5 @@
 import dependency from 'rf-dependency';
 import { conf as localConf } from './conf.js';
-import { makeContext } from 'http-util';
 
 export const conf = localConf;
 
@@ -14,9 +13,9 @@ async function configure(global, options) {
     }
   }
 
-  dependency.addStatic('getAvailableProjectsIdForRequest', getAvailableProjectsIdForRequest);
-  dependency.addStatic('getCurrentProjectId', getCurrentProjectId);
-  dependency.addStatic('getCurrentProject',   getCurrentProject);
+  dependency.addStatic('getAvailableProjectsId', getAvailableProjectsId);
+  dependency.addStatic('getCurrentProjectId',    getCurrentProjectId);
+  dependency.addStatic('getCurrentProject',      getCurrentProject);
 }
 
 var projectService,
@@ -28,12 +27,13 @@ async function init() {
   sessionDataService = dependency.get('sessionDataService', null);
 }
 
-export async function getFiltersFromRequest(req) {
+export async function getFiltersForContext(context) {
   if (!conf.requestFilters) {
     return;
   }
 
   const filters = conf.requestFilters;
+  const req = context.req;
   const request = {
     ...req?.query,
     ...req?.params,
@@ -50,7 +50,7 @@ export async function getFiltersFromRequest(req) {
     ) {
       value = request[value.request];
     } else if (typeof value === 'function') {
-      value = await value(req);
+      value = await value(context);
     }
 
     where[name] = value;
@@ -59,17 +59,17 @@ export async function getFiltersFromRequest(req) {
   return where;
 }
 
-export async function getAvailableProjectsIdForRequest(req) {
+export async function getAvailableProjectsId(context) {
   const options = {
     isEnabled: true,
     skipNoRowsError: true,
   };
 
-  return projectService.getIdFor(await getFiltersFromRequest(req), options);
+  return projectService.getIdFor(await getFiltersForContext(context), options);
 }
 
-export async function getCurrentProjectId(req, res) {
-  const sessionId = req?.session?.id;
+export async function getCurrentProjectId(context) {
+  const sessionId = context?.req?.session?.id;
   if (!sessionId) {
     return;
   }
@@ -88,14 +88,12 @@ export async function getCurrentProjectId(req, res) {
   if (eventBus) {
     const data = {};
     
-    const context = makeContext(req, res),
-      eventOptions = { entity: 'ProjectSelect', context, sessionId, data };
-
+    const eventOptions = { entity: 'ProjectSelect', context, sessionId, data };
     await eventBus.$emit('getCurrentProject', eventOptions);
     if (data?.project?.id) {
       if (sessionData) {
         sessionData.project = data.project;
-        await this.sessionDataService.setData(sessionId, sessionData);  
+        await sessionDataService.setData(sessionId, sessionData);  
       }
 
       return data.project.id;
@@ -105,7 +103,7 @@ export async function getCurrentProjectId(req, res) {
     if (data?.projectId) {
       if (sessionData) {
         sessionData.projectId = data.projectId;
-        await this.sessionDataService.setData(sessionId, sessionData);  
+        await sessionDataService.setData(sessionId, sessionData);  
       }
       
       return data.projectId;
@@ -113,11 +111,11 @@ export async function getCurrentProjectId(req, res) {
   }
 }
 
-export async function getCurrentProject(req) {
-  const projectId = await getCurrentProjectId(req);
+export async function getCurrentProject(context) {
+  const projectId = await getCurrentProjectId(context);
   if (!projectId) {
     return;
   }
 
-  return this.projectService.getSingleForId(projectId);
+  return projectService.getSingleForId(projectId);
 }

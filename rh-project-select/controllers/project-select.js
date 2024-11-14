@@ -3,7 +3,7 @@ import { conf } from '../conf.js';
 import { getOptionsFromParamsAndOData, makeContext } from 'http-util';
 import { checkParameter, MissingParameterError } from 'rf-util';
 import { Controller } from 'rh-controller';
-import { getFiltersFromRequest } from '../rh-project-select.js';
+import { getFiltersForContext } from '../rh-project-select.js';
 
 export class ProjectSelectController extends Controller {
   constructor() {
@@ -24,7 +24,7 @@ export class ProjectSelectController extends Controller {
   }
 
   getPermission = 'project-select.switch';
-  async getData(req) {
+  async getData(req, res) {
     const definitions = {
       uuid: 'uuid',
       name: 'string',
@@ -37,7 +37,7 @@ export class ProjectSelectController extends Controller {
       view: true,
       limit: 10,
       offset: 0,
-      where: await getFiltersFromRequest(req),
+      where: await getFiltersForContext(makeContext(req, res)),
     };
 
     options = await getOptionsFromParamsAndOData(

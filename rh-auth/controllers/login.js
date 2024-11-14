@@ -101,8 +101,8 @@ export class LoginController extends Controller {
           context: makeContext(req, res),
           sessionId: session.id,
           oldSessionId: session.oldSessionId,
-          autoLogin: !!req?.body?.autoLoginToken
-        }
+          autoLogin: !!req?.body?.autoLoginToken,
+        },
       );
 
       req.session = session;
@@ -120,10 +120,22 @@ export class LoginController extends Controller {
   }
 
   async ['get /check'](req, res) {
-    if (req.session?.id) {
-      res.status(204).send();
-    } else {
+    const session = req.session;
+    if (!session?.id) {
       res.status(401).send({ error: 'invalid credentials' });
+      return;
     }
+
+    const result = {};
+    await conf.global.eventBus?.$emit(
+      'login',
+      {
+        result,
+        context: makeContext(req, res),
+        sessionId: session.id,
+      },
+    );
+
+    res.status(200).send(result);
   }
 }
