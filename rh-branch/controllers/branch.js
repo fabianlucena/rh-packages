@@ -13,7 +13,7 @@ export class BranchController extends Controller {
   }
 
   async checkDataForCompanyId(data, context) {
-    if (!conf.filters?.getCurrentCompanyId) {
+    if (!conf.filters?.companyId) {
       return;
     }
             
@@ -23,7 +23,7 @@ export class BranchController extends Controller {
       } else if (data.companyName) {
         data.companyId = await this.companyService.getSingleIdForName(data.companyName);
       } else {
-        data.companyId = await conf.filters.getCurrentCompanyId(context) ?? null;
+        data.companyId = await conf.filters?.companyId(context) ?? null;
         return data.companyId;
       }
         
@@ -32,7 +32,7 @@ export class BranchController extends Controller {
       }
     }
 
-    const companyId = await conf.filters.getCurrentCompanyId(context) ?? null;
+    const companyId = await conf.filters?.companyId(context) ?? null;
     if (data.companyId != companyId) {
       throw new HttpError(loc => loc._c('branch', 'The company does not exist or you do not have permission to access it.'), 403);
     }
@@ -95,9 +95,9 @@ export class BranchController extends Controller {
 
     const context = makeContext(req, res);
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    if (conf.filters?.getCurrentCompanyId) {
+    if (conf.filters?.companyId) {
       options.where ??= {};
-      options.where.companyId = await conf.filters.getCurrentCompanyId(context) ?? null;
+      options.where.companyId = await conf.filters?.companyId(context) ?? null;
     }
 
     const eventOptions = { entity: 'Branch', options, context };
@@ -334,9 +334,9 @@ export class BranchController extends Controller {
     let options = { view: true, limit: 10, offset: 0 };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    if (conf.filters?.getCurrentCompanyId) {
+    if (conf.filters?.companyId) {
       options.where ??= {};
-      options.where.id = await conf.filters.getCurrentCompanyId(makeContext(req, res)) ?? null;
+      options.where.id = await conf.filters?.companyId(makeContext(req, res)) ?? null;
     }
 
     const result = await conf.global.services.Company.singleton().getListAndCount(options);

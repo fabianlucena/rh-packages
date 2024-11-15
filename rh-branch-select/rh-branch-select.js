@@ -16,11 +16,11 @@ async function init() {
 }
 
 export async function getAvailableBranchesId(context) {
-  if (!conf.filters.getCurrentCompanyId) {
+  if (!conf.filters?.companyId) {
     return null;
   }
 
-  const companyId = await conf.filters.getCurrentCompanyId(context);
+  const companyId = await conf.filters?.companyId(context);
   if (!companyId) {
     return;
   }

@@ -13,7 +13,7 @@ export class ProjectController extends Controller {
   }
 
   async checkDataForCompanyId(data, context) {
-    if (!conf.filters?.getCurrentCompanyId) {
+    if (!conf.filters?.companyId) {
       return;
     }
          
@@ -24,7 +24,7 @@ export class ProjectController extends Controller {
       } else if (data.companyName) {
         data.companyId = await this.companyService.getSingleIdForName(data.companyName);
       } else {
-        data.companyId = await conf.filters.getCurrentCompanyId(context) ?? null;
+        data.companyId = await conf.filters?.companyId(context) ?? null;
         return data.companyId;
       }
         
@@ -33,7 +33,7 @@ export class ProjectController extends Controller {
       }
     }
 
-    const companyId = await conf.filters.getCurrentCompanyId(context) ?? null;
+    const companyId = await conf.filters?.companyId(context) ?? null;
     if (data.companyId != companyId) {
       throw new HttpError(loc => loc._c('project', 'The company does not exist or you do not have permission to access it.'), 403);
     }
@@ -97,9 +97,9 @@ export class ProjectController extends Controller {
 
     const context = makeContext(req, res);
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    if (conf.filters?.getCurrentCompanyId) {
+    if (conf.filters?.companyId) {
       options.where ??= {};
-      options.where.companyId = await conf.filters.getCurrentCompanyId(context) ?? null;
+      options.where.companyId = await conf.filters?.companyId(context) ?? null;
     }
 
     const eventOptions = { entity: 'Project', context, options };
@@ -316,9 +316,9 @@ export class ProjectController extends Controller {
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    if (conf.filters?.getCurrentCompanyId) {
+    if (conf.filters?.companyId) {
       options.where ??= {};
-      options.where.id = await conf.filters.getCurrentCompanyId(makeContext(req, res)) ?? null;
+      options.where.id = await conf.filters?.companyId(makeContext(req, res)) ?? null;
     }
 
     const result = await this.companyService.getListAndCount(options);

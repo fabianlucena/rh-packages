@@ -7,7 +7,7 @@ const companyService = CompanyService.singleton();
 
 export class CompanyController {
   static async checkData(data, context) {
-    if (conf.filters?.getCurrentCompanyId) {
+    if (conf.filters?.companyId) {
       if (!data.id) {
         if (data.uuid) {
           data.id = await conf.global.services.Company.singleton().getSingleIdForUuid(data.uuid);
@@ -22,7 +22,7 @@ export class CompanyController {
         throw new HttpError(loc => loc._c('company', 'The company does not exist or you do not have permission to access it.'), 404);
       }
 
-      const companyId = await conf.filters.getCurrentCompanyId(context) ?? null;
+      const companyId = await conf.filters?.companyId(context) ?? null;
       if (data.id != companyId) {
         throw new HttpError(loc => loc._c('company', 'The company does not exist or you do not have permission to access it.'), 403);
       }
@@ -83,9 +83,9 @@ export class CompanyController {
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    if (!req.roles.includes('admin') && conf.filters?.getCurrentCompanyId) {
+    if (!req.roles.includes('admin') && conf.filters?.companyId) {
       options.where ??= {};
-      options.where.id = await conf.filters.getCurrentCompanyId(makeContext(req,)) ?? null;
+      options.where.id = await conf.filters?.companyId(makeContext(req,)) ?? null;
     }
 
     const result = await companyService.getListAndCount(options);
