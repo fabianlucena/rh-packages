@@ -14,8 +14,8 @@ async function configure(global, options) {
   }
 
   dependency.addStatic('getAvailableProjectsId', getAvailableProjectsId);
-  dependency.addStatic('projectId',              projectId);
   dependency.addStatic('getCurrentProject',      getCurrentProject);
+  dependency.addStatic('getCurrentProjectId',    getCurrentProjectId);
 }
 
 var projectService,
@@ -68,7 +68,7 @@ export async function getAvailableProjectsId(context) {
   return projectService.getIdFor(await getFiltersForContext(context), options);
 }
 
-export async function projectId(context) {
+export async function getCurrentProjectId(context) {
   const sessionId = context?.req?.session?.id;
   if (!sessionId) {
     return;
