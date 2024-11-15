@@ -14,7 +14,7 @@ export class AssetTypeController extends Controller {
   }
 
   async checkDataForProjectId(data, context) {
-    if (!conf.filters?.getCurrentProjectId) {
+    if (!conf.filters?.projectId) {
       return data.projectId;
     }
          
@@ -25,7 +25,7 @@ export class AssetTypeController extends Controller {
       } else if (data.projectName) {
         data.projectId = await this.projectService.getSingleIdForName(data.projectName);
       } else {
-        data.projectId = await conf.filters.getCurrentProjectId(context) ?? null;
+        data.projectId = await conf.filters.projectId(context) ?? null;
         return data.projectId;
       }
         
@@ -34,7 +34,7 @@ export class AssetTypeController extends Controller {
       }
     }
 
-    const projectId = await conf.filters.getCurrentProjectId(context) ?? null;
+    const projectId = await conf.filters.projectId(context) ?? null;
     if (data.projectId != projectId) {
       throw new HttpError(loc => loc._c('asset', 'The project does not exist or you do not have permission to access it.'), 403);
     }
@@ -74,9 +74,9 @@ export class AssetTypeController extends Controller {
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    if (conf.filters?.getCurrentProjectId) {
+    if (conf.filters?.projectId) {
       options.where ??= {};
-      options.where.projectId = await conf.filters.getCurrentProjectId(makeContext(req, res)) ?? null;
+      options.where.projectId = await conf.filters.projectId(makeContext(req, res)) ?? null;
     }
 
     return this.service.getListAndCount(options);
@@ -94,9 +94,9 @@ export class AssetTypeController extends Controller {
     let options = { view: true, limit: 10, offset: 0, loc };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    if (conf.filters?.getCurrentProjectId) {
+    if (conf.filters?.projectId) {
       options.where ??= {};
-      options.where.id = await conf.filters.getCurrentProjectId(makeContext(req, res)) ?? null;
+      options.where.id = await conf.filters.projectId(makeContext(req, res)) ?? null;
     }
 
     const result = await this.projectService.getListAndCount(options);

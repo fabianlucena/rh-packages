@@ -14,7 +14,7 @@ async function configure(global, options) {
   }
 
   dependency.addStatic('getAvailableProjectsId', getAvailableProjectsId);
-  dependency.addStatic('getCurrentProjectId',    getCurrentProjectId);
+  dependency.addStatic('projectId',              projectId);
   dependency.addStatic('getCurrentProject',      getCurrentProject);
 }
 
@@ -68,7 +68,7 @@ export async function getAvailableProjectsId(context) {
   return projectService.getIdFor(await getFiltersForContext(context), options);
 }
 
-export async function getCurrentProjectId(context) {
+export async function projectId(context) {
   const sessionId = context?.req?.session?.id;
   if (!sessionId) {
     return;
@@ -99,7 +99,7 @@ export async function getCurrentProjectId(context) {
       return data.project.id;
     }
 
-    await eventBus.$emit('getCurrentProjectId', eventOptions);
+    await eventBus.$emit('projectId', eventOptions);
     if (data?.projectId) {
       if (sessionData) {
         sessionData.projectId = data.projectId;
@@ -112,7 +112,7 @@ export async function getCurrentProjectId(context) {
 }
 
 export async function getCurrentProject(context) {
-  const projectId = await getCurrentProjectId(context);
+  const projectId = await projectId(context);
   if (!projectId) {
     return;
   }
