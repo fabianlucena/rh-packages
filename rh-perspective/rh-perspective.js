@@ -36,7 +36,10 @@ async function getCurrentPerspective({ context }) {
 }
 
 async function menuFilter({ data, context }) {
-  const perspectives = await perspectiveService.getList({ loc: context.loc });
+  const perspectives = await perspectiveService.getList({
+    where: { permission: { name: context.permissions ?? null }},
+    loc: context.loc,
+  });
   if (!perspectives.length) {
     return;
   }
