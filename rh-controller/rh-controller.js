@@ -324,7 +324,7 @@ export class Controller {
         }
       }
 
-      permissions.push('getData', 'get');
+      permissions.push('getDefault', 'get');
       events.push('data.get', `${entity}.data.get`);
       eventOptionsResultName = 'data';
     }
