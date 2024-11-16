@@ -124,6 +124,7 @@ export class AssetService extends Service.IdUuidEnableNameUniqueTitleDescription
         method: 'get',
       },
       action: 'asset',
+      getDefaultValues: true,
       gridActions,
       fields,
     };

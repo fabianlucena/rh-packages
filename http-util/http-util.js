@@ -1137,6 +1137,7 @@ export function makeContext(req, res) {
     req,
     res,
     loc: req.loc,
+    log: req.log,
     permissions: req.permissions,
     user: req.user,
     sessionId: req.sessionId ?? req.session?.id,

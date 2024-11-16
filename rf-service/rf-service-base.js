@@ -839,14 +839,8 @@ export class ServiceBase {
   async getList(options) {
     options = await this.getListOptions(options);
     await this.conditionalEmit('getting', options?.emitEvent, { options });
-    let result = this.model.get(options, this);
-    if (!options) {
-      result = await result;
-      if (this.dto) {
-        result = result.map(r => new this.dto(r));
-      }
-    } else if (this.dto) {
-      result = await result;
+    let result = await this.model.get(options, this);
+    if (this.dto) {
       result = result.map(r => new this.dto(r));
     }
     await this.conditionalEmit('getted', options?.emitEvent, { result, options });
@@ -920,6 +914,16 @@ export class ServiceBase {
     }
 
     throw new ManyRowsError({ length: rows.length });
+  }
+
+  /**
+ * Gets a row for a given criteria.
+ * @param {object} where - criteria to get the row list (where object).
+ * @param {object} options - Options for the @ref getList method.
+ * @returns {Promise[Array[row]]}
+ */
+  async getListFor(where, options) {
+    return this.getList({ ...options, where: { ...options?.where, ...where }});
   }
 
   /**

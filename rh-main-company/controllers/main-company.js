@@ -1,6 +1,6 @@
 import { MainCompanyService } from '../services/main-company.js';
 import { conf } from '../conf.js';
-import { getOptionsFromParamsAndOData, HttpError, ConflictError } from 'http-util';
+import { getOptionsFromParamsAndOData, HttpError, ConflictError, makeContext } from 'http-util';
 import { checkParameter, checkParameterUuid } from 'rf-util';
 
 const mainCompanyService = MainCompanyService.singleton();
@@ -8,7 +8,7 @@ const companyService = conf.global.services.Company.singleton();
 const siteService = conf.global.services.Site.singleton();
 
 export class MainCompanyController {
-  static async checkUuid(req, uuid) {
+  static async checkUuid(context, uuid) {
     const mainCompany = await mainCompanyService.getSingleOrNullForUuid(uuid, { skipNoRowsError: true });
     if (!mainCompany) {
       throw new HttpError(loc => loc._c('mainCompany', 'The main company with UUID %s does not exists.'), 404, uuid);
@@ -171,7 +171,7 @@ export class MainCompanyController {
       req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid,
       loc => loc._c('mainCompany', 'UUID'),
     );
-    await this.checkUuid(req, uuid);
+    await this.checkUuid(makeContext(req, res), uuid);
 
     const rowsDeleted = await mainCompanyService.deleteForUuid(uuid);
     if (!rowsDeleted) {
@@ -186,7 +186,7 @@ export class MainCompanyController {
       req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid,
       loc => loc._c('mainCompany', 'UUID'),
     );
-    await this.checkUuid(req, uuid);
+    await this.checkUuid(makeContext(req, res), uuid);
 
     const rowsUpdated = await mainCompanyService.enableForUuid(uuid);
     if (!rowsUpdated) {
@@ -201,7 +201,7 @@ export class MainCompanyController {
       req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid,
       loc => loc._c('mainCompany', 'UUID'),
     );
-    await this.checkUuid(req, uuid);
+    await this.checkUuid(makeContext(req, res), uuid);
 
     const rowsUpdated = await mainCompanyService.disableForUuid(uuid);
     if (!rowsUpdated) {
@@ -216,7 +216,7 @@ export class MainCompanyController {
       req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid,
       loc => loc._c('scenario', 'UUID'),
     );
-    await this.checkUuid(req, uuid);
+    await this.checkUuid(makeContext(req, res), uuid);
 
     const rowsUpdated = await mainCompanyService.updateForUuid(req.body, uuid);
     if (!rowsUpdated) {

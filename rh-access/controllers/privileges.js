@@ -10,7 +10,6 @@ export class PrivilegesController extends Controller {
 
   static middleware() {
     return (req, res, next) => {
-      const loc = req.loc ?? defaultLoc;
       this.privilegesService.getJSONForUsernameAndSessionIdCached(req?.user?.username, req?.session?.id)
         .then(privileges => {
           if (privileges) {
@@ -24,7 +23,7 @@ export class PrivilegesController extends Controller {
           next();
         })
         .catch(err => {
-          errorHandler(err, loc);
+          errorHandler(err, req.loc);
           next();
         });
     };

@@ -7,9 +7,8 @@ export class GlossaryController extends Controller {
   constructor() {
     super();
 
-    this.service =           dependency.get('glossaryService');
-    this.projectService =    dependency.get('projectService',    null);
-    this.getCurrentProject = dependency.get('getCurrentProject', null);
+    this.service =        dependency.get('glossaryService');
+    this.projectService = dependency.get('projectService',    null);
   }
 
   postPermission =               'glossary.create';
