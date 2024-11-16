@@ -275,7 +275,7 @@ export class ProjectController extends Controller {
     };
 
     const context = makeContext(req, res),
-      eventOptions = { entity: 'Project', context, form };
+      eventOptions = { entity: 'Project', form, context, loc: context.loc };
     await conf.global.eventBus?.$emit('Project.interface.form.get', eventOptions);
     await conf.global.eventBus?.$emit('interface.form.get', eventOptions);
         
@@ -287,7 +287,26 @@ export class ProjectController extends Controller {
   postDisableForUuidPermission = 'project.edit';
 
   'patchPermission /:uuid' = 'project.edit';
+  'patchPermission' = 'project.edit';
   async 'patch /:uuid'(req, res) {
+    const { uuid, companyId } = await this.checkUuid(makeContext(req, res));
+
+    const data = { ...req.body, uuid: undefined };
+    const where = { uuid };
+
+    if (companyId) {
+      where.companyId = companyId;
+    }
+
+    const rowsUpdated = await this.service.updateFor(data, where);
+    if (!rowsUpdated) {
+      throw new HttpError(loc => loc._c('project', 'Project with UUID %s does not exists.'), 403, uuid);
+    }
+
+    res.sendStatus(204);
+  }
+
+  async 'patch'(req, res) {
     const { uuid, companyId } = await this.checkUuid(makeContext(req, res));
 
     const data = { ...req.body, uuid: undefined };
