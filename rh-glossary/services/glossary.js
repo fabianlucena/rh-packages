@@ -16,8 +16,7 @@ export class GlossaryService extends Service.IdUuidEnableNameUniqueTitleDescript
   eventBus = conf.global.eventBus;
 
   init() {
-    this.projectService =    dependency.get('projectService',    null);
-    this.getCurrentProject = dependency.get('getCurrentProject', null);
+    this.projectService = dependency.get('projectService', null);
 
     super.init();
   }
@@ -127,8 +126,8 @@ export class GlossaryService extends Service.IdUuidEnableNameUniqueTitleDescript
   async getDefault(options) {
     const row = {};
 
-    if (options?.context?.req && this.projectService && this.getCurrentProject) {
-      const project = await this.getCurrentProject(options.context.req);
+    if (options?.context?.req && conf.filters?.getCurrentProject && this.projectService) {
+      const project = await conf.filters.getCurrentProject(options.context);
       if (project) {
         row.project = { uuid: project.uuid };
       }

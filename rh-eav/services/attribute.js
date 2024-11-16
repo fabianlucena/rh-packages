@@ -17,6 +17,7 @@ export class EavAttributeService extends Service.IdUuidEnableNameUniqueTitleDesc
       createIfNotExists: true,
     }
   };
+  translatableColumns = ['title', 'description', 'help'];
     
   init() {
     super.init();

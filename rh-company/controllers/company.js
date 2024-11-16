@@ -1,13 +1,13 @@
 import { CompanyService } from '../services/company.js';
 import { conf } from '../conf.js';
-import { getOptionsFromParamsAndOData, HttpError, getUuidFromRequest } from 'http-util';
+import { getOptionsFromParamsAndOData, HttpError, getUuidFromRequest, makeContext } from 'http-util';
 import { checkParameter } from 'rf-util';
 
 const companyService = CompanyService.singleton();
 
 export class CompanyController {
-  static async checkData(req, data) {
-    if (conf.filters?.getCurrentCompanyId) {
+  static async checkData(data, context) {
+    if (conf.filters?.companyId) {
       if (!data.id) {
         if (data.uuid) {
           data.id = await conf.global.services.Company.singleton().getSingleIdForUuid(data.uuid);
@@ -22,7 +22,7 @@ export class CompanyController {
         throw new HttpError(loc => loc._c('company', 'The company does not exist or you do not have permission to access it.'), 404);
       }
 
-      const companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
+      const companyId = await conf.filters?.companyId(context) ?? null;
       if (data.id != companyId) {
         throw new HttpError(loc => loc._c('company', 'The company does not exist or you do not have permission to access it.'), 403);
       }
@@ -31,14 +31,14 @@ export class CompanyController {
     return true;
   }
 
-  static async checkUuid(req) {
-    const uuid = await getUuidFromRequest(req);
+  static async checkUuid(context) {
+    const uuid = await getUuidFromRequest(context.req);
     const company = await companyService.getSingleOrNullForUuid(uuid, { skipNoRowsError: true });
     if (!company) {
       throw new HttpError(loc => loc._c('company', 'The company with UUID %s does not exists.'), 404, uuid);
     }
 
-    await CompanyController.checkData(req, { id: company.id });
+    await CompanyController.checkData({ id: company.id }, context);
 
     return { uuid };
   }
@@ -83,9 +83,9 @@ export class CompanyController {
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    if (!req.roles.includes('admin') && conf.filters?.getCurrentCompanyId) {
+    if (!req.roles.includes('admin') && conf.filters?.companyId) {
       options.where ??= {};
-      options.where.id = await conf.filters.getCurrentCompanyId(req) ?? null;
+      options.where.id = await conf.filters?.companyId(makeContext(req,)) ?? null;
     }
 
     const result = await companyService.getListAndCount(options);
@@ -197,7 +197,7 @@ export class CompanyController {
   }
 
   static async delete(req, res) {
-    const { uuid } = await CompanyController.checkUuid(req);
+    const { uuid } = await CompanyController.checkUuid(makeContext(req, res));
     const rowsDeleted = await companyService.deleteForUuid(uuid);
     if (!rowsDeleted) {
       throw new HttpError(loc => loc._c('company', 'Company with UUID %s does not exists.'), 403, uuid);
@@ -207,7 +207,7 @@ export class CompanyController {
   }
 
   static async enablePost(req, res) {
-    const { uuid } = await CompanyController.checkUuid(req);
+    const { uuid } = await CompanyController.checkUuid(makeContext(req, res));
     const rowsUpdated = await companyService.enableForUuid(uuid);
     if (!rowsUpdated) {
       throw new HttpError(loc => loc._c('company', 'Company with UUID %s does not exists.'), 403, uuid);
@@ -217,7 +217,7 @@ export class CompanyController {
   }
 
   static async disablePost(req, res) {
-    const { uuid } = await CompanyController.checkUuid(req);
+    const { uuid } = await CompanyController.checkUuid(makeContext(req, res));
     const rowsUpdated = await companyService.disableForUuid(uuid);
     if (!rowsUpdated) {
       throw new HttpError(loc => loc._c('company', 'Company with UUID %s does not exists.'), 403, uuid);
@@ -227,7 +227,7 @@ export class CompanyController {
   }
 
   static async patch(req, res) {
-    const { uuid } = await CompanyController.checkUuid(req);
+    const { uuid } = await CompanyController.checkUuid(makeContext(req, res));
 
     const data = { ...req.body, uuid: undefined };
     const where = { uuid };
