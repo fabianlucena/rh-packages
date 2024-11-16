@@ -10,6 +10,7 @@ export class ProjectSelectService extends Service.Base {
   init() {
     super.init();
 
+    this.eventBus =           dependency.get('eventBus', null);
     this.projectService =     dependency.get('projectService');
     this.sessionDataService = dependency.get('sessionDataService', null);
   }
