@@ -382,6 +382,8 @@ async function updateValues({ entity, entityIds, data, options }) {
     return;
   }
 
+  const modelEntityNameId = await conf.modelEntityNameService.getSingleIdForName(entity, queryOptions);
+
   for (const entityId of entityIds) {
     for (const attribute of attributes) {
       const fieldName = attribute.fieldName ?? attribute.name;
@@ -392,6 +394,7 @@ async function updateValues({ entity, entityIds, data, options }) {
 
       const optionData = {
         attributeId: attribute.id,
+        modelEntityNameId,
         entityId,
         categoryId: attribute.categoryId,
         value,

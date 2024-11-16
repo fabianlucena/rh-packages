@@ -32,7 +32,8 @@ export class CompanySiteService extends Service.OwnerModule {
     let company;
     if (!data.companyId) {
       if (data.name && data.title) {
-        company = await this.companyService.createIfNotExists(data);
+        const [createdCompany] = await this.companyService.findOrCreate(data);
+        company = createdCompany;
         data.companyId = company.id;
       }
 
@@ -56,13 +57,13 @@ export class CompanySiteService extends Service.OwnerModule {
         siteData.ownerModuleId = company.ownerModuleId;
       }
 
-      const site = await this.siteService.createIfNotExists(siteData);
+      const [site] = await this.siteService.findOrCreate(siteData);
       data.siteId = site.id;
 
       await checkDataForMissingProperties(data, 'CompanySiteService', 'siteId');
     }
 
-    super.create(data);
+    return super.create(data);
   }
 
   /**
@@ -87,14 +88,6 @@ export class CompanySiteService extends Service.OwnerModule {
       item = rows[0];
     } else {
       item = await this.create(data);
-    }
-
-    if (data.users) {
-      const userSiteRoleService = conf.global.services.UserSiteRole.singleton();
-      const siteId = item.siteId;
-      for (const userRole of data.users) {
-        await userSiteRoleService.createIfNotExists({ ...userRole, siteId, owner: data.owner });
-      }
     }
 
     return item;

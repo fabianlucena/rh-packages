@@ -60,6 +60,6 @@ export class ShareService extends Service.EnableOwnerModuleTranslatable {
   }
 
   async getIdForUsername(username, options) {
-    return this.userService.getForUsernameOrNull(username, options);
+    return this.userService.getForUsernameOrNull(username, options).then(r => r.id);
   }
 }
