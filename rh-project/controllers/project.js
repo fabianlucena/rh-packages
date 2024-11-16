@@ -3,6 +3,7 @@ import { getOptionsFromParamsAndOData, HttpError, getUuidFromRequest, makeContex
 import { checkParameter, sanitizeFields } from 'rf-util';
 import { Controller } from 'rh-controller';
 import { dependency } from 'rf-dependency';
+import { defaultLoc } from 'rf-locale';
 
 export class ProjectController extends Controller {
   constructor() {
@@ -79,12 +80,13 @@ export class ProjectController extends Controller {
 
   getPermission = 'project.get';
   async getData(req, res) {
+    const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = {
       view: true,
       limit: 10,
       offset: 0,
-      loc: req.loc,
+      loc,
       include: { owner: true },
     };
 
@@ -131,7 +133,7 @@ export class ProjectController extends Controller {
     if (req.permissions.includes('project.delete')) actions.push('delete');
     actions.push('search', 'paginate');
         
-    const loc = req.loc;
+    const loc = req.loc ?? defaultLoc;
     const columns = [
       {
         name: 'title',
@@ -192,7 +194,7 @@ export class ProjectController extends Controller {
   async getForm(req, res) {
     checkParameter(req.query, '$form');
 
-    const loc = req.loc;
+    const loc = req.loc ?? defaultLoc;
     const fields = [
       {
         name: 'title',
@@ -326,9 +328,10 @@ export class ProjectController extends Controller {
 
   'getPermission /company' = 'project.edit';
   async 'get /company'(req, res) {
+    const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = {
-      loc: req.loc,
+      loc,
       view: true,
       limit: 10,
       offset: 0,
