@@ -1,6 +1,6 @@
 import { conf } from '../conf.js';
 import { Controller } from 'rh-controller';
-import { getOptionsFromParamsAndOData, HttpError, getUuidFromRequest, makeContext } from 'http-util';
+import { getOptionsFromParamsAndOData, HttpError, makeContext } from 'http-util';
 import { checkParameter } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
@@ -19,8 +19,8 @@ export class IssueController extends Controller {
     this.userService =             dependency.get('userService');
   }
 
-  async checkDataForProjectId(req, data) {
-    if (!conf.filters?.getCurrentProjectId) {
+  async checkDataForProjectId(data, context) {
+    if (!conf.filters?.projectId) {
       return data.projectId;
     }
          
@@ -31,7 +31,7 @@ export class IssueController extends Controller {
       } else if (data.projectName) {
         data.projectId = await this.projectService.getSingleIdForName(data.projectName);
       } else {
-        data.projectId = await conf.filters.getCurrentProjectId(req) ?? null;
+        data.projectId = await conf.filters.projectId(context) ?? null;
         return data.projectId;
       }
         
@@ -40,25 +40,12 @@ export class IssueController extends Controller {
       }
     }
 
-    const projectId = await conf.filters.getCurrentProjectId(req) ?? null;
+    const projectId = await conf.filters.projectId(context) ?? null;
     if (data.projectId != projectId) {
       throw new HttpError(loc => loc._c('issue', 'The project does not exist or you do not have permission to access it.'), 403);
     }
 
     return data.projectId;
-  }
-
-  async checkUuid(req) {
-    const loc = req.loc ?? defaultLoc;
-    const uuid = await getUuidFromRequest(req);
-    const issue = await this.service.getSingleOrNullForUuid(uuid, { skipNoRowsError: true, loc });
-    if (!issue) {
-      throw new HttpError(loc => loc._c('issue', 'The issue with UUID %s does not exists.'), 404, uuid);
-    }
-
-    const projectId = await this.checkDataForProjectId(req, { projectId: issue.projectId });
-
-    return { uuid, projectId };
   }
 
   postPermission = 'issue.create';
@@ -71,10 +58,11 @@ export class IssueController extends Controller {
       },
     );
         
+    const context = makeContext(req, res);
     const data = { ...req.body };
-    await this.checkDataForProjectId(req, data);
+    await this.checkDataForProjectId(data, context);
 
-    await this.service.create(data, { context: makeContext(req, res) });
+    await this.service.create(data, { context });
   }
 
   getPermission = 'issue.get';
@@ -106,14 +94,14 @@ export class IssueController extends Controller {
       loc,
     };
 
+    const context = makeContext(req, res);
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    if (conf.filters?.getCurrentProjectId) {
+    if (conf.filters?.projectId) {
       options.where ??= {};
-      options.where.projectId = await conf.filters.getCurrentProjectId(req) ?? null;
+      options.where.projectId = await conf.filters.projectId(context) ?? null;
     }
 
-    const context = makeContext(req, res),
-      eventOptions = { entity: 'Issue', context, options };
+    const eventOptions = { entity: 'Issue', context, options };
     await conf.global.eventBus?.$emit('Issue.response.getting', eventOptions);
     let result = await this.service.getListAndCount(options);
     await conf.global.eventBus?.$emit('Issue.response.getted', { ...eventOptions, result });
@@ -301,10 +289,11 @@ export class IssueController extends Controller {
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = { view: true, limit: 10, offset: 0, loc };
 
+    const context = makeContext(req, res);
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    if (conf.filters?.getCurrentProjectId) {
+    if (conf.filters?.projectId) {
       options.where ??= {};
-      options.where.id = await conf.filters.getCurrentProjectId(req) ?? null;
+      options.where.id = await conf.filters.projectId(context) ?? null;
     }
 
     const result = await this.projectService.getListAndCount(options);

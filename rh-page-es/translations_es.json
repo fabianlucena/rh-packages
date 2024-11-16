@@ -4,82 +4,153 @@
         "language": "es",
         "context": "page",
         "translation": "Contenido",
-        "ref": "..\\rh-page\\services\\page.js [28,84]"
+        "ref": "..\\rh-page\\services\\page.js [23,65]"
     },
     {
         "source": "Content",
         "language": "es",
         "context": "resource",
         "translation": "Contenido",
-        "ref": "..\\rh-page\\services\\resource.js [28,89]"
+        "ref": "..\\rh-page\\services\\resource.js [22,66]"
+    },
+    {
+        "source": "Create resources",
+        "language": "es",
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Crear recursos",
+        "ref": "..\\rh-page\\conf_data.js [26,43]"
     },
     {
         "source": "Error: No page name.",
         "language": "es",
         "context": "page",
         "translation": "Error: sin nombre de página.",
-        "ref": "..\\rh-page\\translations.js [5,40]"
+        "ref": "..\\rh-page\\translations.js [5,5]"
+    },
+    {
+        "source": "File",
+        "language": "es",
+        "context": "resource",
+        "isDraft": false,
+        "translation": "Archivo",
+        "ref": "..\\rh-page\\controllers\\resource.js [112,28]\n..\\rh-page\\controllers\\resource.js [125,28]"
     },
     {
         "source": "Format",
         "language": "es",
         "context": "pageFormat",
         "translation": "Formato",
-        "ref": "..\\rh-page\\conf_data.js [8,63]"
+        "ref": "..\\rh-page\\conf_data.js [8,33]"
+    },
+    {
+        "source": "Get resources",
+        "language": "es",
+        "context": "permission",
+        "isDraft": false,
+        "translation": "Obtener recursos",
+        "ref": "..\\rh-page\\conf_data.js [25,43]"
+    },
+    {
+        "source": "Name",
+        "language": "es",
+        "context": "resource",
+        "isDraft": false,
+        "translation": "Nombre",
+        "ref": "..\\rh-page\\controllers\\resource.js [94,34]"
     },
     {
         "source": "PNG image",
         "language": "es",
         "context": "resourceType",
         "translation": "Imagen PNG",
-        "ref": "..\\rh-page\\conf_data.js [12,76]"
+        "ref": "..\\rh-page\\conf_data.js [12,41]"
     },
     {
         "source": "Page not found.",
         "language": "es",
         "context": "page",
         "translation": "Página no encontrada.",
-        "ref": "..\\rh-page\\controllers\\page.js [71,72]"
+        "ref": "..\\rh-page\\controllers\\page.js [25,38]"
     },
     {
         "source": "Plain",
         "language": "es",
         "context": "pageFormat",
         "translation": "Plano",
-        "ref": "..\\rh-page\\conf_data.js [7,62]"
+        "ref": "..\\rh-page\\conf_data.js [7,33]"
+    },
+    {
+        "source": "Resource",
+        "language": "es",
+        "context": "resource",
+        "isDraft": false,
+        "translation": "Recurso",
+        "ref": "..\\rh-page\\controllers\\resource.js [85,24]"
+    },
+    {
+        "source": "Resource manager",
+        "language": "es",
+        "context": "role",
+        "isDraft": false,
+        "translation": "Administrador de recursos",
+        "ref": "..\\rh-page\\conf_data.js [17,43]"
     },
     {
         "source": "Resource not found.",
         "language": "es",
         "context": "resource",
         "translation": "Recurso no encontrado.",
-        "ref": "..\\rh-page\\controllers\\resource.js [42,80]"
+        "ref": "..\\rh-page\\controllers\\resource.js [53,38]"
+    },
+    {
+        "source": "Resources",
+        "language": "es",
+        "context": "menu",
+        "isDraft": false,
+        "translation": "Recursos",
+        "ref": "..\\rh-page\\conf_data.js [25,172]"
     },
     {
         "source": "SVG image",
         "language": "es",
         "context": "resourceType",
-        "isDraft": false,
         "translation": "Imagen SVG",
-        "ref": "..\\rh-page\\conf_data.js [13,76]"
+        "ref": "..\\rh-page\\conf_data.js [13,41]"
     },
     {
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-page-es.js [18,41]"
+        "ref": "rh-page-es.js [18,20]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-page-es.js [19,57]"
+        "ref": "rh-page-es.js [19,26]"
     },
     {
         "source": "There are many resources for that criteria.",
         "language": "es",
         "context": "resource",
         "translation": "Hay muchos recursos para ese criterio.",
-        "ref": "..\\rh-page\\controllers\\resource.js [46,104]"
+        "ref": "..\\rh-page\\controllers\\resource.js [57,38]"
+    },
+    {
+        "source": "Title",
+        "language": "es",
+        "context": "resource",
+        "isDraft": false,
+        "translation": "Título",
+        "ref": "..\\rh-page\\controllers\\resource.js [101,34]\n..\\rh-page\\controllers\\resource.js [124,28]"
+    },
+    {
+        "source": "Type the title here",
+        "language": "es",
+        "context": "resource",
+        "isDraft": false,
+        "translation": "Escriba el título aquí",
+        "ref": "..\\rh-page\\controllers\\resource.js [102,34]"
     }
 ]

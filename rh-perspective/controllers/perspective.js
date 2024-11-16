@@ -24,7 +24,12 @@ export class PerspectiveController extends Controller {
   async 'get /permission'(req) {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
-    let options = { view: true, limit: 10, offset: 0, loc };
+    let options = {
+      view: true,
+      where: { permission: { name: req.permissions ?? null }},
+      offset: 0,
+      loc,
+    };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
     let result = await this.permissionService.getListAndCount(options);

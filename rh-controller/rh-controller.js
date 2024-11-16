@@ -52,7 +52,6 @@ export class Controller {
           { name: 'getObject',          httpMethod: 'get',    handler: 'defaultGet' },
           { name: 'getInterface',       httpMethod: 'get',    handler: 'defaultGet' },
           { name: 'getDefault',         httpMethod: 'get',    handler: 'defaultGet' },
-          { name: 'getInterface',       httpMethod: 'get',    handler: 'defaultGet' },
           { name: 'post',               httpMethod: 'post',   handler: 'defaultPost' },
           { name: 'deleteForUuid',      httpMethod: 'delete', handler: 'defaultDeleteForUuid',      inPathParam: 'uuid' },
           { name: 'patchForUuid',       httpMethod: 'patch',  handler: 'defaultPatchForUuid',       inPathParam: 'uuid' },
@@ -325,7 +324,7 @@ export class Controller {
         }
       }
 
-      permissions.push('getData', 'get');
+      permissions.push('getDefault', 'get');
       events.push('data.get', `${entity}.data.get`);
       eventOptionsResultName = 'data';
     }
@@ -474,10 +473,9 @@ export class Controller {
     return result;
   }
 
-  async checkUuid(req, res) {
-    const loc = req.loc ?? defaultLoc;
-    const uuid = await getUuidFromRequest(req);
-    const item = await this.service.getSingleOrNullForUuid(uuid, { skipNoRowsError: true, loc, context: makeContext(req, res) });
+  async checkUuid(context) {
+    const uuid = await getUuidFromRequest(context.req);
+    const item = await this.service.getSingleOrNullForUuid(uuid, { skipNoRowsError: true, context });
     if (!item) {
       throw new HttpError(loc => loc._c('controller', 'The item with UUID %s does not exists.'), 404, uuid);
     }
@@ -506,7 +504,7 @@ export class Controller {
 
     await this.checkPermissionsFromProperty(req, res, next, 'getForUuidPermission');
 
-    const { uuid } = await this.checkUuid(req);
+    const { uuid } = await this.checkUuid(makeContext(req, res));
     
     let getOptions;
     if (typeof this.getOptions === 'function') {
@@ -537,7 +535,7 @@ export class Controller {
   async defaultDeleteForUuid(req, res, next) {
     await this.checkPermissionsFromProperty(req, res, next, 'deleteForUuidPermission');
 
-    const { uuid } = await this.checkUuid(req);
+    const { uuid } = await this.checkUuid(makeContext(req, res));
     const rowCount = await this.service.deleteForUuid(uuid, { skipNoRowsError: true, context: makeContext(req, res) });
     await deleteHandler(req, res, rowCount);
   }
@@ -545,7 +543,7 @@ export class Controller {
   async defaultPostEnableForUuid(req, res, next) {
     await this.checkPermissionsFromProperty(req, res, next, 'enableForUuidPermission');
 
-    const { uuid } = await this.checkUuid(req);
+    const { uuid } = await this.checkUuid(makeContext(req, res));
     const rowsUpdated = await this.service.enableForUuid(uuid, { context: makeContext(req, res) });
     await enableHandler(req, res, rowsUpdated);
   }
@@ -553,7 +551,7 @@ export class Controller {
   async defaultPostDisableForUuid(req, res, next) {
     await this.checkPermissionsFromProperty(req, res, next, 'disableForUuidPermission');
 
-    const { uuid } = await this.checkUuid(req);
+    const { uuid } = await this.checkUuid(makeContext(req, res));
     const rowsUpdated = await this.service.disableForUuid(uuid, { context: makeContext(req, res) });
     await disableHandler(req, res, rowsUpdated);
   }
@@ -561,7 +559,7 @@ export class Controller {
   async defaultPatchForUuid(req, res, next) {
     await this.checkPermissionsFromProperty(req, res, next, 'patchForUuidPermission');
 
-    const { uuid } = await this.checkUuid(req);
+    const { uuid } = await this.checkUuid(makeContext(req, res));
     const { uuid: _, ...data } = { ...req.body };
     const where = { uuid };
 

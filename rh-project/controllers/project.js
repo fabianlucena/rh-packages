@@ -3,6 +3,7 @@ import { getOptionsFromParamsAndOData, HttpError, getUuidFromRequest, makeContex
 import { checkParameter, sanitizeFields } from 'rf-util';
 import { Controller } from 'rh-controller';
 import { dependency } from 'rf-dependency';
+import { defaultLoc } from 'rf-locale';
 
 export class ProjectController extends Controller {
   constructor() {
@@ -12,8 +13,8 @@ export class ProjectController extends Controller {
     this.companyService = dependency.get('companyService', null);
   }
 
-  async checkDataForCompanyId(req, data) {
-    if (!conf.filters?.getCurrentCompanyId) {
+  async checkDataForCompanyId(data, context) {
+    if (!conf.filters?.companyId) {
       return;
     }
          
@@ -24,7 +25,7 @@ export class ProjectController extends Controller {
       } else if (data.companyName) {
         data.companyId = await this.companyService.getSingleIdForName(data.companyName);
       } else {
-        data.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
+        data.companyId = await conf.filters?.companyId(context) ?? null;
         return data.companyId;
       }
         
@@ -33,7 +34,7 @@ export class ProjectController extends Controller {
       }
     }
 
-    const companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
+    const companyId = await conf.filters?.companyId(context) ?? null;
     if (data.companyId != companyId) {
       throw new HttpError(loc => loc._c('project', 'The company does not exist or you do not have permission to access it.'), 403);
     }
@@ -41,14 +42,14 @@ export class ProjectController extends Controller {
     return data.companyId;
   }
 
-  async checkUuid(req) {
-    const uuid = await getUuidFromRequest(req);
-    const project = await this.service.getSingleOrNullForUuid(uuid, { skipNoRowsError: true, loc: req.loc });
+  async checkUuid(context) {
+    const uuid = await getUuidFromRequest(context.req);
+    const project = await this.service.getSingleOrNullForUuid(uuid, { skipNoRowsError: true, loc: context.loc });
     if (!project) {
       throw new HttpError(loc => loc._c('project', 'The project with UUID %s does not exists.'), 404, uuid);
     }
 
-    const companyId = await this.checkDataForCompanyId(req, { companyId: project.companyId });
+    const companyId = await this.checkDataForCompanyId({ companyId: project.companyId }, context);
 
     return { uuid, companyId };
   }
@@ -64,7 +65,7 @@ export class ProjectController extends Controller {
     );
         
     const data = { ...req.body };
-    await this.checkDataForCompanyId(req, data);
+    await this.checkDataForCompanyId(data, makeContext(req, res));
     if (!data.owner && !data.ownerId) {
       data.ownerId = req.user.id;
       if (!data.ownerId) {
@@ -79,12 +80,13 @@ export class ProjectController extends Controller {
 
   getPermission = 'project.get';
   async getData(req, res) {
+    const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = {
       view: true,
       limit: 10,
       offset: 0,
-      loc: req.loc,
+      loc,
       include: { owner: true },
     };
 
@@ -95,14 +97,14 @@ export class ProjectController extends Controller {
       };
     }
 
+    const context = makeContext(req, res);
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    if (conf.filters?.getCurrentCompanyId) {
+    if (conf.filters?.companyId) {
       options.where ??= {};
-      options.where.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
+      options.where.companyId = await conf.filters?.companyId(context) ?? null;
     }
 
-    const context = makeContext(req, res),
-      eventOptions = { entity: 'Project', context, options };
+    const eventOptions = { entity: 'Project', context, options };
     await conf.global.eventBus?.$emit('Project.response.getting', eventOptions);
     await conf.global.eventBus?.$emit('response.getting', eventOptions);
 
@@ -131,7 +133,7 @@ export class ProjectController extends Controller {
     if (req.permissions.includes('project.delete')) actions.push('delete');
     actions.push('search', 'paginate');
         
-    const loc = req.loc;
+    const loc = req.loc ?? defaultLoc;
     const columns = [
       {
         name: 'title',
@@ -192,7 +194,7 @@ export class ProjectController extends Controller {
   async getForm(req, res) {
     checkParameter(req.query, '$form');
 
-    const loc = req.loc;
+    const loc = req.loc ?? defaultLoc;
     const fields = [
       {
         name: 'title',
@@ -275,7 +277,7 @@ export class ProjectController extends Controller {
     };
 
     const context = makeContext(req, res),
-      eventOptions = { entity: 'Project', context, form };
+      eventOptions = { entity: 'Project', form, context, loc: context.loc };
     await conf.global.eventBus?.$emit('Project.interface.form.get', eventOptions);
     await conf.global.eventBus?.$emit('interface.form.get', eventOptions);
         
@@ -287,8 +289,27 @@ export class ProjectController extends Controller {
   postDisableForUuidPermission = 'project.edit';
 
   'patchPermission /:uuid' = 'project.edit';
+  'patchPermission' = 'project.edit';
   async 'patch /:uuid'(req, res) {
-    const { uuid, companyId } = await this.checkUuid(req);
+    const { uuid, companyId } = await this.checkUuid(makeContext(req, res));
+
+    const data = { ...req.body, uuid: undefined };
+    const where = { uuid };
+
+    if (companyId) {
+      where.companyId = companyId;
+    }
+
+    const rowsUpdated = await this.service.updateFor(data, where);
+    if (!rowsUpdated) {
+      throw new HttpError(loc => loc._c('project', 'Project with UUID %s does not exists.'), 403, uuid);
+    }
+
+    res.sendStatus(204);
+  }
+
+  async 'patch'(req, res) {
+    const { uuid, companyId } = await this.checkUuid(makeContext(req, res));
 
     const data = { ...req.body, uuid: undefined };
     const where = { uuid };
@@ -307,18 +328,19 @@ export class ProjectController extends Controller {
 
   'getPermission /company' = 'project.edit';
   async 'get /company'(req, res) {
+    const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = {
-      loc: req.loc,
+      loc,
       view: true,
       limit: 10,
       offset: 0,
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    if (conf.filters?.getCurrentCompanyId) {
+    if (conf.filters?.companyId) {
       options.where ??= {};
-      options.where.id = await conf.filters.getCurrentCompanyId(req) ?? null;
+      options.where.id = await conf.filters?.companyId(makeContext(req, res)) ?? null;
     }
 
     const result = await this.companyService.getListAndCount(options);

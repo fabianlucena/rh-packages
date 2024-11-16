@@ -12,8 +12,8 @@ export class BranchController extends Controller {
     this.companyService = dependency.get('companyService');
   }
 
-  async checkDataForCompanyId(req, data) {
-    if (!conf.filters?.getCurrentCompanyId) {
+  async checkDataForCompanyId(data, context) {
+    if (!conf.filters?.companyId) {
       return;
     }
             
@@ -23,7 +23,7 @@ export class BranchController extends Controller {
       } else if (data.companyName) {
         data.companyId = await this.companyService.getSingleIdForName(data.companyName);
       } else {
-        data.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
+        data.companyId = await conf.filters?.companyId(context) ?? null;
         return data.companyId;
       }
         
@@ -32,7 +32,7 @@ export class BranchController extends Controller {
       }
     }
 
-    const companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
+    const companyId = await conf.filters?.companyId(context) ?? null;
     if (data.companyId != companyId) {
       throw new HttpError(loc => loc._c('branch', 'The company does not exist or you do not have permission to access it.'), 403);
     }
@@ -40,13 +40,16 @@ export class BranchController extends Controller {
     return data.companyId;
   }
 
-  async checkUuid(req, uuid) {
+  async checkUuid(uuid, context) {
     const branch = await this.service.getSingleOrNullForUuid(uuid, { skipNoRowsError: true });
     if (!branch) {
       throw new HttpError(loc => loc._c('branch', 'The branch with UUID %s does not exists.'), 404, uuid);
     }
 
-    return await this.checkDataForCompanyId(req, { companyId: branch.companyId });
+    return await this.checkDataForCompanyId(
+      { companyId: branch.companyId },
+      context,
+    );
   }
 
   postPermission = 'branch.create';
@@ -61,7 +64,7 @@ export class BranchController extends Controller {
         
     const data = { ...req.body };
 
-    await this.checkDataForCompanyId(req, data);
+    await this.checkDataForCompanyId(data, makeContext(req, res));
 
     if (await this.service.getForName(data.name, { skipNoRowsError: true })) {
       throw new ConflictError(loc => loc._c('branch', 'Exists another branch with that name.'));
@@ -90,14 +93,14 @@ export class BranchController extends Controller {
       },
     };
 
+    const context = makeContext(req, res);
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    if (conf.filters?.getCurrentCompanyId) {
+    if (conf.filters?.companyId) {
       options.where ??= {};
-      options.where.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
+      options.where.companyId = await conf.filters?.companyId(context) ?? null;
     }
 
-    const context = makeContext(req, res),
-      eventOptions = { entity: 'Branch', options, context };
+    const eventOptions = { entity: 'Branch', options, context };
     await conf.global.eventBus?.$emit('Branch.response.getting', eventOptions);
 
     const result = await this.service.getListAndCount(options);
@@ -254,7 +257,7 @@ export class BranchController extends Controller {
     };
 
     const context = makeContext(req, res),
-      eventOptions = { entity: 'Branch', context, form };
+      eventOptions = { entity: 'Branch', context, form, loc: context.loc };
     await conf.global.eventBus?.$emit('interface.form.get', eventOptions);
     await conf.global.eventBus?.$emit('Branch.interface.form.get', form);
 
@@ -267,7 +270,7 @@ export class BranchController extends Controller {
       req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid,
       loc => loc._c('branch', 'UUID'),
     );
-    await this.checkUuid(req, uuid);
+    await this.checkUuid(uuid, makeContext(req, res));
 
     const rowsDeleted = await this.service.deleteForUuid(uuid);
     if (!rowsDeleted) {
@@ -283,7 +286,7 @@ export class BranchController extends Controller {
       req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid,
       loc => loc._c('branch', 'UUID'),
     );
-    await this.checkUuid(req, uuid);
+    await this.checkUuid(uuid, makeContext(req, res));
 
     const rowsUpdated = await this.service.enableForUuid(uuid);
     if (!rowsUpdated) {
@@ -299,7 +302,7 @@ export class BranchController extends Controller {
       req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid,
       loc => loc._c('branch', 'UUID'),
     );
-    await this.checkUuid(req, uuid);
+    await this.checkUuid(uuid, makeContext(req, res));
 
     const rowsUpdated = await this.service.disableForUuid(uuid);
     if (!rowsUpdated) {
@@ -315,7 +318,7 @@ export class BranchController extends Controller {
       req.query?.uuid ?? req.params?.uuid ?? req.body?.uuid,
       loc => loc._c('branch', 'UUID'),
     );
-    await this.checkUuid(req, uuid);
+    await this.checkUuid(uuid, makeContext(req, res));
 
     const rowsUpdated = await this.service.updateForUuid(req.body, uuid);
     if (!rowsUpdated) {
@@ -331,9 +334,9 @@ export class BranchController extends Controller {
     let options = { view: true, limit: 10, offset: 0 };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    if (conf.filters?.getCurrentCompanyId) {
+    if (conf.filters?.companyId) {
       options.where ??= {};
-      options.where.id = await conf.filters.getCurrentCompanyId(req) ?? null;
+      options.where.id = await conf.filters?.companyId(makeContext(req, res)) ?? null;
     }
 
     const result = await conf.global.services.Company.singleton().getListAndCount(options);

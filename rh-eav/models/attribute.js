@@ -110,6 +110,14 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BIGINT,
       allowNull: true,
     },
+    helpTopic: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    help: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    }
   }, {
     sequelize,
     timestamps: true,

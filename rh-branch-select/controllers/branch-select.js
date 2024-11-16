@@ -31,8 +31,8 @@ export class BranchSelectController {
 
     if (!req.roles.includes('admin')) {
       let companyId;
-      if (conf.filters?.getCurrentCompanyId) {
-        companyId = await conf.filters.getCurrentCompanyId(req);
+      if (conf.filters?.companyId) {
+        companyId = await conf.filters?.companyId(makeContext(req, res));
       }
 
       if (companyId != branch.companyId) {
@@ -103,9 +103,9 @@ export class BranchSelectController {
       options.where.companyUuid = companyUuid;
     }
         
-    if (conf.filters?.getCurrentCompanyId) {
+    if (conf.filters?.companyId) {
       options.where ??= {};
-      options.where.companyId = await conf.filters.getCurrentCompanyId(req) ?? null;
+      options.where.companyId = await conf.filters?.companyId(makeContext(req, res)) ?? null;
     }
 
     options.include = {

@@ -1,39 +1,45 @@
-import { SessionDataService } from './services/session-data.js';
+import dependency from 'rf-dependency';
 import { conf as localConf } from './conf.js';
 import { deepComplete } from 'rf-util';
 
 export const conf = localConf;
 
 conf.configure = configure;
+conf.init = [init];
 
 function configure (global) {
   global.eventBus?.$on('login', login);
   global.eventBus?.$on('menuGet', menuGet);
 }
 
-async function login({ options }) {
-  if (!options?.sessionId || !options?.oldSessionId) {
+var sessionDataService;
+async function init() {
+  sessionDataService = dependency.get('sessionDataService');
+}
+
+async function login({ sessionId, oldSessionId }) {
+  if (!sessionId || !oldSessionId) {
     return;
   }
 
-  const sessionDataService = SessionDataService.singleton();
-  const oldData = await sessionDataService.getDataOrNullForSessionId(options.oldSessionId);
-  if (!oldData) {
-    return;
-  }
+  if (oldSessionId) {
+    const oldData = await sessionDataService.getDataOrNullForSessionId(oldSessionId);
+    if (!oldData) {
+      return;
+    }
 
-  const sessionId = options.sessionId;
-  await sessionDataService.addData(sessionId, oldData);
+    await sessionDataService.addData(sessionId, oldData);
+  }
 
   return sessionDataService.getDataOrNullForSessionId(sessionId);
 }
 
-async function menuGet({ data, options }) {
-  if (!options?.sessionId) {
+async function menuGet({ data, sessionId }) {
+  if (!sessionId) {
     return;
   }
 
-  const thisData = await SessionDataService.singleton().getDataOrNullForSessionId(options.sessionId);
+  const thisData = await sessionDataService.getDataOrNullForSessionId(sessionId);
   deepComplete(data, thisData);
 
   return thisData;

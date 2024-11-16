@@ -1,6 +1,6 @@
 import { conf } from '../conf.js';
 import { Controller } from 'rh-controller';
-import { getOptionsFromParamsAndOData, HttpError, getUuidFromRequest, makeContext } from 'http-util';
+import { getOptionsFromParamsAndOData, HttpError, makeContext } from 'http-util';
 import { checkParameter } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
@@ -13,8 +13,8 @@ export class AssetTypeController extends Controller {
     this.projectService = dependency.get('projectService');
   }
 
-  async checkDataForProjectId(req, data) {
-    if (!conf.filters?.getCurrentProjectId) {
+  async checkDataForProjectId(data, context) {
+    if (!conf.filters?.projectId) {
       return data.projectId;
     }
          
@@ -25,7 +25,7 @@ export class AssetTypeController extends Controller {
       } else if (data.projectName) {
         data.projectId = await this.projectService.getSingleIdForName(data.projectName);
       } else {
-        data.projectId = await conf.filters.getCurrentProjectId(req) ?? null;
+        data.projectId = await conf.filters.projectId(context) ?? null;
         return data.projectId;
       }
         
@@ -34,25 +34,12 @@ export class AssetTypeController extends Controller {
       }
     }
 
-    const projectId = await conf.filters.getCurrentProjectId(req) ?? null;
+    const projectId = await conf.filters.projectId(context) ?? null;
     if (data.projectId != projectId) {
       throw new HttpError(loc => loc._c('asset', 'The project does not exist or you do not have permission to access it.'), 403);
     }
 
     return data.projectId;
-  }
-
-  async checkUuid(req) {
-    const loc = req.loc ?? defaultLoc;
-    const uuid = await getUuidFromRequest(req);
-    const assetType = await this.service.getSingleOrNullForUuid(uuid, { skipNoRowsError: true, loc });
-    if (!assetType) {
-      throw new HttpError(loc => loc._c('asset', 'The asset type with UUID %s does not exists.'), 404, uuid);
-    }
-
-    const projectId = await this.checkDataForProjectId(req, { projectId: assetType.projectId });
-
-    return { uuid, projectId };
   }
 
   postPermission = 'assetType.create';
@@ -65,14 +52,15 @@ export class AssetTypeController extends Controller {
       },
     );
         
+    const context = makeContext(req, res);
     const data = { ...req.body };
-    await this.checkDataForProjectId(req, data);
+    await this.checkDataForProjectId(data, context);
 
-    await this.service.create(data, { context: makeContext(req, res) });
+    await this.service.create(data, { context });
   }
 
   getPermission = 'assetType.get';
-  async getData(req) {
+  async getData(req, res) {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = {
@@ -86,9 +74,9 @@ export class AssetTypeController extends Controller {
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    if (conf.filters?.getCurrentProjectId) {
+    if (conf.filters?.projectId) {
       options.where ??= {};
-      options.where.projectId = await conf.filters.getCurrentProjectId(req) ?? null;
+      options.where.projectId = await conf.filters.projectId(makeContext(req, res)) ?? null;
     }
 
     return this.service.getListAndCount(options);
@@ -106,9 +94,9 @@ export class AssetTypeController extends Controller {
     let options = { view: true, limit: 10, offset: 0, loc };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-    if (conf.filters?.getCurrentProjectId) {
+    if (conf.filters?.projectId) {
       options.where ??= {};
-      options.where.id = await conf.filters.getCurrentProjectId(req) ?? null;
+      options.where.id = await conf.filters.projectId(makeContext(req, res)) ?? null;
     }
 
     const result = await this.projectService.getListAndCount(options);
