@@ -257,7 +257,7 @@ export class BranchController extends Controller {
     };
 
     const context = makeContext(req, res),
-      eventOptions = { entity: 'Branch', context, form };
+      eventOptions = { entity: 'Branch', context, form, loc: context.loc };
     await conf.global.eventBus?.$emit('interface.form.get', eventOptions);
     await conf.global.eventBus?.$emit('Branch.interface.form.get', form);
 
