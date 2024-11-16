@@ -1,4 +1,5 @@
-import { Service } from 'rf-service';
+import { Service, DisabledRowError, NoRowError, CheckError } from 'rf-service';
+import dependency from 'rf-dependency';
 
 export class PerspectiveService extends Service.IdUuidEnableNameUniqueTitleDescriptionTranslatable {
   references = {
@@ -11,6 +12,12 @@ export class PerspectiveService extends Service.IdUuidEnableNameUniqueTitleDescr
   defaultTranslationContext = 'perspective';
   viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'description', 'isTranslatable', 'translationContext'];
   translatableColumns = [ 'title', 'description' ];
+
+  init() {
+    super.init();
+
+    this.sessionDataService = dependency.get('sessionDataService');
+  }
   
   async getInterface(options) {
     const gridActions = [],
@@ -104,5 +111,52 @@ export class PerspectiveService extends Service.IdUuidEnableNameUniqueTitleDescr
     };
 
     return result;
+  }
+
+  async switchToName(name, options) {
+    return this.switchTo({ name }, options);
+  }
+
+  async switchToUuid(uuid, options) {
+    return this.switchTo({ uuid }, options);
+  }
+
+  async switchTo(where, options) {
+    const context = options.context;
+    if (!context) {
+      throw new CheckError(loc => loc._c('perspective', 'No context to switch perspective.'));
+    }
+
+    if (!context.sessionId) {
+      throw new CheckError(loc => loc._c('perspective', 'No sessionId to switch perspective.'));
+    }
+
+    options = {
+      loc: context.loc,
+      skipNoRowsError: true,
+    };
+    let perspective = await this.getSingleOrNullFor(where, options);
+    if (!perspective) {
+      throw new NoRowError(loc => loc._c('perspective', 'The selected perspective does not exist or you do not have permission to access it.'), 400);
+    }
+
+    if (!perspective.isEnabled) {
+      throw new DisabledRowError(loc => loc._c('perspective', 'The selected perspective is disabled.'), 403);
+    }
+
+    const sessionId = context.sessionId;
+    await this.sessionDataService.addData(sessionId, { perspective });
+
+    options.log?.info(`Perspective switched to: ${perspective.title}.`, { sessionId, perspectiveName: perspective.name });
+
+    return {
+      count: 1,
+      rows: perspective,
+      api: {
+        data: {
+          perspectiveUuid: perspective.uuid,
+        },
+      },
+    };
   }
 }
