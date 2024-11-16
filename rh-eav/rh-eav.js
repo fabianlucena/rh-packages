@@ -1,15 +1,6 @@
-import { EavAttributeService } from './services/attribute.js';
-import { EavAttributeTypeService } from './services/attribute_type.js';
-import { EavAttributeOptionService } from './services/attribute_option.js';
-import { EavAttributeTagService } from './services/attribute_tag.js';
-import { EavValueTextService } from './services/value_text.js';
-import { EavValueNumberService } from './services/value_number.js';
-import { EavValueCheckService } from './services/value_check.js';
-import { EavValueOptionService } from './services/value_option.js';
-import { EavValueTagService } from './services/value_tag.js';
 import { conf as localConf } from './conf.js';
 import { runSequentially } from 'rf-util';
-import { loc } from 'rf-locale';
+import { defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
 
 export const conf = localConf;
@@ -28,16 +19,6 @@ async function configure(global, options) {
     conf[k] = options[k];
   }
 
-  dependency.addSingleton('attributeService',       EavAttributeService);
-  dependency.addSingleton('attributeTypeService',   EavAttributeTypeService);
-  dependency.addSingleton('attributeOptionService', EavAttributeOptionService);
-  dependency.addSingleton('attributeTagService',    EavAttributeTagService);
-  dependency.addSingleton('valueTextService',       EavValueTextService);
-  dependency.addSingleton('valueNumberService',     EavValueNumberService);
-  dependency.addSingleton('valueCheckService',      EavValueCheckService);
-  dependency.addSingleton('valueOptionService',     EavValueOptionService);
-  dependency.addSingleton('valueTagService',        EavValueTagService);
-
   global.eventBus?.$on('interface.grid.get', interfaceGridGet);
   global.eventBus?.$on('interface.form.get', interfaceFormGet);
   global.eventBus?.$on('getted',   getted);
@@ -52,23 +33,25 @@ async function init() {
     throw new Error('There is no ModelEntityName service. Try adding RH Model Entity Name module to the project.');
   }
     
-  conf.eavAttributeService =       EavAttributeService.singleton();
-  conf.eavAttributeTypeService =   EavAttributeTypeService.singleton();
-  conf.eavAttributeOptionService = EavAttributeOptionService.singleton();
-  conf.eavAttributeTagService =    EavAttributeTagService.singleton();
-  conf.modelEntityNameService =    conf?.global?.services?.ModelEntityName?.singleton();
-  conf.eavValueTextService =       EavValueTextService.singleton();
-  conf.eavValueNumberService =     EavValueNumberService.singleton();
-  conf.eavValueCheckService =      EavValueCheckService.singleton();
-  conf.eavValueOptionService =     EavValueOptionService.singleton();
-  conf.eavValueTagService =        EavValueTagService.singleton();
+  conf.eavAttributeService =         dependency.get('eavAttributeService');
+  conf.eavAttributeTypeService =     dependency.get('eavAttributeTypeService');
+  conf.eavAttributeCategoryService = dependency.get('eavAttributeCategoryService');
+  conf.eavAttributeOptionService =   dependency.get('eavAttributeOptionService');
+  conf.eavAttributeTagService =      dependency.get('eavAttributeTagService');
+  conf.modelEntityNameService =      dependency.get('modelEntityNameService');
+  conf.eavValueTextService =         dependency.get('eavValueTextService');
+  conf.eavValueNumberService =       dependency.get('eavValueNumberService');
+  conf.eavValueCheckService =        dependency.get('eavValueCheckService');
+  conf.eavValueOptionService =       dependency.get('eavValueOptionService');
+  conf.eavValueTagService =          dependency.get('eavValueTagService');
 }
 
 async function updateData(global) {
   const data = global?.data;
 
-  await runSequentially(data?.eavAttributesTypes, async data => await conf.eavAttributeTypeService.createIfNotExists(data));
-  await runSequentially(data?.eavAttributes,      async data => await conf.eavAttributeService.    createOrUpdate(data));
+  await runSequentially(data?.eavAttributesCategories, async data => await conf.eavAttributeCategoryService.createIfNotExists(data));
+  await runSequentially(data?.eavAttributesTypes,      async data => await conf.eavAttributeTypeService.    createIfNotExists(data));
+  await runSequentially(data?.eavAttributes,           async data => await conf.eavAttributeService.        createOrUpdate(data));
 }
 
 async function clearCache() {
@@ -95,7 +78,8 @@ async function getAttributes(entity, { loc }) {
   conf.attributesCache[entity] ||= {};
   const attributesCache = conf.attributesCache[entity];
 
-  const language = loc?.language;
+  loc ??= defaultLoc;
+  const language = loc.language;
   if (attributesCache[language] === undefined) {
     attributesCache[language] = {};
         
@@ -145,6 +129,7 @@ async function interfaceFormGet({ form, entity, loc }) {
   conf.fieldsCache[entity] ||= {};
   const fieldsCache = conf.fieldsCache[entity];
 
+  loc ??= defaultLoc;
   const language = loc?.language;
   if (fieldsCache[language] === undefined) {
     fieldsCache[language] = [];
@@ -166,6 +151,8 @@ async function interfaceFormGet({ form, entity, loc }) {
         label: attribute.title,
         type: attribute.htmlType,
         condition: attribute.condition,
+        help: attribute.help,
+        helpTopic: attribute.helpTopic,
       };
 
       if (attribute.type === 'select') {
@@ -200,6 +187,7 @@ async function interfaceGridGet({ grid, entity, loc }) {
   const columnsCache = conf.columnsCache[entity];
   const detailsCache = conf.detailsCache[entity];
 
+  loc ??= defaultLoc;
   const language = loc?.language;
   if (columnsCache[language] === undefined) {
     columnsCache[language] = [];
@@ -249,13 +237,10 @@ async function getted({ entity, result, options }) {
     return result;
   }
 
-  const attributes = await getAttributes(entity, { loc: options?.loc });
+  const loc = options?.loc ?? defaultLoc;
+  const attributes = await getAttributes(entity, { loc });
   if (!attributes?.length) {
     return result;
-  }
-
-  if (result.then) {
-    result = await result;
   }
 
   const rows = result.rows || result;
@@ -332,7 +317,7 @@ async function getted({ entity, result, options }) {
           row[fieldName] = valueRows.map(r => r.tag.name);
         }
       } break;
-      default: row[fieldName] = await (options?.loc ?? loc)._c('eav', 'Error unknown attribute type: %s', typeName);
+      default: row[fieldName] = await loc._c('eav', 'Error unknown attribute type: %s', typeName);
       }
     }
   }
