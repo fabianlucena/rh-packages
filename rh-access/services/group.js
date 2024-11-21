@@ -116,9 +116,10 @@ export class GroupService extends Service.IdUuidEnableOwnerModule {
         skipAssociationAttributes: true,
       }
     );
-    let allGroupIdList = await newGroupList.map(group => group.id);
+    let allGroupIdList = await newGroupList.map(group => group.groupId);
     let newGroupIdList = allGroupIdList;
-        
+    
+    parentOptions.where ??= {};
     while (newGroupList.length) {
       parentOptions.where.userId = { [Op.in]: newGroupIdList };
       parentOptions.where.groupId = { [Op.notIn]: allGroupIdList };
