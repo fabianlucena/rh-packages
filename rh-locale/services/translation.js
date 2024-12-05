@@ -4,7 +4,7 @@ import { SourceService } from './source.js';
 import { LanguageService } from './language.js';
 import { ContextService } from './context.js';
 import { DomainService } from './domain.js';
-import { checkDataForMissingProperties, getSingle } from 'sql-util';
+import { checkDataForMissingProperties, getSingle, MissingPropertyError } from 'sql-util';
 import { deepComplete } from 'rf-util';
 
 export class TranslationService extends Service.IdUuidEnable {
@@ -32,7 +32,7 @@ export class TranslationService extends Service.IdUuidEnable {
    * @returns {Promise{data}}
    */
   async completeSourceId(data) {
-    if (!data.sourceId && data.source) {
+    if (!data.sourceId && typeof data.source !== 'undefined' && data.source !== null) {
       data.sourceId = await SourceService.singleton().getIdOrCreateForTextAndIsJson(data.source, data.isJson, { data: { ref: data.ref }});
     }
 
@@ -40,7 +40,11 @@ export class TranslationService extends Service.IdUuidEnable {
   }
 
   async validateForCreation(data) {
-    await checkDataForMissingProperties(data, 'Translation', 'sourceId', 'languageId', 'text');
+    await checkDataForMissingProperties(data, 'Translation', 'sourceId', 'languageId');
+    if (typeof data.text === 'undefined' || data.text === null) {
+      throw new MissingPropertyError('Translation', 'text');
+    }
+
     data.text = await this.sanitizeText(data.text);
 
     return super.validateForCreation(data);
