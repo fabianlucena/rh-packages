@@ -22,7 +22,7 @@ export const data = {
   ],
 
   permissions: [
-    { name: 'resource.get',    title: loc._cf('permission', 'Get resources'),    isTranslatable: true, roles: 'resourceManager', ownerModule: name, menuItem: { label: loc._cf('menu', 'Resources'), isTranslatable: true, icon: 'resource', action: 'grid', service: 'resource' }},
+    { name: 'resource.get',    title: loc._cf('permission', 'Get resources'),    isTranslatable: true, roles: 'resourceManager', ownerModule: name, menuItem: { label: loc._cf('menu', 'Resources'), isTranslatable: true, parent: 'administration', icon: 'resource', action: 'grid', service: 'resource' }},
     { name: 'resource.create', title: loc._cf('permission', 'Create resources'), isTranslatable: true, roles: 'resourceManager', ownerModule: name, },
   ]
 };
