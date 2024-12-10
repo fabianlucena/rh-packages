@@ -388,7 +388,7 @@ async function updateValues({ entity, entityIds, data, options }) {
     for (const attribute of attributes) {
       const fieldName = attribute.fieldName ?? attribute.name;
       const value = data[fieldName];
-      if (value === undefined) {
+      if (value === undefined || value === null) {
         continue;
       }
 
