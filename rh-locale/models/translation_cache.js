@@ -19,7 +19,9 @@ export default (sequelize, DataTypes) => {
     source: {
       type: DataTypes.TEXT,
       allowNull: false,
-      collate: 'utf8_bin',
+      ... (sequelize.getDialect() === 'mysql' && { collate: 'utf8_bin' }),
+      ... (sequelize.getDialect() === 'postgres' && { collate: 'POSIX' }),
+      ... (sequelize.getDialect() === 'mssql' && { collate: 'SQL_Latin1_General_CP1_CS_AS' })
     },
     isJson: {
       type: DataTypes.BOOLEAN,
