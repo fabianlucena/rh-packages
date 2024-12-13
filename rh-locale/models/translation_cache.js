@@ -6,46 +6,47 @@ export default (sequelize, DataTypes) => {
   TranslationCache.init({
     language: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     domain: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     context: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     source: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: false,
+      collate: 'utf8_bin',
     },
     isJson: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false
+      defaultValue: false,
     },
     translation: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: false,
     },
     ref: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: true,
     },
     isTranslated: {
       type: DataTypes.BOOLEAN,
-      allowNull: true
+      allowNull: true,
     },
     isDraft: {
       type: DataTypes.BOOLEAN,
-      allowNull: true
+      allowNull: true,
     },
   }, {
     sequelize,
     timestamps: true,
     freezeTableName: true,
-    schema: conf.schema
+    schema: conf.schema,
   });
   return TranslationCache;
 };

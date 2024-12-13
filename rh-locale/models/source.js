@@ -8,50 +8,38 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
-      unique: true
+      unique: true,
     },
     uuid: {
       type: DataTypes.UUID,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
-      unique: true
+      unique: true,
     },
     isEnabled: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: true
+      defaultValue: true,
     },
     isJson: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false
+      defaultValue: false,
     },
     text: {
       type: DataTypes.TEXT,
       allowNull: false,
-      //unique: true
+      collate: 'utf8_bin',
     },
     ref: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: true,
     },
   }, {
     sequelize,
     timestamps: true,
     freezeTableName: true,
     schema: conf.schema,
-    /*indexes: [
-            {
-                //unique: true,
-                type: 'FULLTEXT',
-                fields: [
-                    'isJson',
-                    {
-                        name: 'text',
-                    },
-                ],
-            },
-        ],*/
   });
   return Source;
 };
