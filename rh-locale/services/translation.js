@@ -8,14 +8,16 @@ export class TranslationService extends Service.IdUuidEnable {
   references = {
     source: {
       createIfNotExists: true,
-      function: this.completeSourceId,
+      function: (...args) => this.completeSourceId(...args),
     },
     language: true,
     domain: { createIfNotExists: true },
     context: { createIfNotExists: true },
   };
 
-  init () {
+  init() {
+    super.init();
+
     this.sourceService =   dependency.get('sourceService');
     this.contextService =  dependency.get('contextService');
     this.domainService =   dependency.get('domainService');
