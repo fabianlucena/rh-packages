@@ -27,16 +27,16 @@ export class EavValueTagService extends Service.IdUuidTranslatable {
     this.eavAttributeTagService = dependency.get('eavAttributeTagService');
   }
 
-  async validateForCreation(data) {
+  async validateForCreation(data, options) {
     checkParameterNotNullOrEmpty(data.attributeId, loc => loc._c('eav', 'Attribute'));
     checkParameterNotNullOrEmpty(data.tagId,       loc => loc._c('eav', 'Tag'));
 
-    const rows = await this.getFor(data, { skipNoRowsError: true });
+    const rows = await this.getFor(data, { transaction: options?.transaction, skipNoRowsError: true });
     if (rows.length) {
       throw new ConflictError(loc => loc._c('eav', 'The tag is already linked to the entity.'));
     }
 
-    return super.validateForCreation(data);
+    return super.validateForCreation(data, options);
   }
 
   async getListOptions(options) {
@@ -129,12 +129,20 @@ export class EavValueTagService extends Service.IdUuidTranslatable {
         const tagRow = await this.eavAttributeTagService.getOrCreate({
           categoryId: data.categoryId,
           name: tag,
+        }, {
+          transaction: options?.transaction,
         });
 
         const tagId = tagRow.id;
         tagsId.push(tagId);
         serviceData.tagId = tagId;
-        const rows = await this.getFor(serviceData, { ...options, skipNoRowsError: true });
+        const rows = await this.getFor(
+          serviceData,
+          {
+            ...options,
+            skipNoRowsError: true,
+          }
+        );
         if (rows?.length) {
           continue;
         }
