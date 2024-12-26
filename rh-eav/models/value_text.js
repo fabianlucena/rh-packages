@@ -8,7 +8,6 @@ export default (sequelize, DataTypes) => {
       }
       
       this.belongsTo(models.EavAttribute, { as: 'attribute', foreignKey: 'attributeId' });
-      this.belongsTo(models.ModelEntityName, { as: 'modelEntityName', foreignKey: 'modelEntityNameId' });
     }
   }
   EavValueText.init({
@@ -29,10 +28,6 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
     },
     entityId: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-    },
-    modelEntityNameId: {
       type: DataTypes.BIGINT,
       allowNull: false,
     },

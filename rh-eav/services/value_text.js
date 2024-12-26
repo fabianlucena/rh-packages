@@ -17,16 +17,6 @@ export class EavValueTextService extends Service.IdUuid {
       throw new UpdateAttributeValueError(loc => loc._c('eav', 'Cannot update option value because entityId data is missing or empty'));
     }
 
-    if (!data.modelEntityNameId) {
-      throw new UpdateAttributeValueError(loc => loc._c('eav', 'Cannot update option value because modelEntityNameId data is missing or empty'));
-    }
-
-    const serviceData = {
-      attributeId: data.attributeId,
-      modelEntityNameId: data.modelEntityNameId,
-      entityId: data.entityId,
-    };
-
     const result = await conf.eavValueTextService.getFor(serviceData, options);
     if (!result?.length) {
       await conf.eavValueTextService.create({ ...serviceData, value: data.value }, options);
