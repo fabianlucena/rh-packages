@@ -5,7 +5,6 @@ export class EavValueOptionService extends Service.IdUuidTranslatable {
   references = {
     attribute:       'eavAttributeService',
     option:          'eavAttributeOptionService',
-    modelEntityName: true,
   };
 
   async delete(options) {
