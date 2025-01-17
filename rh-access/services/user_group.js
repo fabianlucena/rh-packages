@@ -3,7 +3,7 @@ import { checkDataForMissingProperties } from 'sql-util';
 
 export class UserGroupService extends Service.OwnerModuleTranslatable {
   references = {
-    user:  { whereColumn: 'username', getIdForName: 'getIdForUsernameOrNull' },
+    user:  { whereColumn: 'username', getIdForName: 'getIdForUsername' },
     group: { whereColumn: 'username', getIdForName: 'getIdForUsername' },
   };
 
