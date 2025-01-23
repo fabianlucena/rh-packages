@@ -85,6 +85,10 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
     return this.getSingleOrNull(options);
   }
 
+  async getIdForUsernameOrNull(username, options) {
+    return (await this.getForUsernameOrNull(username, { ...options, attributes: ['id'] })).id;
+  }
+
   /**
    * Gets an user for its username. For many coincidences and for no rows this method fails.
    * @param {string} username - username for the user to get.
