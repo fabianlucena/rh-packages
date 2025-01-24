@@ -153,6 +153,7 @@ async function interfaceFormGet({ form, entity, loc }) {
         condition: attribute.condition,
         help: attribute.help,
         helpTopic: attribute.helpTopic,
+        order: attribute.order,
       };
 
       if (attribute.type === 'select') {
@@ -173,7 +174,13 @@ async function interfaceFormGet({ form, entity, loc }) {
     fieldsCache[language].push(...fields);
   }
 
-  form.fields.push(...fieldsCache[language]);
+  for (var field of fieldsCache[language]) {
+    if (typeof field.order === 'undefined') {
+      form.fields.push(field);
+    } else {
+      form.fields.splice(field.order, 0, field);
+    }
+  }
 }
 
 async function interfaceGridGet({ grid, entity, loc }) {
