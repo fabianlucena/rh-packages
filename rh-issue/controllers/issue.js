@@ -229,6 +229,13 @@ export class IssueController extends Controller {
         isField:     true,
       },
       {
+        name: 'dueDate',
+        type: 'dateTime',
+        isField: true,
+        isColumn: true,
+        label: await loc._c('issue', 'Due Date'),
+      },
+      {
         name:        'closeReason.uuid',
         gridName:    'closeReason.title',
         type:        'select',
