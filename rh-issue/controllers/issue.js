@@ -229,11 +229,11 @@ export class IssueController extends Controller {
         isField:     true,
       },
       {
-        name: 'dueDate',
-        type: 'dateTime',
-        isField: true,
+        name:     'dueDate',
+        type:     'dateTime',
+        isField:  true,
         isColumn: true,
-        label: await loc._c('issue', 'Due Date'),
+        label:    await loc._c('issue', 'Due date'),
       },
       {
         name:        'closeReason.uuid',
