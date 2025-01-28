@@ -137,7 +137,7 @@ async function getWorkflowsForEntity(entity, options) {
       entity,
       {
         include: { workflow: true },
-        loc: options.loc,
+        loc: options?.loc ?? defaultLoc,
       }
     );
 

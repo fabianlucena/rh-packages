@@ -441,7 +441,7 @@ export class ServiceBase {
    * @returns {Promise[data]} - the data.
    */
   // eslint-disable-next-line no-unused-vars
-  async validate(data, operation) {
+  async validate(data, operation, options) {
     return trim(data);
   }
 
@@ -450,8 +450,8 @@ export class ServiceBase {
    * @param {object} data - data to update in entity.
    * @returns {Promise[data]} - the data.
    */
-  async validateForCreation(data) {
-    return this.validate(data, 'creation');
+  async validateForCreation(data, options) {
+    return this.validate(data, 'creation', options);
   }
 
   /**
@@ -462,7 +462,7 @@ export class ServiceBase {
    */
   async create(data, options) {
     data = await this.completeReferences(data, options);
-    data = await this.validateForCreation(data);
+    data = await this.validateForCreation(data, options);
 
     let transaction;
     if (options?.transaction || this.transaction) {

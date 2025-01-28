@@ -87,7 +87,6 @@ export class ProjectController extends Controller {
       limit: 10,
       offset: 0,
       loc,
-      include: { owner: true },
     };
 
     if (this.companyService) {

@@ -8,7 +8,6 @@ import { getFiltersForContext } from '../rh-project-select.js';
 export class ProjectSelectController extends Controller {
   constructor() {
     super();
-    this.eventBus = dependency.get('eventBus', null);
     this.projectService =     dependency.get('projectService');
     this.sessionDataService = dependency.get('sessionDataService', null);
   }

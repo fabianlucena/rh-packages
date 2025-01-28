@@ -1,22 +1,28 @@
 import { conf } from '../conf.js';
 import { Service } from 'rf-service';
-import { SourceService } from './source.js';
-import { LanguageService } from './language.js';
-import { ContextService } from './context.js';
-import { DomainService } from './domain.js';
-import { checkDataForMissingProperties, getSingle } from 'sql-util';
+import { checkDataForMissingProperties, getSingle, MissingPropertyError } from 'sql-util';
 import { deepComplete } from 'rf-util';
+import dependency from 'rf-dependency';
 
 export class TranslationService extends Service.IdUuidEnable {
   references = {
     source: {
       createIfNotExists: true,
-      function: this.completeSourceId,
+      function: (...args) => this.completeSourceId(...args),
     },
     language: true,
     domain: { createIfNotExists: true },
     context: { createIfNotExists: true },
   };
+
+  init() {
+    super.init();
+
+    this.sourceService =   dependency.get('sourceService');
+    this.contextService =  dependency.get('contextService');
+    this.domainService =   dependency.get('domainService');
+    this.languageService = dependency.get('languageService');
+  }
 
   async sanitizeText(text) {
     return text.trim().replace(/\r/g, '\\r').replace(/\n/g, '\\n');
@@ -32,15 +38,19 @@ export class TranslationService extends Service.IdUuidEnable {
    * @returns {Promise{data}}
    */
   async completeSourceId(data) {
-    if (!data.sourceId && data.source) {
-      data.sourceId = await SourceService.singleton().getIdOrCreateForTextAndIsJson(data.source, data.isJson, { data: { ref: data.ref }});
+    if (!data.sourceId && typeof data.source !== 'undefined' && data.source !== null) {
+      data.sourceId = await this.sourceService.getIdOrCreateForTextAndIsJson(data.source, data.isJson, { data: { ref: data.ref }});
     }
 
     return data;
   }
 
   async validateForCreation(data) {
-    await checkDataForMissingProperties(data, 'Translation', 'sourceId', 'languageId', 'text');
+    await checkDataForMissingProperties(data, 'Translation', 'sourceId', 'languageId');
+    if (typeof data.text === 'undefined' || data.text === null) {
+      throw new MissingPropertyError('Translation', 'text');
+    }
+
     data.text = await this.sanitizeText(data.text);
 
     return super.validateForCreation(data);
@@ -106,11 +116,19 @@ export class TranslationService extends Service.IdUuidEnable {
             continue;
           }
                     
-          let translationObject = await conf.global.models.TranslationCache.findOne({ where: { language, context: options.context ?? null, domain: options.domain ?? null, source: arrangedText, isJson: options.isJson }});
+          let translationObject = await conf.global.models.TranslationCache.findOne({
+            where: {
+              language, context:
+              options.context ?? null,
+              domain: options.domain ?? null,
+              source: arrangedText,
+              isJson: options.isJson,
+            }
+          });
           if (!translationObject) {
-            const bestTranslation = await TranslationService.singleton().getBestMatchForLanguageTextIsJsonContextsAndDomains(language, arrangedText, options.isJson, options.context, options.domain);
+            const bestTranslation = await this.getBestMatchForLanguageTextIsJsonContextsAndDomains(language, arrangedText, options.isJson, options.context, options.domain);
             if (bestTranslation) {
-              const source = await SourceService.singleton().getForTextAndIsJson(arrangedText, options.isJson);
+              const source = await this.sourceService.getForTextAndIsJson(arrangedText, options.isJson);
               translationObject = await conf.global.models.TranslationCache.create({
                 language,
                 domain: options.domain,
@@ -144,10 +162,14 @@ export class TranslationService extends Service.IdUuidEnable {
 
   async getBestMatchForLanguageTextIsJsonContextsAndDomains(language, text, isJson, contexts, domains) {
     if (!language) {
-      return { translation: text, isTranslated: false, isDraft: true };
+      return {
+        translation: text,
+        isTranslated: false,
+        isDraft: true,
+      };
     }
 
-    const sourceId = await SourceService.singleton().getIdOrCreateForTextAndIsJson(text, isJson);
+    const sourceId = await this.sourceService.getIdOrCreateForTextAndIsJson(text, isJson);
     let contextsId = [];
     let domainsId = [];
         
@@ -156,7 +178,7 @@ export class TranslationService extends Service.IdUuidEnable {
         contexts = contexts.split(',').map(t => t.trim());
       }
             
-      contextsId = await ContextService.singleton().getIdOrCreateForName(contexts);
+      contextsId = await this.contextService.getIdOrCreateForName(contexts);
     }
     if (!contextsId.length || !contextsId.some(context => context === null)) {
       contextsId.push(null);
@@ -168,7 +190,7 @@ export class TranslationService extends Service.IdUuidEnable {
         domains = domains.split(',').map(t => t.trim());
       }
             
-      domainsId = await DomainService.singleton().getIdOrCreateForName(domains);
+      domainsId = await this.domainService.getIdOrCreateForName(domains);
       if (!domainsId.length && domains.some(c => !c)) {
         domainsId.push(null);
       }
@@ -178,7 +200,7 @@ export class TranslationService extends Service.IdUuidEnable {
     }
     domainsId.push(undefined);
         
-    let [ languageData ] = await LanguageService.singleton().findOrCreate({ name: language.trim(), title: language.trim() });
+    let [ languageData ] = await this.languageService.findOrCreate({ name: language.trim(), title: language.trim() });
     while (languageData.id) {
       const data = {
         sourceId,
@@ -217,7 +239,7 @@ export class TranslationService extends Service.IdUuidEnable {
         break;
       }
 
-      languageData = await LanguageService.singleton().getSingleForId(languageData.parentId);
+      languageData = await this.languageService.getSingleForId(languageData.parentId);
     }
 
     return { translation: text, isTranslated: false, isDraft: true };

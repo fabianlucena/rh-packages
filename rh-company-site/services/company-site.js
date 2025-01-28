@@ -1,5 +1,4 @@
 import dependency from 'rf-dependency';
-import { conf } from '../conf.js';
 import { Service } from 'rf-service';
 import { checkDataForMissingProperties } from 'sql-util';
 

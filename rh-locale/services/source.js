@@ -1,5 +1,5 @@
 import { Service } from 'rf-service';
-import { checkDataForMissingProperties } from 'sql-util';
+import { MissingPropertyError } from 'sql-util';
 
 export class SourceService extends Service.IdUuidEnable {
   async sanitizeText(text) {
@@ -11,7 +11,10 @@ export class SourceService extends Service.IdUuidEnable {
   }
     
   async validateForCreation(data) {
-    await checkDataForMissingProperties(data, 'Source', 'text');
+    if (typeof data.text === 'undefined' || data.text === null) {
+      throw new MissingPropertyError('Source', 'text');
+    }
+
     data.text = await this.sanitizeText(data.text);
 
     return super.validateForCreation(data);
