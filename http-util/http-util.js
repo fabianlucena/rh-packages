@@ -369,6 +369,8 @@ export function getOptionsFromOData(params, options) {
       switch (parts[1]) {
       case 'eq': operator = Op.eq; break;
       case 'gt': operator = Op.gt; break;
+      case 'ge': operator = Op.ge; break;
+      case 'le': operator = Op.le; break;
       default: throw new HttpError(loc => loc._('Error to compile filter in part "%s", operator is supported.'), 400, filter);
       }
 
@@ -383,7 +385,15 @@ export function getOptionsFromOData(params, options) {
         value = stripQuotes(value);
       }
 
-      where[parts[0]] = { [operator]: value };
+      if (where[parts[0]]) {
+        if (where[parts[0]][Op.and]) {
+          where[parts[0]][Op.and].push({ [operator]: value });
+        } else {
+          where[parts[0]] = { [Op.and]: [where[parts[0]], {[operator]: value}] }
+        }
+      } else {
+        where[parts[0]] = { [operator]: value };
+      }
     }
 
     options.where = { ...options.where, ...where };
