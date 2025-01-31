@@ -14,7 +14,7 @@ export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescription
     relatedFrom: 'issueRelated',
   };
   defaultTranslationContext = 'issue';
-  viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'isTranslatable', 'description'];
+  viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'isTranslatable', 'description', 'dueDate'];
   eventBus = conf.global.eventBus;
 
   init() {
