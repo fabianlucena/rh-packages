@@ -371,6 +371,8 @@ export function getOptionsFromOData(params, options) {
       case 'gt': operator = Op.gt; break;
       case 'ge': operator = Op.ge; break;
       case 'le': operator = Op.le; break;
+      case 'lt': operator = Op.lt; break;
+      case 'ne': operator = Op.ne; break;
       default: throw new HttpError(loc => loc._('Error to compile filter in part "%s", operator is supported.'), 400, filter);
       }
 
