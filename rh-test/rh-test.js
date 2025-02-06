@@ -1126,7 +1126,7 @@ export const rt = {
    * Perform an automatic login in the agent using the endpoint sending a post to the endpoint. This method uses @see rt.testLogin.
    * @param {*} options Options for @see rt.testLogin.
    * You can specify the agent or app method to override the rt.app or rt.agent values.
-   * This method test the existence of the rt.headers?.Authorization value if the value does not exists perform a new login.
+   * This method test the existence of the rt.headers?.Authorization value if the value does not exist perform a new login.
    */
   autoLogin(options) {
     if (rt.headers?.Authorization) {

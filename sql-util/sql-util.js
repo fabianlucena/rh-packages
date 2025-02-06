@@ -65,7 +65,7 @@ export async function configureModels(modelsPath, sequelize) {
   }
         
   if (!fs.existsSync(modelsPath)) {
-    throw new Error(`The modules path does not exists: ${modelsPath}`);
+    throw new Error(`The modules path does not exist: ${modelsPath}`);
   }
 
   await Promise.all(

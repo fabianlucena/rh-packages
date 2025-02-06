@@ -197,7 +197,7 @@ export async function configureRouter(routesPath, router, checkPermission, optio
   }
 
   if (!fs.existsSync(routesPath)) {
-    throw new Error(`The routes path does not exists: ${routesPath}`);
+    throw new Error(`The routes path does not exist: ${routesPath}`);
   }
         
   const files = fs

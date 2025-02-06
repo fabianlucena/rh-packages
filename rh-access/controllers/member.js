@@ -7,7 +7,7 @@ export class MemberController {
   static async getUserIdFromUuid(req, uuid) {
     const userId = await dependency.get('memberService').getUserIdForUserUuid(uuid, { where: { siteId: req.site.id }, skipNoRowsError: true });
     if (!userId) {
-      throw new HttpError(loc => loc._c('member', 'The member with UUID %s does not exists.'), 404, uuid);
+      throw new HttpError(loc => loc._c('member', 'The member with UUID %s does not exist.'), 404, uuid);
     }
 
     return userId;
@@ -251,7 +251,7 @@ export class MemberController {
             
     const rowsDeleted = await dependency.get('memberService').deleteFor(deleteWhere);
     if (!rowsDeleted)
-      throw new HttpError(loc => loc._c('member', 'The member with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('member', 'The member with UUID %s does not exist.'), 403, uuid);
 
     res.sendStatus(204);
   }
@@ -265,7 +265,7 @@ export class MemberController {
 
     const rowsUpdated = await dependency.get('memberService').enableForSiteIdAndUserId(req.site.id, userId);
     if (!rowsUpdated)
-      throw new HttpError(loc => loc._c('member', 'The member with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('member', 'The member with UUID %s does not exist.'), 403, uuid);
 
     res.sendStatus(204);
   }
@@ -279,7 +279,7 @@ export class MemberController {
 
     const rowsUpdated = await dependency.get('memberService').disableForSiteIdAndUserId(req.site.id, userId);
     if (!rowsUpdated)
-      throw new HttpError(loc => loc._c('member', 'The member with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('member', 'The member with UUID %s does not exist.'), 403, uuid);
 
     res.sendStatus(204);
   }
@@ -307,7 +307,7 @@ export class MemberController {
         
     const rowsUpdated = await dependency.get('memberService').updateFor(data, { userId, siteId }, options);
     if (!rowsUpdated)
-      throw new HttpError(loc => loc._c('member', 'The member with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('member', 'The member with UUID %s does not exist.'), 403, uuid);
 
     res.sendStatus(204);
   }
