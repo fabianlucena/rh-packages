@@ -19,6 +19,7 @@ async function configure(global, options) {
 
   global.eventBus?.$on('interface.grid.get', interfaceGridGet);
   global.eventBus?.$on('getted', getted);
+  global.eventBus?.$on('created', created);
 }
 
 let 
@@ -271,4 +272,37 @@ async function getted({ entity, result, options }) {
   }
 
   return result;
+}
+
+async function created({ entity, rows, options }) {
+  if (!entity) {
+    return;
+  }
+
+  const workflows = await getWorkflowsForEntity(entity, options);
+  if (!workflows.length) {
+    return;
+  }
+
+  const loc = options?.loc ?? defaultLoc;
+
+  for (const iRow in rows) {
+    let row = rows[iRow];
+    if (!row.uuid) {
+      continue;
+    }
+
+    for (const workflow of workflows) {
+      let wfCase = await wfCaseService.getForWorkflowIdAndEnrityUuid(
+        workflow.id,
+        row.uuid,
+        { loc },
+      );
+      
+      if (!wfCase) {
+        wfCase = await wfCaseService.createForWorkflowIdAndEnrityUuid(workflow.id, row.uuid);
+        await wfBranchService.createForWorkflowIdAndCaseId(workflow.id, wfCase.id);
+      }
+    }
+  }
 }
