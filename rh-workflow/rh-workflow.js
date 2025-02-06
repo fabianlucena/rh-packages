@@ -295,7 +295,7 @@ async function created({ entity, rows, options }) {
     }
 
     for (const workflow of workflows) {
-      let wfCase = await wfCaseService.getForWorkflowIdAndEnrityUuid(
+      let wfCase = await wfCaseService.getForWorkflowIdAndEntityUuid(
         workflow.id,
         row.uuid,
         { loc },
