@@ -18,13 +18,8 @@ async function configure(global, options) {
   }
 
   global.eventBus?.$on('interface.grid.get', interfaceGridGet);
-  //global.eventBus?.$on('interface.form.get', interfaceFormGet);
   global.eventBus?.$on('getted', getted);
   global.eventBus?.$on('created', created);
-  /*global.eventBus?.$on('updated', updated);
-    global.eventBus?.$on('deleting', deleting);
-    global.eventBus?.$on('deleted', deleted);
-    global.eventBus?.$on('sanitized', sanitized);*/
 }
 
 let 
@@ -289,6 +284,8 @@ async function created({ entity, rows, options }) {
     return;
   }
 
+  const loc = options?.loc ?? defaultLoc;
+
   for (const iRow in rows) {
     let row = rows[iRow];
     if (!row.uuid) {
@@ -296,8 +293,16 @@ async function created({ entity, rows, options }) {
     }
 
     for (const workflow of workflows) {
-      const wfCase = await wfCaseService.createForWorkflowIdAndEnrityUuid(workflow.id, row.uuid);
-      await wfBranchService.createForWorkflowIdAndCaseId(workflow.id, wfCase.id);
+      let wfCase = await wfCaseService.getForWorkflowIdAndEnrityUuid(
+        workflow.id,
+        row.uuid,
+        { loc },
+      );
+      
+      if (!wfCase) {
+        wfCase = await wfCaseService.createForWorkflowIdAndEnrityUuid(workflow.id, row.uuid);
+        await wfBranchService.createForWorkflowIdAndCaseId(workflow.id, wfCase.id);
+      }
     }
   }
 }
