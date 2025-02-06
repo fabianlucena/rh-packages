@@ -116,7 +116,7 @@
         "language": "es",
         "context": "workflow",
         "translation": "Error en el proceso",
-        "ref": "..\\rh-workflow\\rh-workflow.js [272,54]\n..\\rh-workflow\\rh-workflow.js [276,49]"
+        "ref": "..\\rh-workflow\\rh-workflow.js [267,54]\n..\\rh-workflow\\rh-workflow.js [271,49]"
     },
     {
         "source": "Exists another row with that title.",
@@ -372,7 +372,6 @@
         "source": "{Unasigned}",
         "language": "es",
         "context": "workflow",
-        "isDraft": false,
         "translation": "{No asignado}",
         "ref": "..\\rh-workflow\\rh-workflow.js [15,12]"
     },
@@ -380,8 +379,8 @@
         "source": "{Unasigned}",
         "language": "es",
         "context": "workflow.transitionContext || 'workflow'",
-        "isDraft": true,
-        "translation": null,
-        "ref": "..\\rh-workflow\\rh-workflow.js [250,83]\n..\\rh-workflow\\rh-workflow.js [263,64]"
+        "isDraft": false,
+        "translation": "{No asignado}",
+        "ref": "..\\rh-workflow\\rh-workflow.js [245,83]\n..\\rh-workflow\\rh-workflow.js [258,64]"
     }
 ]
