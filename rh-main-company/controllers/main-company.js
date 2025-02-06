@@ -11,7 +11,7 @@ export class MainCompanyController {
   static async checkUuid(context, uuid) {
     const mainCompany = await mainCompanyService.getSingleOrNullForUuid(uuid, { skipNoRowsError: true });
     if (!mainCompany) {
-      throw new HttpError(loc => loc._c('mainCompany', 'The main company with UUID %s does not exists.'), 404, uuid);
+      throw new HttpError(loc => loc._c('mainCompany', 'The main company with UUID %s does not exist.'), 404, uuid);
     }
 
     return true;
@@ -175,7 +175,7 @@ export class MainCompanyController {
 
     const rowsDeleted = await mainCompanyService.deleteForUuid(uuid);
     if (!rowsDeleted) {
-      throw new HttpError(loc => loc._c('mainCompany', 'The main company with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('mainCompany', 'The main company with UUID %s does not exist.'), 403, uuid);
     }
 
     res.sendStatus(204);
@@ -190,7 +190,7 @@ export class MainCompanyController {
 
     const rowsUpdated = await mainCompanyService.enableForUuid(uuid);
     if (!rowsUpdated) {
-      throw new HttpError(loc => loc._c('mainCompany', 'The main company with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('mainCompany', 'The main company with UUID %s does not exist.'), 403, uuid);
     }
 
     res.sendStatus(204);
@@ -205,7 +205,7 @@ export class MainCompanyController {
 
     const rowsUpdated = await mainCompanyService.disableForUuid(uuid);
     if (!rowsUpdated) {
-      throw new HttpError(loc => loc._c('mainCompany', 'The main company with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('mainCompany', 'The main company with UUID %s does not exist.'), 403, uuid);
     }
 
     res.sendStatus(204);
@@ -220,7 +220,7 @@ export class MainCompanyController {
 
     const rowsUpdated = await mainCompanyService.updateForUuid(req.body, uuid);
     if (!rowsUpdated) {
-      throw new HttpError(loc => loc._c('mainCompany', 'The main company with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('mainCompany', 'The main company with UUID %s does not exist.'), 403, uuid);
     }
 
     res.sendStatus(204);

@@ -4,131 +4,131 @@
         "language": "es",
         "context": "menu",
         "translation": "Empresas",
-        "ref": "..\\rh-company\\conf.js [27,200]"
+        "ref": "..\\rh-company\\conf.js [28,172]"
     },
     {
         "source": "Companies",
         "language": "es",
         "translation": "Empresas",
-        "ref": "..\\rh-company\\controllers\\company.js [212,44]\n..\\rh-company\\controllers\\company.js [243,44]"
+        "ref": "..\\rh-company\\controllers\\company.js [116,24]\n..\\rh-company\\controllers\\company.js [147,24]"
     },
     {
         "source": "Company manager",
         "language": "es",
         "context": "role",
         "translation": "Administrador de empresas",
-        "ref": "..\\rh-company\\conf.js [19,79]"
+        "ref": "..\\rh-company\\conf.js [20,44]"
     },
     {
-        "source": "Company with UUID %s does not exists.",
+        "source": "Company with UUID %s does not exist.",
         "language": "es",
         "context": "company",
         "translation": "La empresa con el UUID %s no existe.",
-        "ref": "..\\rh-company\\controllers\\company.js [338,97]\n..\\rh-company\\controllers\\company.js [387,97]\n..\\rh-company\\controllers\\company.js [436,97]\n..\\rh-company\\controllers\\company.js [487,97]"
+        "ref": "..\\rh-company\\controllers\\company.js [203,38]\n..\\rh-company\\controllers\\company.js [213,38]\n..\\rh-company\\controllers\\company.js [223,38]\n..\\rh-company\\controllers\\company.js [237,38]"
     },
     {
         "source": "Create companies",
         "language": "es",
         "context": "permission",
         "translation": "Crear empresas",
-        "ref": "..\\rh-company\\conf.js [28,86]"
+        "ref": "..\\rh-company\\conf.js [29,44]"
     },
     {
         "source": "Delete companies",
         "language": "es",
         "context": "permission",
         "translation": "Eliminar empresas",
-        "ref": "..\\rh-company\\conf.js [30,86]"
+        "ref": "..\\rh-company\\conf.js [31,44]"
     },
     {
         "source": "Description",
         "language": "es",
         "translation": "Descripción",
-        "ref": "..\\rh-company\\controllers\\company.js [288,54]\n..\\rh-company\\controllers\\company.js [289,60]"
+        "ref": "..\\rh-company\\controllers\\company.js [192,28]\n..\\rh-company\\controllers\\company.js [193,34]"
     },
     {
         "source": "Edit companies",
         "language": "es",
         "context": "permission",
         "translation": "Modificar empresas",
-        "ref": "..\\rh-company\\conf.js [29,84]"
+        "ref": "..\\rh-company\\conf.js [30,44]"
     },
     {
         "source": "Enabled",
         "language": "es",
         "translation": "Habilitado",
-        "ref": "..\\rh-company\\controllers\\company.js [281,50]\n..\\rh-company\\controllers\\company.js [282,56]"
+        "ref": "..\\rh-company\\controllers\\company.js [185,28]\n..\\rh-company\\controllers\\company.js [186,34]"
     },
     {
         "source": "Get companies",
         "language": "es",
         "context": "permission",
         "translation": "Obtener empresas",
-        "ref": "..\\rh-company\\conf.js [27,83]"
+        "ref": "..\\rh-company\\conf.js [28,44]"
     },
     {
         "source": "Name",
         "language": "es",
         "context": "company",
         "translation": "Nombre",
-        "ref": "..\\rh-company\\controllers\\company.js [103,68]"
+        "ref": "..\\rh-company\\controllers\\company.js [50,27]"
     },
     {
         "source": "Name",
         "language": "es",
         "translation": "Nombre",
-        "ref": "..\\rh-company\\controllers\\company.js [227,47]\n..\\rh-company\\controllers\\company.js [270,47]\n..\\rh-company\\controllers\\company.js [271,53]"
+        "ref": "..\\rh-company\\controllers\\company.js [131,28]\n..\\rh-company\\controllers\\company.js [174,28]\n..\\rh-company\\controllers\\company.js [175,34]"
     },
     {
         "source": "Owner",
         "language": "es",
         "translation": "Propietario",
-        "ref": "..\\rh-company\\controllers\\company.js [232,48]"
+        "ref": "..\\rh-company\\controllers\\company.js [136,28]"
     },
     {
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-company-es.js [18,41]"
+        "ref": "rh-company-es.js [18,20]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-company-es.js [19,57]"
+        "ref": "rh-company-es.js [19,26]"
     },
     {
         "source": "The company data does not have a owner.",
         "language": "es",
         "context": "company",
         "translation": "La empresa no tiene un propietario.",
-        "ref": "..\\rh-company\\controllers\\company.js [109,103]"
+        "ref": "..\\rh-company\\controllers\\company.js [59,40]"
     },
     {
         "source": "The company does not exist or you do not have permission to access it.",
         "language": "es",
         "context": "company",
         "translation": "La empresa no existe o usted no tiene permiso para accederla.",
-        "ref": "..\\rh-company\\controllers\\company.js [42,134]\n..\\rh-company\\controllers\\company.js [47,134]"
+        "ref": "..\\rh-company\\controllers\\company.js [22,40]\n..\\rh-company\\controllers\\company.js [27,40]"
     },
     {
-        "source": "The company with UUID %s does not exists.",
+        "source": "The company with UUID %s does not exist.",
         "language": "es",
         "context": "company",
         "translation": "La empresa con el UUID %s no existe.",
-        "ref": "..\\rh-company\\controllers\\company.js [58,101]"
+        "ref": "..\\rh-company\\controllers\\company.js [38,38]"
     },
     {
         "source": "Title",
         "language": "es",
         "context": "company",
         "translation": "Título",
-        "ref": "..\\rh-company\\controllers\\company.js [103,104]"
+        "ref": "..\\rh-company\\controllers\\company.js [51,27]"
     },
     {
         "source": "Title",
         "language": "es",
         "translation": "Título",
-        "ref": "..\\rh-company\\controllers\\company.js [222,48]\n..\\rh-company\\controllers\\company.js [249,48]\n..\\rh-company\\controllers\\company.js [250,54]"
+        "ref": "..\\rh-company\\controllers\\company.js [126,28]\n..\\rh-company\\controllers\\company.js [153,28]\n..\\rh-company\\controllers\\company.js [154,34]"
     }
 ]

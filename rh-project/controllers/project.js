@@ -46,7 +46,7 @@ export class ProjectController extends Controller {
     const uuid = await getUuidFromRequest(context.req);
     const project = await this.service.getSingleOrNullForUuid(uuid, { skipNoRowsError: true, loc: context.loc });
     if (!project) {
-      throw new HttpError(loc => loc._c('project', 'The project with UUID %s does not exists.'), 404, uuid);
+      throw new HttpError(loc => loc._c('project', 'The project with UUID %s does not exist.'), 404, uuid);
     }
 
     const companyId = await this.checkDataForCompanyId({ companyId: project.companyId }, context);
@@ -169,7 +169,7 @@ export class ProjectController extends Controller {
     );
 
     const grid = {
-      title: await loc._c('projects', 'Projects'),
+      title: await loc._c('project', 'Projects'),
       load: {
         service: 'project',
         method: 'get',
@@ -301,7 +301,7 @@ export class ProjectController extends Controller {
 
     const rowsUpdated = await this.service.updateFor(data, where);
     if (!rowsUpdated) {
-      throw new HttpError(loc => loc._c('project', 'Project with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('project', 'Project with UUID %s does not exist.'), 403, uuid);
     }
 
     res.sendStatus(204);
@@ -319,7 +319,7 @@ export class ProjectController extends Controller {
 
     const rowsUpdated = await this.service.updateFor(data, where);
     if (!rowsUpdated) {
-      throw new HttpError(loc => loc._c('project', 'Project with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('project', 'Project with UUID %s does not exist.'), 403, uuid);
     }
 
     res.sendStatus(204);

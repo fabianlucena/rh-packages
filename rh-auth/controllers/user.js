@@ -113,7 +113,7 @@ export class UserController {
     const uuid = checkParameterUuid(allParams.uuid, loc => loc._c('user', 'UUID'));
     const rowsDeleted = await UserService.singleton().deleteForUuid(uuid);
     if (!rowsDeleted) {
-      throw new HttpError(loc => loc._c('user', 'User with UUID %s does not exists.'), 404, uuid);
+      throw new HttpError(loc => loc._c('user', 'User with UUID %s does not exist.'), 404, uuid);
     }
 
     res.sendStatus(204);
@@ -126,7 +126,7 @@ export class UserController {
     );
     const rowsUpdated = await UserService.singleton().enableForUuid(uuid);
     if (!rowsUpdated) {
-      throw new HttpError(loc => loc._c('user', 'User with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('user', 'User with UUID %s does not exist.'), 403, uuid);
     }
 
     res.sendStatus(204);
@@ -139,7 +139,7 @@ export class UserController {
     );
     const rowsUpdated = await UserService.singleton().disableForUuid(uuid);
     if (!rowsUpdated) {
-      throw new HttpError(loc => loc._c('user', 'User with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('user', 'User with UUID %s does not exist.'), 403, uuid);
     }
 
     res.sendStatus(204);
@@ -152,7 +152,7 @@ export class UserController {
     );
     const rowsUpdated = await UserService.singleton().updateForUuid(req.body, uuid);
     if (!rowsUpdated) {
-      throw new HttpError(loc => loc._c('user', 'User with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('user', 'User with UUID %s does not exist.'), 403, uuid);
     }
 
     res.sendStatus(204);

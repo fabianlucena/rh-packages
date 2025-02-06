@@ -10,7 +10,6 @@
         "source": "Assignees",
         "language": "es",
         "context": "workflow",
-        "isDraft": false,
         "translation": "Encargados",
         "ref": "..\\rh-workflow\\models\\wf-workflow-of-entity.js [118,32]"
     },
@@ -55,13 +54,6 @@
         "context": "workflow",
         "translation": "Columna",
         "ref": "..\\rh-workflow\\services\\wf-workflow-of-entity.js [162,37]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [206,37]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [250,37]"
-    },
-    {
-        "source": "Create workflow case",
-        "language": "es",
-        "context": "workflow",
-        "translation": "Crear caso de proceso",
-        "ref": "..\\rh-workflow\\rh-workflow.js [257,69]"
     },
     {
         "source": "Create workflows",
@@ -120,6 +112,13 @@
         "ref": "..\\rh-workflow\\services\\wf-case.js [45,33]"
     },
     {
+        "source": "Error in workflow",
+        "language": "es",
+        "context": "workflow",
+        "translation": "Error en el proceso",
+        "ref": "..\\rh-workflow\\rh-workflow.js [272,54]\n..\\rh-workflow\\rh-workflow.js [276,49]"
+    },
+    {
         "source": "Exists another row with that title.",
         "language": "es",
         "context": "workflow",
@@ -174,13 +173,6 @@
         "context": "workflow",
         "translation": "Nombre",
         "ref": "..\\rh-workflow\\services\\wf-workflow.js [53,33]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [106,33]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [181,37]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [225,37]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [269,37]\n..\\rh-workflow\\services\\wf-transition.js [55,33]\n..\\rh-workflow\\services\\wf-status.js [62,33]"
-    },
-    {
-        "source": "No workflow case",
-        "language": "es",
-        "context": "workflow",
-        "translation": "No hay caso de proceso",
-        "ref": "..\\rh-workflow\\rh-workflow.js [261,49]"
     },
     {
         "source": "Select the model entity",
@@ -359,7 +351,6 @@
         "source": "Workflow parameter is missing or workflow does not exist.",
         "language": "es",
         "context": "workflow",
-        "isDraft": false,
         "translation": "No se encuentra el parámetro proceso (workflow) o el proceso (workflow) no existe.",
         "ref": "..\\rh-workflow\\services\\wf-transition.js [122,39]"
     },
@@ -376,5 +367,21 @@
         "context": "workflow",
         "translation": "Proceso de entidad",
         "ref": "..\\rh-workflow\\conf_data.js [24,125]\n..\\rh-workflow\\services\\wf-workflow-of-entity.js [290,29]"
+    },
+    {
+        "source": "{Unasigned}",
+        "language": "es",
+        "context": "workflow",
+        "isDraft": false,
+        "translation": "{No asignado}",
+        "ref": "..\\rh-workflow\\rh-workflow.js [15,12]"
+    },
+    {
+        "source": "{Unasigned}",
+        "language": "es",
+        "context": "workflow.transitionContext || 'workflow'",
+        "isDraft": true,
+        "translation": null,
+        "ref": "..\\rh-workflow\\rh-workflow.js [250,83]\n..\\rh-workflow\\rh-workflow.js [263,64]"
     }
 ]

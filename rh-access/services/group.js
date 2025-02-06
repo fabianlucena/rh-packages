@@ -184,8 +184,8 @@ export class GroupService extends Service.IdUuidEnableOwnerModule {
       {
         name:          'displayName',
         type:          'text',
-        label:          await loc._c('group', 'Display Name'),
-        placeholder:    await loc._c('group', 'Display Name'),
+        label:          await loc._c('group', 'Display name'),
+        placeholder:    await loc._c('group', 'Display name'),
         required:       true,
         isColumn:       true,
         isField:        true,
@@ -207,10 +207,10 @@ export class GroupService extends Service.IdUuidEnableOwnerModule {
       {
         name:       'username',
         type:       'text',
-        label:       await loc._c('group', 'Username'),
+        label:       await loc._c('group', 'Group name'),
         isColumn:    true,
         isField:     true,
-        placeholder: await loc._c('group', 'Username'),
+        placeholder: await loc._c('group', 'Group name'),
         required:    true,
         disabled:    {
           create:       false,

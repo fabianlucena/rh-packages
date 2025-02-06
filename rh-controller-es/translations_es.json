@@ -12,11 +12,10 @@
         "ref": "rh-controller-es.js [19,26]"
     },
     {
-        "source": "The item with UUID %s does not exists.",
+        "source": "The item with UUID %s does not exist.",
         "language": "es",
         "context": "controller",
-        "isDraft": false,
         "translation": "El elemento con el UUID %s no existe.",
-        "ref": "..\\rh-controller\\rh-controller.js [160,32]"
+        "ref": "..\\rh-controller\\rh-controller.js [480,38]"
     }
 ]

@@ -12,6 +12,8 @@ conf.modelEntityNameCache = {};
 conf.workflowsCache = {};
 conf.fieldsCache = {};
 
+defaultLoc._cf('workflow', '{Unasigned}');
+
 async function configure(global, options) {
   for (const k in options) {
     conf[k] = options[k];
@@ -215,15 +217,15 @@ async function getted({ entity, result, options }) {
         row[workflow.workflowName] = workflow.title;
       }
 
-      let wfCase = await wfCaseService.getForWorkflowIdAndEnrityUuid(
+      let wfCase = await wfCaseService.getForWorkflowIdAndEntityUuid(
         workflow.id,
         row.uuid,
         { loc },
       );
 
       if (!wfCase) {
-        await wfCaseService.createForWorkflowIdAndEnrityUuid(workflow.id, row.uuid);
-        wfCase = await wfCaseService.getForWorkflowIdAndEnrityUuid(
+        await wfCaseService.createForWorkflowIdAndEntityUuid(workflow.id, row.uuid);
+        wfCase = await wfCaseService.getForWorkflowIdAndEntityUuid(
           workflow.id,
           row.uuid,
           { loc },
@@ -296,7 +298,7 @@ async function created({ entity, rows, options }) {
     }
 
     for (const workflow of workflows) {
-      const wfCase = await wfCaseService.createForWorkflowIdAndEnrityUuid(workflow.id, row.uuid);
+      const wfCase = await wfCaseService.createForWorkflowIdAndEntityUuid(workflow.id, row.uuid);
       await wfBranchService.createForWorkflowIdAndCaseId(workflow.id, wfCase.id);
     }
   }

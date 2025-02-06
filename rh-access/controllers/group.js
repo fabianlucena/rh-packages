@@ -2,6 +2,8 @@ import { Controller } from 'rh-controller';
 import dependency from 'rf-dependency';
 import { getOptionsFromParamsAndOData, makeContext } from 'http-util';
 import { conf } from '../conf.js';
+import { defaultLoc } from 'rf-locale';
+import { HttpError } from 'rf-error';
 
 export class GroupController extends Controller {
   constructor() {
@@ -38,8 +40,8 @@ export class GroupController extends Controller {
 
     for (const row of result.rows) {
       row.users = 
-        (await this.userGroupService.getList({ include: { user: true }, where: { groupId: row.id } }))
-        .map(userGroup => userGroup.user);
+        (await this.userGroupService.getList({ include: { user: true }, where: { groupId: row.id }}))
+          .map(userGroup => userGroup.user);
       delete row.id;
     }
     
@@ -75,8 +77,8 @@ export class GroupController extends Controller {
       const groupId = await this.service.getSingleIdForUuid(uuid);
 
       const existingUserUuids = 
-        (await this.userGroupService.getList({ include: { user: { attributes: ['uuid'] } }, where: { groupId } }))
-        .map(userGroup => userGroup.user.uuid);
+        (await this.userGroupService.getList({ include: { user: { attributes: ['uuid'] }}, where: { groupId }}))
+          .map(userGroup => userGroup.user.uuid);
 
       const newUsers = data.users.filter(u => !existingUserUuids.includes(u));
       const removedUsers = existingUserUuids.filter(u => !data.users.includes(u));
@@ -106,7 +108,7 @@ export class GroupController extends Controller {
 
     const rowsDeleted = await this.service.deleteForUuid(uuid);
     if (!rowsDeleted) {
-      throw new HttpError(loc => loc._c('group', 'Group with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('group', 'Group with UUID %s does not exist.'), 403, uuid);
     }
   }
 
