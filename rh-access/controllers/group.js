@@ -1,9 +1,8 @@
 import { Controller } from 'rh-controller';
 import dependency from 'rf-dependency';
-import { getOptionsFromParamsAndOData, makeContext } from 'http-util';
+import { getOptionsFromParamsAndOData, makeContext, HttpError } from 'http-util';
 import { conf } from '../conf.js';
 import { defaultLoc } from 'rf-locale';
-import { HttpError } from 'rf-error';
 
 export class GroupController extends Controller {
   constructor() {
