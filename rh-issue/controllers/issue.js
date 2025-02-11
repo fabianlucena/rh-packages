@@ -117,13 +117,25 @@ export class IssueController extends Controller {
   }
 
   async getInterface(req) {
+    const loc = req.loc ?? defaultLoc;
     const gridActions = [];
     if (req.permissions.includes('issue.create')) gridActions.push('create');
     if (req.permissions.includes('issue.edit'))   gridActions.push('enableDisable', 'edit');
     if (req.permissions.includes('issue.delete')) gridActions.push('delete');
     gridActions.push('search', 'paginate');
-        
-    const loc = req.loc ?? defaultLoc;
+    if (req.permissions.includes('issue.edit')) gridActions.push({
+      name: 'take',
+      type: 'buttonIcon',
+      icon: 'assign-self',
+      title: await loc._c('qaait', 'Take issue'),
+      actionData: {
+        action: 'apiCall',
+        service: 'issue/take',
+        method: 'PATCH',
+        bodyParam: { uuid: 'uuid' },
+      },
+    });
+
     const fields = [
       {
         name:        'title',
@@ -391,5 +403,12 @@ export class IssueController extends Controller {
     const result = await this.wfTransitionService.getListAndCount(options);
 
     res.status(200).send(result);
+  }
+
+  'patchPermission /take' = 'issue.edit';
+  async 'patch /take'(req, res) {
+    const context = makeContext(req, res);
+    const { uuid } = await this.checkUuid(context);
+    await this.service.updateForUuid({ assigneeUuid: req.user.uuid }, uuid);
   }
 }
