@@ -17,6 +17,8 @@ export class IssueController extends Controller {
     this.wfStatusService =         dependency.get('wfStatusService');
     this.wfTransitionService =     dependency.get('wfTransitionService');
     this.userService =             dependency.get('userService');
+    this.wfCaseService =           dependency.get('wfCaseService');
+    this.wfBranchService =         dependency.get('wfBranchService');
   }
 
   async checkDataForProjectId(data, context) {
@@ -409,6 +411,9 @@ export class IssueController extends Controller {
   async 'patch /take'(req, res) {
     const context = makeContext(req, res);
     const { uuid } = await this.checkUuid(context);
-    await this.service.updateForUuid({ assigneeUuid: req.user.uuid }, uuid);
+    const userId = await this.userService.getIdForUuid(req.user.uuid);
+    await this.service.updateForUuid({ assigneeId: userId }, uuid);
+    const caseIds = await this.wfCaseService.getIdFor({ entityUuid: uuid });
+    await this.wfBranchService.updateFor({ assigneeId: userId }, { caseId: caseIds });
   }
 }
