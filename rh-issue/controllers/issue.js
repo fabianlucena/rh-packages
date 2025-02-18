@@ -129,7 +129,7 @@ export class IssueController extends Controller {
       name: 'take',
       type: 'buttonIcon',
       icon: 'assign-self',
-      title: await loc._c('qaait', 'Take issue'),
+      title: await loc._c('issue', 'Take issue'),
       actionData: {
         action: 'apiCall',
         service: 'issue/take',
