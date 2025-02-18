@@ -21,6 +21,14 @@
         "ref": "..\\rh-workflow\\services\\wf-case.js [52,29]"
     },
     {
+        "source": "Case missing from request",
+        "language": "es",
+        "context": "workflow",
+        "isDraft": false,
+        "translation": "No hay caso en el requerimiento",
+        "ref": "..\\rh-workflow\\controllers\\workflow-case.js [37,38]"
+    },
+    {
         "source": "Cases",
         "language": "es",
         "context": "workflow",
@@ -257,6 +265,22 @@
         "ref": "..\\rh-workflow\\services\\wf-transition.js [106,29]"
     },
     {
+        "source": "Transition does not belong to workflow",
+        "language": "es",
+        "context": "workflow",
+        "isDraft": false,
+        "translation": "La transición no pertenece al proceso",
+        "ref": "..\\rh-workflow\\controllers\\workflow-case.js [50,38]"
+    },
+    {
+        "source": "Transition missing from request",
+        "language": "es",
+        "context": "workflow",
+        "isDraft": false,
+        "translation": "No se encuentra la transición en el requerimiento",
+        "ref": "..\\rh-workflow\\controllers\\workflow-case.js [43,38]"
+    },
+    {
         "source": "Transitions",
         "language": "es",
         "context": "workflow",
@@ -379,7 +403,6 @@
         "source": "{Unasigned}",
         "language": "es",
         "context": "workflow.transitionContext || 'workflow'",
-        "isDraft": false,
         "translation": "{No asignado}",
         "ref": "..\\rh-workflow\\rh-workflow.js [245,83]\n..\\rh-workflow\\rh-workflow.js [258,64]"
     }
