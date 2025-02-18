@@ -3,7 +3,6 @@
         "source": "Administration",
         "language": "es",
         "context": "menu",
-        "isDraft": false,
         "translation": "Administración",
         "ref": "..\\rh-auth\\conf_data.js [32,96]"
     },
@@ -232,11 +231,19 @@
         "ref": "..\\rh-auth\\controllers\\session.js [59,45]"
     },
     {
+        "source": "Invalid device",
+        "language": "es",
+        "context": "login",
+        "isDraft": false,
+        "translation": "Dispositivo inválido",
+        "ref": "..\\rh-auth\\services\\login.js [49,40]\n..\\rh-auth\\services\\login.js [100,38]"
+    },
+    {
         "source": "Invalid login",
         "language": "es",
         "context": "login",
         "translation": "Ingreso inválido ",
-        "ref": "..\\rh-auth\\controllers\\login.js [118,38]"
+        "ref": "..\\rh-auth\\services\\login.js [41,38]\n..\\rh-auth\\controllers\\login.js [118,38]"
     },
     {
         "source": "Local",
@@ -366,7 +373,6 @@
         "source": "The auto login token is invalid because the session is closed",
         "language": "es",
         "context": "login",
-        "isDraft": false,
         "translation": "La seña (token) de ingreso automático es inválida porque la sesión está cerrada ",
         "ref": "..\\rh-auth\\services\\login.js [95,46]"
     },

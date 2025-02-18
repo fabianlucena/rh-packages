@@ -30,23 +30,24 @@ export class WorkflowCaseController extends Controller {
 
   'postPermission /do-transition' = 'workflow.edit';
   async 'post /do-transition'(req) {
+    const loc = loc ?? defaultLoc;
     const wfCaseWhere = req.body?.case;
 
     if (!wfCaseWhere) {
-      throw new HttpError('Case missing from request', 400);
+      throw new HttpError(loc => loc._c('workflow', 'Case missing from request'), 400);
     }
 
     const transitionWhere = req.body?.transition;
 
     if (!transitionWhere) {
-      throw new HttpError('Transition missing from request', 400);
+      throw new HttpError(loc => loc._c('workflow', 'Transition missing from request'), 400);
     }
 
     const wfCase = await this.service.getSingle({ where: wfCaseWhere });
     const transition = await this.transitionService.getSingle({ where:transitionWhere });
 
     if (wfCase.workflowId !== transition.workflowId) {
-      throw new HttpError('Transition does not belong to workflow', 400);
+      throw new HttpError(loc => loc._c('workflow', 'Transition does not belong to workflow'), 400);
     }
 
     await this.branchService.updateFor({ statusId: transition.toId }, { caseId: wfCase.id });
