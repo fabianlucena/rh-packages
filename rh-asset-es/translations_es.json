@@ -4,7 +4,7 @@
         "language": "es",
         "context": "asset",
         "translation": "Activos",
-        "ref": "..\\rh-asset\\conf_data.js [20,197]\n..\\rh-asset\\controllers\\asset.js [205,24]"
+        "ref": "..\\rh-asset\\conf_data.js [20,197]\n..\\rh-asset\\services\\asset.js [121,24]"
     },
     {
         "source": "Assets manager",
@@ -18,20 +18,19 @@
         "language": "es",
         "context": "asset",
         "translation": "Tipos de activos",
-        "ref": "..\\rh-asset\\conf_data.js [15,197]\n..\\rh-asset\\controllers\\type.js [179,24]"
+        "ref": "..\\rh-asset\\conf_data.js [15,197]\n..\\rh-asset\\services\\asset-type.js [102,24]"
     },
     {
         "source": "Check for enable or uncheck for disable",
         "language": "es",
         "context": "asset",
         "translation": "Marque para habilitar y desmarque para deshabilitar",
-        "ref": "..\\rh-asset\\controllers\\type.js [172,32]\n..\\rh-asset\\controllers\\asset.js [198,32]"
+        "ref": "..\\rh-asset\\services\\asset.js [37,32]\n..\\rh-asset\\services\\asset-type.js [34,32]"
     },
     {
         "source": "Create assets",
         "language": "es",
         "context": "asset",
-        "isDraft": false,
         "translation": "Crear activos",
         "ref": "..\\rh-asset\\conf_data.js [21,44]"
     },
@@ -39,7 +38,6 @@
         "source": "Create assets types",
         "language": "es",
         "context": "asset",
-        "isDraft": false,
         "translation": "Crear tipos de activos",
         "ref": "..\\rh-asset\\conf_data.js [16,44]"
     },
@@ -47,7 +45,6 @@
         "source": "Delete assets",
         "language": "es",
         "context": "asset",
-        "isDraft": false,
         "translation": "Eliminar activos",
         "ref": "..\\rh-asset\\conf_data.js [23,44]"
     },
@@ -55,7 +52,6 @@
         "source": "Delete assets types",
         "language": "es",
         "context": "asset",
-        "isDraft": false,
         "translation": "Eliminar tipos de activos",
         "ref": "..\\rh-asset\\conf_data.js [18,44]"
     },
@@ -64,13 +60,12 @@
         "language": "es",
         "context": "asset",
         "translation": "Descripción ",
-        "ref": "..\\rh-asset\\controllers\\type.js [163,32]\n..\\rh-asset\\controllers\\asset.js [189,32]"
+        "ref": "..\\rh-asset\\services\\asset.js [113,32]\n..\\rh-asset\\services\\asset-type.js [94,32]"
     },
     {
         "source": "Edit assets",
         "language": "es",
         "context": "asset",
-        "isDraft": false,
         "translation": "Modificar activos",
         "ref": "..\\rh-asset\\conf_data.js [22,44]"
     },
@@ -78,7 +73,6 @@
         "source": "Edit assets types",
         "language": "es",
         "context": "asset",
-        "isDraft": false,
         "translation": "Modificar tipos de activos",
         "ref": "..\\rh-asset\\conf_data.js [17,44]"
     },
@@ -87,27 +81,26 @@
         "language": "es",
         "context": "asset",
         "translation": "Habilitado ",
-        "ref": "..\\rh-asset\\controllers\\type.js [171,32]\n..\\rh-asset\\controllers\\asset.js [197,32]"
+        "ref": "..\\rh-asset\\services\\asset.js [36,32]\n..\\rh-asset\\services\\asset-type.js [33,32]"
     },
     {
         "source": "Exists another asset with that name in this project.",
         "language": "es",
         "context": "asset",
         "translation": "Existe otro activo con ese nombre en este proyecto.",
-        "ref": "..\\rh-asset\\services\\asset.js [39,42]\n..\\rh-asset\\services\\asset-type.js [31,42]"
+        "ref": "..\\rh-asset\\services\\asset.js [151,42]\n..\\rh-asset\\services\\asset-type.js [126,42]"
     },
     {
         "source": "Exists another asset with that title in this project.",
         "language": "es",
         "context": "asset",
         "translation": "Existe otro activo con ese título en este proyecto.",
-        "ref": "..\\rh-asset\\services\\asset.js [56,42]\n..\\rh-asset\\services\\asset-type.js [48,42]"
+        "ref": "..\\rh-asset\\services\\asset.js [168,42]\n..\\rh-asset\\services\\asset-type.js [143,42]"
     },
     {
         "source": "Get assets",
         "language": "es",
         "context": "asset",
-        "isDraft": false,
         "translation": "Obtener activos",
         "ref": "..\\rh-asset\\conf_data.js [20,44]"
     },
@@ -115,7 +108,6 @@
         "source": "Get assets types",
         "language": "es",
         "context": "asset",
-        "isDraft": false,
         "translation": "Obtener tipos de activos",
         "ref": "..\\rh-asset\\conf_data.js [15,44]"
     },
@@ -124,35 +116,35 @@
         "language": "es",
         "context": "asset",
         "translation": "Nombre ",
-        "ref": "..\\rh-asset\\controllers\\type.js [63,27]\n..\\rh-asset\\controllers\\type.js [133,32]\n..\\rh-asset\\controllers\\asset.js [64,27]\n..\\rh-asset\\controllers\\asset.js [142,32]"
+        "ref": "..\\rh-asset\\services\\asset.js [67,32]\n..\\rh-asset\\services\\asset-type.js [64,32]\n..\\rh-asset\\controllers\\type.js [50,27]\n..\\rh-asset\\controllers\\asset.js [51,27]"
     },
     {
         "source": "Project",
         "language": "es",
         "context": "asset",
         "translation": "Proyecto",
-        "ref": "..\\rh-asset\\controllers\\type.js [148,32]\n..\\rh-asset\\controllers\\asset.js [157,32]"
+        "ref": "..\\rh-asset\\services\\asset.js [99,32]\n..\\rh-asset\\services\\asset-type.js [79,32]"
     },
     {
         "source": "Project parameter is missing.",
         "language": "es",
         "context": "asset",
         "translation": "No se encuentra el parámetro proyecto.",
-        "ref": "..\\rh-asset\\services\\asset-type.js [22,39]"
+        "ref": "..\\rh-asset\\services\\asset-type.js [117,39]"
     },
     {
         "source": "Select the project",
         "language": "es",
         "context": "asset",
         "translation": "Seleccione el proyecto",
-        "ref": "..\\rh-asset\\controllers\\type.js [149,32]\n..\\rh-asset\\controllers\\asset.js [158,32]"
+        "ref": "..\\rh-asset\\services\\asset.js [100,32]\n..\\rh-asset\\services\\asset-type.js [80,32]"
     },
     {
         "source": "Select the type",
         "language": "es",
         "context": "asset",
         "translation": "Seleccione el tipo",
-        "ref": "..\\rh-asset\\controllers\\asset.js [175,32]"
+        "ref": "..\\rh-asset\\services\\asset.js [83,36]"
     },
     {
         "source": "Spanish",
@@ -167,20 +159,6 @@
         "ref": "rh-asset-es.js [19,26]"
     },
     {
-        "source": "The asset type with UUID %s does not exists.",
-        "language": "es",
-        "context": "asset",
-        "translation": "El tipo de activo con el UUID %s no existe.",
-        "ref": "..\\rh-asset\\controllers\\type.js [50,38]"
-    },
-    {
-        "source": "The asset with UUID %s does not exists.",
-        "language": "es",
-        "context": "asset",
-        "translation": "El activo con el UUID %s no existe.",
-        "ref": "..\\rh-asset\\controllers\\asset.js [51,38]"
-    },
-    {
         "source": "The project does not exist or you do not have permission to access it.",
         "language": "es",
         "context": "asset",
@@ -192,41 +170,41 @@
         "language": "es",
         "context": "asset",
         "translation": "Título ",
-        "ref": "..\\rh-asset\\controllers\\type.js [64,27]\n..\\rh-asset\\controllers\\type.js [110,32]\n..\\rh-asset\\controllers\\asset.js [65,27]\n..\\rh-asset\\controllers\\asset.js [119,32]"
+        "ref": "..\\rh-asset\\services\\asset.js [44,32]\n..\\rh-asset\\services\\asset-type.js [41,32]\n..\\rh-asset\\controllers\\type.js [51,27]\n..\\rh-asset\\controllers\\asset.js [52,27]"
     },
     {
         "source": "Type",
         "language": "es",
         "context": "asset",
         "translation": "Tipo",
-        "ref": "..\\rh-asset\\controllers\\asset.js [174,32]"
+        "ref": "..\\rh-asset\\services\\asset.js [82,36]\n..\\rh-asset\\controllers\\asset.js [53,27]"
     },
     {
         "source": "Type parameter is missing.",
         "language": "es",
         "context": "asset",
         "translation": "No se encuentra el parámetro tipo.",
-        "ref": "..\\rh-asset\\services\\asset.js [25,39]"
+        "ref": "..\\rh-asset\\services\\asset.js [137,39]"
     },
     {
         "source": "Type the description here",
         "language": "es",
         "context": "asset",
         "translation": "Escriba aquí la descripción",
-        "ref": "..\\rh-asset\\controllers\\type.js [164,32]\n..\\rh-asset\\controllers\\asset.js [190,32]"
+        "ref": "..\\rh-asset\\services\\asset.js [114,32]\n..\\rh-asset\\services\\asset-type.js [95,32]"
     },
     {
         "source": "Type the name here",
         "language": "es",
         "context": "asset",
         "translation": "Escriba aquí el nombre",
-        "ref": "..\\rh-asset\\controllers\\type.js [134,32]\n..\\rh-asset\\controllers\\asset.js [143,32]"
+        "ref": "..\\rh-asset\\services\\asset.js [68,32]\n..\\rh-asset\\services\\asset-type.js [65,32]"
     },
     {
         "source": "Type the title here",
         "language": "es",
         "context": "asset",
         "translation": "Escriba aquí el título",
-        "ref": "..\\rh-asset\\controllers\\type.js [111,32]\n..\\rh-asset\\controllers\\asset.js [120,32]"
+        "ref": "..\\rh-asset\\services\\asset.js [45,32]\n..\\rh-asset\\services\\asset-type.js [42,32]"
     }
 ]

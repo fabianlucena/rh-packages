@@ -38,7 +38,7 @@ export class LoginService {
     await userService.checkEnabledUser(user, username);
     const checkPasswordResult = await IdentityService.singleton().checkLocalPasswordForUsername(username, password, loc);
     if (checkPasswordResult !== true) {
-      throw new HttpError('Invalid login', 403);
+      throw new HttpError(loc => loc._c('login', 'Invalid login'), 403);
     }
 
     const deviceService = DeviceService.singleton();
@@ -46,7 +46,7 @@ export class LoginService {
     if (deviceToken) {
       device = await deviceService.getForToken(deviceToken);
       if (!device) {
-        throw new HttpError('Invalid device', 400);                
+        throw new HttpError(loc => loc._c('login', 'Invalid device'), 400);                
       }
     }
     
@@ -97,7 +97,7 @@ export class LoginService {
 
     const device = await DeviceService.singleton().getForToken(deviceToken);
     if (!device) {
-      throw new HttpError('Invalid device', 400);
+      throw new HttpError(loc => loc._c('login', 'Invalid device'), 400);
     }
 
     if (oldSession.deviceId != device.id) {

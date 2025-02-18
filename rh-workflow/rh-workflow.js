@@ -12,19 +12,16 @@ conf.modelEntityNameCache = {};
 conf.workflowsCache = {};
 conf.fieldsCache = {};
 
+defaultLoc._cf('workflow', '{Unasigned}');
+
 async function configure(global, options) {
   for (const k in options) {
     conf[k] = options[k];
   }
 
   global.eventBus?.$on('interface.grid.get', interfaceGridGet);
-  //global.eventBus?.$on('interface.form.get', interfaceFormGet);
   global.eventBus?.$on('getted', getted);
   global.eventBus?.$on('created', created);
-  /*global.eventBus?.$on('updated', updated);
-    global.eventBus?.$on('deleting', deleting);
-    global.eventBus?.$on('deleted', deleted);
-    global.eventBus?.$on('sanitized', sanitized);*/
 }
 
 let 
@@ -215,15 +212,15 @@ async function getted({ entity, result, options }) {
         row[workflow.workflowName] = workflow.title;
       }
 
-      let wfCase = await wfCaseService.getForWorkflowIdAndEnrityUuid(
+      let wfCase = await wfCaseService.getForWorkflowIdAndEntityUuid(
         workflow.id,
         row.uuid,
         { loc },
       );
 
       if (!wfCase) {
-        await wfCaseService.createForWorkflowIdAndEnrityUuid(workflow.id, row.uuid);
-        wfCase = await wfCaseService.getForWorkflowIdAndEnrityUuid(
+        await wfCaseService.createForWorkflowIdAndEntityUuid(workflow.id, row.uuid);
+        wfCase = await wfCaseService.getForWorkflowIdAndEntityUuid(
           workflow.id,
           row.uuid,
           { loc },
@@ -289,6 +286,8 @@ async function created({ entity, rows, options }) {
     return;
   }
 
+  const loc = options?.loc ?? defaultLoc;
+
   for (const iRow in rows) {
     let row = rows[iRow];
     if (!row.uuid) {
@@ -296,8 +295,16 @@ async function created({ entity, rows, options }) {
     }
 
     for (const workflow of workflows) {
-      const wfCase = await wfCaseService.createForWorkflowIdAndEnrityUuid(workflow.id, row.uuid);
-      await wfBranchService.createForWorkflowIdAndCaseId(workflow.id, wfCase.id);
+      let wfCase = await wfCaseService.getForWorkflowIdAndEntityUuid(
+        workflow.id,
+        row.uuid,
+        { loc },
+      );
+      
+      if (!wfCase) {
+        wfCase = await wfCaseService.createForWorkflowIdAndEntityUuid(workflow.id, row.uuid);
+        await wfBranchService.createForWorkflowIdAndCaseId(workflow.id, wfCase.id);
+      }
     }
   }
 }

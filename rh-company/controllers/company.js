@@ -35,7 +35,7 @@ export class CompanyController {
     const uuid = await getUuidFromRequest(context.req);
     const company = await companyService.getSingleOrNullForUuid(uuid, { skipNoRowsError: true });
     if (!company) {
-      throw new HttpError(loc => loc._c('company', 'The company with UUID %s does not exists.'), 404, uuid);
+      throw new HttpError(loc => loc._c('company', 'The company with UUID %s does not exist.'), 404, uuid);
     }
 
     await CompanyController.checkData({ id: company.id }, context);
@@ -200,7 +200,7 @@ export class CompanyController {
     const { uuid } = await CompanyController.checkUuid(makeContext(req, res));
     const rowsDeleted = await companyService.deleteForUuid(uuid);
     if (!rowsDeleted) {
-      throw new HttpError(loc => loc._c('company', 'Company with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('company', 'Company with UUID %s does not exist.'), 403, uuid);
     }
 
     res.sendStatus(204);
@@ -210,7 +210,7 @@ export class CompanyController {
     const { uuid } = await CompanyController.checkUuid(makeContext(req, res));
     const rowsUpdated = await companyService.enableForUuid(uuid);
     if (!rowsUpdated) {
-      throw new HttpError(loc => loc._c('company', 'Company with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('company', 'Company with UUID %s does not exist.'), 403, uuid);
     }
 
     res.sendStatus(204);
@@ -220,7 +220,7 @@ export class CompanyController {
     const { uuid } = await CompanyController.checkUuid(makeContext(req, res));
     const rowsUpdated = await companyService.disableForUuid(uuid);
     if (!rowsUpdated) {
-      throw new HttpError(loc => loc._c('company', 'Company with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('company', 'Company with UUID %s does not exist.'), 403, uuid);
     }
 
     res.sendStatus(204);
@@ -234,7 +234,7 @@ export class CompanyController {
 
     const rowsUpdated = await companyService.updateFor(data, where);
     if (!rowsUpdated) {
-      throw new HttpError(loc => loc._c('company', 'Company with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('company', 'Company with UUID %s does not exist.'), 403, uuid);
     }
 
     res.sendStatus(204);

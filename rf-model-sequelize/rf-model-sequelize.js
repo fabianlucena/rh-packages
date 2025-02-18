@@ -182,18 +182,18 @@ export class ModelSequelize {
         sanitizedInclude.model = include.model ?? reference.service?.model?.model;
         if (!sanitizedInclude.model) {
           if (!references[includedName]) {
-            throw Error(`Reference for "${includedName}" does not exists in service "${service.constructor.name}".`);
+            throw Error(`Reference for "${includedName}" does not exist in service "${service.constructor.name}".`);
           }
 
           if (!references[includedName].service) {
-            throw Error(`Service for reference "${includedName}" does not exists in service "${service.constructor.name}".`);
+            throw Error(`Service for reference "${includedName}" does not exist in service "${service.constructor.name}".`);
           }
 
           if (!references[includedName].service.model) {
-            throw Error(`Model for reference "${includedName}" does not exists in service "${service.constructor.name}".`);
+            throw Error(`Model for reference "${includedName}" does not exist in service "${service.constructor.name}".`);
           }
 
-          throw Error(`Sequelize model for reference "${includedName}" does not exists in service "${service.constructor.name}".`);
+          throw Error(`Sequelize model for reference "${includedName}" does not exist in service "${service.constructor.name}".`);
         }
 
         sanitizedInclude.as ??= includedName;

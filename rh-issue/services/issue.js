@@ -12,9 +12,10 @@ export class IssueService extends Service.IdUuidEnableNameUniqueTitleDescription
     closeReason: 'issueCloseReason',
     relatedTo:   'issueRelated',
     relatedFrom: 'issueRelated',
+    assignee:    'user',
   };
   defaultTranslationContext = 'issue';
-  viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'isTranslatable', 'description'];
+  viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'isTranslatable', 'description', 'dueDate'];
   eventBus = conf.global.eventBus;
 
   init() {

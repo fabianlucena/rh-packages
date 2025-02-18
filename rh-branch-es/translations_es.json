@@ -4,151 +4,150 @@
         "language": "es",
         "context": "role",
         "translation": "Administrador de sucursales ",
-        "ref": "..\\rh-branch\\conf_data.js [7,73]"
+        "ref": "..\\rh-branch\\conf_data.js [7,41]"
     },
     {
-        "source": "Branch with UUID %s does not exists.",
+        "source": "Branch with UUID %s does not exist.",
         "language": "es",
         "context": "branch",
         "translation": "La sucursal con el UUID %s no existe. ",
-        "ref": "..\\rh-branch\\controllers\\branch.js [382,95]\n..\\rh-branch\\controllers\\branch.js [433,95]\n..\\rh-branch\\controllers\\branch.js [484,95]\n..\\rh-branch\\controllers\\branch.js [533,95]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [277,38]\n..\\rh-branch\\controllers\\branch.js [293,38]\n..\\rh-branch\\controllers\\branch.js [309,38]\n..\\rh-branch\\controllers\\branch.js [325,38]"
     },
     {
         "source": "Branches",
         "language": "es",
         "context": "menu",
         "translation": "Sucursales ",
-        "ref": "..\\rh-branch\\conf_data.js [15,192]"
+        "ref": "..\\rh-branch\\conf_data.js [15,167]"
     },
     {
         "source": "Branches",
         "language": "es",
         "translation": "Sucursales",
-        "ref": "..\\rh-branch\\controllers\\branch.js [246,43]\n..\\rh-branch\\controllers\\branch.js [327,43]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [153,24]\n..\\rh-branch\\controllers\\branch.js [245,24]"
     },
     {
         "source": "Company",
         "language": "es",
         "context": "branch",
         "translation": "Empresa",
-        "ref": "..\\rh-branch\\controllers\\branch.js [235,58]\n..\\rh-branch\\controllers\\branch.js [301,58]\n..\\rh-branch\\controllers\\branch.js [302,64]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [143,26]\n..\\rh-branch\\controllers\\branch.js [219,26]\n..\\rh-branch\\controllers\\branch.js [220,32]"
     },
     {
         "source": "Company parameter is missing.",
         "language": "es",
         "context": "branch",
         "translation": "No se encuentra el parámetro empresa.",
-        "ref": "..\\rh-branch\\services\\branch.js [23,84]"
+        "ref": "..\\rh-branch\\services\\branch.js [17,39]"
     },
     {
         "source": "Create branches",
         "language": "es",
         "context": "permission",
         "translation": "Crear sucursales ",
-        "ref": "..\\rh-branch\\conf_data.js [16,80]"
+        "ref": "..\\rh-branch\\conf_data.js [16,41]"
     },
     {
         "source": "Delete branches",
         "language": "es",
         "context": "permission",
         "translation": "Eliminar sucursales ",
-        "ref": "..\\rh-branch\\conf_data.js [18,80]"
+        "ref": "..\\rh-branch\\conf_data.js [18,41]"
     },
     {
         "source": "Description",
         "language": "es",
         "context": "branch",
         "translation": "Descripción ",
-        "ref": "..\\rh-branch\\controllers\\branch.js [321,62]\n..\\rh-branch\\controllers\\branch.js [322,68]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [239,26]\n..\\rh-branch\\controllers\\branch.js [240,32]"
     },
     {
         "source": "Edit branches",
         "language": "es",
         "context": "permission",
         "translation": "Modificar sucursales ",
-        "ref": "..\\rh-branch\\conf_data.js [17,78]"
+        "ref": "..\\rh-branch\\conf_data.js [17,41]"
     },
     {
         "source": "Enabled",
         "language": "es",
         "context": "branch",
         "translation": "Habilitado ",
-        "ref": "..\\rh-branch\\controllers\\branch.js [314,58]\n..\\rh-branch\\controllers\\branch.js [315,64]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [232,26]\n..\\rh-branch\\controllers\\branch.js [233,32]"
     },
     {
         "source": "Exists another branch with that name.",
         "language": "es",
         "context": "branch",
-        "isDraft": false,
         "translation": "Existe otra sucursal con ese nombre.",
-        "ref": "..\\rh-branch\\controllers\\branch.js [110,100]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [70,42]"
     },
     {
         "source": "Get branches",
         "language": "es",
         "context": "permission",
         "translation": "Obtener sucursales ",
-        "ref": "..\\rh-branch\\conf_data.js [15,77]"
+        "ref": "..\\rh-branch\\conf_data.js [15,41]"
     },
     {
         "source": "Name",
         "language": "es",
         "context": "branch",
         "translation": "Nombre ",
-        "ref": "..\\rh-branch\\controllers\\branch.js [103,67]\n..\\rh-branch\\controllers\\branch.js [229,55]\n..\\rh-branch\\controllers\\branch.js [289,55]\n..\\rh-branch\\controllers\\branch.js [290,61]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [60,27]\n..\\rh-branch\\controllers\\branch.js [138,26]\n..\\rh-branch\\controllers\\branch.js [208,26]\n..\\rh-branch\\controllers\\branch.js [209,32]"
     },
     {
         "source": "Owner",
         "language": "es",
         "context": "branch",
         "translation": "Propietario ",
-        "ref": "..\\rh-branch\\controllers\\branch.js [241,56]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [148,26]"
     },
     {
         "source": "Spanish",
         "language": "es",
         "translation": "Español",
-        "ref": "rh-branch-es.js [18,41]"
+        "ref": "rh-branch-es.js [18,20]"
     },
     {
         "source": "Spanish language.",
         "language": "es",
         "translation": "Idioma español.",
-        "ref": "rh-branch-es.js [19,57]"
+        "ref": "rh-branch-es.js [19,26]"
     },
     {
         "source": "The branch data does not have a owner.",
         "language": "es",
         "context": "branch",
         "translation": "Los datos de la sucursal no tienen un propietario. ",
-        "ref": "..\\rh-branch\\controllers\\branch.js [116,101]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [76,40]"
     },
     {
-        "source": "The branch with UUID %s does not exists.",
+        "source": "The branch with UUID %s does not exist.",
         "language": "es",
         "context": "branch",
         "translation": "La sucursal con el UUID %s no existe. ",
-        "ref": "..\\rh-branch\\controllers\\branch.js [60,99]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [46,38]"
     },
     {
         "source": "The company does not exist or you do not have permission to access it.",
         "language": "es",
         "context": "branch",
         "translation": "La empresa no existe o usted no tiene permiso para accederla. ",
-        "ref": "..\\rh-branch\\controllers\\branch.js [45,133]\n..\\rh-branch\\controllers\\branch.js [51,129]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [31,40]\n..\\rh-branch\\controllers\\branch.js [37,38]"
     },
     {
         "source": "Title",
         "language": "es",
         "context": "branch",
         "translation": "Título ",
-        "ref": "..\\rh-branch\\controllers\\branch.js [103,102]\n..\\rh-branch\\controllers\\branch.js [224,56]\n..\\rh-branch\\controllers\\branch.js [268,56]\n..\\rh-branch\\controllers\\branch.js [269,62]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [61,27]\n..\\rh-branch\\controllers\\branch.js [133,26]\n..\\rh-branch\\controllers\\branch.js [187,26]\n..\\rh-branch\\controllers\\branch.js [188,32]"
     },
     {
         "source": "UUID",
         "language": "es",
         "context": "branch",
         "translation": "UUID ",
-        "ref": "..\\rh-branch\\controllers\\branch.js [377,131]\n..\\rh-branch\\controllers\\branch.js [428,131]\n..\\rh-branch\\controllers\\branch.js [479,131]\n..\\rh-branch\\controllers\\branch.js [528,131]"
+        "ref": "..\\rh-branch\\controllers\\branch.js [271,18]\n..\\rh-branch\\controllers\\branch.js [287,18]\n..\\rh-branch\\controllers\\branch.js [303,18]\n..\\rh-branch\\controllers\\branch.js [319,18]"
     }
 ]

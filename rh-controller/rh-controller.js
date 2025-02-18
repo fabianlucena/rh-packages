@@ -477,7 +477,7 @@ export class Controller {
     const uuid = await getUuidFromRequest(context.req);
     const item = await this.service.getSingleOrNullForUuid(uuid, { skipNoRowsError: true, context });
     if (!item) {
-      throw new HttpError(loc => loc._c('controller', 'The item with UUID %s does not exists.'), 404, uuid);
+      throw new HttpError(loc => loc._c('controller', 'The item with UUID %s does not exist.'), 404, uuid);
     }
 
     return { uuid };

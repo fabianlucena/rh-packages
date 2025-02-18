@@ -1,5 +1,6 @@
 import { Service, Op } from 'rf-service';
 import dependency from 'rf-dependency';
+import { defaultLoc } from 'rf-locale';
 
 export class GroupService extends Service.IdUuidEnableOwnerModule {
   model = 'userModel';
@@ -160,5 +161,87 @@ export class GroupService extends Service.IdUuidEnableOwnerModule {
             
     const groupsList = await this.getAllForUsername(username, { ...options, attributes: ['username'], skipThroughAssociationAttributes: true });
     return Promise.all(await groupsList.map(group => group.username));
+  }
+
+  async getInterface({ loc, permissions }) {
+    loc ??= defaultLoc;
+    const actions = [];
+
+    if (permissions.includes('group.create')) actions.push('create');
+    if (permissions.includes('group.edit'))   actions.push('enableDisable', 'edit');
+    if (permissions.includes('group.delete')) actions.push('delete');
+
+    actions.push('search', 'paginate');
+
+    const fields = [
+      {
+        name:        'isEnabled',
+        type:        'checkbox',
+        label:       await loc._c('group', 'Enabled'),
+        placeholder: await loc._c('group', 'Enabled'),
+        value:       true,
+      },
+      {
+        name:          'displayName',
+        type:          'text',
+        label:          await loc._c('group', 'Display name'),
+        placeholder:    await loc._c('group', 'Display name'),
+        required:       true,
+        isColumn:       true,
+        isField:        true,
+        onValueChanged: {
+          mode: {
+            create: true,
+            defaultValue: false,
+          },
+          action:   'setValues',
+          override: false,
+          map: {
+            name: {
+              source:   'displayName',
+              sanitize: 'dasherize',
+            },
+          },
+        },
+      },
+      {
+        name:       'username',
+        type:       'text',
+        label:       await loc._c('group', 'Group name'),
+        isColumn:    true,
+        isField:     true,
+        placeholder: await loc._c('group', 'Group name'),
+        required:    true,
+        disabled:    {
+          create:       false,
+          defaultValue: true,
+        },
+      },
+      {
+        name:            'users',
+        type:            'select',
+        gridType:        'list',
+        label:           await loc._c('group', 'Users'),
+        singleProperty:  'displayName',
+        multiple:        true,
+        big:             true,
+        isField:         true,
+        loadOptionsFrom: {
+          service: 'group/users',
+          value:   'uuid',
+          text:    'displayName',
+          title:   'description',
+        },
+      },
+    ];
+
+    return {
+      title:             await loc._c('group', 'Group'),
+      icon:             'group',
+      service:          'group',
+      action:           'group',
+      fields,
+      actions,
+    };
   }
 }

@@ -43,7 +43,7 @@ export class BranchController extends Controller {
   async checkUuid(uuid, context) {
     const branch = await this.service.getSingleOrNullForUuid(uuid, { skipNoRowsError: true });
     if (!branch) {
-      throw new HttpError(loc => loc._c('branch', 'The branch with UUID %s does not exists.'), 404, uuid);
+      throw new HttpError(loc => loc._c('branch', 'The branch with UUID %s does not exist.'), 404, uuid);
     }
 
     return await this.checkDataForCompanyId(
@@ -274,7 +274,7 @@ export class BranchController extends Controller {
 
     const rowsDeleted = await this.service.deleteForUuid(uuid);
     if (!rowsDeleted) {
-      throw new HttpError(loc => loc._c('branch', 'Branch with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('branch', 'Branch with UUID %s does not exist.'), 403, uuid);
     }
 
     res.sendStatus(204);
@@ -290,7 +290,7 @@ export class BranchController extends Controller {
 
     const rowsUpdated = await this.service.enableForUuid(uuid);
     if (!rowsUpdated) {
-      throw new HttpError(loc => loc._c('branch', 'Branch with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('branch', 'Branch with UUID %s does not exist.'), 403, uuid);
     }
 
     res.sendStatus(204);
@@ -306,7 +306,7 @@ export class BranchController extends Controller {
 
     const rowsUpdated = await this.service.disableForUuid(uuid);
     if (!rowsUpdated) {
-      throw new HttpError(loc => loc._c('branch', 'Branch with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('branch', 'Branch with UUID %s does not exist.'), 403, uuid);
     }
 
     res.sendStatus(204);
@@ -322,7 +322,7 @@ export class BranchController extends Controller {
 
     const rowsUpdated = await this.service.updateForUuid(req.body, uuid);
     if (!rowsUpdated) {
-      throw new HttpError(loc => loc._c('branch', 'Branch with UUID %s does not exists.'), 403, uuid);
+      throw new HttpError(loc => loc._c('branch', 'Branch with UUID %s does not exist.'), 403, uuid);
     }
 
     res.sendStatus(204);
