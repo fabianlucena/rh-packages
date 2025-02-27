@@ -32,10 +32,10 @@ export const data = {
   ],
 
   issueCloseReasons: [
-    { name: 'resolved',   title: loc._cf('issue', 'Resolved'),    isTranslatable: true, translationContext: 'issue', description: loc._cf('issue', 'The issue was closed because the problem was solved.') },
-    { name: 'discarded',  title: loc._cf('issue', 'Discarded'),   isTranslatable: true, translationContext: 'issue', description: loc._cf('issue', 'The issue was closed because the problem was discarded and will not be worked on.') },
-    { name: 'duplicated', title: loc._cf('issue', 'Duplicated'),  isTranslatable: true, translationContext: 'issue', description: loc._cf('issue', 'The issue was closed because is duplicated in another issue.') },
-    { name: 'workForMe',  title: loc._cf('issue', 'Work for me'), isTranslatable: true, translationContext: 'issue', description: loc._cf('issue', 'The issue was closed because it was checked and work properly so don\'t need work on it.') },
+    { name: 'resolved',   title: loc._cf('issue', 'Resolved'),     isTranslatable: true, translationContext: 'issue', description: loc._cf('issue', 'The issue was closed because the problem was solved.') },
+    { name: 'discarded',  title: loc._cf('issue', 'Discarded'),    isTranslatable: true, translationContext: 'issue', description: loc._cf('issue', 'The issue was closed because the problem was discarded and will not be worked on.') },
+    { name: 'duplicated', title: loc._cf('issue', 'Duplicated'),   isTranslatable: true, translationContext: 'issue', description: loc._cf('issue', 'The issue was closed because it is duplicated in another issue.') },
+    { name: 'workForMe',  title: loc._cf('issue', 'Works for me'), isTranslatable: true, translationContext: 'issue', description: loc._cf('issue', 'The issue was closed because it was checked and work properly so don\'t need work on it.') },
   ],
 
   issueRelationships: [
