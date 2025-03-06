@@ -391,7 +391,7 @@ export function getOptionsFromOData(params, options) {
         if (where[parts[0]][Op.and]) {
           where[parts[0]][Op.and].push({ [operator]: value });
         } else {
-          where[parts[0]] = { [Op.and]: [where[parts[0]], {[operator]: value}] }
+          where[parts[0]] = { [Op.and]: [where[parts[0]], { [operator]: value }] };
         }
       } else {
         where[parts[0]] = { [operator]: value };
