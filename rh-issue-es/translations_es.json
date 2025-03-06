@@ -302,7 +302,6 @@
         "source": "Take issue",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "Tomar incidencia",
         "ref": "..\\rh-issue\\controllers\\issue.js [132,24]"
     },
@@ -370,32 +369,33 @@
         "ref": "..\\rh-issue\\conf_data.js [30,132]"
     },
     {
-        "source": "The issue was closed because is duplicated in another issue.",
+        "source": "The issue was closed because it is duplicated in another issue.",
         "language": "es",
         "context": "issue",
+        "isDraft": false,
         "translation": "La incidencia se cerró porque está duplicada en otra incidencia.",
-        "ref": "..\\rh-issue\\conf_data.js [37,135]"
+        "ref": "..\\rh-issue\\conf_data.js [37,136]"
     },
     {
         "source": "The issue was closed because it was checked and work properly so don\\'t need work on it.",
         "language": "es",
         "context": "issue",
         "translation": "La incidencia se cerró porque se verificó y trabaja apropiadamente, por lo tanto no requiere trabajo.",
-        "ref": "..\\rh-issue\\conf_data.js [38,135]"
+        "ref": "..\\rh-issue\\conf_data.js [38,136]"
     },
     {
         "source": "The issue was closed because the problem was discarded and will not be worked on.",
         "language": "es",
         "context": "issue",
         "translation": "La incidencia se cerró porque el problema se ha descartado no se trabajará en ella.",
-        "ref": "..\\rh-issue\\conf_data.js [36,135]"
+        "ref": "..\\rh-issue\\conf_data.js [36,136]"
     },
     {
         "source": "The issue was closed because the problem was solved.",
         "language": "es",
         "context": "issue",
         "translation": "La incidencia se cerró porque el problema se ha solucionado.",
-        "ref": "..\\rh-issue\\conf_data.js [35,135]"
+        "ref": "..\\rh-issue\\conf_data.js [35,136]"
     },
     {
         "source": "The minimalist workflow only support open and close status.",
@@ -461,17 +461,17 @@
         "ref": "..\\rh-issue\\conf_data.js [30,37]"
     },
     {
-        "source": "Work for me",
-        "language": "es",
-        "context": "issue",
-        "translation": "Trabaja para mí",
-        "ref": "..\\rh-issue\\conf_data.js [38,38]"
-    },
-    {
         "source": "Workflow",
         "language": "es",
         "context": "issue",
         "translation": "Proceso",
         "ref": "..\\rh-issue\\conf_data.js [60,31]"
+    },
+    {
+        "source": "Works for me",
+        "language": "es",
+        "context": "issue",
+        "translation": "Funciona para mí",
+        "ref": "..\\rh-issue\\conf_data.js [38,38]"
     }
 ]
