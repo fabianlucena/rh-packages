@@ -5,7 +5,7 @@ import { ConflictError } from 'http-util';
 import dependency from 'rf-dependency';
 import { defaultLoc } from 'rf-locale';
 
-export class AssetService extends Service.IdUuidEnableNameUniqueTitleDescriptionTranslatable {
+export class AssetService extends Service.IdUuidEnableNameUniqueTitleDescriptionTranslatableSoftDelete {
   references = {
     project: true,
     type:    'assetType',

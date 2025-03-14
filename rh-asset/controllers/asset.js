@@ -86,23 +86,27 @@ export class AssetController extends Controller {
       },
       loc,
     };
-
+  
     const context = makeContext(req, res);
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
+    
     if (conf.filters?.projectId) {
       options.where ??= {};
       options.where.projectId = await conf.filters.projectId(context) ?? null;
     }
-
+  
+    options.where ??= {};
+    options.where.deletedAt = null; // Solo trae los registros que no estén "eliminados"
+  
     const eventOptions = { entity: 'Asset', context, options };
     await conf.global.eventBus?.$emit('Asset.response.getting', eventOptions);
     let result = await this.service.getListAndCount(options);
     await conf.global.eventBus?.$emit('Asset.response.getted', { ...eventOptions, result });
     result = await this.service.sanitize(result);
-
+  
     return result;
   }
-
+  
   async getDefault(req, res) {
     const row =  {};
     if (conf.filters?.projectId) {

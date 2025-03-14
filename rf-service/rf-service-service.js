@@ -15,6 +15,7 @@ import { ServiceMixinIdEnable } from './rf-service-mixin-id-enable.js';
 import { ServiceMixinUuidEnable } from './rf-service-mixin-uuid-enable.js';
 import { ServiceMixinNameUniqueTitle } from './rf-service-mixin-name-unique-title.js';
 import { ServiceMixinExpirable } from './rf-service-mixin-expirable.js';
+import { ServiceMixinSoftDelete } from './rf-service-mixin-soft-delete.js';
 
 const Service = {
   Base: ServiceBase,
@@ -94,6 +95,10 @@ const classesData = [
   {
     name: 'Expirable',
     mixin: ServiceMixinExpirable,
+  },
+  {
+    name: 'SoftDelete',
+    mixin: ServiceMixinSoftDelete,
   },
 ];
 
