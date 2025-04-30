@@ -15,7 +15,19 @@ export class AssetTypeService extends Service.IdUuidEnableNameUniqueTitleDescrip
     super.init();
 
     this.service =        dependency.get('assetTypeService');
+    this.assetService =   dependency.get('assetService');
     this.projectService = dependency.get('projectService');
+  }
+
+  async delete(options) {
+    options = { ...options };
+    options.where = await this.completeReferences(options.where);
+
+    const existingAssets = await this.assetService.getList({ attributes: ['id'], where: { type: options.where }, limit: 1 });
+    if (existingAssets.length > 0) {
+      throw new CheckError(loc => loc._c('asset', 'There are existing assets for the asset type.'));
+    }
+    return super.delete(options);
   }
 
   async getInterface({ loc, permissions }) {
