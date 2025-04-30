@@ -32,7 +32,7 @@ export class MemberController {
       include: {
         user: true,
         role: true,
-        //rolesId: assignableRolesId,
+        rolesId: assignableRolesId,
       },
     };
 
