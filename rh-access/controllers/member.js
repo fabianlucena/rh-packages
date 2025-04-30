@@ -31,7 +31,7 @@ export class MemberController {
       loc: req.loc,
       include: {
         user: true,
-        roles: true,
+        role: true,
         rolesId: assignableRolesId,
       },
     };
