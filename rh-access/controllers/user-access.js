@@ -143,7 +143,7 @@ export class UserAccessController extends Controller {
       include: {
         user:  {},
         site:  {},
-        roles: { attributes: ['title', 'uuid'] },
+        role: { attributes: ['title', 'uuid'] },
       },
     };
 

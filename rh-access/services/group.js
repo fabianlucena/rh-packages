@@ -71,7 +71,7 @@ export class GroupService extends Service.IdUuidEnableOwnerModule {
    * @returns {Promise{Permission}}
    */
   async getIdForUsername(username, options) {
-    return (await this.getForUsername(username, { ...options, attributes: ['id'] })).id;
+    return (await this.getForUsername(username, { ...options, attributes: ['id'] }))?.id;
   }
 
   /**
