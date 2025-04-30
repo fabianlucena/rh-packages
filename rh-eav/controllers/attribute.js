@@ -15,6 +15,7 @@ export class AttributeController extends Controller {
 
   getPermission =          'eavAttribute.get';
   postPermission =         'eavAttribute.create';
+  deleteForUuidPermission = 'eavAttribute.delete';
   patchForUuidPermission = 'eavAttribute.edit';
 
   'getPermission /type' = 'eavAttribute.edit';
