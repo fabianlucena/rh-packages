@@ -372,14 +372,14 @@
         "source": "The issue was closed because it is duplicated in another issue.",
         "language": "es",
         "context": "issue",
-        "isDraft": false,
         "translation": "La incidencia se cerró porque está duplicada en otra incidencia.",
         "ref": "..\\rh-issue\\conf_data.js [37,136]"
     },
     {
-        "source": "The issue was closed because it was checked and work properly so don\\'t need work on it.",
+        "source": "The issue was closed because it was checked and work properly, so don\\'t need work on it.",
         "language": "es",
         "context": "issue",
+        "isDraft": false,
         "translation": "La incidencia se cerró porque se verificó y trabaja apropiadamente, por lo tanto no requiere trabajo.",
         "ref": "..\\rh-issue\\conf_data.js [38,136]"
     },
