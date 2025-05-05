@@ -210,6 +210,7 @@ async function getted({ entity, result, options }) {
     for (const workflow of workflows) {
       if (workflow.workflowName) {
         row[workflow.workflowName] = workflow.title;
+        row[workflow.workflowName + 'Uuid'] = workflow.uuid;
       }
 
       let wfCase = await wfCaseService.getForWorkflowIdAndEntityUuid(
@@ -242,7 +243,8 @@ async function getted({ entity, result, options }) {
                   return;
                 }
 
-                return `${b.status.title}: ${b.assignee?.displayName ?? await loc._c(workflow.transitionContext || 'workflow', '{Unasigned}')}`;
+                return { status: b.status, assignee: b.assignee };
+                //return `${b.status.title}: ${b.assignee?.displayName ?? await loc._c(workflow.transitionContext || 'workflow', '{Unasigned}')}`;
               })
               .filter(i => !!i)
             );
