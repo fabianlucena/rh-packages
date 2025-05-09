@@ -243,8 +243,17 @@ async function getted({ entity, result, options }) {
                   return;
                 }
 
+                return `${b.status.title}: ${b.assignee?.displayName ?? await loc._c(workflow.transitionContext || 'workflow', '{Unasigned}')}`;
+              })
+              .filter(i => !!i)
+            );
+            row[workflow.currentStatusName + 'detail'] = await Promise.all(branches
+              .map(async b => {
+                if (!b.status) {
+                  return;
+                }
+
                 return { status: b.status, assignee: b.assignee };
-                //return `${b.status.title}: ${b.assignee?.displayName ?? await loc._c(workflow.transitionContext || 'workflow', '{Unasigned}')}`;
               })
               .filter(i => !!i)
             );
