@@ -73,9 +73,15 @@ export class LogController extends Controller {
           name: 'message',
           type: 'text',
           label: await loc._c('log', 'Message'),
+          className: 'truncate',
         },
       ],
       details: [
+        {
+          name: 'message',
+          type: 'text',
+          label: await loc._c('log', 'Message'),
+        },
         {
           name: 'data',
           type: 'object',
