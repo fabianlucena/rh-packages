@@ -15,8 +15,7 @@ export class SessionController extends Controller {
   static configureMiddleware() {
     return async (req, res, next) => {
       const authorization = req.header('Authorization');
-      if (!authorization || authorization.length < 8 || authorization.slice(0, 7).toLowerCase() !== 'bearer ') {
-        // this.log.info('no authorization token');
+      if (!authorization) {
         next();
         return;
       }
@@ -38,7 +37,6 @@ export class SessionController extends Controller {
         .then(session => {
           req.session = session;
           req.user = req.session.user;
-          this.log.info({ session: session.id, username: session.user.username });
           next();
         })
         .catch(async err => {
