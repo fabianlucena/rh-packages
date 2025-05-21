@@ -1,3 +1,5 @@
+import { defaultLoc } from 'rf-locale';
+
 function pad02(number) {
   if (number < 10) {
     return '0' + number;
@@ -92,7 +94,11 @@ export class Log {
       this.cache = [];
       this.checkCache = false;
     } catch(e) {
-      console.error(e);
+      let message = e.message;
+      if (typeof message === 'function')
+        message = await message(defaultLoc);
+
+      console.error(message);
     }
   }
 
@@ -103,6 +109,12 @@ export class Log {
   async msg(type, message, data) {
     if (!this.ref || isNaN(this.ref)) {
       this.ref = (Log.refSeed++);
+    }
+
+    if (message instanceof Error
+      && typeof message.message === 'function'
+    ) {
+      message = await message.message(defaultLoc);
     }
 
     const line = {
@@ -118,8 +130,33 @@ export class Log {
     }
 
     if (typeof line.message !== 'string') {
-      if (line.message.toString) {
-        line.message = line.message.toString();
+      line.sessionId ??= line.message.sessionId ?? line.message.session;
+      if (line.message.sessionId) {
+        if (line.sessionId === line.message.sessionId) {
+          delete line.message.sessionId;
+        }
+      }
+
+      if (line.message.session) {
+        if (line.sessionId === line.message.session) {
+          delete line.message.session;
+        }
+      }
+
+      if (line.message.message) {
+        line.data ??= {};
+        for (let k in line.message) {
+          if (k === 'message')
+            continue;
+          
+          line.data[k] = line.message[k];
+        }
+
+        line.message = line.message.message;
+
+        if (typeof line.message !== 'string') {
+          line.message = JSON.stringify(line.message);
+        }
       } else {
         line.message = JSON.stringify(line.message);
       }
@@ -137,7 +174,7 @@ export class Log {
     }
 
     if (this.console) {
-      let text = `${this.dateFormat(line.dateTime)} - ${ type ?? '{NO TYPE}'} - ${line.session ?? line.sessionId ?? '{NO SESSION}'} - ${message ?? '{NO MESSAGE}'}`;
+      let text = `${this.dateFormat(line.dateTime)} - ${line.type ?? '{NO TYPE}'} - ${line.sessionId ?? '{NO SESSION}'} - ${line.message ?? '{NO MESSAGE}'}`;
       if (data) {
         text += ' - ' + JSON.stringify(data);
       }

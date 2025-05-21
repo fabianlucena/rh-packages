@@ -87,7 +87,7 @@ export class AssignableRolePerRoleService extends Service.OwnerModule {
       ...options,
       include: {
         ...options?.include,
-        Role: {
+        role: {
           where: { name: roleName },
           required: false,
           skipAssociationAttributes: true,

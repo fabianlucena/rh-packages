@@ -759,7 +759,6 @@ export async function filterData(global) {
     return;
   }
 
-
   if (typeof updateData === 'string') {
     updateData = updateData.trim().split(',');
   }
