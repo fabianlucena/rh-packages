@@ -1,5 +1,5 @@
 import { Op, Column } from './rf-service-op.js';
-import { NoRowsError, ManyRowsError, ReferenceDefinitionError, QueryError } from './rf-service-errors.js';
+import { NoRowsError, ManyRowsError, ReferenceDefinitionError, QueryError, ReferenceError } from './rf-service-errors.js';
 import { ucfirst, lcfirst } from 'rf-util/rf-util-string.js';
 import { trim } from 'rf-util';
 import dependency from 'rf-dependency';
@@ -425,11 +425,11 @@ export class ServiceBase {
           data[uuidPropertyName] ?? JSON.stringify(data[name]) ?? JSON.stringify(data[Name]),
         ));
       }
+    } else {
+      delete data[uuidPropertyName];
+      delete data[Name];
+      delete data[name];
     }
-
-    delete data[uuidPropertyName];
-    delete data[Name];
-    delete data[name];
         
     return data;
   }
