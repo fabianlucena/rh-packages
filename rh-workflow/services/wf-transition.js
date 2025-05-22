@@ -4,10 +4,28 @@ import { ConflictError } from 'http-util';
 
 export class WfTransitionService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleDescriptionTranslatable {
   references = {
+    workflow:  'wfWorkflow',
     from: 'wfStatusService',
     to:   'wfStatusService',
   };
   defaultTranslationContext = 'workflow';
+
+  async checkTitleForConflict(title, data, where) {
+    const forOption = { title, workflowId: data.workflowId };
+    if (where) {
+      forOption[Op.not] = where;
+    }
+
+    const rowsCount = await this.countFor(forOption);
+    if (rowsCount) {
+      throw new ConflictError(loc => loc._c(
+        'service',
+        'Exists another row with the title "%s", in "%s".',
+        title,
+        this.name,
+      ));
+    }
+  }
 
   async getInterface(options) {
     const gridActions = [],
