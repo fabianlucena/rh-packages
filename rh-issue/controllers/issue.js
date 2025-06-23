@@ -80,18 +80,6 @@ export class IssueController extends Controller {
         type:        true,
         priority:    true,
         closeReason: true,
-        relatedTo:   {
-          include: {
-            to:           true,
-            relationship: true,
-          },
-        },
-        relatedFrom:   {
-          include: {
-            from:         true,
-            relationship: true,
-          },
-        },
       },
       loc,
     };
@@ -107,12 +95,6 @@ export class IssueController extends Controller {
     await conf.global.eventBus?.$emit('Issue.response.getting', eventOptions);
     let result = await this.service.getListAndCount(options);
     await conf.global.eventBus?.$emit('Issue.response.getted', { ...eventOptions, result });
-    for (const row of result.rows) {
-      row.related = [
-        ...row.relatedTo.  map(i => ({ ...i, issue: i.to   })),
-        ...row.relatedFrom.map(i => ({ ...i, issue: i.from })),
-      ];
-    }
     result = await this.service.sanitize(result);
 
     return result;
@@ -264,23 +246,6 @@ export class IssueController extends Controller {
           text: 'title',
           title: 'description',
         },
-      },
-      {
-        name:        'related',
-        type:        'list',
-        label:       await loc._c('issue', 'Related issues'),
-        isField:     false,
-        isDetail:    true,
-        properties: [
-          {
-            label: await loc._c('issue', 'Relationship'),
-            name: 'relationship.title',
-          },
-          {
-            label: await loc._c('issue', 'Issue'),
-            name: 'issue.title',
-          },
-        ],
       },
     ];
 
