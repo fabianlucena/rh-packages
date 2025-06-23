@@ -17,11 +17,15 @@ export class LogController extends Controller {
       offset: 0,
       orderBy: [['dateTime', 'DESC']],
       loc: req.loc,
-      include: { user: true },
+      include: {
+        session: {
+          include: { user: true }
+        }
+      },
     };
 
     options = await getOptionsFromParamsAndOData(req?.query, null, options);
-    const result = await logService.getListAndCount(options);
+    const result = await this.service.getListAndCount(options);
 
     res.status(200).send(result);
   }
@@ -56,7 +60,7 @@ export class LogController extends Controller {
           label: await loc._c('log', 'Type'),
         },
         {
-          name: 'Session.User.username',
+          name: 'session.user.username',
           type: 'text',
           label: await loc._c('log', 'User'),
         },
@@ -69,9 +73,15 @@ export class LogController extends Controller {
           name: 'message',
           type: 'text',
           label: await loc._c('log', 'Message'),
+          className: 'truncate',
         },
       ],
       details: [
+        {
+          name: 'message',
+          type: 'text',
+          label: await loc._c('log', 'Message'),
+        },
         {
           name: 'data',
           type: 'object',

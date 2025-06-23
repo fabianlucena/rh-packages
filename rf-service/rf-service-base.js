@@ -1,5 +1,5 @@
 import { Op, Column } from './rf-service-op.js';
-import { NoRowsError, ManyRowsError, ReferenceDefinitionError, QueryError } from './rf-service-errors.js';
+import { NoRowsError, ManyRowsError, ReferenceDefinitionError, QueryError, ReferenceError } from './rf-service-errors.js';
 import { ucfirst, lcfirst } from 'rf-util/rf-util-string.js';
 import { trim } from 'rf-util';
 import dependency from 'rf-dependency';
@@ -425,11 +425,11 @@ export class ServiceBase {
           data[uuidPropertyName] ?? JSON.stringify(data[name]) ?? JSON.stringify(data[Name]),
         ));
       }
+    } else {
+      delete data[uuidPropertyName];
+      delete data[Name];
+      delete data[name];
     }
-
-    delete data[uuidPropertyName];
-    delete data[Name];
-    delete data[name];
         
     return data;
   }
@@ -1097,49 +1097,51 @@ export class ServiceBase {
   async sanitizeRow(row, options) {
     await this.conditionalEmit('sanitizingRow', options?.emitEvent, { row, options });
 
-    if (this.hiddenColumns?.length) {
-      row = { ...row };
-      for (const hideColumn of this.hiddenColumns) {
-        delete row[hideColumn];
-      }
-    }
-
-    for (const referenceName in this.references) {
-      const reference = this.references[referenceName];
-      if (!reference) {
-        continue;
+    if (row && typeof row === 'object' && typeof row !== 'string') {
+      if (this.hiddenColumns?.length) {
+        row = { ...row };
+        for (const hideColumn of this.hiddenColumns) {
+          delete row[hideColumn];
+        }
       }
 
-      let service = reference;
-      if (!service?.sanitizeRow) {
-        if (reference.service) {
-          service = reference.service;
+      for (const referenceName in this.references) {
+        const reference = this.references[referenceName];
+        if (!reference) {
+          continue;
         }
 
+        let service = reference;
         if (!service?.sanitizeRow) {
-          continue;
-        }
-      }
-            
-      let name = referenceName;
-      if (!row[name]) {
-        name = service.constructor?.name;
-        if (name.endsWith('Service')) {
-          name = name.substring(0, name.length - 7);
-        }
+          if (reference.service) {
+            service = reference.service;
+          }
 
+          if (!service?.sanitizeRow) {
+            continue;
+          }
+        }
+              
+        let name = referenceName;
         if (!row[name]) {
-          continue;
-        }
-      }
+          name = service.constructor?.name;
+          if (name.endsWith('Service')) {
+            name = name.substring(0, name.length - 7);
+          }
 
-      if (Array.isArray(row[name])) {
-        if (service.sanitize) {
-          row[name] = await service.sanitize(row[name], options);
+          if (!row[name]) {
+            continue;
+          }
         }
-      } else {
-        if (service.sanitizeRow) {
-          row[name] = await service.sanitizeRow(row[name], options);
+
+        if (Array.isArray(row[name])) {
+          if (service.sanitize) {
+            row[name] = await service.sanitize(row[name], options);
+          }
+        } else {
+          if (service.sanitizeRow) {
+            row[name] = await service.sanitizeRow(row[name], options);
+          }
         }
       }
     }

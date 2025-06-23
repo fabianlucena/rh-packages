@@ -1,5 +1,6 @@
 import { Service } from 'rf-service';
 import dependency from 'rf-dependency';
+import { ConflictError } from 'http-util';
 
 export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleDescriptionTranslatable {
   references = {
@@ -12,8 +13,39 @@ export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerMod
   init() {
     this.wfStatusIsInitialService = dependency.get('wfStatusIsInitialService');
     this.wfStatusIsFinalService =   dependency.get('wfStatusIsFinalService');
+    this.wfWorkflowService =        dependency.get('wfWorkflowService');
 
     super.init();
+  }
+
+  async createIfNotExists(data, options) {
+    if (data.workflowId) {
+      options = {...options, where: {...options?.where, workflowId: data.workflowId}}
+    } else if (data.workflow) {
+      const workflowId = await this.wfWorkflowService.getSingleIdForName(data.workflow);
+      options = {...options, where: {...options?.where, workflowId }}
+    }
+    
+    return super.createIfNotExists(data, options);
+  }
+
+  async checkNameForConflict(name, data) {
+    const rows = await this.getFor({ name, workflowId: data.workflowId }, { attributes: ['id'], limit: 1 });
+    if (rows?.length) {
+      throw new ConflictError(loc => loc._c('service', 'Exists another row with that name.'));
+    }
+  }
+
+  async checkTitleForConflict(title, data) {
+    const rows = await this.getFor({ title, workflowId: data.workflowId }, { attributes: ['id'], limit: 1 });
+    if (rows?.length) {
+      throw new ConflictError(loc => loc._c(
+        'service',
+        'Exists another row with the title "%s", in "%s".',
+        title,
+        this.name,
+      ));
+    }
   }
 
   async getInterface(options) {
