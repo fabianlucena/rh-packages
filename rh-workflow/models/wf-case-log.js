@@ -1,15 +1,15 @@
 import { conf } from '../conf.js';
 
 export default (sequelize, DataTypes) => {
-  class WfCaseTransition extends sequelize.Sequelize.Model {
+  class WfCaseLog extends sequelize.Sequelize.Model {
     static associate(models) {
       this.belongsTo(models.WfCase,   { as: 'case',     foreignKey: 'caseId' });
-      this.belongsTo(models.WfStatus, { as: 'from',     foreignKey: 'fromId' });
-      this.belongsTo(models.WfStatus, { as: 'to',       foreignKey: 'toId' });
-      this.belongsTo(models.User,     { as: 'operator', foreignKey: 'userId' });
+      this.belongsTo(models.WfStatus, { as: 'status',   foreignKey: 'statusId' });
+      this.belongsTo(models.User,     { as: 'assignee', foreignKey: 'assigneeId' });
+      this.belongsTo(models.User,     { as: 'operator', foreignKey: 'operatorId' });
     }
   }
-  WfCaseTransition.init({
+  WfCaseLog.init({
     id: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
@@ -26,11 +26,11 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BIGINT,
       allowNull: false,
     },
-    fromId: {
+    statusId: {
       type: DataTypes.BIGINT,
-      allowNull: true,
+      allowNull: false,
     },
-    toId: {
+    assigneeId: {
       type: DataTypes.BIGINT,
       allowNull: true,
     },
@@ -41,8 +41,8 @@ export default (sequelize, DataTypes) => {
   }, {
     sequelize,
     timestamps: true,
-    tableName: 'CaseTransition',
+    tableName: 'CaseLog',
     schema: conf.schema,
   });
-  return WfCaseTransition;
+  return WfCaseLog;
 };
