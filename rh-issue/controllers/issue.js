@@ -130,13 +130,13 @@ export class IssueController extends Controller {
     if (req.permissions.includes('issue.delete')) gridActions.push('delete');
     gridActions.push('search', 'paginate');
     if (req.permissions.includes('issue.edit')) gridActions.push({
-      name: 'upload',
+      name: 'take',
       type: 'buttonIcon',
       icon: 'assign-self',
       title: await loc._c('issue', 'Take issue'),
       actionData: {
-        action: 'goTo',
-        service: 'upload',
+        action: 'apiCall',
+        service: 'issue/take',
         method: 'PATCH',
         bodyParam: { uuid: 'uuid' },
       },
