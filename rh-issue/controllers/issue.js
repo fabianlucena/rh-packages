@@ -4,6 +4,9 @@ import { getOptionsFromParamsAndOData, HttpError, makeContext } from 'http-util'
 import { checkParameter } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
+import fileUpload from 'express-fileupload';
+
+const upload = fileUpload({ createParentPath: true });
 
 export class IssueController extends Controller {
   constructor() {
@@ -50,6 +53,7 @@ export class IssueController extends Controller {
     return data.projectId;
   }
 
+  postMiddleware = upload;
   postPermission = 'issue.create';
   async post(req, res) {
     checkParameter(
@@ -126,13 +130,13 @@ export class IssueController extends Controller {
     if (req.permissions.includes('issue.delete')) gridActions.push('delete');
     gridActions.push('search', 'paginate');
     if (req.permissions.includes('issue.edit')) gridActions.push({
-      name: 'take',
+      name: 'upload',
       type: 'buttonIcon',
       icon: 'assign-self',
       title: await loc._c('issue', 'Take issue'),
       actionData: {
-        action: 'apiCall',
-        service: 'issue/take',
+        action: 'goTo',
+        service: 'upload',
         method: 'PATCH',
         bodyParam: { uuid: 'uuid' },
       },
@@ -303,6 +307,34 @@ export class IssueController extends Controller {
   postEnableForUuidPermission =  'issue.edit';
   postDisableForUuidPermission = 'issue.edit';
   patchForUuidPermission =       'issue.edit';
+  patchMiddleware = upload;
+
+  async patch (req, res) {
+    const newBody = {};
+    for (const field in req.body) {
+      if (field !== 'body' && !field.includes('.')) {
+        let isObject = false;
+        for (const otherField in req.body) {
+          if (otherField === field) continue;
+          const dotIndex = otherField.indexOf('.');
+          if (dotIndex === -1) continue;
+          if (otherField.substring(0, dotIndex) === field) {
+            isObject = true;
+            break;
+          }
+        }
+        newBody[field] = isObject ? JSON.parse(req.body[field]) : req.body[field];
+      }
+    }
+    req.body = newBody;
+    req.body.files = req.files
+
+    const { uuid } = await this.checkUuid(makeContext(req, res));
+    const { uuid: _, ...data } = { ...req.body };
+    const where = { uuid };
+
+    await this.service.updateFor(data, where, { context: makeContext(req, res) });
+  }
 
   'getPermission /project' = 'issue.edit';
   async 'get /project'(req, res) {
