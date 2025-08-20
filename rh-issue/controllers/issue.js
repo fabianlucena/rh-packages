@@ -310,24 +310,38 @@ export class IssueController extends Controller {
   patchMiddleware = upload;
 
   async patch (req, res) {
-    const newBody = {};
-    for (const field in req.body) {
-      if (field !== 'body' && !field.includes('.')) {
-        let isObject = false;
-        for (const otherField in req.body) {
-          if (otherField === field) continue;
-          const dotIndex = otherField.indexOf('.');
-          if (dotIndex === -1) continue;
-          if (otherField.substring(0, dotIndex) === field) {
-            isObject = true;
-            break;
+    if (req.headers['content-type'].includes('multipart/form-data')) {
+      const newBody = {};
+      for (const field in req.body) {
+        if (field !== 'body' && !field.includes('.')) {
+          let isObject = false;
+          for (const otherField in req.body) {
+            if (otherField === field) continue;
+            const dotIndex = otherField.indexOf('.');
+            if (dotIndex === -1) continue;
+            if (otherField.substring(0, dotIndex) === field) {
+              isObject = true;
+              break;
+            }
+          }
+          if (isObject) {
+            newBody[field] = JSON.parse(req.body[field]);
+          } else {
+            if (req.body[field].includes('null')) {
+              try {
+                newBody[field] = JSON.parse(req.body[field]);
+              } catch {
+                newBody[field] = req.body[field];
+              }
+            } else {
+              newBody[field] = req.body[field];
+            }
           }
         }
-        newBody[field] = isObject ? JSON.parse(req.body[field]) : req.body[field];
       }
+      req.body = newBody;
+      req.body.files = req.files
     }
-    req.body = newBody;
-    req.body.files = req.files
 
     const { uuid } = await this.checkUuid(makeContext(req, res));
     const { uuid: _, ...data } = { ...req.body };
