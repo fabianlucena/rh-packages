@@ -232,7 +232,7 @@ async function getted({ entity, result, options }) {
         if (workflow.currentStatusName) {
           let branches = wfCase.branches;
           if (!branches?.length) {
-            await wfBranchService.createForWorkflowIdAndCaseId(workflow.id, wfCase.id);
+            await wfBranchService.createForWorkflowIdAndCaseId(workflow.workflow.id, wfCase.id);
             branches = await wfBranchService.getForCaseId(wfCase.id);
           }
 
@@ -314,7 +314,7 @@ async function created({ entity, rows, options }) {
       
       if (!wfCase) {
         wfCase = await wfCaseService.createForWorkflowIdAndEntityUuid(workflow.id, row.uuid);
-        await wfBranchService.createForWorkflowIdAndCaseId(workflow.id, wfCase.id);
+        await wfBranchService.createForWorkflowIdAndCaseId(workflow.workflow.id, wfCase.id);
       }
     }
   }
