@@ -327,7 +327,7 @@ export class IssueController extends Controller {
           if (isObject) {
             newBody[field] = JSON.parse(req.body[field]);
           } else {
-            if (req.body[field].includes('null')) {
+            if ((req.body[field].includes('{') && req.body[field].includes('}')) || req.body[field] === '[]') {
               try {
                 newBody[field] = JSON.parse(req.body[field]);
               } catch {
