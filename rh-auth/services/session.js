@@ -95,6 +95,9 @@ export class SessionService extends Service.IdUuid {
    * @returns {Promise[Session]}
    */
   async getForAuthToken(authToken, options) {
+    if (!authToken) { 
+        return null;
+    }
     const rows = await this.getList({ ...options, where: { ...options?.where, authToken }, limit: 2 });
     return getSingle(rows, { ...options, params: ['session', ['authToken = %s', authToken], 'Session'] });
   }
