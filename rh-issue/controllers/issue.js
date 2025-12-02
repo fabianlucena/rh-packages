@@ -428,4 +428,91 @@ export class IssueController extends Controller {
     const caseIds = await this.wfCaseService.getIdFor({ entityUuid: uuid });
     await this.wfBranchService.updateFor({ assigneeId: userId }, { caseId: caseIds });
   }
+
+  'postPermission /external' = 'issue.create';
+  async 'post /external'(req, res) {
+    const loc = req.loc ?? defaultLoc;
+    
+    checkParameter(
+      req?.body,
+      {
+        externalSystem: loc => loc._c('issue', 'External System'),
+        externalId: loc => loc._c('issue', 'External ID'),
+        title: loc => loc._c('issue', 'Title'),
+        project: loc => loc._c('issue', 'Project'),
+        type: loc => loc._c('issue', 'Type'),
+      },
+    );
+
+    const {
+      externalSystem,
+      externalId,
+      title,
+      description,
+      project,
+      type,
+      priority,
+      dueDate,
+      assetUuid,
+      position
+    } = req.body;
+
+    const context = makeContext(req, res);
+
+    let projectId;
+    if (project.uuid) {
+      projectId = await this.projectService.getSingleIdForUuid(project.uuid);
+    } else if (project.name) {
+      projectId = await this.projectService.getSingleIdForName(project.name);
+    } else if (project.id) {
+      projectId = project.id;
+    }
+
+    if (!projectId) {
+      throw new HttpError(loc => loc._c('issue', 'Project not found'), 404);
+    }
+
+    let typeId;
+    if (type.uuid) {
+      typeId = await this.issueTypeService.getSingleIdForUuid(type.uuid);
+    } else if (type.name) {
+      typeId = await this.issueTypeService.getSingleIdForName(type.name);
+    } else if (type.id) {
+      typeId = type.id;
+    }
+
+    if (!typeId) {
+      throw new HttpError(loc => loc._c('issue', 'Type not found'), 404);
+    }
+
+    let priorityId = null;
+    if (priority) {
+      if (priority.uuid) {
+        priorityId = await this.issuePriorityService.getSingleIdForUuid(priority.uuid);
+      } else if (priority.name) {
+        priorityId = await this.issuePriorityService.getSingleIdForName(priority.name);
+      } else if (priority.id) {
+        priorityId = priority.id;
+      }
+    }
+
+    const issueData = {
+      name: `${externalSystem}-${externalId}`,
+      title,
+      description: description || '',
+      projectId,
+      typeId,
+      priorityId,
+      dueDate: dueDate || null,
+      isEnabled: true,
+      externalSystem,
+      externalId,
+      assetUuid: assetUuid || null,
+      position: position ? JSON.stringify(position) : null,
+    };
+
+    const result = await this.service.create(issueData, { context });
+
+    return result;
+  }
 }
