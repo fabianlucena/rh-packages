@@ -4,6 +4,9 @@ import { getOptionsFromParamsAndOData, HttpError, makeContext } from 'http-util'
 import { checkParameter } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
+import fileUpload from 'express-fileupload';
+
+const upload = fileUpload({ createParentPath: true });
 
 export class IssueController extends Controller {
   constructor() {
@@ -50,6 +53,7 @@ export class IssueController extends Controller {
     return data.projectId;
   }
 
+  postMiddleware = upload;
   postPermission = 'issue.create';
   async post(req, res) {
     checkParameter(
@@ -64,7 +68,7 @@ export class IssueController extends Controller {
     const data = { ...req.body };
     await this.checkDataForProjectId(data, context);
 
-    await this.service.create(data, { context });
+    return await this.service.create(data, { context });
   }
 
   getPermission = 'issue.get';
@@ -80,18 +84,6 @@ export class IssueController extends Controller {
         type:        true,
         priority:    true,
         closeReason: true,
-        relatedTo:   {
-          include: {
-            to:           true,
-            relationship: true,
-          },
-        },
-        relatedFrom:   {
-          include: {
-            from:         true,
-            relationship: true,
-          },
-        },
       },
       loc,
     };
@@ -107,12 +99,6 @@ export class IssueController extends Controller {
     await conf.global.eventBus?.$emit('Issue.response.getting', eventOptions);
     let result = await this.service.getListAndCount(options);
     await conf.global.eventBus?.$emit('Issue.response.getted', { ...eventOptions, result });
-    for (const row of result.rows) {
-      row.related = [
-        ...row.relatedTo.  map(i => ({ ...i, issue: i.to   })),
-        ...row.relatedFrom.map(i => ({ ...i, issue: i.from })),
-      ];
-    }
     result = await this.service.sanitize(result);
 
     return result;
@@ -265,23 +251,6 @@ export class IssueController extends Controller {
           title: 'description',
         },
       },
-      {
-        name:        'related',
-        type:        'list',
-        label:       await loc._c('issue', 'Related issues'),
-        isField:     false,
-        isDetail:    true,
-        properties: [
-          {
-            label: await loc._c('issue', 'Relationship'),
-            name: 'relationship.title',
-          },
-          {
-            label: await loc._c('issue', 'Issue'),
-            name: 'issue.title',
-          },
-        ],
-      },
     ];
 
     const result = {
@@ -303,6 +272,48 @@ export class IssueController extends Controller {
   postEnableForUuidPermission =  'issue.edit';
   postDisableForUuidPermission = 'issue.edit';
   patchForUuidPermission =       'issue.edit';
+  patchMiddleware = upload;
+
+  async patch (req, res) {
+    if (req.headers['content-type'].includes('multipart/form-data')) {
+      const newBody = {};
+      for (const field in req.body) {
+        if (field !== 'body' && !field.includes('.')) {
+          let isObject = false;
+          for (const otherField in req.body) {
+            if (otherField === field) continue;
+            const dotIndex = otherField.indexOf('.');
+            if (dotIndex === -1) continue;
+            if (otherField.substring(0, dotIndex) === field) {
+              isObject = true;
+              break;
+            }
+          }
+          if (isObject) {
+            newBody[field] = JSON.parse(req.body[field]);
+          } else {
+            if ((req.body[field].includes('{') && req.body[field].includes('}')) || req.body[field] === '[]') {
+              try {
+                newBody[field] = JSON.parse(req.body[field]);
+              } catch {
+                newBody[field] = req.body[field];
+              }
+            } else {
+              newBody[field] = req.body[field];
+            }
+          }
+        }
+      }
+      req.body = newBody;
+      req.body.files = req.files
+    }
+
+    const { uuid } = await this.checkUuid(makeContext(req, res));
+    const { uuid: _, ...data } = { ...req.body };
+    const where = { uuid };
+
+    await this.service.updateFor(data, where, { context: makeContext(req, res) });
+  }
 
   'getPermission /project' = 'issue.edit';
   async 'get /project'(req, res) {
@@ -415,5 +426,92 @@ export class IssueController extends Controller {
     await this.service.updateForUuid({ assigneeId: userId }, uuid);
     const caseIds = await this.wfCaseService.getIdFor({ entityUuid: uuid });
     await this.wfBranchService.updateFor({ assigneeId: userId }, { caseId: caseIds });
+  }
+
+  'postPermission /external' = 'issue.create';
+  async 'post /external'(req, res) {
+    const loc = req.loc ?? defaultLoc;
+    
+    checkParameter(
+      req?.body,
+      {
+        externalSystem: loc => loc._c('issue', 'External System'),
+        externalId: loc => loc._c('issue', 'External ID'),
+        title: loc => loc._c('issue', 'Title'),
+        project: loc => loc._c('issue', 'Project'),
+        type: loc => loc._c('issue', 'Type'),
+      },
+    );
+
+    const {
+      externalSystem,
+      externalId,
+      title,
+      description,
+      project,
+      type,
+      priority,
+      dueDate,
+      assetUuid,
+      position
+    } = req.body;
+
+    const context = makeContext(req, res);
+
+    let projectId;
+    if (project.uuid) {
+      projectId = await this.projectService.getSingleIdForUuid(project.uuid);
+    } else if (project.name) {
+      projectId = await this.projectService.getSingleIdForName(project.name);
+    } else if (project.id) {
+      projectId = project.id;
+    }
+
+    if (!projectId) {
+      throw new HttpError(loc => loc._c('issue', 'Project not found'), 404);
+    }
+
+    let typeId;
+    if (type.uuid) {
+      typeId = await this.issueTypeService.getSingleIdForUuid(type.uuid);
+    } else if (type.name) {
+      typeId = await this.issueTypeService.getSingleIdForName(type.name);
+    } else if (type.id) {
+      typeId = type.id;
+    }
+
+    if (!typeId) {
+      throw new HttpError(loc => loc._c('issue', 'Type not found'), 404);
+    }
+
+    let priorityId = null;
+    if (priority) {
+      if (priority.uuid) {
+        priorityId = await this.issuePriorityService.getSingleIdForUuid(priority.uuid);
+      } else if (priority.name) {
+        priorityId = await this.issuePriorityService.getSingleIdForName(priority.name);
+      } else if (priority.id) {
+        priorityId = priority.id;
+      }
+    }
+
+    const issueData = {
+      name: `${externalSystem}-${externalId}`,
+      title,
+      description: description || '',
+      projectId,
+      typeId,
+      priorityId,
+      dueDate: dueDate || null,
+      isEnabled: true,
+      externalSystem,
+      externalId,
+      assetUuid: assetUuid || null,
+      position: position ? JSON.stringify(position) : null,
+    };
+
+    const result = await this.service.create(issueData, { context });
+
+    return result;
   }
 }
