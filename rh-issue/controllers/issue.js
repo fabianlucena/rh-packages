@@ -79,6 +79,7 @@ export class IssueController extends Controller {
       view: true,
       limit:  10,
       offset:  0,
+      orderBy: [['Issue.createdAt', 'DESC']],
       include: {
         project:     true,
         type:        true,
