@@ -12,23 +12,26 @@ export class IssueController extends Controller {
   constructor() {
     super();
 
-    this.projectService =          dependency.get('projectService');
-    this.issueTypeService =        dependency.get('issueTypeService');
-    this.issuePriorityService =    dependency.get('issuePriorityService');
+    this.projectService = dependency.get('projectService');
+    this.issueTypeService = dependency.get('issueTypeService');
+    this.issuePriorityService = dependency.get('issuePriorityService');
     this.issueCloseReasonService = dependency.get('issueCloseReasonService');
     this.wfWorkflowOfEntityService = dependency.get('wfWorkflowOfEntityService');
-    this.wfStatusService =         dependency.get('wfStatusService');
-    this.wfTransitionService =     dependency.get('wfTransitionService');
-    this.userService =             dependency.get('userService');
-    this.wfCaseService =           dependency.get('wfCaseService');
-    this.wfBranchService =         dependency.get('wfBranchService');
+    this.wfStatusService = dependency.get('wfStatusService');
+    this.wfTransitionService = dependency.get('wfTransitionService');
+    this.userService = dependency.get('userService');
+    this.wfCaseService = dependency.get('wfCaseService');
+    this.wfBranchService = dependency.get('wfBranchService');
+    this.assetService = dependency.get('assetService');
+    this.issueExtensionService = dependency.get('issueExtensionService', { skipError: true });
+    this.issueAssetService = dependency.get('issueAssetService', { skipError: true });
   }
 
   async checkDataForProjectId(data, context) {
     if (!conf.filters?.projectId) {
       return data.projectId;
     }
-         
+
     data ??= {};
     if (!data.projectId) {
       if (data.projectUuid) {
@@ -39,7 +42,7 @@ export class IssueController extends Controller {
         data.projectId = await conf.filters.projectId(context) ?? null;
         return data.projectId;
       }
-        
+
       if (!data.projectId) {
         throw new HttpError(loc => loc._c('issue', 'The project does not exist or you do not have permission to access it.'), 404);
       }
@@ -59,11 +62,11 @@ export class IssueController extends Controller {
     checkParameter(
       req?.body,
       {
-        name:  loc => loc._c('issue', 'Name'),
+        name: loc => loc._c('issue', 'Name'),
         title: loc => loc._c('issue', 'Title'),
       },
     );
-        
+
     const context = makeContext(req, res);
     const data = { ...req.body };
     await this.checkDataForProjectId(data, context);
@@ -77,13 +80,13 @@ export class IssueController extends Controller {
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = {
       view: true,
-      limit:  10,
-      offset:  0,
+      limit: 10,
+      offset: 0,
       orderBy: [['Issue.createdAt', 'DESC']],
       include: {
-        project:     true,
-        type:        true,
-        priority:    true,
+        project: true,
+        type: true,
+        priority: true,
         closeReason: true,
       },
       loc,
@@ -109,7 +112,7 @@ export class IssueController extends Controller {
     const loc = req.loc ?? defaultLoc;
     const gridActions = [];
     if (req.permissions.includes('issue.create')) gridActions.push('create');
-    if (req.permissions.includes('issue.edit'))   gridActions.push('enableDisable', 'edit');
+    if (req.permissions.includes('issue.edit')) gridActions.push('enableDisable', 'edit');
     if (req.permissions.includes('issue.delete')) gridActions.push('delete');
     gridActions.push('search', 'paginate');
     if (req.permissions.includes('issue.edit')) gridActions.push({
@@ -127,123 +130,123 @@ export class IssueController extends Controller {
 
     const fields = [
       {
-        name:        'title',
-        type:        'text',
-        label:       await loc._c('issue', 'Title'),
+        name: 'title',
+        type: 'text',
+        label: await loc._c('issue', 'Title'),
         placeholder: await loc._c('issue', 'Type the title here'),
-        isField:     true,
-        isColumn:    true,
-        required:    true,
+        isField: true,
+        isColumn: true,
+        required: true,
         onValueChanged: {
           mode: {
-            create:       true,
+            create: true,
             defaultValue: false,
           },
-          action:   'setValues',
+          action: 'setValues',
           override: false,
           map: {
             name: {
-              source:   'title',
+              source: 'title',
               sanitize: 'dasherize',
             },
           },
         },
       },
       {
-        name:       'name',
-        type:       'text',
-        label:       await loc._c('issue', 'Name'),
+        name: 'name',
+        type: 'text',
+        label: await loc._c('issue', 'Name'),
         placeholder: await loc._c('issue', 'Type the name here'),
-        isField:     true,
-        isColumn:    true,
-        required:    true,
+        isField: true,
+        isColumn: true,
+        required: true,
         disabled: {
-          create:      false,
+          create: false,
           defaultValue: true,
         },
       },
       {
-        name:        'project.uuid',
-        gridName:    'project.title',
-        type:        'select',
-        gridType:    'text',
-        label:       await loc._c('issue', 'Project'),
+        name: 'project.uuid',
+        gridName: 'project.title',
+        type: 'select',
+        gridType: 'text',
+        label: await loc._c('issue', 'Project'),
         placeholder: await loc._c('issue', 'Select the project'),
-        isField:     true,
-        isColumn:    true,
-        required:    true,
+        isField: true,
+        isColumn: true,
+        required: true,
         loadOptionsFrom: {
           service: 'issue/project',
-          value:   'uuid',
-          text:    'title',
-          title:   'description',
+          value: 'uuid',
+          text: 'title',
+          title: 'description',
         },
       },
       {
-        name:        'type.uuid',
-        gridName:    'type.title',
-        type:        'select',
-        gridType:    'text',
-        label:       await loc._c('issue', 'Type'),
+        name: 'type.uuid',
+        gridName: 'type.title',
+        type: 'select',
+        gridType: 'text',
+        label: await loc._c('issue', 'Type'),
         placeholder: await loc._c('issue', 'Select the type'),
-        isField:     true,
-        isColumn:    true,
-        required:    true,
+        isField: true,
+        isColumn: true,
+        required: true,
         loadOptionsFrom: {
           service: 'issue/type',
-          value:   'uuid',
-          text:    'title',
-          title:   'description',
+          value: 'uuid',
+          text: 'title',
+          title: 'description',
         },
       },
       {
-        name:        'priority.uuid',
-        gridName:    'priority.title',
-        type:        'select',
-        gridType:    'text',
-        label:       await loc._c('issue', 'Priority'),
+        name: 'priority.uuid',
+        gridName: 'priority.title',
+        type: 'select',
+        gridType: 'text',
+        label: await loc._c('issue', 'Priority'),
         placeholder: await loc._c('issue', 'Select the priority'),
-        isField:     true,
-        isColumn:    true,
+        isField: true,
+        isColumn: true,
         options: [{ value: null, text: '' }],
         loadOptionsFrom: {
           service: 'issue/priority',
-          value:   'uuid',
-          text:    'title',
-          title:   'description',
+          value: 'uuid',
+          text: 'title',
+          title: 'description',
         },
       },
       {
-        name:        'description',
-        type:        'textArea',
-        label:       await loc._c('issue', 'Description'),
+        name: 'description',
+        type: 'textArea',
+        label: await loc._c('issue', 'Description'),
         placeholder: await loc._c('issue', 'Type the description here'),
-        isField:     true,
-        isDetail:    true,
+        isField: true,
+        isDetail: true,
       },
       {
-        name:        'isEnabled',
-        type:        'checkbox',
-        label:       await loc._c('issue', 'Enabled'),
+        name: 'isEnabled',
+        type: 'checkbox',
+        label: await loc._c('issue', 'Enabled'),
         placeholder: await loc._c('issue', 'Check for enable or uncheck for disable'),
-        value:       true,
-        isField:     true,
+        value: true,
+        isField: true,
       },
       {
-        name:     'dueDate',
-        type:     'dateTime',
-        isField:  true,
+        name: 'dueDate',
+        type: 'dateTime',
+        isField: true,
         isColumn: true,
-        label:    await loc._c('issue', 'Due date'),
+        label: await loc._c('issue', 'Due date'),
       },
       {
-        name:        'closeReason.uuid',
-        gridName:    'closeReason.title',
-        type:        'select',
-        label:       await loc._c('issue', 'Close reason'),
+        name: 'closeReason.uuid',
+        gridName: 'closeReason.title',
+        type: 'select',
+        label: await loc._c('issue', 'Close reason'),
         placeholder: await loc._c('issue', 'Type the description here'),
-        isField:     true,
-        isDetail:    true,
+        isField: true,
+        isDetail: true,
         options: [{ value: null, text: '' }],
         loadOptionsFrom: {
           service: 'issue/close-reason',
@@ -269,13 +272,13 @@ export class IssueController extends Controller {
     return result;
   }
 
-  deleteForUuidPermission =      'issue.delete';
-  postEnableForUuidPermission =  'issue.edit';
+  deleteForUuidPermission = 'issue.delete';
+  postEnableForUuidPermission = 'issue.edit';
   postDisableForUuidPermission = 'issue.edit';
-  patchForUuidPermission =       'issue.edit';
+  patchForUuidPermission = 'issue.edit';
   patchMiddleware = upload;
 
-  async patch (req, res) {
+  async patch(req, res) {
     if (req.headers['content-type'].includes('multipart/form-data')) {
       const newBody = {};
       for (const field in req.body) {
@@ -306,7 +309,7 @@ export class IssueController extends Controller {
         }
       }
       req.body = newBody;
-      req.body.files = req.files
+      req.body.files = req.files;
     }
 
     const { uuid } = await this.checkUuid(makeContext(req, res));
@@ -427,5 +430,228 @@ export class IssueController extends Controller {
     await this.service.updateForUuid({ assigneeId: userId }, uuid);
     const caseIds = await this.wfCaseService.getIdFor({ entityUuid: uuid });
     await this.wfBranchService.updateFor({ assigneeId: userId }, { caseId: caseIds });
+  }
+
+  'getPermission /asset' = 'issue.get';
+  async 'get /asset'(req, res) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid', name: 'string' };
+    let options = {
+      view: true,
+      limit: 100,
+      offset: 0,
+      loc,
+    };
+
+    options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
+
+    const result = await this.assetService.getListAndCount(options);
+
+    res.status(200).send(result);
+  }
+
+  'getPermission /mobile/projects' = 'issue.get';
+  async 'get /mobile/projects'(req) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid', name: 'string' };
+    let options = {
+      view: true,
+      limit: 100,
+      offset: 0,
+      loc,
+    };
+
+    options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
+
+    return await this.projectService.getListAndCount(options);
+  }
+
+  'getPermission /mobile/types' = 'issue.get';
+  async 'get /mobile/types'(req) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid', name: 'string' };
+    let options = {
+      view: true,
+      limit: 100,
+      offset: 0,
+      loc,
+    };
+
+    options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
+
+    return await this.issueTypeService.getListAndCount(options);
+  }
+
+  'getPermission /mobile/priorities' = 'issue.get';
+  async 'get /mobile/priorities'(req) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid', name: 'string' };
+    let options = {
+      view: true,
+      limit: 100,
+      offset: 0,
+      loc,
+    };
+
+    options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
+
+    let result = await this.issuePriorityService.getListAndCount(options);
+
+    if (this.issuePriorityService.sanitize) {
+      result = this.issuePriorityService.sanitize(result);
+    }
+
+    return result;
+  }
+
+  'getPermission /mobile/assets' = 'issue.get';
+  async 'get /mobile/assets'(req) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid', name: 'string' };
+    let options = {
+      view: true,
+      limit: 100,
+      offset: 0,
+      loc,
+    };
+
+    options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
+
+    return await this.assetService.getListAndCount(options);
+  }
+
+  'postPermission /mobile' = 'issue.create';
+  async 'post /mobile'(req, res) {
+    const loc = req.loc ?? defaultLoc;
+    const context = makeContext(req, res);
+
+    console.log('=== POST /issue/mobile ===');
+    console.log('Body recibido:', JSON.stringify(req.body, null, 2));
+
+    checkParameter(
+      req?.body,
+      {
+        title: loc => loc._c('issue', 'Title'),
+        name: loc => loc._c('issue', 'Name'),
+        projectUuid: loc => loc._c('issue', 'Project'),
+        typeUuid: loc => loc._c('issue', 'Type'),
+      },
+    );
+
+    const data = {
+      title: req.body.title,
+      name: req.body.name,
+      description: req.body.description || '',
+      isEnabled: req.body.isEnabled !== undefined ? req.body.isEnabled : true,
+    };
+
+    // Convertir projectUuid a projectId
+    data.projectId = await this.projectService.getSingleIdForUuid(req.body.projectUuid);
+    if (!data.projectId) {
+      throw new HttpError(loc => loc._c('issue', 'The project does not exist.'), 404);
+    }
+
+    // Convertir typeUuid a typeId
+    data.typeId = await this.issueTypeService.getSingleIdForUuid(req.body.typeUuid);
+    if (!data.typeId) {
+      throw new HttpError(loc => loc._c('issue', 'The issue type does not exist.'), 404);
+    }
+
+    // Convertir priorityUuid a priorityId (opcional)
+    if (req.body.priorityUuid) {
+      data.priorityId = await this.issuePriorityService.getSingleIdForUuid(req.body.priorityUuid);
+    }
+
+    // Fecha de vencimiento
+    if (req.body.dueDate) {
+      data.dueDate = req.body.dueDate;
+    }
+
+    console.log('Data a crear en Issue:', JSON.stringify(data, null, 2));
+
+    // Crear la OT
+    const issue = await this.service.create(data, { context });
+
+    console.log('Issue creado:', JSON.stringify(issue, null, 2));
+
+    if (!issue || !issue.uuid) {
+      throw new HttpError(loc => loc._c('issue', 'Error creating work order.'), 500);
+    }
+
+    // Crear IssueExtension para guardar position
+    if (req.body.position && req.body.position.lat !== undefined && req.body.position.lon !== undefined) {
+      try {
+        const extensionData = {
+          id: issue.id,
+          position: req.body.position,
+        };
+
+        console.log('Creando IssueExtension:', JSON.stringify(extensionData, null, 2));
+
+        if (this.issueExtensionService) {
+          await this.issueExtensionService.create(extensionData, { context });
+          console.log('IssueExtension creado correctamente');
+        } else {
+          console.warn('issueExtensionService no disponible');
+        }
+      } catch (error) {
+        console.warn('No se pudo crear IssueExtension:', error.message);
+      }
+    }
+
+    // Crear IssueAsset para relacionar con el Asset
+    if (req.body.assetUuid) {
+      try {
+        const assetId = await this.assetService.getSingleIdForUuid(req.body.assetUuid);
+        
+        if (assetId) {
+          const issueAssetData = {
+            issueId: issue.id,
+            assetId: assetId,
+          };
+
+          console.log('Creando IssueAsset:', JSON.stringify(issueAssetData, null, 2));
+
+          if (this.issueAssetService) {
+            await this.issueAssetService.create(issueAssetData, { context });
+            console.log('IssueAsset creado correctamente');
+          } else {
+            console.warn('issueAssetService no disponible');
+          }
+        } else {
+          console.warn('Asset no encontrado para uuid:', req.body.assetUuid);
+        }
+      } catch (error) {
+        console.warn('No se pudo crear IssueAsset:', error.message);
+      }
+    }
+
+    // Crear el caso de workflow si existe configuración
+    try {
+      const workflowOfEntity = await this.wfWorkflowOfEntityService.getSingleForName('work-order', {
+        include: { workflow: true },
+        skipNoRowsError: true,
+      });
+
+      if (workflowOfEntity) {
+        await this.wfCaseService.createForWorkflowIdAndEntityUuid(
+          workflowOfEntity.workflowId,
+          issue.uuid
+        );
+      }
+    } catch (error) {
+      console.warn('No se pudo crear el caso de workflow:', error.message);
+    }
+
+    console.log('=== OT creada exitosamente ===');
+
+    res.status(201).send({
+      success: true,
+      uuid: issue.uuid,
+      id: issue.id,
+      title: issue.title,
+      name: issue.name,
+      message: 'Orden de trabajo creada correctamente',
+    });
   }
 }
