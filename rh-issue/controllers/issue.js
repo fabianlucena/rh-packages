@@ -441,6 +441,9 @@ export class IssueController extends Controller {
       limit: 100,
       offset: 0,
       loc,
+      where: {
+        deletedAt: null
+      }
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
@@ -513,6 +516,9 @@ export class IssueController extends Controller {
       limit: 100,
       offset: 0,
       loc,
+      where: {
+        deletedAt: null
+      }
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
@@ -642,8 +648,6 @@ export class IssueController extends Controller {
     } catch (error) {
       console.warn('No se pudo crear el caso de workflow:', error.message);
     }
-
-    console.log('=== OT creada exitosamente ===');
 
     res.status(201).send({
       success: true,
