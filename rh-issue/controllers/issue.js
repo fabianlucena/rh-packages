@@ -640,10 +640,12 @@ export class IssueController extends Controller {
       });
 
       if (workflowOfEntity) {
+        // ✅ CORREGIDO: Usar workflowOfEntity.id en lugar de workflowOfEntity.workflowId
         await this.wfCaseService.createForWorkflowIdAndEntityUuid(
-          workflowOfEntity.workflowId,
+          workflowOfEntity.id,
           issue.uuid
         );
+        console.log('Caso de workflow creado correctamente');
       }
     } catch (error) {
       console.warn('No se pudo crear el caso de workflow:', error.message);
