@@ -568,7 +568,7 @@ export class IssueController extends Controller {
       data.priorityId = await this.issuePriorityService.getSingleIdForUuid(req.body.priorityUuid);
     }
 
-    // Fecha de vencimiento
+    // Fecha
     if (req.body.dueDate) {
       data.dueDate = req.body.dueDate;
     }
@@ -640,12 +640,21 @@ export class IssueController extends Controller {
       });
 
       if (workflowOfEntity) {
-        // ✅ CORREGIDO: Usar workflowOfEntity.id en lugar de workflowOfEntity.workflowId
-        await this.wfCaseService.createForWorkflowIdAndEntityUuid(
-          workflowOfEntity.id,
-          issue.uuid
+        // Verificar si ya existe un caso para este issue
+        const existingCase = await this.wfCaseService.getSingleFor(
+          { entityUuid: issue.uuid },
+          { skipNoRowsError: true }
         );
-        console.log('Caso de workflow creado correctamente');
+        
+        if (!existingCase) {
+          await this.wfCaseService.createForWorkflowIdAndEntityUuid(
+            workflowOfEntity.id,
+            issue.uuid
+          );
+          console.log('Caso de workflow creado correctamente');
+        } else {
+          console.log('Ya existe un caso de workflow para este issue');
+        }
       }
     } catch (error) {
       console.warn('No se pudo crear el caso de workflow:', error.message);
