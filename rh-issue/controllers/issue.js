@@ -570,12 +570,9 @@ export class IssueController extends Controller {
       data.dueDate = req.body.dueDate;
     }
 
-    console.log('Data a crear en Issue:', JSON.stringify(data, null, 2));
-
     // Crear la OT
     const issue = await this.service.create(data, { context });
 
-    console.log('Issue creado:', JSON.stringify(issue, null, 2));
 
     if (!issue || !issue.uuid) {
       throw new HttpError(loc => loc._c('issue', 'Error creating work order.'), 500);
@@ -589,7 +586,6 @@ export class IssueController extends Controller {
           position: req.body.position,
         };
 
-        console.log('Creando IssueExtension:', JSON.stringify(extensionData, null, 2));
 
         if (this.issueExtensionService) {
           await this.issueExtensionService.create(extensionData, { context });
@@ -612,8 +608,6 @@ export class IssueController extends Controller {
             issueId: issue.id,
             assetId: assetId,
           };
-
-          console.log('Creando IssueAsset:', JSON.stringify(issueAssetData, null, 2));
 
           if (this.issueAssetService) {
             await this.issueAssetService.create(issueAssetData, { context });
