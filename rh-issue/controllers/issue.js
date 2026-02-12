@@ -531,9 +531,6 @@ export class IssueController extends Controller {
     const loc = req.loc ?? defaultLoc;
     const context = makeContext(req, res);
 
-    console.log('=== POST /issue/mobile ===');
-    console.log('Body recibido:', JSON.stringify(req.body, null, 2));
-
     checkParameter(
       req?.body,
       {
