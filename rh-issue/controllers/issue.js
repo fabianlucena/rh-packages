@@ -17,11 +17,116 @@ export class IssueController extends Controller {
     this.issuePriorityService =    dependency.get('issuePriorityService');
     this.issueCloseReasonService = dependency.get('issueCloseReasonService');
     this.wfWorkflowOfEntityService = dependency.get('wfWorkflowOfEntityService');
-    this.wfStatusService =         dependency.get('wfStatusService');
-    this.wfTransitionService =     dependency.get('wfTransitionService');
-    this.userService =             dependency.get('userService');
-    this.wfCaseService =           dependency.get('wfCaseService');
-    this.wfBranchService =         dependency.get('wfBranchService');
+    this.wfStatusService = dependency.get('wfStatusService');
+    this.wfTransitionService = dependency.get('wfTransitionService');
+    this.userService = dependency.get('userService');
+    this.wfCaseService = dependency.get('wfCaseService');
+    this.wfBranchService = dependency.get('wfBranchService');
+    this.assetService = dependency.get('assetService');
+    this.issueExtensionService = dependency.get('issueExtensionService', { skipError: true });
+    this.issueAssetService = dependency.get('issueAssetService', { skipError: true });
+  }
+
+  // Limpia el body: convierte fechas vacías en null y decodifica JSONs "stringified".
+  parseMultipartBody(req) {
+    if (!req.headers['content-type']?.includes('multipart/form-data')) return;
+
+    const newBody = {};
+
+    for (const field in req.body) {
+      if (field === 'body' || field.includes('.')) continue;
+
+      const isObject = Object.keys(req.body).some(other => {
+        const dotIndex = other.indexOf('.');
+        return dotIndex !== -1 && other.substring(0, dotIndex) === field;
+      });
+
+      const raw = req.body[field];
+
+      if (isObject) {
+        // Desempaquetar JSON anidado hasta obtener un objeto real
+        let parsed = raw;
+        while (typeof parsed === 'string') {
+          try { parsed = JSON.parse(parsed); }
+          catch { break; }
+        }
+        newBody[field] = parsed;
+      } else {
+        // Cadena vacía / "null" / "undefined" → null
+        // Evita que MSSQL reciba "" como valor de fecha y falle la conversión
+        if (raw === '' || raw === 'null' || raw === 'undefined') {
+          newBody[field] = null;
+        } else if (raw === '[]') {
+          newBody[field] = [];
+        } else if (
+          (raw.startsWith('{') && raw.endsWith('}')) ||
+          (raw.startsWith('[') && raw.endsWith(']'))
+        ) {
+          let parsed = raw;
+          while (typeof parsed === 'string') {
+            try { parsed = JSON.parse(parsed); }
+            catch { break; }
+          }
+          newBody[field] = parsed;
+        } else {
+          newBody[field] = raw;
+        }
+      }
+    }
+
+    req.body = newBody;
+    req.body.files = req.files;
+  }
+
+  // Limpia el body: convierte fechas vacías en null y decodifica JSONs "stringified".
+  parseMultipartBody(req) {
+    if (!req.headers['content-type']?.includes('multipart/form-data')) return;
+
+    const newBody = {};
+
+    for (const field in req.body) {
+      if (field === 'body' || field.includes('.')) continue;
+
+      const isObject = Object.keys(req.body).some(other => {
+        const dotIndex = other.indexOf('.');
+        return dotIndex !== -1 && other.substring(0, dotIndex) === field;
+      });
+
+      const raw = req.body[field];
+
+      if (isObject) {
+        // Desempaquetar JSON anidado hasta obtener un objeto real
+        let parsed = raw;
+        while (typeof parsed === 'string') {
+          try { parsed = JSON.parse(parsed); }
+          catch { break; }
+        }
+        newBody[field] = parsed;
+      } else {
+        // Cadena vacía / "null" / "undefined" → null
+        // Evita que MSSQL reciba "" como valor de fecha y falle la conversión
+        if (raw === '' || raw === 'null' || raw === 'undefined') {
+          newBody[field] = null;
+        } else if (raw === '[]') {
+          newBody[field] = [];
+        } else if (
+          (raw.startsWith('{') && raw.endsWith('}')) ||
+          (raw.startsWith('[') && raw.endsWith(']'))
+        ) {
+          let parsed = raw;
+          while (typeof parsed === 'string') {
+            try { parsed = JSON.parse(parsed); }
+            catch { break; }
+          }
+          newBody[field] = parsed;
+        } else {
+          newBody[field] = raw;
+        }
+      }
+    }
+
+    req.body = newBody;
+    req.body.files = req.files;
   }
 
   async checkDataForProjectId(data, context) {
@@ -56,6 +161,8 @@ export class IssueController extends Controller {
   postMiddleware = upload;
   postPermission = 'issue.create';
   async post(req, res) {
+    this.parseMultipartBody(req);
+
     checkParameter(
       req?.body,
       {
@@ -275,39 +382,9 @@ export class IssueController extends Controller {
   patchForUuidPermission =       'issue.edit';
   patchMiddleware = upload;
 
-  async patch (req, res) {
-    if (req.headers['content-type'].includes('multipart/form-data')) {
-      const newBody = {};
-      for (const field in req.body) {
-        if (field !== 'body' && !field.includes('.')) {
-          let isObject = false;
-          for (const otherField in req.body) {
-            if (otherField === field) continue;
-            const dotIndex = otherField.indexOf('.');
-            if (dotIndex === -1) continue;
-            if (otherField.substring(0, dotIndex) === field) {
-              isObject = true;
-              break;
-            }
-          }
-          if (isObject) {
-            newBody[field] = JSON.parse(req.body[field]);
-          } else {
-            if ((req.body[field].includes('{') && req.body[field].includes('}')) || req.body[field] === '[]') {
-              try {
-                newBody[field] = JSON.parse(req.body[field]);
-              } catch {
-                newBody[field] = req.body[field];
-              }
-            } else {
-              newBody[field] = req.body[field];
-            }
-          }
-        }
-      }
-      req.body = newBody;
-      req.body.files = req.files
-    }
+  async patch(req, res) {
+    // ── Reutilizar el mismo parseo que post
+    this.parseMultipartBody(req);
 
     const { uuid } = await this.checkUuid(makeContext(req, res));
     const { uuid: _, ...data } = { ...req.body };
@@ -427,5 +504,231 @@ export class IssueController extends Controller {
     await this.service.updateForUuid({ assigneeId: userId }, uuid);
     const caseIds = await this.wfCaseService.getIdFor({ entityUuid: uuid });
     await this.wfBranchService.updateFor({ assigneeId: userId }, { caseId: caseIds });
+  }
+
+  'getPermission /asset' = 'issue.get';
+  async 'get /asset'(req, res) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid', name: 'string' };
+    let options = {
+      view: true,
+      limit: 100,
+      offset: 0,
+      loc,
+      where: {
+        deletedAt: null
+      }
+    };
+
+    options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
+
+    const result = await this.assetService.getListAndCount(options);
+
+    res.status(200).send(result);
+  }
+
+  'getPermission /mobile/projects' = 'issue.get';
+  async 'get /mobile/projects'(req) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid', name: 'string' };
+    let options = {
+      view: true,
+      limit: 100,
+      offset: 0,
+      loc,
+    };
+
+    options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
+
+    return await this.projectService.getListAndCount(options);
+  }
+
+  'getPermission /mobile/types' = 'issue.get';
+  async 'get /mobile/types'(req) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid', name: 'string' };
+    let options = {
+      view: true,
+      limit: 100,
+      offset: 0,
+      loc,
+    };
+
+    options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
+
+    return await this.issueTypeService.getListAndCount(options);
+  }
+
+  'getPermission /mobile/priorities' = 'issue.get';
+  async 'get /mobile/priorities'(req) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid', name: 'string' };
+    let options = {
+      view: true,
+      limit: 100,
+      offset: 0,
+      loc,
+    };
+
+    options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
+
+    let result = await this.issuePriorityService.getListAndCount(options);
+
+    if (this.issuePriorityService.sanitize) {
+      result = this.issuePriorityService.sanitize(result);
+    }
+
+    return result;
+  }
+
+  'getPermission /mobile/assets' = 'issue.get';
+  async 'get /mobile/assets'(req) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid', name: 'string' };
+    let options = {
+      view: true,
+      limit: 100,
+      offset: 0,
+      loc,
+      where: {
+        deletedAt: null
+      }
+    };
+
+    options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
+
+    return await this.assetService.getListAndCount(options);
+  }
+
+  'postPermission /mobile' = 'issue.create';
+  async 'post /mobile'(req, res) {
+    const loc = req.loc ?? defaultLoc;
+    const context = makeContext(req, res);
+
+    checkParameter(
+      req?.body,
+      {
+        title: loc => loc._c('issue', 'Title'),
+        name: loc => loc._c('issue', 'Name'),
+        projectUuid: loc => loc._c('issue', 'Project'),
+        typeUuid: loc => loc._c('issue', 'Type'),
+      },
+    );
+
+    const data = {
+      title: req.body.title,
+      name: req.body.name,
+      description: req.body.description || '',
+      isEnabled: req.body.isEnabled !== undefined ? req.body.isEnabled : true,
+    };
+
+    // Convertir projectUuid a projectId
+    data.projectId = await this.projectService.getSingleIdForUuid(req.body.projectUuid);
+    if (!data.projectId) {
+      throw new HttpError(loc => loc._c('issue', 'The project does not exist.'), 404);
+    }
+
+    // Convertir typeUuid a typeId
+    data.typeId = await this.issueTypeService.getSingleIdForUuid(req.body.typeUuid);
+    if (!data.typeId) {
+      throw new HttpError(loc => loc._c('issue', 'The issue type does not exist.'), 404);
+    }
+
+    // Convertir priorityUuid a priorityId (opcional)
+    if (req.body.priorityUuid) {
+      data.priorityId = await this.issuePriorityService.getSingleIdForUuid(req.body.priorityUuid);
+    }
+
+    // Fecha
+    if (req.body.dueDate) {
+      data.dueDate = req.body.dueDate;
+    }
+
+    // Crear la OT
+    const issue = await this.service.create(data, { context });
+
+    if (!issue || !issue.uuid) {
+      throw new HttpError(loc => loc._c('issue', 'Error creating work order.'), 500);
+    }
+
+    // Crear IssueExtension para guardar position
+    if (req.body.position && req.body.position.lat !== undefined && req.body.position.lon !== undefined) {
+      try {
+        const extensionData = {
+          id: issue.id,
+          position: req.body.position,
+        };
+
+        if (this.issueExtensionService) {
+          await this.issueExtensionService.create(extensionData, { context });
+          console.log('IssueExtension creado correctamente');
+        } else {
+          console.warn('issueExtensionService no disponible');
+        }
+      } catch (error) {
+        console.warn('No se pudo crear IssueExtension:', error.message);
+      }
+    }
+
+    // Crear IssueAsset para relacionar con el Asset
+    if (req.body.assetUuid) {
+      try {
+        const assetId = await this.assetService.getSingleIdForUuid(req.body.assetUuid);
+
+        if (assetId) {
+          const issueAssetData = {
+            issueId: issue.id,
+            assetId: assetId,
+          };
+
+          if (this.issueAssetService) {
+            await this.issueAssetService.create(issueAssetData, { context });
+            console.log('IssueAsset creado correctamente');
+          } else {
+            console.warn('issueAssetService no disponible');
+          }
+        } else {
+          console.warn('Asset no encontrado para uuid:', req.body.assetUuid);
+        }
+      } catch (error) {
+        console.warn('No se pudo crear IssueAsset:', error.message);
+      }
+    }
+
+    // Crear el caso de workflow si existe configuración
+    try {
+      const workflowOfEntity = await this.wfWorkflowOfEntityService.getSingleForName('work-order', {
+        include: { workflow: true },
+        skipNoRowsError: true,
+      });
+
+      if (workflowOfEntity) {
+        const existingCase = await this.wfCaseService.getSingleFor(
+          { entityUuid: issue.uuid },
+          { skipNoRowsError: true }
+        );
+
+        if (!existingCase) {
+          await this.wfCaseService.createForWorkflowIdAndEntityUuid(
+            workflowOfEntity.id,
+            issue.uuid
+          );
+          console.log('Caso de workflow creado correctamente');
+        } else {
+          console.log('Ya existe un caso de workflow para este issue');
+        }
+      }
+    } catch (error) {
+      console.warn('No se pudo crear el caso de workflow:', error.message);
+    }
+
+    res.status(201).send({
+      success: true,
+      uuid: issue.uuid,
+      id: issue.id,
+      title: issue.title,
+      name: issue.name,
+      message: 'Orden de trabajo creada correctamente',
+    });
   }
 }
