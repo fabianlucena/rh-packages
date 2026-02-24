@@ -9,6 +9,7 @@ export default (sequelize, DataTypes) => {
         
       this.belongsTo(models.Project,   { as: 'project', foreignKey: 'projectId' });
       this.belongsTo(models.AssetType, { as: 'type',    foreignKey: 'typeId' });
+      this.hasOne(models.AssetExtension, { as: 'extension', foreignKey: 'id' });
     }
   }
 

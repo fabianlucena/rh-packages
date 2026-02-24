@@ -12,9 +12,9 @@ export class IssueController extends Controller {
   constructor() {
     super();
 
-    this.projectService =          dependency.get('projectService');
-    this.issueTypeService =        dependency.get('issueTypeService');
-    this.issuePriorityService =    dependency.get('issuePriorityService');
+    this.projectService = dependency.get('projectService');
+    this.issueTypeService = dependency.get('issueTypeService');
+    this.issuePriorityService = dependency.get('issuePriorityService');
     this.issueCloseReasonService = dependency.get('issueCloseReasonService');
     this.wfWorkflowOfEntityService = dependency.get('wfWorkflowOfEntityService');
     this.wfStatusService = dependency.get('wfStatusService');
@@ -133,7 +133,7 @@ export class IssueController extends Controller {
     if (!conf.filters?.projectId) {
       return data.projectId;
     }
-         
+
     data ??= {};
     if (!data.projectId) {
       if (data.projectUuid) {
@@ -144,7 +144,7 @@ export class IssueController extends Controller {
         data.projectId = await conf.filters.projectId(context) ?? null;
         return data.projectId;
       }
-        
+
       if (!data.projectId) {
         throw new HttpError(loc => loc._c('issue', 'The project does not exist or you do not have permission to access it.'), 404);
       }
@@ -166,11 +166,11 @@ export class IssueController extends Controller {
     checkParameter(
       req?.body,
       {
-        name:  loc => loc._c('issue', 'Name'),
+        name: loc => loc._c('issue', 'Name'),
         title: loc => loc._c('issue', 'Title'),
       },
     );
-        
+
     const context = makeContext(req, res);
     const data = { ...req.body };
     await this.checkDataForProjectId(data, context);
@@ -184,13 +184,13 @@ export class IssueController extends Controller {
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = {
       view: true,
-      limit:  10,
-      offset:  0,
+      limit: 10,
+      offset: 0,
       orderBy: [['Issue.createdAt', 'DESC']],
       include: {
-        project:     true,
-        type:        true,
-        priority:    true,
+        project: true,
+        type: true,
+        priority: true,
         closeReason: true,
       },
       loc,
@@ -216,7 +216,7 @@ export class IssueController extends Controller {
     const loc = req.loc ?? defaultLoc;
     const gridActions = [];
     if (req.permissions.includes('issue.create')) gridActions.push('create');
-    if (req.permissions.includes('issue.edit'))   gridActions.push('enableDisable', 'edit');
+    if (req.permissions.includes('issue.edit')) gridActions.push('enableDisable', 'edit');
     if (req.permissions.includes('issue.delete')) gridActions.push('delete');
     gridActions.push('search', 'paginate');
     if (req.permissions.includes('issue.edit')) gridActions.push({
@@ -234,123 +234,123 @@ export class IssueController extends Controller {
 
     const fields = [
       {
-        name:        'title',
-        type:        'text',
-        label:       await loc._c('issue', 'Title'),
+        name: 'title',
+        type: 'text',
+        label: await loc._c('issue', 'Title'),
         placeholder: await loc._c('issue', 'Type the title here'),
-        isField:     true,
-        isColumn:    true,
-        required:    true,
+        isField: true,
+        isColumn: true,
+        required: true,
         onValueChanged: {
           mode: {
-            create:       true,
+            create: true,
             defaultValue: false,
           },
-          action:   'setValues',
+          action: 'setValues',
           override: false,
           map: {
             name: {
-              source:   'title',
+              source: 'title',
               sanitize: 'dasherize',
             },
           },
         },
       },
       {
-        name:       'name',
-        type:       'text',
-        label:       await loc._c('issue', 'Name'),
+        name: 'name',
+        type: 'text',
+        label: await loc._c('issue', 'Name'),
         placeholder: await loc._c('issue', 'Type the name here'),
-        isField:     true,
-        isColumn:    true,
-        required:    true,
+        isField: true,
+        isColumn: true,
+        required: true,
         disabled: {
-          create:      false,
+          create: false,
           defaultValue: true,
         },
       },
       {
-        name:        'project.uuid',
-        gridName:    'project.title',
-        type:        'select',
-        gridType:    'text',
-        label:       await loc._c('issue', 'Project'),
+        name: 'project.uuid',
+        gridName: 'project.title',
+        type: 'select',
+        gridType: 'text',
+        label: await loc._c('issue', 'Project'),
         placeholder: await loc._c('issue', 'Select the project'),
-        isField:     true,
-        isColumn:    true,
-        required:    true,
+        isField: true,
+        isColumn: true,
+        required: true,
         loadOptionsFrom: {
           service: 'issue/project',
-          value:   'uuid',
-          text:    'title',
-          title:   'description',
+          value: 'uuid',
+          text: 'title',
+          title: 'description',
         },
       },
       {
-        name:        'type.uuid',
-        gridName:    'type.title',
-        type:        'select',
-        gridType:    'text',
-        label:       await loc._c('issue', 'Type'),
+        name: 'type.uuid',
+        gridName: 'type.title',
+        type: 'select',
+        gridType: 'text',
+        label: await loc._c('issue', 'Type'),
         placeholder: await loc._c('issue', 'Select the type'),
-        isField:     true,
-        isColumn:    true,
-        required:    true,
+        isField: true,
+        isColumn: true,
+        required: true,
         loadOptionsFrom: {
           service: 'issue/type',
-          value:   'uuid',
-          text:    'title',
-          title:   'description',
+          value: 'uuid',
+          text: 'title',
+          title: 'description',
         },
       },
       {
-        name:        'priority.uuid',
-        gridName:    'priority.title',
-        type:        'select',
-        gridType:    'text',
-        label:       await loc._c('issue', 'Priority'),
+        name: 'priority.uuid',
+        gridName: 'priority.title',
+        type: 'select',
+        gridType: 'text',
+        label: await loc._c('issue', 'Priority'),
         placeholder: await loc._c('issue', 'Select the priority'),
-        isField:     true,
-        isColumn:    true,
+        isField: true,
+        isColumn: true,
         options: [{ value: null, text: '' }],
         loadOptionsFrom: {
           service: 'issue/priority',
-          value:   'uuid',
-          text:    'title',
-          title:   'description',
+          value: 'uuid',
+          text: 'title',
+          title: 'description',
         },
       },
       {
-        name:        'description',
-        type:        'textArea',
-        label:       await loc._c('issue', 'Description'),
+        name: 'description',
+        type: 'textArea',
+        label: await loc._c('issue', 'Description'),
         placeholder: await loc._c('issue', 'Type the description here'),
-        isField:     true,
-        isDetail:    true,
+        isField: true,
+        isDetail: true,
       },
       {
-        name:        'isEnabled',
-        type:        'checkbox',
-        label:       await loc._c('issue', 'Enabled'),
+        name: 'isEnabled',
+        type: 'checkbox',
+        label: await loc._c('issue', 'Enabled'),
         placeholder: await loc._c('issue', 'Check for enable or uncheck for disable'),
-        value:       true,
-        isField:     true,
+        value: true,
+        isField: true,
       },
       {
-        name:     'dueDate',
-        type:     'dateTime',
-        isField:  true,
+        name: 'dueDate',
+        type: 'dateTime',
+        isField: true,
         isColumn: true,
-        label:    await loc._c('issue', 'Due date'),
+        label: await loc._c('issue', 'Due date'),
       },
       {
-        name:        'closeReason.uuid',
-        gridName:    'closeReason.title',
-        type:        'select',
-        label:       await loc._c('issue', 'Close reason'),
+        name: 'closeReason.uuid',
+        gridName: 'closeReason.title',
+        type: 'select',
+        label: await loc._c('issue', 'Close reason'),
         placeholder: await loc._c('issue', 'Type the description here'),
-        isField:     true,
-        isDetail:    true,
+        isField: true,
+        isDetail: true,
         options: [{ value: null, text: '' }],
         loadOptionsFrom: {
           service: 'issue/close-reason',
@@ -376,10 +376,10 @@ export class IssueController extends Controller {
     return result;
   }
 
-  deleteForUuidPermission =      'issue.delete';
-  postEnableForUuidPermission =  'issue.edit';
+  deleteForUuidPermission = 'issue.delete';
+  postEnableForUuidPermission = 'issue.edit';
   postDisableForUuidPermission = 'issue.edit';
-  patchForUuidPermission =       'issue.edit';
+  patchForUuidPermission = 'issue.edit';
   patchMiddleware = upload;
 
   async patch(req, res) {
