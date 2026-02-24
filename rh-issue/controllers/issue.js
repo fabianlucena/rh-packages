@@ -27,6 +27,108 @@ export class IssueController extends Controller {
     this.issueAssetService = dependency.get('issueAssetService', { skipError: true });
   }
 
+  // Limpia el body: convierte fechas vacías en null y decodifica JSONs "stringified".
+  parseMultipartBody(req) {
+    if (!req.headers['content-type']?.includes('multipart/form-data')) return;
+
+    const newBody = {};
+
+    for (const field in req.body) {
+      if (field === 'body' || field.includes('.')) continue;
+
+      const isObject = Object.keys(req.body).some(other => {
+        const dotIndex = other.indexOf('.');
+        return dotIndex !== -1 && other.substring(0, dotIndex) === field;
+      });
+
+      const raw = req.body[field];
+
+      if (isObject) {
+        // Desempaquetar JSON anidado hasta obtener un objeto real
+        let parsed = raw;
+        while (typeof parsed === 'string') {
+          try { parsed = JSON.parse(parsed); }
+          catch { break; }
+        }
+        newBody[field] = parsed;
+      } else {
+        // Cadena vacía / "null" / "undefined" → null
+        // Evita que MSSQL reciba "" como valor de fecha y falle la conversión
+        if (raw === '' || raw === 'null' || raw === 'undefined') {
+          newBody[field] = null;
+        } else if (raw === '[]') {
+          newBody[field] = [];
+        } else if (
+          (raw.startsWith('{') && raw.endsWith('}')) ||
+          (raw.startsWith('[') && raw.endsWith(']'))
+        ) {
+          let parsed = raw;
+          while (typeof parsed === 'string') {
+            try { parsed = JSON.parse(parsed); }
+            catch { break; }
+          }
+          newBody[field] = parsed;
+        } else {
+          newBody[field] = raw;
+        }
+      }
+    }
+
+    req.body = newBody;
+    req.body.files = req.files;
+  }
+
+  // Limpia el body: convierte fechas vacías en null y decodifica JSONs "stringified".
+  parseMultipartBody(req) {
+    if (!req.headers['content-type']?.includes('multipart/form-data')) return;
+
+    const newBody = {};
+
+    for (const field in req.body) {
+      if (field === 'body' || field.includes('.')) continue;
+
+      const isObject = Object.keys(req.body).some(other => {
+        const dotIndex = other.indexOf('.');
+        return dotIndex !== -1 && other.substring(0, dotIndex) === field;
+      });
+
+      const raw = req.body[field];
+
+      if (isObject) {
+        // Desempaquetar JSON anidado hasta obtener un objeto real
+        let parsed = raw;
+        while (typeof parsed === 'string') {
+          try { parsed = JSON.parse(parsed); }
+          catch { break; }
+        }
+        newBody[field] = parsed;
+      } else {
+        // Cadena vacía / "null" / "undefined" → null
+        // Evita que MSSQL reciba "" como valor de fecha y falle la conversión
+        if (raw === '' || raw === 'null' || raw === 'undefined') {
+          newBody[field] = null;
+        } else if (raw === '[]') {
+          newBody[field] = [];
+        } else if (
+          (raw.startsWith('{') && raw.endsWith('}')) ||
+          (raw.startsWith('[') && raw.endsWith(']'))
+        ) {
+          let parsed = raw;
+          while (typeof parsed === 'string') {
+            try { parsed = JSON.parse(parsed); }
+            catch { break; }
+          }
+          newBody[field] = parsed;
+        } else {
+          newBody[field] = raw;
+        }
+      }
+    }
+
+    req.body = newBody;
+    req.body.files = req.files;
+  }
+
   async checkDataForProjectId(data, context) {
     if (!conf.filters?.projectId) {
       return data.projectId;
@@ -59,6 +161,8 @@ export class IssueController extends Controller {
   postMiddleware = upload;
   postPermission = 'issue.create';
   async post(req, res) {
+    this.parseMultipartBody(req);
+
     checkParameter(
       req?.body,
       {
@@ -279,38 +383,8 @@ export class IssueController extends Controller {
   patchMiddleware = upload;
 
   async patch(req, res) {
-    if (req.headers['content-type'].includes('multipart/form-data')) {
-      const newBody = {};
-      for (const field in req.body) {
-        if (field !== 'body' && !field.includes('.')) {
-          let isObject = false;
-          for (const otherField in req.body) {
-            if (otherField === field) continue;
-            const dotIndex = otherField.indexOf('.');
-            if (dotIndex === -1) continue;
-            if (otherField.substring(0, dotIndex) === field) {
-              isObject = true;
-              break;
-            }
-          }
-          if (isObject) {
-            newBody[field] = JSON.parse(req.body[field]);
-          } else {
-            if ((req.body[field].includes('{') && req.body[field].includes('}')) || req.body[field] === '[]') {
-              try {
-                newBody[field] = JSON.parse(req.body[field]);
-              } catch {
-                newBody[field] = req.body[field];
-              }
-            } else {
-              newBody[field] = req.body[field];
-            }
-          }
-        }
-      }
-      req.body = newBody;
-      req.body.files = req.files;
-    }
+    // ── Reutilizar el mismo parseo que post
+    this.parseMultipartBody(req);
 
     const { uuid } = await this.checkUuid(makeContext(req, res));
     const { uuid: _, ...data } = { ...req.body };
@@ -573,7 +647,6 @@ export class IssueController extends Controller {
     // Crear la OT
     const issue = await this.service.create(data, { context });
 
-
     if (!issue || !issue.uuid) {
       throw new HttpError(loc => loc._c('issue', 'Error creating work order.'), 500);
     }
@@ -585,7 +658,6 @@ export class IssueController extends Controller {
           id: issue.id,
           position: req.body.position,
         };
-
 
         if (this.issueExtensionService) {
           await this.issueExtensionService.create(extensionData, { context });
@@ -602,7 +674,7 @@ export class IssueController extends Controller {
     if (req.body.assetUuid) {
       try {
         const assetId = await this.assetService.getSingleIdForUuid(req.body.assetUuid);
-        
+
         if (assetId) {
           const issueAssetData = {
             issueId: issue.id,
@@ -631,12 +703,11 @@ export class IssueController extends Controller {
       });
 
       if (workflowOfEntity) {
-        // Verificar si ya existe un caso para este issue
         const existingCase = await this.wfCaseService.getSingleFor(
           { entityUuid: issue.uuid },
           { skipNoRowsError: true }
         );
-        
+
         if (!existingCase) {
           await this.wfCaseService.createForWorkflowIdAndEntityUuid(
             workflowOfEntity.id,
