@@ -1,4 +1,5 @@
 import { UserService } from '../services/user.js';
+import { TeamService } from '../../../qaait/services/team.js';
 import { getOptionsFromParamsAndOData, HttpError } from 'http-util';
 import { defaultLoc } from 'rf-locale';
 import { checkParameter, checkParameterUuid } from 'rf-util';
@@ -111,6 +112,15 @@ export class UserController {
     const allParams = { ...req?.body, ...req?.query, ...req?.params };
     checkParameter(allParams, 'uuid');
     const uuid = checkParameterUuid(allParams.uuid, loc => loc._c('user', 'UUID'));
+
+    // Siempre borrar via TeamService primero
+    // Esto limpia TeamPositionLogs, UserGroups, Teams y el usuario en cascada
+    const teamsDeleted = await TeamService.singleton().delete({ where: { group: { uuid } } });
+    if (teamsDeleted) {
+      return res.sendStatus(204);
+    }
+
+    // No tenía Teams → borrar el usuario directamente
     const rowsDeleted = await UserService.singleton().deleteForUuid(uuid);
     if (!rowsDeleted) {
       throw new HttpError(loc => loc._c('user', 'User with UUID %s does not exist.'), 404, uuid);
