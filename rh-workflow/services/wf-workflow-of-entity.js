@@ -1,4 +1,5 @@
 import { Service } from 'rf-service';
+import { conf } from '../conf.js';
 
 export class WfWorkflowOfEntityService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleDescriptionTranslatable {
   references = {
@@ -17,6 +18,29 @@ export class WfWorkflowOfEntityService extends Service.IdUuidEnableNameUniqueTit
     'assigneeTitle',
     'workflowTitle',
   ];
+
+  clearCache() {
+    conf.fieldsCache = {};
+    conf.workflowsCache = {};
+  }
+
+  async enableForUuid(uuid, options) {
+    const result = await super.enableForUuid(uuid, options);
+    this.clearCache();
+    return result;
+  }
+
+  async disableForUuid(uuid, options) {
+    const result = await super.disableForUuid(uuid, options);
+    this.clearCache();
+    return result;
+  }
+
+  async deleteForUuid(uuid, options) {
+    const result = await super.deleteForUuid(uuid, options);
+    this.clearCache();
+    return result;
+  }
 
   async getListOptions(options) {
     options = { ...options };
