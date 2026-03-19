@@ -1,5 +1,6 @@
 import { Service } from 'rf-service';
 import { conf } from '../conf.js';
+import dependency from 'rf-dependency';
 
 export class WfWorkflowOfEntityService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleDescriptionTranslatable {
   references = {
@@ -19,6 +20,11 @@ export class WfWorkflowOfEntityService extends Service.IdUuidEnableNameUniqueTit
     'workflowTitle',
   ];
 
+  init() {
+    super.init?.();
+    this.wfCaseService = dependency.get('wfCaseService');
+  }
+
   clearCache() {
     conf.fieldsCache = {};
     conf.workflowsCache = {};
@@ -37,6 +43,8 @@ export class WfWorkflowOfEntityService extends Service.IdUuidEnableNameUniqueTit
   }
 
   async deleteForUuid(uuid, options) {
+    const item = await this.getSingleForUuid(uuid, { attributes: ['id'] });
+    await this.wfCaseService.deleteFor({ workflowId: item.id }, options);
     const result = await super.deleteForUuid(uuid, options);
     this.clearCache();
     return result;
@@ -176,7 +184,7 @@ export class WfWorkflowOfEntityService extends Service.IdUuidEnableNameUniqueTit
         isDetail:    true,
       },
       {
-        legend:       loc => loc._c('workflow', 'Current status'),
+        legend:      loc => loc._c('workflow', 'Current status'),
         type:        'fields',
         fields:      [
           {
@@ -200,8 +208,8 @@ export class WfWorkflowOfEntityService extends Service.IdUuidEnableNameUniqueTit
             isField:     true,
           },
           {
-            name:       'currentStatusName',
-            type:       'text',
+            name:        'currentStatusName',
+            type:        'text',
             label:       loc => loc._c('workflow', 'Name'),
             placeholder: loc => loc._c('workflow', 'Type the current status property name here'),
             isField:     true,
@@ -209,8 +217,8 @@ export class WfWorkflowOfEntityService extends Service.IdUuidEnableNameUniqueTit
             required:    true,
           },
           {
-            name:       'currentStatusTitle',
-            type:       'text',
+            name:        'currentStatusTitle',
+            type:        'text',
             label:       loc => loc._c('workflow', 'Title'),
             placeholder: loc => loc._c('workflow', 'Type the current status field title here'),
             isField:     true,
@@ -220,7 +228,7 @@ export class WfWorkflowOfEntityService extends Service.IdUuidEnableNameUniqueTit
         ],
       },
       {
-        legend:       loc => loc._c('workflow', 'Assignee'),
+        legend:      loc => loc._c('workflow', 'Assignee'),
         type:        'fields',
         fields:      [
           {
@@ -244,8 +252,8 @@ export class WfWorkflowOfEntityService extends Service.IdUuidEnableNameUniqueTit
             isField:     true,
           },
           {
-            name:       'assigneeName',
-            type:       'text',
+            name:        'assigneeName',
+            type:        'text',
             label:       loc => loc._c('workflow', 'Name'),
             placeholder: loc => loc._c('workflow', 'Type the assignee name here'),
             isField:     true,
@@ -253,8 +261,8 @@ export class WfWorkflowOfEntityService extends Service.IdUuidEnableNameUniqueTit
             required:    true,
           },
           {
-            name:       'assigneeTitle',
-            type:       'text',
+            name:        'assigneeTitle',
+            type:        'text',
             label:       loc => loc._c('workflow', 'Title'),
             placeholder: loc => loc._c('workflow', 'Type the assignee field title here'),
             isField:     true,
@@ -264,7 +272,7 @@ export class WfWorkflowOfEntityService extends Service.IdUuidEnableNameUniqueTit
         ],
       },
       {
-        legend:       loc => loc._c('workflow', 'Workflow'),
+        legend:      loc => loc._c('workflow', 'Workflow'),
         type:        'fields',
         fields:      [
           {
@@ -288,8 +296,8 @@ export class WfWorkflowOfEntityService extends Service.IdUuidEnableNameUniqueTit
             isField:     true,
           },
           {
-            name:       'workflowName',
-            type:       'text',
+            name:        'workflowName',
+            type:        'text',
             label:       loc => loc._c('workflow', 'Name'),
             placeholder: loc => loc._c('workflow', 'Type the workflow name here'),
             isField:     true,
@@ -297,8 +305,8 @@ export class WfWorkflowOfEntityService extends Service.IdUuidEnableNameUniqueTit
             required:    true,
           },
           {
-            name:       'workflowTitle',
-            type:       'text',
+            name:        'workflowTitle',
+            type:        'text',
             label:       loc => loc._c('workflow', 'Title'),
             placeholder: loc => loc._c('workflow', 'Type the workflow field title here'),
             isField:     true,
