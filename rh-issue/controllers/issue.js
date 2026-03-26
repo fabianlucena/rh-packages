@@ -337,10 +337,10 @@ export class IssueController extends Controller {
         isField: true,
       },
       {
-        name: 'manuelDataEntry',
+        name: 'manualDataEntry',
         type: 'checkbox',
-        label: await loc._c('issue', 'Manuel Data Entry'),
-        placeholder: await loc._c('issue', 'Check for enable manuel data entry'),
+        label: await loc._c('issue', 'Manual Data Entry'),
+        placeholder: await loc._c('issue', 'Check for enable manual data entry'),
         value: false,
         isField: true,
       },

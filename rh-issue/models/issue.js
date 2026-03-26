@@ -37,7 +37,7 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: true,
     },
-    manuelDataEntry: {
+    manualDataEntry: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
