@@ -337,6 +337,14 @@ export class IssueController extends Controller {
         isField: true,
       },
       {
+        name: 'manualDataEntry',
+        type: 'checkbox',
+        label: await loc._c('issue', 'Manual Data Entry'),
+        placeholder: await loc._c('issue', 'Check for enable manual data entry'),
+        value: false,
+        isField: true,
+      },
+      {
         name: 'dueDate',
         type: 'dateTime',
         isField: true,
@@ -620,6 +628,7 @@ export class IssueController extends Controller {
       name: req.body.name,
       description: req.body.description || '',
       isEnabled: req.body.isEnabled !== undefined ? req.body.isEnabled : true,
+      manualDataEntry: req.body.manualDataEntry !== undefined ? req.body.manualDataEntry : false,
     };
 
     // Convertir projectUuid a projectId
