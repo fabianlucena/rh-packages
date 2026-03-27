@@ -628,7 +628,7 @@ export class IssueController extends Controller {
       name: req.body.name,
       description: req.body.description || '',
       isEnabled: req.body.isEnabled !== undefined ? req.body.isEnabled : true,
-      manuelDataEntry: req.body.manuelDataEntry !== undefined ? req.body.manuelDataEntry : false,
+      manualDataEntry: req.body.manualDataEntry !== undefined ? req.body.manualDataEntry : false,
     };
 
     // Convertir projectUuid a projectId
