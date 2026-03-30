@@ -12,7 +12,23 @@ export class WorkflowOfEntityController extends Controller {
     this.modelEntityNameService = dependency.get('modelEntityNameService');
   }
 
-  getPermission = 'workflow.get';
+  getPermission =            'workflow.get';
+  postPermission =           'workflow.create';
+  deleteForUuidPermission =  'workflow.delete';
+  enableForUuidPermission =  'workflow.edit';
+  disableForUuidPermission = 'workflow.edit';
+
+  async deleteForUuid(req, res, next) {
+    return this.defaultDeleteForUuid(req, res, next);
+  }
+
+  async postEnableForUuid(req, res, next) {
+    return this.defaultPostEnableForUuid(req, res, next);
+  }
+
+  async postDisableForUuid(req, res, next) {
+    return this.defaultPostDisableForUuid(req, res, next);
+  }
 
   'getPermission /workflow' = [ 'workflow.create', 'workflow.edit' ];
   async 'get /workflow'(req) {
