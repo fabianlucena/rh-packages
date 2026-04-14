@@ -1,4 +1,5 @@
 import { Op as srvOp } from 'rf-service';
+import { Column }       from 'rf-service/rf-service-op.js';
 import { Op, Utils as seqUtils } from 'sequelize';
 // import crypto from 'crypto';
 
@@ -225,6 +226,10 @@ export class ModelSequelize {
       }
 
       return newList;
+    }
+
+    if (Column.isColumn(where)) {
+      return this.sequelize.col(where.name);
     }
 
     if (where && typeof where === 'object') {
