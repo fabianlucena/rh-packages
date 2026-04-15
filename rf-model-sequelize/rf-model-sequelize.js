@@ -1,5 +1,6 @@
 import { Op as srvOp } from 'rf-service';
 import { Op, Utils as seqUtils } from 'sequelize';
+import { Column }       from 'rf-service/rf-service-op.js';
 // import crypto from 'crypto';
 
 const opMap = {
@@ -227,6 +228,10 @@ export class ModelSequelize {
       return newList;
     }
 
+    if (Column.isColumn(where)) {
+      return this.sequelize.col(where.name);
+    }
+    
     if (where && typeof where === 'object') {
       const newWhere = {};
       const symbols = Object.getOwnPropertySymbols(where);
