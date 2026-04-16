@@ -11,7 +11,11 @@ export class WorkflowStatusController extends Controller {
     this.workflowService = dependency.get('wfWorkflowService');
   }
 
-  getPermission = 'workflow.get';
+
+  getPermission    = 'workflow.get';
+  postPermission   = 'workflow.create';
+  patchPermission  = 'workflow.edit';
+  deletePermission = 'workflow.delete';
 
   'getPermission /workflow' = [ 'workflow.create', 'workflow.edit' ];
   async 'get /workflow'(req) {
