@@ -113,6 +113,7 @@ export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerMod
         placeholder:     loc => loc._c('workflow', 'Select the workflow'),
         isField:         true,
         isColumn:        true,
+        required:        true,
         loadOptionsFrom: {
           service: 'workflow-status/workflow',
           value:   'uuid',
@@ -171,11 +172,11 @@ export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerMod
     const id = result.id;
 
     if (isInitial) {
-      await this.wfStatusIsInitialService.create({ statusId: id }, options);
+      await this.wfStatusIsInitialService.create({ statusId: id });
     }
 
     if (isFinal) {
-      await this.wfStatusIsFinalService.create({ statusId: id }, options);
+      await this.wfStatusIsFinalService.create({ statusId: id });
     }
 
     return result;
@@ -199,20 +200,20 @@ export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerMod
       if (isInitial !== undefined) {
         if (isInitial) {
           for (const id of idList) {
-            await this.wfStatusIsInitialService.createIfNotExists({ statusId: id }, options);
+            await this.wfStatusIsInitialService.createIfNotExists({ statusId: id });
           }
         } else {
-          await this.wfStatusIsInitialService.deleteFor({ statusId: idList }, options);
+          await this.wfStatusIsInitialService.deleteFor({ statusId: idList });
         }
       }
 
       if (isFinal !== undefined) {
         if (isFinal) {
           for (const id of idList) {
-            await this.wfStatusIsFinalService.createIfNotExists({ statusId: id }, options);
+            await this.wfStatusIsFinalService.createIfNotExists({ statusId: id });
           }
         } else {
-          await this.wfStatusIsFinalService.deleteFor({ statusId: idList }, options);
+          await this.wfStatusIsFinalService.deleteFor({ statusId: idList });
         }
       }
     }

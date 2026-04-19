@@ -29,6 +29,55 @@ export class WorkflowStatusController extends Controller {
     return result;
   }
 
+  async patch(req) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid' };
+    let options = { loc };
+
+    options = await getOptionsFromParamsAndOData(
+      { ...req.query, ...req.params, ...req.body },
+      definitions,
+      options,
+    );
+
+    const data = { ...req.body };
+    delete data.uuid;
+
+    await this.service.update(data, options);
+
+    return null;
+  }
+
+  'postPermission /disable' = 'workflow.edit';
+  async 'post /disable'(req) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid' };
+    let options = { loc };
+
+    options = await getOptionsFromParamsAndOData(
+      { ...req.query, ...req.params, ...req.body },
+      definitions,
+      options,
+    );
+
+    return this.service.disable(options);
+  }
+
+  'postPermission /enable' = 'workflow.edit';
+  async 'post /enable'(req) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid' };
+    let options = { loc };
+
+    options = await getOptionsFromParamsAndOData(
+      { ...req.query, ...req.params, ...req.body },
+      definitions,
+      options,
+    );
+
+    return this.service.enable(options);
+  }
+
   async delete(req) {
     const loc = req.loc ?? defaultLoc;
     const definitions = { uuid: 'uuid' };
