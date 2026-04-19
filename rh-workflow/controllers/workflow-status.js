@@ -11,7 +11,6 @@ export class WorkflowStatusController extends Controller {
     this.workflowService = dependency.get('wfWorkflowService');
   }
 
-
   getPermission    = 'workflow.get';
   postPermission   = 'workflow.create';
   patchPermission  = 'workflow.edit';
@@ -28,5 +27,21 @@ export class WorkflowStatusController extends Controller {
     result = await this.workflowService.sanitize(result);
 
     return result;
+  }
+
+  async delete(req) {
+    const loc = req.loc ?? defaultLoc;
+    const definitions = { uuid: 'uuid' };
+    let options = { loc };
+
+    options = await getOptionsFromParamsAndOData(
+      { ...req.query, ...req.params, ...req.body },
+      definitions,
+      options,
+    );
+
+    await this.service.delete(options);
+
+    return null;
   }
 }
