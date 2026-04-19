@@ -60,7 +60,9 @@ export class WorkflowStatusController extends Controller {
       options,
     );
 
-    return this.service.disable(options);
+    await this.service.update({ isEnabled: false }, options);
+
+    return null;
   }
 
   'postPermission /enable' = 'workflow.edit';
@@ -75,7 +77,9 @@ export class WorkflowStatusController extends Controller {
       options,
     );
 
-    return this.service.enable(options);
+    await this.service.update({ isEnabled: true }, options);
+
+    return null;
   }
 
   async delete(req) {
