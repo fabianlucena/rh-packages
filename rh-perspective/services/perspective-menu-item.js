@@ -11,7 +11,7 @@ export class PerspectiveMenuItemService extends Service.IdUuidEnableOwnerModuleT
   
   async getInterface(options) {
     const gridActions = [],
-      permissions = options?.context?.req?.permissions;
+      permissions = options?.permissions ?? options?.context?.req?.permissions ?? [];
     if (permissions.includes('perspective.create')) gridActions.push('create');
     if (permissions.includes('perspective.edit'))   gridActions.push('enableDisable', 'edit');
     if (permissions.includes('perspective.delete')) gridActions.push('delete');
@@ -67,7 +67,7 @@ export class PerspectiveMenuItemService extends Service.IdUuidEnableOwnerModuleT
       },
     ];
 
-    const result = {
+    return {
       title:     loc => loc._c('perspective', 'Perspective menu item'),
       gridTitle: loc => loc._c('perspective', 'Perspectives menu items'),
       load: {
@@ -79,7 +79,5 @@ export class PerspectiveMenuItemService extends Service.IdUuidEnableOwnerModuleT
       gridActions,
       fields,
     };
-
-    return result;
   }
 }
