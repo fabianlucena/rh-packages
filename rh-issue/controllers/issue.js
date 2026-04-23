@@ -5,6 +5,7 @@ import { checkParameter } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
 import fileUpload from 'express-fileupload';
+import { Op as srvOp } from 'rf-service';
 
 const upload = fileUpload({ createParentPath: true });
 
@@ -25,6 +26,9 @@ export class IssueController extends Controller {
     this.assetService = dependency.get('assetService');
     this.issueExtensionService = dependency.get('issueExtensionService', { skipError: true });
     this.issueAssetService = dependency.get('issueAssetService', { skipError: true });
+    this.issueMaterialService = dependency.get('issueMaterialService', { skipError: true });
+    this.warehouseService = dependency.get('warehouseService', { skipError: true });
+    this.warehouseReservationService = dependency.get('warehouseReservationService', { skipError: true });
   }
 
   // Limpia el body: convierte fechas vacías en null y decodifica JSONs "stringified".
@@ -608,6 +612,33 @@ export class IssueController extends Controller {
     return await this.assetService.getListAndCount(options);
   }
 
+  'getPermission /mobile/warehouse-items' = 'issue.get';
+  async 'get /mobile/warehouse-items'(req) {
+    const { q, category, page = 1, limit = 50 } = req.query;
+
+    const parsedLimit  = Math.min(parseInt(limit, 10) || 50, 100);
+    const parsedOffset = (Math.max(parseInt(page, 10) || 1, 1) - 1) * parsedLimit;
+
+    const options = {
+      where:      { isEnabled: true },
+      attributes: ['uuid', 'sku', 'name', 'unit', 'stockCurrent', 'stockMin', 'category', 'subcategory'],
+      order:      [['name', 'ASC']],
+      limit:      parsedLimit,
+      offset:     parsedOffset,
+    };
+
+    if (q?.trim()) {
+      options.where[srvOp.or] = [
+        { sku:  { [srvOp.like]: `%${q.trim()}%` } },
+        { name: { [srvOp.like]: `%${q.trim()}%` } },
+      ];
+    }
+
+    if (category) options.where.category = category;
+
+    return await this.warehouseService.getListAndCount(options);
+  }
+
   'postPermission /mobile' = 'issue.create';
   async 'post /mobile'(req, res) {
     const loc = req.loc ?? defaultLoc;
@@ -622,6 +653,15 @@ export class IssueController extends Controller {
         typeUuid: loc => loc._c('issue', 'Type'),
       },
     );
+
+    const materials = Array.isArray(req.body.materials) ? req.body.materials : [];
+    for (const [i, m] of materials.entries()) {
+      if (!m.warehouseUuid) throw new HttpError(() => `materials[${i}].warehouseUuid is required`, 400);
+      const qty = parseFloat(m.quantityRequired);
+      if (!Number.isFinite(qty) || qty <= 0) throw new HttpError(() => `materials[${i}].quantityRequired must be a positive number`, 400);
+    }
+    const dupes = materials.map(m => m.warehouseUuid).filter((u, i, arr) => arr.indexOf(u) !== i);
+    if (dupes.length) throw new HttpError(() => `Duplicate warehouse items: ${[...new Set(dupes)].join(', ')}`, 400);
 
     const data = {
       title: req.body.title,
@@ -701,6 +741,39 @@ export class IssueController extends Controller {
         }
       } catch (error) {
         console.warn('No se pudo crear IssueAsset:', error.message);
+      }
+    }
+
+    // Crear IssueMaterials para relacionar items de warehouse
+    if (materials.length) {
+      try {
+        if (this.issueMaterialService) {
+          await this.issueMaterialService.createMaterialsForIssue(issue.id, materials);
+          console.log('IssueMaterials creados correctamente');
+        } else {
+          console.warn('issueMaterialService no disponible');
+        }
+      } catch (error) {
+        console.warn('No se pudo crear IssueMaterials:', error.message);
+      }
+
+      // Crear reserva de materiales y descontar stock
+      try {
+        if (this.warehouseReservationService) {
+          const userId = req.user?.id
+            ?? (req.user?.uuid ? await this.userService.getIdForUuid(req.user.uuid) : null);
+
+          await this.warehouseReservationService.createReservation(
+            issue.id,
+            materials,
+            { userId },
+          );
+          console.log('Reserva de materiales creada correctamente');
+        } else {
+          console.warn('warehouseReservationService no disponible');
+        }
+      } catch (error) {
+        console.warn('No se pudo crear la reserva de materiales:', error.message);
       }
     }
 
