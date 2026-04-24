@@ -616,20 +616,20 @@ export class IssueController extends Controller {
   async 'get /mobile/warehouse-items'(req) {
     const { q, category, page = 1, limit = 50 } = req.query;
 
-    const parsedLimit  = Math.min(parseInt(limit, 10) || 50, 100);
+    const parsedLimit = Math.min(parseInt(limit, 10) || 50, 100);
     const parsedOffset = (Math.max(parseInt(page, 10) || 1, 1) - 1) * parsedLimit;
 
     const options = {
-      where:      { isEnabled: true },
+      where: { isEnabled: true },
       attributes: ['uuid', 'sku', 'name', 'unit', 'stockCurrent', 'stockMin', 'category', 'subcategory'],
-      order:      [['name', 'ASC']],
-      limit:      parsedLimit,
-      offset:     parsedOffset,
+      order: [['name', 'ASC']],
+      limit: parsedLimit,
+      offset: parsedOffset,
     };
 
     if (q?.trim()) {
       options.where[srvOp.or] = [
-        { sku:  { [srvOp.like]: `%${q.trim()}%` } },
+        { sku: { [srvOp.like]: `%${q.trim()}%` } },
         { name: { [srvOp.like]: `%${q.trim()}%` } },
       ];
     }
@@ -698,6 +698,10 @@ export class IssueController extends Controller {
 
     if (!issue || !issue.uuid) {
       throw new HttpError(loc => loc._c('issue', 'Error creating work order.'), 500);
+    }
+
+    if (!issue.id) {
+      issue.id = await this.service.getSingleIdForUuid(issue.uuid);
     }
 
     // Crear IssueExtension para guardar position
