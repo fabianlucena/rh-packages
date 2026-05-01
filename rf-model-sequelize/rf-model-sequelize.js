@@ -228,6 +228,10 @@ export class ModelSequelize {
     }
 
     if (where && typeof where === 'object') {
+      if (where instanceof Date) {
+        return where;
+      }
+      
       const newWhere = {};
       const symbols = Object.getOwnPropertySymbols(where);
       for (let k of symbols) {
