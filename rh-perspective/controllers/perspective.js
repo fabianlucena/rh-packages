@@ -1,3 +1,4 @@
+// perspective.controller.js
 import { Controller } from 'rh-controller';
 import dependency from 'rf-dependency';
 import { defaultLoc } from 'rf-locale';
@@ -8,8 +9,8 @@ export class PerspectiveController extends Controller {
   constructor() {
     super();
 
-    this.service =            dependency.get('perspectiveService');
-    this.permissionService =  dependency.get('permissionService');
+    this.service =           dependency.get('perspectiveService');
+    this.permissionService = dependency.get('permissionService');
   }
 
   postPermission =               'perspective.create';
@@ -25,7 +26,11 @@ export class PerspectiveController extends Controller {
     const definitions = { uuid: 'uuid', name: 'string' };
     let options = {
       view: true,
-      where: { permission: { name: req.permissions ?? null }},
+      where: {
+        name: req.permissions?.length
+          ? req.permissions
+          : null,
+      },
       offset: 0,
       loc,
     };
