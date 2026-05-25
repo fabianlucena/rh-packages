@@ -103,4 +103,13 @@ export const ServiceMixinName = Service => class extends Service {
 
     return super.update(data, options);
   }
+
+  /**
+   * Deletes a rows for a given name.
+   * @param {string} name - Name for the test case o delete.
+   * @returns {Promise[integer]} deleted rows count.
+   */
+  async deleteForName(name) {
+    return this.deleteFor({ name });
+  }
 };

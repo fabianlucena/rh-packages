@@ -9,7 +9,6 @@ export class AssetService extends Service.IdUuidEnableNameUniqueTitleDescription
   references = {
     project: true,
     type:    'assetType',
-    extension: 'assetExtension',
   };
   defaultTranslationContext = 'asset';
   viewAttributes = ['id', 'uuid', 'isEnabled', 'name', 'title', 'isTranslatable', 'description'];
