@@ -60,6 +60,11 @@ export default (sequelize, DataTypes) => {
         this.setDataValue('jsonData', jsonData);
       }
     },
+    custom: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
   }, {
     sequelize,
     timestamps: true,
