@@ -69,6 +69,7 @@ export class AssetController extends Controller {
     await this.checkDataForProjectId(data, context);
 
     delete data.uuid;
+    delete data.extension;
     await this.service.updateForUuid(data, uuid, { context });
   }
 
@@ -96,7 +97,7 @@ export class AssetController extends Controller {
     }
   
     options.where ??= {};
-    options.where.deletedAt = null; // Solo trae los registros que no estén "eliminados"
+    options.where.deletedAt = null; // Solo trae los registros que no estén eliminados
   
     const eventOptions = { entity: 'Asset', context, options };
     await conf.global.eventBus?.$emit('Asset.response.getting', eventOptions);
