@@ -21,7 +21,7 @@ export class PerspectiveService extends Service.IdUuidEnableNameUniqueTitleDescr
   
   async getInterface(options) {
     const gridActions = [],
-      permissions = options?.context?.req?.permissions;
+      permissions = options?.permissions ?? options?.context?.req?.permissions ?? [];
     if (permissions.includes('perspective.create')) gridActions.push('create');
     if (permissions.includes('perspective.edit'))   gridActions.push('enableDisable', 'edit');
     if (permissions.includes('perspective.delete')) gridActions.push('delete');
@@ -60,15 +60,15 @@ export class PerspectiveService extends Service.IdUuidEnableNameUniqueTitleDescr
         },
       },
       {
-        name:       'name',
-        type:       'text',
+        name:        'name',
+        type:        'text',
         label:       loc => loc._c('perspective', 'Name'),
         placeholder: loc => loc._c('perspective', 'Type the name here'),
         isField:     true,
         isColumn:    true,
         required:    true,
         disabled: {
-          create:      false,
+          create:       false,
           defaultValue: true,
         },
       },
@@ -97,7 +97,7 @@ export class PerspectiveService extends Service.IdUuidEnableNameUniqueTitleDescr
       },
     ];
 
-    const result = {
+    return {
       title:     loc => loc._c('perspective', 'Perspective'),
       gridTitle: loc => loc._c('perspective', 'Perspectives'),
       load: {
@@ -109,8 +109,6 @@ export class PerspectiveService extends Service.IdUuidEnableNameUniqueTitleDescr
       gridActions,
       fields,
     };
-
-    return result;
   }
 
   async switchToName(name, options) {
