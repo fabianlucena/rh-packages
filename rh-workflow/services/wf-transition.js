@@ -4,9 +4,9 @@ import { ConflictError } from 'http-util';
 
 export class WfTransitionService extends Service.IdUuidEnableNameUniqueTitleOwnerModuleDescriptionTranslatable {
   references = {
-    workflow:  'wfWorkflow',
-    from: 'wfStatusService',
-    to:   'wfStatusService',
+    workflow: 'wfWorkflow',
+    from:     'wfStatusService',
+    to:       'wfStatusService',
   };
   defaultTranslationContext = 'workflow';
 
@@ -34,7 +34,7 @@ export class WfTransitionService extends Service.IdUuidEnableNameUniqueTitleOwne
     if (permissions?.includes('workflow.edit'))   gridActions.push('enableDisable', 'edit');
     if (permissions?.includes('workflow.delete')) gridActions.push('delete');
     gridActions.push('search', 'paginate');
-        
+
     const fields = [
       {
         name:        'isEnabled',
@@ -68,16 +68,32 @@ export class WfTransitionService extends Service.IdUuidEnableNameUniqueTitleOwne
         },
       },
       {
-        name:       'name',
-        type:       'text',
+        name:        'name',
+        type:        'text',
         label:       loc => loc._c('workflow', 'Name'),
         placeholder: loc => loc._c('workflow', 'Type the name here'),
         isField:     true,
         isColumn:    true,
         required:    true,
         disabled: {
-          create:      false,
+          create:       false,
           defaultValue: true,
+        },
+      },
+      {
+        name:            'workflow.uuid',
+        gridName:        'workflow.title',
+        type:            'select',
+        gridType:        'text',
+        label:           loc => loc._c('workflow', 'Workflow'),
+        placeholder:     loc => loc._c('workflow', 'Select the workflow'),
+        isField:         true,
+        isColumn:        true,
+        required:        true,
+        loadOptionsFrom: {
+          service: 'workflow',
+          value:   'uuid',
+          text:    'title',
         },
       },
       {

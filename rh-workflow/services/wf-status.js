@@ -14,18 +14,21 @@ export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerMod
     this.wfStatusIsInitialService = dependency.get('wfStatusIsInitialService');
     this.wfStatusIsFinalService =   dependency.get('wfStatusIsFinalService');
     this.wfWorkflowService =        dependency.get('wfWorkflowService');
+    this.wfTransitionService =      dependency.get('wfTransitionService');
+    this.wfBranchService =          dependency.get('wfBranchService');
+    this.wfCaseLogService =         dependency.get('wfCaseLogService');
 
     super.init();
   }
 
   async createIfNotExists(data, options) {
     if (data.workflowId) {
-      options = {...options, where: {...options?.where, workflowId: data.workflowId}}
+      options = { ...options, where: { ...options?.where, workflowId: data.workflowId } };
     } else if (data.workflow) {
       const workflowId = await this.wfWorkflowService.getSingleIdForName(data.workflow);
-      options = {...options, where: {...options?.where, workflowId }}
+      options = { ...options, where: { ...options?.where, workflowId } };
     }
-    
+
     return super.createIfNotExists(data, options);
   }
 
@@ -55,7 +58,7 @@ export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerMod
     if (permissions?.includes('workflow.edit'))   gridActions.push('enableDisable', 'edit');
     if (permissions?.includes('workflow.delete')) gridActions.push('delete');
     gridActions.push('search', 'paginate');
-        
+
     const fields = [
       {
         name:        'isEnabled',
@@ -89,15 +92,15 @@ export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerMod
         },
       },
       {
-        name:       'name',
-        type:       'text',
+        name:        'name',
+        type:        'text',
         label:       loc => loc._c('workflow', 'Name'),
         placeholder: loc => loc._c('workflow', 'Type the name here'),
         isField:     true,
         isColumn:    true,
         required:    true,
         disabled: {
-          create:      false,
+          create:       false,
           defaultValue: true,
         },
       },
@@ -110,6 +113,7 @@ export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerMod
         placeholder:     loc => loc._c('workflow', 'Select the workflow'),
         isField:         true,
         isColumn:        true,
+        required:        true,
         loadOptionsFrom: {
           service: 'workflow-status/workflow',
           value:   'uuid',
@@ -117,20 +121,20 @@ export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerMod
         },
       },
       {
-        name:        'isInitial',
-        type:        'checkbox',
-        gridType:    'check',
-        label:       loc => loc._c('workflow', 'Initial'),
-        isField:     true,
-        isColumn:    true,
+        name:     'isInitial',
+        type:     'checkbox',
+        gridType: 'check',
+        label:    loc => loc._c('workflow', 'Initial'),
+        isField:  true,
+        isColumn: true,
       },
       {
-        name:        'isFinal',
-        type:        'checkbox',
-        gridType:    'check',
-        label:       loc => loc._c('workflow', 'Final'),
-        isField:     true,
-        isColumn:    true,
+        name:     'isFinal',
+        type:     'checkbox',
+        gridType: 'check',
+        label:    loc => loc._c('workflow', 'Final'),
+        isField:  true,
+        isColumn: true,
       },
       {
         name:        'description',
@@ -142,7 +146,7 @@ export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerMod
       },
     ];
 
-    const result = {
+    return {
       title:     loc => loc._c('workflow', 'Status'),
       gridTitle: loc => loc._c('workflow', 'Statuses'),
       load: {
@@ -153,8 +157,6 @@ export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerMod
       gridActions,
       fields,
     };
-
-    return result;
   }
 
   async create(data, options) {
@@ -170,11 +172,11 @@ export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerMod
     const id = result.id;
 
     if (isInitial) {
-      await this.wfStatusIsInitialService.create({ statusId: id }, options);
+      await this.wfStatusIsInitialService.create({ statusId: id });
     }
 
     if (isFinal) {
-      await this.wfStatusIsFinalService.create({ statusId: id }, options);
+      await this.wfStatusIsFinalService.create({ statusId: id });
     }
 
     return result;
@@ -189,29 +191,29 @@ export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerMod
     const isFinal = data.isFinal;
     delete data.isFinal;
 
-    const result = super.update(data, options);
+    const result = await super.update(data, options);
 
     if (isInitial !== undefined || isFinal !== undefined) {
-      const rows = this.getList({ ...options, attributes: ['id'] });
+      const rows = await this.getList({ ...options, attributes: ['id'] });
       const idList = rows.map(r => r.id);
 
       if (isInitial !== undefined) {
         if (isInitial) {
           for (const id of idList) {
-            await this.wfStatusIsInitialService.createIfNotExists({ statusId: id }, options);
+            await this.wfStatusIsInitialService.createIfNotExists({ statusId: id });
           }
         } else {
-          await this.wfStatusIsInitialService.deleteFor({ statusId: idList }, options);
+          await this.wfStatusIsInitialService.deleteFor({ statusId: idList });
         }
       }
 
       if (isFinal !== undefined) {
         if (isFinal) {
           for (const id of idList) {
-            await this.wfStatusIsFinalService.createIfNotExists({ statusId: id }, options);
+            await this.wfStatusIsFinalService.createIfNotExists({ statusId: id });
           }
         } else {
-          await this.wfStatusIsFinalService.deleteFor({ statusId: idList }, options);
+          await this.wfStatusIsFinalService.deleteFor({ statusId: idList });
         }
       }
     }
@@ -220,11 +222,15 @@ export class WfStatusService extends Service.IdUuidEnableNameUniqueTitleOwnerMod
   }
 
   async delete(options) {
-    const rows = this.getList({ ...options, attributes: ['id'] });
+    const rows = await this.getList({ ...options, attributes: ['id'] });
     const idList = rows.map(r => r.id);
 
-    await this.wfStatusIsInitialService.deleteFor({ statusId: idList }, options);
-    await this.wfStatusIsFinalService.deleteFor({ statusId: idList }, options);
+    await this.wfCaseLogService.deleteFor(   { statusId: idList });
+    await this.wfBranchService.deleteFor(    { statusId: idList });
+    await this.wfTransitionService.deleteFor({ fromId:   idList });
+    await this.wfTransitionService.deleteFor({ toId:     idList });
+    await this.wfStatusIsInitialService.deleteFor({ statusId: idList });
+    await this.wfStatusIsFinalService.deleteFor(  { statusId: idList });
 
     return super.delete(options);
   }
