@@ -95,9 +95,11 @@ export const ServiceMixinName = Service => class extends Service {
   }
 
   async update(data, options) {
-    if (!options?.where && data.name) {
-      options ??= {};
-      options.where = { name: data.name };
+    if (data?.name) {
+      if (!options?.where) {
+        options = { ...options, where: { name: data.name } };
+      }
+
       data = { ...data, name: undefined };
     }
 
