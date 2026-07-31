@@ -158,19 +158,19 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
   /**
    * Updates an user.
    * @param {object} data - Data to update.
-   * @param {object} where - Where object with the criteria to update.
+   * @param {object} options - Options object with criteria to update.
    * @returns {Promise[integer]} updated rows count.
    */
-  async update(data, where) {
-    const result = await super.update(data, where);
+  async update(data, options) {
+    const result = await super.update(data, options);
     if (!result) {
       return result;
     }
 
     if (data.password) {
       const identityService = IdentityService.singleton();
-      const user = await this.getFor(where);
-      const identity = await identityService.getLocalForUsername(user.username);
+      const user = await this.getSingle(options);
+      const identity = await identityService.getLocalForUsernameOrNull(user.username);
       if (identity?.id) {
         await identityService.updateForId({ password: data.password }, identity.id);
       } else {

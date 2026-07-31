@@ -79,9 +79,11 @@ export const ServiceMixinId = Service => class ServiceId extends Service {
   }
 
   async update(data, options) {
-    if (!options?.where && data.id) {
-      options ??= {};
-      options.where = { id: data.id };
+    if (data?.id) {
+      if (!options?.where) {
+        options = { ...options, where: { id: data.id } };
+      }
+
       data = { ...data, id: undefined };
     }
 
