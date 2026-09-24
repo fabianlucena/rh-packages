@@ -41,7 +41,7 @@ export default (sequelize, DataTypes) => {
       allowNull: true,
     },
     jsonData: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     data: {

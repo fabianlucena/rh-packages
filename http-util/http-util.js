@@ -222,11 +222,12 @@ export function configureServices(services, servicesPath, options) {
     .forEach(async file => {
       const loadedServices = await import('file://' + path.join(servicesPath, file));
       for (let name in loadedServices) {
-        const service = loadedServices[name];
-        let l = name.length;
-        if (l > 7 && name.endsWith('Service')) {
-          name = name.substring(0, l - 7);
+        if (!name.endsWith('Service')) {
+          continue;
         }
+
+        const service = loadedServices[name];
+        name = name.substring(0, name.length - 7);
 
         services[name] = service;
         dependency.addSingleton(service);
