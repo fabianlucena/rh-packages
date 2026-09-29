@@ -6,9 +6,9 @@ export default (sequelize, DataTypes) => {
       this.belongsTo(models.Module, { as: 'ownerModule', foreignKey: 'ownerModuleId' });
 
       this.       belongsToMany(models.Permission,  { as: 'permissions', through: models.RolePermission, foreignKey: 'roleId', otherKey: 'permissionId' });
-      this.       belongsToMany(models.User,        { as: 'users',       through: models.UserSiteRole,   foreignKey: 'roleId', otherKey: 'userId', unique: false });
-      this.       belongsToMany(models.Site,        { as: 'sites',       through: models.UserSiteRole,   foreignKey: 'roleId', otherKey: 'siteId', unique: false });
-      models.User.belongsToMany(models.Role,        { as: 'roles',       through: models.UserSiteRole,   foreignKey: 'userId', otherKey: 'roleId', unique: false });
+      this.       belongsToMany(models.User,        { as: 'users',       through: { model: models.UserSiteRole, unique: false }, foreignKey: 'roleId', otherKey: 'userId' });
+      this.       belongsToMany(models.Site,        { as: 'sites',       through: { model: models.UserSiteRole, unique: false }, foreignKey: 'roleId', otherKey: 'siteId' });
+      models.User.belongsToMany(models.Role,        { as: 'roles',       through: { model: models.UserSiteRole, unique: false }, foreignKey: 'userId', otherKey: 'roleId' });
     }
   }
   Role.init({
