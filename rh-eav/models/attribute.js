@@ -79,7 +79,7 @@ export default (sequelize, DataTypes) => {
     order: {
       type: DataTypes.BIGINT,
       allowNull: false,
-      defaultValue: false,
+      defaultValue: 0,
     },
     isField: {
       type: DataTypes.BOOLEAN,

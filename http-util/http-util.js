@@ -877,11 +877,41 @@ export async function afterSync(global) {
   }
 }
 
+const maxIdentifierLengthByDialect = {
+  postgres: 63,
+  mysql: 64,
+  mariadb: 64,
+  mssql: 128,
+  sqlite: 128,
+};
+
+export function checkIndexNameLengths(sequelize) {
+  const maxLength = maxIdentifierLengthByDialect[sequelize.options.dialect];
+  if (!maxLength) {
+    return;
+  }
+
+  const tooLong = [];
+  for (const model of Object.values(sequelize.models)) {
+    for (const index of model._indexes ?? []) {
+      if (index.name.length > maxLength) {
+        const fields = index.fields.map(field => typeof field === 'string'? field: field.name ?? field.attribute).join(', ');
+        tooLong.push(`  - ${model.name}: index "${index.name}" (${index.name.length} chars) on [${fields}] exceeds the ${maxLength}-char ${sequelize.options.dialect} identifier limit. Give it an explicit short "name" in the model's "indexes" option.`);
+      }
+    }
+  }
+
+  if (tooLong.length) {
+    throw new Error(`Index name(s) exceed the database identifier limit:\n${tooLong.join('\n')}`);
+  }
+}
+
 export async function syncDB(global) {
   if (!global.sequelize) {
     return;
   }
 
+  checkIndexNameLengths(global.sequelize);
   await global.sequelize.sync(global?.config?.db?.sync);
   const asyncMethodList = getPropertyFromItems('check', global.sequelize.models);
   await execAsyncMethodList(asyncMethodList);

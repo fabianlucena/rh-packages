@@ -11,6 +11,7 @@ export const data = {
   resourceTypes: [
     { name: 'image/png',     title: loc._cf('resourceType', 'PNG image'), isTranslatable: true, ownerModule: name },
     { name: 'image/svg+xml', title: loc._cf('resourceType', 'SVG image'), isTranslatable: true, ownerModule: name },
+    { name: 'image/jpg',     title: loc._cf('resourceType', 'JPG image'), isTranslatable: true, ownerModule: name },
   ],
 
   roles: [

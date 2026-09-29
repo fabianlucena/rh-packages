@@ -6,7 +6,7 @@ export default (sequelize, DataTypes) => {
       this.belongsTo(models.Module,      { as: 'ownerModule', foreignKey: 'ownerModuleId' });
       this.belongsToMany(models.Module,  { as: 'modules',     through: models.SiteModule,   foreignKey: 'siteId', otherKey: 'moduleId' });
       this.belongsToMany(models.Session, { as: 'sessions',    through: models.SessionSite,  foreignKey: 'siteId', otherKey: 'sessionId' });
-      this.belongsToMany(models.User,    { as: 'users',       through: models.UserSiteRole, foreignKey: 'siteId', otherKey: 'userId' });
+      this.belongsToMany(models.User,    { as: 'users',       through: { model: models.UserSiteRole, unique: false }, foreignKey: 'siteId', otherKey: 'userId' });
     }
   }
   Site.init({
