@@ -39,10 +39,10 @@ export class MissingPropertyError extends BaseError {
   message = async loc => loc._nn(
     this.properties.length,
     'No properties for object "%s"',
-    'Missing property "%s" for  object "%s"',
+    'Missing property "%s" for object "%s"',
     'Missing properties "%s" for object "%s"',
-    await loc._('objectName'),
-    await loc._('modepropertiesl'),
+    await loc._(this.properties?.join(', ') ?? ''),
+    await loc._(this.objectName ?? ''),
   );
 
   properties = [];

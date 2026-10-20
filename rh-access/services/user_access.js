@@ -20,21 +20,35 @@ export class UserAccessService extends UserSiteRoleService {
   }
 
   async completeReferences(data, options) {
-    data = await super.completeReferences(data, options);
-
-    if (!data.rolesId?.length) {
-      if (data.roles?.length) {
-        for (const role of data.roles) {
-          if (!role.id) {
-            role.id = await this.roleService.getSingleIdForUuid(role.uuid);
-          }
-        }
-
-        data.rolesId = data.roles.map(r => r.id);
-        delete data.roles;
-      }
+    if (data.user?.uuid && !data.userId) {
+      data.userId = await this.userService.getSingleIdForUuid(data.user.uuid, options);
     }
 
+    if (data.site?.uuid && !data.siteId) {
+      data.siteId = await dependency.get('siteService').getSingleIdForUuid(data.site.uuid, options);
+    }
+
+    if (!data.rolesId?.length && data.roles?.length) {
+      const rolesId = [];
+      for (const role of data.roles) {
+        let roleId;
+        if (role?.id) {
+          roleId = role.id;
+        } else if (role?.uuid) {
+          roleId = await this.roleService.getSingleIdForUuid(role.uuid, options);
+        } else if (typeof role === 'string') {
+          roleId = await this.roleService.getSingleIdForUuid(role, options);
+        }
+        if (roleId) {
+          rolesId.push(roleId);
+        }
+      }
+
+      data.rolesId = rolesId;
+      delete data.roles;
+    }
+
+    data = await super.completeReferences(data, options);
     return data;
   }
 
@@ -83,13 +97,6 @@ export class UserAccessService extends UserSiteRoleService {
   }
 
   async updateRoles(options) {
-    const getListOptions = {
-      attributes: ['userId'],
-      where: {
-        userId: options.userId,
-        siteId: options.siteId,
-      }
-    };
     const queryOptions = {};
     if (options.transaction) {
       queryOptions.transaction = options.transaction;
@@ -99,10 +106,14 @@ export class UserAccessService extends UserSiteRoleService {
     for (const roleId of options.rolesId) {
       if (!options.assignableRolesId || options.assignableRolesId.includes(roleId)) {
         rolesId.push(roleId);
-        getListOptions.where.roleId = roleId;
-        const result = await this.userSiteRoleService.getList(getListOptions);
+        const where = {
+          userId: options.userId,
+          siteId: options.siteId,
+          roleId: roleId,
+        };
+        const result = await this.userSiteRoleService.getList({ attributes: ['userId'], where: { ...where } });
         if (!result?.length) {
-          await this.userSiteRoleService.create(getListOptions.where, queryOptions);
+          await this.userSiteRoleService.create({ ...where }, queryOptions);
         }
       }
     }
@@ -122,20 +133,31 @@ export class UserAccessService extends UserSiteRoleService {
   }
 
   async getListOptions(options) {
-    if (!options?.include?.roles) {
+    const rolesInclude = options?.include?.roles ?? options?.include?.role;
+    if (!rolesInclude) {
       return super.getListOptions(options);
     }
 
-    const roles = options.include.roles;
+    const roles = rolesInclude;
     delete options.include.roles;
+    delete options.include.role;
     options = await super.getListOptions(options);
     options.include.roles = roles;
     return options;
   }
     
   async getList(options) {
-    if (!options?.include?.roles) {
-      return super.getList(options);
+    const rolesInclude = options?.include?.roles ?? options?.include?.role;
+    if (!rolesInclude) {
+      const result = await super.getList(options);
+      if (result) {
+        for (const row of result) {
+          if (row.user?.uuid && row.site?.uuid) {
+            row.uuid = row.user.uuid + ',' + row.site.uuid;
+          }
+        }
+      }
+      return result;
     }
 
     options = { ...options };
@@ -163,8 +185,9 @@ export class UserAccessService extends UserSiteRoleService {
       options.include.site.attributes.push('uuid');
     }
 
-    const rolesOptions = options.include.roles;
+    const rolesOptions = rolesInclude;
     delete options.include.roles;
+    delete options.include.role;
     options = await this.getListOptions(options);
     const result = await super.getList(options);
 
@@ -188,7 +211,9 @@ export class UserAccessService extends UserSiteRoleService {
     }
 
     for (const row of result) {
-      row.uuid = row.user.uuid + ',' + row.site.uuid;
+      if (row.user?.uuid && row.site?.uuid) {
+        row.uuid = row.user.uuid + ',' + row.site.uuid;
+      }
 
       roleQueryOptions.where.user.id = row.userId;
       roleQueryOptions.where.site.id = row.siteId;

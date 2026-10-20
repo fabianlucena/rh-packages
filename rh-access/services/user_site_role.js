@@ -39,8 +39,8 @@ export class UserSiteRoleService extends Service.EnableOwnerModuleTranslatable {
     }
   }
 
-  async validateRoleId(roleId) {
-    if (!roleId) {
+  async validateRoleId(roleId, data) {
+    if (!roleId && !data?.rolesId?.length && !data?.roles?.length) {
       throw new MissingPropertyError('UserSiteRole', 'roleId');
     }
   }

@@ -200,6 +200,10 @@ export class IdentityService extends Service.IdUuidEnable {
     return this.getForUsernameAndTypeName(username, 'local', options);
   }
 
+  async getLocalForUsernameOrNull(username, options) {
+    return this.getForUsernameAndTypeName(username, 'local', { skipNoRowsError: true, ...options });
+  }
+
   /**
    * Checks the password for a local identity of the username user.
    * @param {string} username - the username for check password.
@@ -207,7 +211,7 @@ export class IdentityService extends Service.IdUuidEnable {
    * @returns {Promise[bool|errorMessage]}
    */
   async checkLocalPasswordForUsername(username, rawPassword, loc) {
-    const identity = await this.getLocalForUsername(username);
+    const identity = await this.getLocalForUsernameOrNull(username);
 
     if (!identity) {
       return loc._c('identity', 'User "%s" does not have local identity', username);
@@ -290,8 +294,8 @@ export class IdentityService extends Service.IdUuidEnable {
   async update(data, options) {
     if (data.password) {
       if (!data.data) {
-        const identity = await this.getFor(options.where);
-        data.data = identity.data;
+        const identity = await this.getSingle(options);
+        data.data = identity?.data;
       }
 
       await this.completeDataFromPassword(data);
