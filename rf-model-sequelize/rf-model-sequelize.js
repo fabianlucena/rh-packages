@@ -1,4 +1,5 @@
 import { Op as srvOp } from 'rf-service';
+import { Column } from 'rf-service/rf-service-op.js';
 import { Op, Utils as seqUtils } from 'sequelize';
 // import crypto from 'crypto';
 
@@ -228,9 +229,14 @@ export class ModelSequelize {
     }
 
     if (where && typeof where === 'object') {
-      if (where instanceof Date) {
+      if (where instanceof Date || where instanceof seqUtils.SequelizeMethod) {
         return where;
       }
+
+      if (Column.isColumn(where)) {
+        return this.model.sequelize.col(where.name);
+      }
+
       
       const newWhere = {};
       const symbols = Object.getOwnPropertySymbols(where);

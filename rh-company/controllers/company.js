@@ -77,9 +77,7 @@ export class CompanyController {
       view: true,
       limit: 10,
       offset: 0,
-      include: {
-        Owner: true,
-      },
+      include: {},
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
