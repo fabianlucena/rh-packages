@@ -159,19 +159,19 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
   /**
    * Updates an user.
    * @param {object} data - Data to update.
-   * @param {object} where - Where object with the criteria to update.
+   * @param {object} options - Options object with criteria to update.
    * @returns {Promise[integer]} updated rows count.
    */
-  async update(data, where) {
-    const result = await super.update(data, where);
+  async update(data, options) {
+    const result = await super.update(data, options);
     if (!result) {
       return result;
     }
 
     if (data.password) {
       const identityService = IdentityService.singleton();
-      const user = await this.getFor(where);
-      const identity = await identityService.getLocalForUsername(user.username);
+      const user = await this.getSingle(options);
+      const identity = await identityService.getLocalForUsernameOrNull(user.username);
       if (identity?.id) {
         await identityService.updateForId({ password: data.password }, identity.id);
       } else {
@@ -183,9 +183,11 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
     }
 
     if (data.isEnabled === false) {
-      const users = await this.getList({ ...options, attributes: ['id'] });
+      const privilegesService = dependency.get('privilegesService', null);
+      const users = await this.getList({ ...options, attributes: ['id', 'username'] });
       for (const user of users) {
         await this.sessionService.closeForUserId(user.id);
+        privilegesService?.deleteFromCacheForUsername(user.username);
       }
     }
 
@@ -218,11 +220,8 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
       return 0;
     }
 
-    const userId = user.id;
-    const sequelize = this.model?.sequelize;
-    if (sequelize) {
-      await sequelize.query('DELETE FROM [auth].[Session] WHERE [userId] = :userId', { replacements: { userId } }).catch(() => {});
-    }
+    await this.sessionService.closeForUserId(user.id);
+    dependency.get('privilegesService', null)?.deleteFromCacheForUsername(user.username);
 
     return super.disableForUuid(uuid, options);
   }

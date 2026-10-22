@@ -23,7 +23,7 @@ export class NotFoundError extends BaseError {
 }
 
 export class UnauthorizedError extends BaseError {
-  static visibleProperties = ['message', 'title'];
+  static visibleProperties = ['message', 'title', 'redirectTo'];
 
   statusCode = 401;
 

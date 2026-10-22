@@ -5,14 +5,15 @@ export class OptionsController extends Controller {
   static getData() {
     const config = conf.global.config;
     const env = config.env;
-    const isProd = ['prod', 'production', 'docker'].includes(env);
+    const isDev = env === 'dev' || env === 'development';
+    const isProd = env === 'prod' || env === 'production' || !isDev;
     const className = config.className ?? (isProd? 'prod': ('no-prod ' + env));
     const title = config.title ?? 'No title';
-    const label = config.label ?? (isProd? '': ('Environment: ' + env));
+    const label = config.label ?? (isDev? ('Environment: ' + env) : '');
 
     return {
-      env,
-      className,
+      env: isDev? env: 'production',
+      className: isDev? className: 'prod',
       title,
       label,
     };
