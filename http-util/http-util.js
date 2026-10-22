@@ -1170,7 +1170,15 @@ export async function getUuidFromRequest(req, defaultResult) {
     }
   }
 
-  checkParameterUuid(uuid, loc => loc._('UUID'));
+  try {
+    checkParameterUuid(uuid, loc => loc._('UUID'));
+  } catch (err) {
+    if (typeof defaultResult !== 'undefined') {
+      return defaultResult;
+    }
+
+    throw err;
+  }
 
   return uuid;
 }

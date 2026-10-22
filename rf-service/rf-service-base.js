@@ -66,7 +66,7 @@ export class ServiceBase {
    * @returns {ServiceBase}
    */
   static singleton() {
-    if (!this.singletonInstance) {
+    if (!Object.prototype.hasOwnProperty.call(this, 'singletonInstance')) {
       this.singletonInstance = this.factory();
     }
 
@@ -79,7 +79,7 @@ export class ServiceBase {
    */
   static factory() {
     const service = new this();
-    if (!this.singletonInstance) {
+    if (!Object.prototype.hasOwnProperty.call(this, 'singletonInstance')) {
       this.singletonInstance = service;
     }
 
