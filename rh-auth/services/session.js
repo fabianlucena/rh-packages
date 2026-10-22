@@ -110,6 +110,12 @@ export class SessionService extends Service.IdUuid {
   async getJSONForAuthTokenCached(authToken) {
     if (conf.sessionCache && conf.sessionCache[authToken]) {
       const sessionData = conf.sessionCache[authToken];
+      const cachedUser = sessionData.session?.user;
+      if (cachedUser && cachedUser.isEnabled === false) {
+        delete conf.sessionCache[authToken];
+        throw new SessionClosedError();
+      }
+
       sessionData.lastUse = Date.now();
 
       return sessionData.session;
@@ -130,12 +136,51 @@ export class SessionService extends Service.IdUuid {
       throw new SessionClosedError();
     }
 
+    if (session.user && session.user.isEnabled === false) {
+      if (conf.sessionCache && conf.sessionCache[authToken]) {
+        delete conf.sessionCache[authToken];
+      }
+      throw new SessionClosedError();
+    }
+
     conf.sessionCache[authToken] = {
       session: session,
       lastUse: Date.now(),
     };
 
     return session;
+  }
+
+  deleteFromCacheForUserId(userId) {
+    if (!conf.sessionCache) return;
+    for (const authToken in conf.sessionCache) {
+      const s = conf.sessionCache[authToken]?.session;
+      if (s?.userId == userId || s?.user?.id == userId) {
+        delete conf.sessionCache[authToken];
+      }
+    }
+  }
+
+  /**
+   * Closes all active sessions for a given user ID and evicts them from memory cache.
+   * @param {number} userId - ID of the user whose sessions should be closed.
+   * @returns {Promise<number>} number of updated sessions.
+   */
+  async closeForUserId(userId) {
+    if (!userId) return 0;
+
+    this.deleteFromCacheForUserId(userId);
+
+    const SessionModel = this.model?.model || this.model?.sequelize?.models?.Session;
+    if (SessionModel) {
+      const [count] = await SessionModel.update(
+        { close: new Date() },
+        { where: { userId, close: null } }
+      );
+      return count;
+    }
+
+    return this.updateFor({ close: new Date() }, { userId, close: null });
   }
 
   async deleteFromCacheForSessionId(sessionId) {

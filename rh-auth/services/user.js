@@ -167,6 +167,22 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
       return result;
     }
 
+    if (data.isEnabled === false) {
+      try {
+        const user = await this.getSingleOrNullFor(where, { skipNoRowsError: true });
+        if (user?.id) {
+          const sessionService = dependency.get('sessionService', null);
+          if (sessionService) {
+            await sessionService.closeForUserId(user.id);
+          }
+          const privilegesService = dependency.get('privilegesService', null);
+          if (privilegesService?.deleteFromCacheForUsername && user.username) {
+            privilegesService.deleteFromCacheForUsername(user.username);
+          }
+        }
+      } catch (_) {}
+    }
+
     if (data.password) {
       const identityService = IdentityService.singleton();
       const user = await this.getFor(where);
@@ -211,10 +227,19 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
     }
 
     const userId = user.id;
-    const sequelize = this.model?.sequelize;
-    if (sequelize) {
-      await sequelize.query('DELETE FROM [auth].[Session] WHERE [userId] = :userId', { replacements: { userId } }).catch(() => {});
-    }
+    try {
+      const sessionService = dependency.get('sessionService', null);
+      if (sessionService) {
+        await sessionService.closeForUserId(userId);
+      }
+    } catch (_) {}
+
+    try {
+      const privilegesService = dependency.get('privilegesService', null);
+      if (privilegesService?.deleteFromCacheForUsername && user.username) {
+        privilegesService.deleteFromCacheForUsername(user.username);
+      }
+    } catch (_) {}
 
     return super.disableForUuid(uuid, options);
   }

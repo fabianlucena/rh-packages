@@ -174,4 +174,13 @@ export class PrivilegesService extends Service.Base {
       delete conf.privilegesCache[sessionId];
     }
   }
+
+  deleteFromCacheForUsername(username) {
+    if (!conf.privilegesCache) return;
+    for (const key in conf.privilegesCache) {
+      if (conf.privilegesCache[key]?.privileges?.username === username) {
+        delete conf.privilegesCache[key];
+      }
+    }
+  }
 }
