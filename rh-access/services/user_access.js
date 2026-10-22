@@ -20,35 +20,24 @@ export class UserAccessService extends UserSiteRoleService {
   }
 
   async completeReferences(data, options) {
-    if (data.user?.uuid && !data.userId) {
-      data.userId = await this.userService.getSingleIdForUuid(data.user.uuid, options);
-    }
-
-    if (data.site?.uuid && !data.siteId) {
-      data.siteId = await dependency.get('siteService').getSingleIdForUuid(data.site.uuid, options);
-    }
-
-    if (!data.rolesId?.length && data.roles?.length) {
-      const rolesId = [];
-      for (const role of data.roles) {
-        let roleId;
-        if (role?.id) {
-          roleId = role.id;
-        } else if (role?.uuid) {
-          roleId = await this.roleService.getSingleIdForUuid(role.uuid, options);
-        } else if (typeof role === 'string') {
-          roleId = await this.roleService.getSingleIdForUuid(role, options);
-        }
-        if (roleId) {
-          rolesId.push(roleId);
-        }
-      }
-
-      data.rolesId = rolesId;
-      delete data.roles;
-    }
-
     data = await super.completeReferences(data, options);
+
+    if (!data.rolesId) {
+      if (data.roles?.length) {
+        for (const role of data.roles) {
+          if (!role.id && role.uuid) {
+            role.id = await this.roleService.getSingleIdForUuid(role.uuid);
+          }
+        }
+
+        data.rolesId = data.roles.map(r => r.id).filter(Boolean);
+        delete data.roles;
+      } else if (data.roles) {
+        data.rolesId = [];
+        delete data.roles;
+      }
+    }
+
     return data;
   }
 
@@ -59,7 +48,7 @@ export class UserAccessService extends UserSiteRoleService {
         
     await checkDataForMissingProperties(data, 'UserSiteRole', 'userId', 'siteId');
 
-    if (!data.rolesId?.length) {
+    if (data.rolesId === undefined || data.rolesId === null) {
       throw new MissingPropertyError('UserAccess', 'roles');
     }
         
@@ -97,23 +86,26 @@ export class UserAccessService extends UserSiteRoleService {
   }
 
   async updateRoles(options) {
+    const getListOptions = {
+      attributes: ['userId'],
+      where: {
+        userId: options.userId,
+        siteId: options.siteId,
+      }
+    };
     const queryOptions = {};
     if (options.transaction) {
       queryOptions.transaction = options.transaction;
     }
             
     const rolesId = [];
-    for (const roleId of options.rolesId) {
+    for (const roleId of (options.rolesId || [])) {
       if (!options.assignableRolesId || options.assignableRolesId.includes(roleId)) {
         rolesId.push(roleId);
-        const where = {
-          userId: options.userId,
-          siteId: options.siteId,
-          roleId: roleId,
-        };
-        const result = await this.userSiteRoleService.getList({ attributes: ['userId'], where: { ...where } });
+        getListOptions.where.roleId = roleId;
+        const result = await this.userSiteRoleService.getList(getListOptions);
         if (!result?.length) {
-          await this.userSiteRoleService.create({ ...where }, queryOptions);
+          await this.userSiteRoleService.create(getListOptions.where, queryOptions);
         }
       }
     }
@@ -126,38 +118,77 @@ export class UserAccessService extends UserSiteRoleService {
       deleteData.roleId = options.assignableRolesId;
     }
 
-    deleteData.notRoleId = options.rolesId;
+    deleteData.notRoleId = options.rolesId || [];
+
+    // Protección para el superadministrador global 'admin' en el sitio 'system'
+    try {
+      const siteService = dependency.get('siteService', null);
+      if (siteService) {
+        const systemSite = await siteService.getSingleOrNullForName('system', { attributes: ['id'] });
+        const adminUser = await this.userService.getSingleOrNullForUsername('admin', { attributes: ['id'] });
+        const adminRole = await this.roleService.getSingleOrNullForName('admin', { attributes: ['id'] });
+        if (adminUser && systemSite && adminRole && options.userId == adminUser.id && options.siteId == systemSite.id) {
+          if (!deleteData.notRoleId.includes(adminRole.id)) {
+            deleteData.notRoleId.push(adminRole.id);
+          }
+          if (!rolesId.includes(adminRole.id)) {
+            rolesId.push(adminRole.id);
+            await this.userSiteRoleService.createIfNotExists({
+              userId: adminUser.id,
+              siteId: systemSite.id,
+              roleId: adminRole.id,
+            }, queryOptions);
+          }
+        }
+      }
+    } catch (_) {
+      // Ignorar para no bloquear la operación
+    }
+
     await this.userSiteRoleService.deleteFor(deleteData, queryOptions);
+
+    // Invalidar caché de privilegios en memoria para que los cambios surtan efecto inmediato
+    try {
+      const privilegesConf = (await import('../conf.js')).conf;
+      if (privilegesConf?.privilegesCache) {
+        privilegesConf.privilegesCache = {};
+      }
+    } catch (_) {
+      // Ignorar si el módulo conf no está accesible
+    }
 
     return rolesId;
   }
 
   async getListOptions(options) {
-    const rolesInclude = options?.include?.roles ?? options?.include?.role;
-    if (!rolesInclude) {
+    if (!options?.include?.roles) {
       return super.getListOptions(options);
     }
 
-    const roles = rolesInclude;
+    const roles = options.include.roles;
     delete options.include.roles;
-    delete options.include.role;
     options = await super.getListOptions(options);
     options.include.roles = roles;
     return options;
   }
     
+  async count(options) {
+    if (options?.include?.roles) {
+      options = { ...options, include: { ...options.include } };
+      delete options.include.roles;
+    }
+
+    let count = await super.count(options);
+    if (Array.isArray(count)) {
+      count = count.length;
+    }
+
+    return count;
+  }
+    
   async getList(options) {
-    const rolesInclude = options?.include?.roles ?? options?.include?.role;
-    if (!rolesInclude) {
-      const result = await super.getList(options);
-      if (result) {
-        for (const row of result) {
-          if (row.user?.uuid && row.site?.uuid) {
-            row.uuid = row.user.uuid + ',' + row.site.uuid;
-          }
-        }
-      }
-      return result;
+    if (!options?.include?.roles) {
+      return super.getList(options);
     }
 
     options = { ...options };
@@ -185,9 +216,8 @@ export class UserAccessService extends UserSiteRoleService {
       options.include.site.attributes.push('uuid');
     }
 
-    const rolesOptions = rolesInclude;
+    const rolesOptions = options.include.roles;
     delete options.include.roles;
-    delete options.include.role;
     options = await this.getListOptions(options);
     const result = await super.getList(options);
 
@@ -211,9 +241,7 @@ export class UserAccessService extends UserSiteRoleService {
     }
 
     for (const row of result) {
-      if (row.user?.uuid && row.site?.uuid) {
-        row.uuid = row.user.uuid + ',' + row.site.uuid;
-      }
+      row.uuid = row.user.uuid + ',' + row.site.uuid;
 
       roleQueryOptions.where.user.id = row.userId;
       roleQueryOptions.where.site.id = row.siteId;

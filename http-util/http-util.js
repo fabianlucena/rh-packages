@@ -211,28 +211,29 @@ export async function configureRouter(routesPath, router, checkPermission, optio
   }
 }
 
-export function configureServices(services, servicesPath, options) {
+export async function configureServices(services, servicesPath, options) {
   if (!servicesPath) {
     return;
   }
         
-  fs
+  const files = fs
     .readdirSync(servicesPath)
-    .filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js' && (!options?.exclude || !options.exclude.test(file)))
-    .forEach(async file => {
-      const loadedServices = await import('file://' + path.join(servicesPath, file));
-      for (let name in loadedServices) {
-        if (!name.endsWith('Service')) {
-          continue;
-        }
+    .filter(file => file.indexOf('.') !== 0 && file.slice(-3) === '.js' && (!options?.exclude || !options.exclude.test(file)));
 
-        const service = loadedServices[name];
-        name = name.substring(0, name.length - 7);
-
-        services[name] = service;
-        dependency.addSingleton(service);
+  for (const file of files) {
+    const loadedServices = await import('file://' + path.join(servicesPath, file));
+    for (let name in loadedServices) {
+      if (!name.endsWith('Service')) {
+        continue;
       }
-    });
+
+      const service = loadedServices[name];
+      name = name.substring(0, name.length - 7);
+
+      services[name] = service;
+      dependency.addSingleton(service);
+    }
+  }
 }
 
 export async function configureControllers(controllers, controllersPath, options) {
@@ -1169,7 +1170,15 @@ export async function getUuidFromRequest(req, defaultResult) {
     }
   }
 
-  checkParameterUuid(uuid, loc => loc._('UUID'));
+  try {
+    checkParameterUuid(uuid, loc => loc._('UUID'));
+  } catch (err) {
+    if (typeof defaultResult !== 'undefined') {
+      return defaultResult;
+    }
+
+    throw err;
+  }
 
   return uuid;
 }

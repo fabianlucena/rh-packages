@@ -19,12 +19,16 @@ export class UserController {
     const definitions = { uuid: 'uuid', username: 'string' };
     let options = {
       view: true,
-      limit: 10,
+      limit: 15,
       offset: 0,
       include: { type: true },
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
+    // Enforce maximum 15 items per page
+    if (!options.limit || options.limit > 15) {
+      options.limit = 15;
+    }
     const result = await UserService.singleton().getListAndCount(options);
 
     res.status(200).send(result);

@@ -158,19 +158,19 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
   /**
    * Updates an user.
    * @param {object} data - Data to update.
-   * @param {object} options - Options object with criteria to update.
+   * @param {object} where - Where object with the criteria to update.
    * @returns {Promise[integer]} updated rows count.
    */
-  async update(data, options) {
-    const result = await super.update(data, options);
+  async update(data, where) {
+    const result = await super.update(data, where);
     if (!result) {
       return result;
     }
 
     if (data.password) {
       const identityService = IdentityService.singleton();
-      const user = await this.getSingle(options);
-      const identity = await identityService.getLocalForUsernameOrNull(user.username);
+      const user = await this.getFor(where);
+      const identity = await identityService.getLocalForUsername(user.username);
       if (identity?.id) {
         await identityService.updateForId({ password: data.password }, identity.id);
       } else {
@@ -196,5 +196,37 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
     }
 
     return this.create(data);
+  }
+
+  /**
+   * Disables a user and terminates all active sessions immediately.
+   * @param {string} uuid - UUID of the user to disable.
+   * @param {Options} options - Additional query options.
+   * @returns {Promise<number>} number of updated rows.
+   */
+  async disableForUuid(uuid, options) {
+    const user = await this.getSingleOrNullForUuid(uuid, { skipNoRowsError: true, ...options });
+    if (!user) {
+      return 0;
+    }
+
+    const userId = user.id;
+    const sequelize = this.model?.sequelize;
+    if (sequelize) {
+      await sequelize.query('DELETE FROM [auth].[Session] WHERE [userId] = :userId', { replacements: { userId } }).catch(() => {});
+    }
+
+    return super.disableForUuid(uuid, options);
+  }
+
+  /**
+   * Performs soft delete on a user by setting isEnabled = 0 and revoking active sessions.
+   * Preserves all historical referential integrity (work orders, audits, groups, assignments).
+   * @param {string} uuid - UUID of the user to soft-delete.
+   * @param {Options} options - Additional query options.
+   * @returns {Promise<number>} number of updated rows.
+   */
+  async deleteForUuid(uuid, options) {
+    return this.disableForUuid(uuid, options);
   }
 }

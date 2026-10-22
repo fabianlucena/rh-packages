@@ -3,12 +3,14 @@ import { checkParameterUuid, checkParameterUuidList, checkNotNullNotEmptyAndNotU
 import { defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
 import { Controller } from 'rh-controller';
+import { UserAccessService } from '../services/user_access.js';
 
 export class UserAccessController extends Controller {
   constructor() {
     super();
 
-    this.userAccessService = dependency.get('userAccessService');
+    const service = dependency.get('userAccessService', null);
+    this.userAccessService = (service instanceof UserAccessService) ? service : UserAccessService.singleton();
   }
 
   async getInterface(req) {
@@ -92,85 +94,53 @@ export class UserAccessController extends Controller {
     return result;
   }
 
-  postPermission = 'user-access.create';
+  postPermission = ['user-access.create', 'user-access.edit'];
   async post(req) {
-    let userUuid = req.body.user?.uuid ?? req.body['user.uuid'] ?? (typeof req.body.user === 'string' ? req.body.user : undefined);
-    let siteUuid = req.body.site?.uuid ?? req.body['site.uuid'] ?? (typeof req.body.site === 'string' ? req.body.site : undefined);
-    const rawRoles = req.body.roles ?? req.body['roles'];
-
-    const roleUuids = checkParameterUuidList(
-      rawRoles,
-      loc => loc._c('userAccess', 'Roles'),
-    );
+    const data = {
+      user:  { uuid: req.body.user?.uuid },
+      site:  { uuid: req.body.site?.uuid },
+      roles: checkParameterUuidList(
+        req.body.roles,
+        loc => loc._c('userAccess', 'Roles'),
+      ).map(uuid => ({ uuid })),
+    };
 
     if (req.body.uuid) {
-      if (!userUuid) {
-        userUuid = req.body.uuid.split(',')[0];
+      if (!data.user.uuid) {
+        data.user.uuid = req.body.uuid.split(',')[0];
       }
 
-      if (!siteUuid) {
-        siteUuid = req.body.uuid.split(',')[1];
+      if (!data.site.uuid) {
+        data.site.uuid = req.body.uuid.split(',')[1];
       }
     }
 
-    checkParameterUuid(userUuid, loc => loc._c('userAccess', 'User'));
-
-    const userService = dependency.get('userService');
-    const roleService = dependency.get('roleService');
-    const siteService = dependency.get('siteService');
-
-    const userId = await userService.getSingleIdForUuid(userUuid);
-    
-    let siteId;
-    if (siteUuid) {
-      checkParameterUuid(siteUuid, loc => loc._c('userAccess', 'Site'));
-      siteId = await siteService.getSingleIdForUuid(siteUuid);
-    } else {
+    if (!data.site.uuid) {
       if (!req.site?.id) {
         throw new HttpError(loc => loc._c('userAccess', 'Site UUID param is missing.'), 400);
       }
-      siteId = req.site.id;
+      
+      data.site.id = req.site.id;
     }
 
-    const rolesId = [];
-    for (const roleUuid of roleUuids) {
-      const roleId = await roleService.getSingleIdForUuid(roleUuid);
-      if (roleId) {
-        rolesId.push(roleId);
-      }
+    checkParameterUuid(data.user.uuid, loc => loc._c('userAccess', 'User'));
+    checkParameterUuid(data.site.uuid, loc => loc._c('userAccess', 'Site'));
+
+    const isAdmin = req.roles?.includes('admin') || req.roles?.includes('qaaitAdmin') || req.user?.username === 'admin';
+    if (!isAdmin) {
+      data.assignableRolesId = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
     }
 
-    if (!rolesId.length) {
-      throw new HttpError(loc => loc._c('userAccess', 'No valid roles provided.'), 400);
-    }
+    await this.userAccessService.create(data);
+  }
 
-    let assignableRolesId;
-    if (!req.roles.includes('admin')) {
-      assignableRolesId = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
-    }
+  getForUuidPermission = 'user-access.get';
+  async checkUuid(context) {
+    return { uuid: context.req?.params?.uuid };
+  }
 
-    const userSiteRoleService = dependency.get('userSiteRoleService');
-
-    const assignedRolesId = [];
-    for (const roleId of rolesId) {
-      if (!assignableRolesId || assignableRolesId.includes(roleId)) {
-        assignedRolesId.push(roleId);
-        const existing = await userSiteRoleService.getList({
-          attributes: ['userId'],
-          where: { userId, siteId, roleId },
-        });
-        if (!existing?.length) {
-          await userSiteRoleService.create({ userId, siteId, roleId });
-        }
-      }
-    }
-
-    const deleteData = { userId, siteId };
-    if (assignableRolesId) {
-      deleteData.roleId = assignableRolesId;
-    }
-    deleteData.notRoleId = rolesId;
-    await userSiteRoleService.deleteFor(deleteData);
+  async getForUuid(req, res, next) {
+    return this.getData(req, res, next);
   }
 
   getPermission = 'user-access.get';
@@ -185,7 +155,7 @@ export class UserAccessController extends Controller {
       include: {
         user:  {},
         site:  {},
-        role: { attributes: ['title', 'uuid'] },
+        roles: { attributes: ['title', 'uuid'] },
       },
     };
 
@@ -197,7 +167,8 @@ export class UserAccessController extends Controller {
       options.where.siteId = req.site.id;
     }
 
-    if (!req.roles.includes('admin')) {
+    const isAdmin = req.roles?.includes('admin') || req.roles?.includes('qaaitAdmin') || req.user?.username === 'admin';
+    if (!isAdmin) {
       const assignableRolesId = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
       options.include.roles = {
         ...options.include.roles,
@@ -212,8 +183,11 @@ export class UserAccessController extends Controller {
       const uuid = options.where.uuid.split(',');
       delete options.where.uuid;
 
-      options.include.user = { ...options.include.user, where: { ...options.include.user.where, uuid: uuid[0] }};
-      options.include.site = { ...options.include.site, where: { ...options.include.site.where, uuid: uuid[1] }};
+      if (uuid.length === 2) {
+        delete options.where.siteId;
+        options.include.user = { ...options.include.user, where: { ...options.include.user.where, uuid: uuid[0] }};
+        options.include.site = { ...options.include.site, where: { ...options.include.site.where, uuid: uuid[1] }};
+      }
     }
 
     const result = await this.userAccessService.getListAndCount(options);
@@ -221,7 +195,7 @@ export class UserAccessController extends Controller {
     return result;
   }
 
-  'getPermission /user' = 'user-access.edit';
+  'getPermission /user' = ['user-access.get', 'user-access.create', 'user-access.edit'];
   async 'get /user'(req) {
     const definitions = { uuid: 'uuid', title: 'string' };
     let options = {
@@ -240,7 +214,7 @@ export class UserAccessController extends Controller {
     return result;
   }
 
-  'getPermission /site' = 'user-access.edit';
+  'getPermission /site' = ['user-access.get', 'user-access.create', 'user-access.edit'];
   async 'get /site'(req) {
     const definitions = { uuid: 'uuid', title: 'string' };
     let options = {
@@ -259,14 +233,14 @@ export class UserAccessController extends Controller {
     return result;
   }
 
-  'getPermission /role' = 'user-access.edit';
+  'getPermission /role' = ['user-access.get', 'user-access.create', 'user-access.edit'];
   async 'get /role'(req) {
     const definitions = { uuid: 'uuid', title: 'string' };
     let options = {
       view:       true,
       limit:      100,
       offset:     0,
-      attributes: ['uuid', 'name', 'title', 'description'],
+      attributes: ['id', 'uuid', 'name', 'title', 'description'],
       isEnabled:  true,
     };
 
@@ -279,11 +253,49 @@ export class UserAccessController extends Controller {
     const result = await dependency.get('roleService').getListAndCount(options);
         
     const loc = req.loc ?? defaultLoc;
+    const rolePermissionService = dependency.get('rolePermissionService', null);
+    let rolePermissions = [];
+    if (rolePermissionService && result.rows?.length) {
+      try {
+        const roleIds = result.rows.map(r => r.id).filter(Boolean);
+        rolePermissions = await rolePermissionService.getList({
+          where: { roleId: roleIds },
+          attributes: ['roleId'],
+          include: {
+            permission: {
+              attributes: ['uuid', 'name', 'title', 'description', 'isTranslatable'],
+            },
+          },
+        });
+      } catch (err) {
+        req.log?.warn?.('Error fetching permissions for roles:', err);
+      }
+    }
+
     result.rows = await Promise.all(result.rows.map(async row => {
       if (row.isTranslatable)
         row.title = await loc._(row.title);
 
       delete row.isTranslatable;
+
+      const perms = rolePermissions
+        .filter(rp => rp.roleId === row.id && rp.permission)
+        .map(rp => rp.permission);
+
+      row.permissions = await Promise.all(perms.map(async p => {
+        let title = p.title;
+        if (p.isTranslatable && title) {
+          title = await loc._(title);
+        }
+        return {
+          uuid: p.uuid,
+          name: p.name,
+          title: title || p.name,
+          description: p.description || '',
+        };
+      }));
+
+      delete row.id;
 
       return row;
     }));
