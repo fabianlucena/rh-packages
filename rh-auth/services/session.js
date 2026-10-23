@@ -224,6 +224,11 @@ export class SessionService extends Service.IdUuid {
       delete conf.sessionCache[session.authToken];
     }
 
+    if (!session.close) {
+      await this.updateForId({ close: new Date() }, session.id);
+      return 1;
+    }
+
     return super.deleteForUuid(uuid);
   }
 
