@@ -5,7 +5,7 @@ export class OptionsController extends Controller {
   static getData() {
     const config = conf.global.config;
     const env = config.env;
-    const isProd = env === 'prod' || env === 'production';
+    const isProd = ['prod', 'production', 'docker'].includes(env);
     const className = config.className ?? (isProd? 'prod': ('no-prod ' + env));
     const title = config.title ?? 'No title';
     const label = config.label ?? (isProd? '': ('Environment: ' + env));
