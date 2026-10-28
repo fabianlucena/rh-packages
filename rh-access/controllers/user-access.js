@@ -9,6 +9,12 @@ export class UserAccessController extends Controller {
     super();
 
     this.userAccessService = dependency.get('userAccessService');
+    this.userService = dependency.get('userService');
+    this.roleService = dependency.get('roleService');
+    this.siteService = dependency.get('siteService');
+    this.userSiteRoleService = dependency.get('userSiteRoleService');
+    this.assignableRolePerRoleService = dependency.get('assignableRolePerRoleService');
+    this.permissionService = dependency.get('permissionService');
   }
 
   async getInterface(req) {
@@ -115,16 +121,12 @@ export class UserAccessController extends Controller {
 
     checkParameterUuid(userUuid, loc => loc._c('userAccess', 'User'));
 
-    const userService = dependency.get('userService');
-    const roleService = dependency.get('roleService');
-    const siteService = dependency.get('siteService');
-
-    const userId = await userService.getSingleIdForUuid(userUuid);
+    const userId = await this.userService.getSingleIdForUuid(userUuid);
     
     let siteId;
     if (siteUuid) {
       checkParameterUuid(siteUuid, loc => loc._c('userAccess', 'Site'));
-      siteId = await siteService.getSingleIdForUuid(siteUuid);
+      siteId = await this.siteService.getSingleIdForUuid(siteUuid);
     } else {
       if (!req.site?.id) {
         throw new HttpError(loc => loc._c('userAccess', 'Site UUID param is missing.'), 400);
@@ -134,7 +136,7 @@ export class UserAccessController extends Controller {
 
     const rolesId = [];
     for (const roleUuid of roleUuids) {
-      const roleId = await roleService.getSingleIdForUuid(roleUuid);
+      const roleId = await this.roleService.getSingleIdForUuid(roleUuid);
       if (roleId) {
         rolesId.push(roleId);
       }
@@ -146,21 +148,19 @@ export class UserAccessController extends Controller {
 
     let assignableRolesId;
     if (!req.roles.includes('admin')) {
-      assignableRolesId = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
+      assignableRolesId = await this.assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
     }
-
-    const userSiteRoleService = dependency.get('userSiteRoleService');
 
     const assignedRolesId = [];
     for (const roleId of rolesId) {
       if (!assignableRolesId || assignableRolesId.includes(roleId)) {
         assignedRolesId.push(roleId);
-        const existing = await userSiteRoleService.getList({
+        const existing = await this.userSiteRoleService.getList({
           attributes: ['userId'],
           where: { userId, siteId, roleId },
         });
         if (!existing?.length) {
-          await userSiteRoleService.create({ userId, siteId, roleId });
+          await this.userSiteRoleService.create({ userId, siteId, roleId });
         }
       }
     }
@@ -170,7 +170,7 @@ export class UserAccessController extends Controller {
       deleteData.roleId = assignableRolesId;
     }
     deleteData.notRoleId = rolesId;
-    await userSiteRoleService.deleteFor(deleteData);
+    await this.userSiteRoleService.deleteFor(deleteData);
   }
 
   getPermission = 'user-access.get';
@@ -185,7 +185,7 @@ export class UserAccessController extends Controller {
       include: {
         user:  {},
         site:  {},
-        role: { attributes: ['title', 'uuid'] },
+        role: { attributes: ['name', 'title', 'uuid'] },
       },
     };
 
@@ -198,14 +198,19 @@ export class UserAccessController extends Controller {
     }
 
     if (!req.roles.includes('admin')) {
-      const assignableRolesId = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
-      options.include.roles = {
-        ...options.include.roles,
+      const assignableRolesId = await this.assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
+      options.include.role = {
+        ...options.include.role,
         where: {
-          ...options.include.roles.where,
+          ...options.include.role.where,
           id: assignableRolesId,
         },
       };
+    }
+
+    if (req.query?.userUuids) {
+      const userUuids = checkParameterUuidList(req.query.userUuids, loc => loc._c('userAccess', 'Users'));
+      options.include.user = { ...options.include.user, where: { ...options.include.user.where, uuid: userUuids }};
     }
 
     if (options.where?.uuid) {
@@ -221,6 +226,29 @@ export class UserAccessController extends Controller {
     return result;
   }
 
+  'getPermission /user-site' = 'user-access.edit';
+  async 'get /user-site'(req) {
+    const userUuid = checkParameterUuid(req.query?.userUuid, loc => loc._c('userAccess', 'User'));
+
+    const options = {
+      view: true,
+      loc: req.loc ?? defaultLoc,
+      include: {
+        user: { where: { uuid: userUuid }},
+        site: {},
+        role: { attributes: ['name', 'title', 'uuid'] },
+      },
+    };
+
+    if (!req.roles.includes('admin')) {
+      options.include.role.where = {
+        id: await this.assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles),
+      };
+    }
+
+    return this.userAccessService.getListAndCount(options);
+  }
+
   'getPermission /user' = 'user-access.edit';
   async 'get /user'(req) {
     const definitions = { uuid: 'uuid', title: 'string' };
@@ -233,9 +261,7 @@ export class UserAccessController extends Controller {
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-
-    const userService = await dependency.get('userService');
-    const result = await userService.getListAndCount(options);
+    const result = await this.userService.getListAndCount(options);
 
     return result;
   }
@@ -252,9 +278,7 @@ export class UserAccessController extends Controller {
     };
       
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
-
-    const siteService = dependency.get('siteService');
-    const result = await siteService.getListAndCount(options);
+    const result = await this.siteService.getListAndCount(options);
 
     return result;
   }
@@ -273,17 +297,36 @@ export class UserAccessController extends Controller {
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
 
     if (!req.roles.includes('admin')) {
-      options.where = { ...options?.where, id: await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles) };
+      options.where = { ...options?.where, id: await this.assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles) };
     }
 
-    const result = await dependency.get('roleService').getListAndCount(options);
+    const result = await this.roleService.getListAndCount(options);
         
     const loc = req.loc ?? defaultLoc;
+    const includePermissions = req.query?.includePermissions === 'true';
     result.rows = await Promise.all(result.rows.map(async row => {
       if (row.isTranslatable)
         row.title = await loc._(row.title);
 
       delete row.isTranslatable;
+
+      if (includePermissions) {
+        const permissions = await this.permissionService.getForRolesName(
+          [row.name],
+          {
+            attributes: ['uuid', 'name', 'title', 'description', 'isTranslatable'],
+            isEnabled: true,
+            skipThroughAssociationAttributes: true,
+          },
+        );
+        row.permissions = await Promise.all(permissions.map(async permission => {
+          const { isTranslatable, ...rest } = permission;
+          if (isTranslatable)
+            rest.title = await loc._(rest.title);
+
+          return rest;
+        }));
+      }
 
       return row;
     }));
@@ -292,6 +335,11 @@ export class UserAccessController extends Controller {
   }
 
   deleteForUuidPermission = 'user-access.delete';
+  async defaultDeleteForUuid(req, res, next) {
+    await this.checkPermissionsFromProperty(req, res, next, 'deleteForUuidPermission');
+    await this.deleteForUuid(req, res);
+  }
+
   async deleteForUuid(req, res) {
     const loc = req.loc ?? defaultLoc;
 
@@ -331,13 +379,15 @@ export class UserAccessController extends Controller {
       siteUuid = checkParameterUuid(uuidParts[1], loc => loc._c('userAccess', 'Site'));
     }
 
-    let rowsDeleted;
-    const deleteWhere = { userUuid, siteUuid };
+    const deleteWhere = {
+      userId: await this.userService.getSingleIdForUuid(userUuid),
+      siteId: await this.siteService.getSingleIdForUuid(siteUuid),
+    };
     if (!req.roles.includes('admin')) {
-      deleteWhere.notRoleName = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
+      deleteWhere.roleId = await this.assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
     }
 
-    rowsDeleted = await this.userAccessService.deleteFor(deleteWhere);
+    const rowsDeleted = await this.userAccessService.deleteFor(deleteWhere);
 
     if (!rowsDeleted) {
       throw new HttpError(loc => loc._c('userAccess', 'User with UUID %s has not access to the site with UUID %s.'), 403, userUuid, siteUuid);

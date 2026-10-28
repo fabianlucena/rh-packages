@@ -2,8 +2,14 @@ import { UserService } from '../services/user.js';
 import { getOptionsFromParamsAndOData, HttpError } from 'http-util';
 import { defaultLoc } from 'rf-locale';
 import { checkParameter, checkParameterUuid } from 'rf-util';
+import dependency from 'rf-dependency';
 
 export class UserController {
+  static init() {
+    UserController.roleService = dependency.get('roleService', null);
+    UserController.userSiteRoleService = dependency.get('userSiteRoleService', null);
+  }
+
   static async post(req, res) {
     await UserService.singleton().create(req.body);
     res.status(204).send();
@@ -25,9 +31,34 @@ export class UserController {
     };
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
+
+    if (req.query.roleUuid) {
+      options.where = { ...options.where, id: await UserController.getUserIdsForRoleUuid(req.query.roleUuid, req.site?.id) };
+    }
+
     const result = await UserService.singleton().getListAndCount(options);
 
     res.status(200).send(result);
+  }
+
+  static async getUserIdsForRoleUuid(roleUuid, siteId) {
+    if (!UserController.roleService || !UserController.userSiteRoleService) {
+      throw new HttpError(loc => loc._c('user', 'Filtering by role is not available.'), 400);
+    }
+
+    checkParameterUuid(roleUuid, loc => loc._c('user', 'Role'));
+    const roleId = await UserController.roleService.getIdOrNullForUuid(roleUuid);
+    if (!roleId) {
+      return [];
+    }
+
+    const where = { roleId };
+    if (siteId) {
+      where.siteId = siteId;
+    }
+
+    const userSiteRoles = await UserController.userSiteRoleService.getList({ attributes: ['userId'], where });
+    return [...new Set(userSiteRoles.map(userSiteRole => userSiteRole.userId))];
   }
 
   static async getGrid(req, res) {

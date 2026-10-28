@@ -660,7 +660,7 @@ export class ServiceBase {
         searchColumn = '$' + searchColumn + '$';
       }
 
-      qColumns?.push({ [searchColumn]: { [Op.like]: q }});
+      qColumns?.push({ [searchColumn]: { [Op.iLike]: q }});
     }
 
     if (qColumns.length) {
