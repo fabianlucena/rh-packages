@@ -47,6 +47,12 @@ const opMap = {
   [srvOp.not]:           Op.not,
 };
 
+// ILIKE only exists in Postgres; other dialects (e.g. MSSQL) compare case-insensitively with LIKE by default collation
+const caseInsensitiveFallbackOpMap = {
+  [srvOp.iLike]:    Op.like,
+  [srvOp.notILike]: Op.notLike,
+};
+
 export class ModelSequelize {
   static cache = {};
 
@@ -242,7 +248,7 @@ export class ModelSequelize {
       const symbols = Object.getOwnPropertySymbols(where);
       for (let k of symbols) {
         let v = where[k];
-        const w = opMap[k];
+        const w = (this.model.sequelize.getDialect() !== 'postgres' && caseInsensitiveFallbackOpMap[k]) || opMap[k];
         if (!w) {
           throw Error('Unknown symbol in query.');
         }

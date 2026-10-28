@@ -20,6 +20,7 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
     super.init();
 
     this.userTypeService = dependency.get('userTypeService');
+    this.sessionService = dependency.get('sessionService');
   }
 
   async validateForCreation(data) {
@@ -182,10 +183,9 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
     }
 
     if (data.isEnabled === false) {
-      const sessionService = dependency.get('sessionService');
       const users = await this.getList({ ...options, attributes: ['id'] });
       for (const user of users) {
-        await sessionService.closeForUserId(user.id);
+        await this.sessionService.closeForUserId(user.id);
       }
     }
 
