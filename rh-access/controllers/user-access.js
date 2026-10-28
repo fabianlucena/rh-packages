@@ -186,7 +186,7 @@ export class UserAccessController extends Controller {
       include: {
         user:  {},
         site:  {},
-        role: { attributes: ['name', 'title', 'uuid'] },
+        roles: { attributes: ['name', 'title', 'uuid'] },
       },
     };
 
@@ -200,10 +200,10 @@ export class UserAccessController extends Controller {
 
     if (!isAdmin({ roles: req.roles, username: req.user?.username })) {
       const assignableRolesId = await this.assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
-      options.include.role = {
-        ...options.include.role,
+      options.include.roles = {
+        ...options.include.roles,
         where: {
-          ...options.include.role.where,
+          ...options.include.roles.where,
           id: assignableRolesId,
         },
       };
@@ -237,12 +237,12 @@ export class UserAccessController extends Controller {
       include: {
         user: { where: { uuid: userUuid }},
         site: {},
-        role: { attributes: ['name', 'title', 'uuid'] },
+        roles: { attributes: ['name', 'title', 'uuid'] },
       },
     };
 
     if (!isAdmin({ roles: req.roles, username: req.user?.username })) {
-      options.include.role.where = {
+      options.include.roles.where = {
         id: await this.assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles),
       };
     }
