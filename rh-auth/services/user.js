@@ -183,9 +183,11 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
     }
 
     if (data.isEnabled === false) {
-      const users = await this.getList({ ...options, attributes: ['id'] });
+      const privilegesService = dependency.get('privilegesService', null);
+      const users = await this.getList({ ...options, attributes: ['id', 'username'] });
       for (const user of users) {
         await this.sessionService.closeForUserId(user.id);
+        privilegesService?.deleteFromCacheForUsername(user.username);
       }
     }
 
@@ -204,5 +206,34 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
     }
 
     return this.create(data);
+  }
+
+  /**
+   * Disables a user and terminates all active sessions immediately.
+   * @param {string} uuid - UUID of the user to disable.
+   * @param {Options} options - Additional query options.
+   * @returns {Promise<number>} number of updated rows.
+   */
+  async disableForUuid(uuid, options) {
+    const user = await this.getSingleOrNullForUuid(uuid, { skipNoRowsError: true, ...options });
+    if (!user) {
+      return 0;
+    }
+
+    await this.sessionService.closeForUserId(user.id);
+    dependency.get('privilegesService', null)?.deleteFromCacheForUsername(user.username);
+
+    return super.disableForUuid(uuid, options);
+  }
+
+  /**
+   * Performs soft delete on a user by setting isEnabled = 0 and revoking active sessions.
+   * Preserves all historical referential integrity (work orders, audits, groups, assignments).
+   * @param {string} uuid - UUID of the user to soft-delete.
+   * @param {Options} options - Additional query options.
+   * @returns {Promise<number>} number of updated rows.
+   */
+  async deleteForUuid(uuid, options) {
+    return this.disableForUuid(uuid, options);
   }
 }

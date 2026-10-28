@@ -3,6 +3,7 @@ import { checkParameterUuid, checkParameterUuidList, checkNotNullNotEmptyAndNotU
 import { defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
 import { Controller } from 'rh-controller';
+import { isAdmin } from '../is-admin.js';
 
 export class UserAccessController extends Controller {
   constructor() {
@@ -147,7 +148,7 @@ export class UserAccessController extends Controller {
     }
 
     let assignableRolesId;
-    if (!req.roles.includes('admin')) {
+    if (!isAdmin({ roles: req.roles, username: req.user?.username })) {
       assignableRolesId = await this.assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
     }
 
@@ -185,7 +186,7 @@ export class UserAccessController extends Controller {
       include: {
         user:  {},
         site:  {},
-        role: { attributes: ['name', 'title', 'uuid'] },
+        roles: { attributes: ['name', 'title', 'uuid'] },
       },
     };
 
@@ -197,12 +198,12 @@ export class UserAccessController extends Controller {
       options.where.siteId = req.site.id;
     }
 
-    if (!req.roles.includes('admin')) {
+    if (!isAdmin({ roles: req.roles, username: req.user?.username })) {
       const assignableRolesId = await this.assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
-      options.include.role = {
-        ...options.include.role,
+      options.include.roles = {
+        ...options.include.roles,
         where: {
-          ...options.include.role.where,
+          ...options.include.roles.where,
           id: assignableRolesId,
         },
       };
@@ -236,12 +237,12 @@ export class UserAccessController extends Controller {
       include: {
         user: { where: { uuid: userUuid }},
         site: {},
-        role: { attributes: ['name', 'title', 'uuid'] },
+        roles: { attributes: ['name', 'title', 'uuid'] },
       },
     };
 
-    if (!req.roles.includes('admin')) {
-      options.include.role.where = {
+    if (!isAdmin({ roles: req.roles, username: req.user?.username })) {
+      options.include.roles.where = {
         id: await this.assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles),
       };
     }
@@ -296,7 +297,7 @@ export class UserAccessController extends Controller {
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
 
-    if (!req.roles.includes('admin')) {
+    if (!isAdmin({ roles: req.roles, username: req.user?.username })) {
       options.where = { ...options?.where, id: await this.assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles) };
     }
 
@@ -383,7 +384,7 @@ export class UserAccessController extends Controller {
       userId: await this.userService.getSingleIdForUuid(userUuid),
       siteId: await this.siteService.getSingleIdForUuid(siteUuid),
     };
-    if (!req.roles.includes('admin')) {
+    if (!isAdmin({ roles: req.roles, username: req.user?.username })) {
       deleteWhere.roleId = await this.assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
     }
 
