@@ -3,6 +3,7 @@ import { checkParameterUuid, checkParameterUuidList, checkNotNullNotEmptyAndNotU
 import { defaultLoc } from 'rf-locale';
 import dependency from 'rf-dependency';
 import { Controller } from 'rh-controller';
+import { isAdmin } from '../is-admin.js';
 
 export class UserAccessController extends Controller {
   constructor() {
@@ -147,7 +148,7 @@ export class UserAccessController extends Controller {
     }
 
     let assignableRolesId;
-    if (!req.roles.includes('admin')) {
+    if (!isAdmin({ roles: req.roles, username: req.user?.username })) {
       assignableRolesId = await this.assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
     }
 
@@ -197,7 +198,7 @@ export class UserAccessController extends Controller {
       options.where.siteId = req.site.id;
     }
 
-    if (!req.roles.includes('admin')) {
+    if (!isAdmin({ roles: req.roles, username: req.user?.username })) {
       const assignableRolesId = await this.assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
       options.include.role = {
         ...options.include.role,
@@ -240,7 +241,7 @@ export class UserAccessController extends Controller {
       },
     };
 
-    if (!req.roles.includes('admin')) {
+    if (!isAdmin({ roles: req.roles, username: req.user?.username })) {
       options.include.role.where = {
         id: await this.assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles),
       };
@@ -296,7 +297,7 @@ export class UserAccessController extends Controller {
 
     options = await getOptionsFromParamsAndOData({ ...req.query, ...req.params }, definitions, options);
 
-    if (!req.roles.includes('admin')) {
+    if (!isAdmin({ roles: req.roles, username: req.user?.username })) {
       options.where = { ...options?.where, id: await this.assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles) };
     }
 
@@ -383,7 +384,7 @@ export class UserAccessController extends Controller {
       userId: await this.userService.getSingleIdForUuid(userUuid),
       siteId: await this.siteService.getSingleIdForUuid(siteUuid),
     };
-    if (!req.roles.includes('admin')) {
+    if (!isAdmin({ roles: req.roles, username: req.user?.username })) {
       deleteWhere.roleId = await this.assignableRolePerRoleService.getAssignableRolesIdForRoleName(req.roles);
     }
 

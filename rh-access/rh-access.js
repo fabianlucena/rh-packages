@@ -3,6 +3,7 @@ import { NoPermissionError } from 'http-util';
 import { runSequentially } from 'rf-util';
 import { conf as localConf } from './conf.js';
 import dependency from 'rf-dependency';
+import { isAdmin } from './is-admin.js';
 
 export const conf = localConf;
 
@@ -62,7 +63,7 @@ async function checkPermissionForUsernameAndSiteName(privileges, ...requiredPerm
     return false;
   }
 
-  if (privileges.roles?.includes('admin') || privileges.roles?.includes('qaaitAdmin') || privileges.user?.username === 'admin' || privileges.username === 'admin') {
+  if (isAdmin({ roles: privileges.roles, username: privileges.username ?? privileges.user?.username })) {
     return true;
   }
 
