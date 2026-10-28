@@ -185,7 +185,7 @@ export class UserAccessController extends Controller {
       include: {
         user:  {},
         site:  {},
-        role: { attributes: ['title', 'uuid'] },
+        role: { attributes: ['name', 'title', 'uuid'] },
       },
     };
 
@@ -199,10 +199,10 @@ export class UserAccessController extends Controller {
 
     if (!req.roles.includes('admin')) {
       const assignableRolesId = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
-      options.include.roles = {
-        ...options.include.roles,
+      options.include.role = {
+        ...options.include.role,
         where: {
-          ...options.include.roles.where,
+          ...options.include.role.where,
           id: assignableRolesId,
         },
       };
@@ -219,6 +219,29 @@ export class UserAccessController extends Controller {
     const result = await this.userAccessService.getListAndCount(options);
 
     return result;
+  }
+
+  'getPermission /user-site' = 'user-access.edit';
+  async 'get /user-site'(req) {
+    const userUuid = checkParameterUuid(req.query?.userUuid, loc => loc._c('userAccess', 'User'));
+
+    const options = {
+      view: true,
+      loc: req.loc ?? defaultLoc,
+      include: {
+        user: { where: { uuid: userUuid }},
+        site: {},
+        role: { attributes: ['name', 'title', 'uuid'] },
+      },
+    };
+
+    if (!req.roles.includes('admin')) {
+      options.include.role.where = {
+        id: await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles),
+      };
+    }
+
+    return this.userAccessService.getListAndCount(options);
   }
 
   'getPermission /user' = 'user-access.edit';
@@ -279,11 +302,31 @@ export class UserAccessController extends Controller {
     const result = await dependency.get('roleService').getListAndCount(options);
         
     const loc = req.loc ?? defaultLoc;
+    const includePermissions = req.query?.includePermissions === 'true';
+    const permissionService = dependency.get('permissionService');
     result.rows = await Promise.all(result.rows.map(async row => {
       if (row.isTranslatable)
         row.title = await loc._(row.title);
 
       delete row.isTranslatable;
+
+      if (includePermissions) {
+        const permissions = await permissionService.getForRolesName(
+          [row.name],
+          {
+            attributes: ['uuid', 'name', 'title', 'description', 'isTranslatable'],
+            isEnabled: true,
+            skipThroughAssociationAttributes: true,
+          },
+        );
+        row.permissions = await Promise.all(permissions.map(async permission => {
+          const { isTranslatable, ...rest } = permission;
+          if (isTranslatable)
+            rest.title = await loc._(rest.title);
+
+          return rest;
+        }));
+      }
 
       return row;
     }));
@@ -292,6 +335,11 @@ export class UserAccessController extends Controller {
   }
 
   deleteForUuidPermission = 'user-access.delete';
+  async defaultDeleteForUuid(req, res, next) {
+    await this.checkPermissionsFromProperty(req, res, next, 'deleteForUuidPermission');
+    await this.deleteForUuid(req, res);
+  }
+
   async deleteForUuid(req, res) {
     const loc = req.loc ?? defaultLoc;
 
@@ -331,13 +379,15 @@ export class UserAccessController extends Controller {
       siteUuid = checkParameterUuid(uuidParts[1], loc => loc._c('userAccess', 'Site'));
     }
 
-    let rowsDeleted;
-    const deleteWhere = { userUuid, siteUuid };
+    const deleteWhere = {
+      userId: await dependency.get('userService').getSingleIdForUuid(userUuid),
+      siteId: await dependency.get('siteService').getSingleIdForUuid(siteUuid),
+    };
     if (!req.roles.includes('admin')) {
-      deleteWhere.notRoleName = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
+      deleteWhere.roleId = await dependency.get('assignableRolePerRoleService').getAssignableRolesIdForRoleName(req.roles);
     }
 
-    rowsDeleted = await this.userAccessService.deleteFor(deleteWhere);
+    const rowsDeleted = await this.userAccessService.deleteFor(deleteWhere);
 
     if (!rowsDeleted) {
       throw new HttpError(loc => loc._c('userAccess', 'User with UUID %s has not access to the site with UUID %s.'), 403, userUuid, siteUuid);

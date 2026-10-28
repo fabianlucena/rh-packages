@@ -181,6 +181,14 @@ export class UserService extends Service.IdUuidEnableOwnerModule {
       }
     }
 
+    if (data.isEnabled === false) {
+      const sessionService = dependency.get('sessionService');
+      const users = await this.getList({ ...options, attributes: ['id'] });
+      for (const user of users) {
+        await sessionService.closeForUserId(user.id);
+      }
+    }
+
     return result;
   }
 

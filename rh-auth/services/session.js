@@ -165,6 +165,24 @@ export class SessionService extends Service.IdUuid {
   }
 
   /**
+   * Closes all the open sessions for a given user ID.
+   * @param {number} userId - ID for the user whose sessions will be closed.
+   * @returns {Promise[integer]}
+   */
+  async closeForUserId(userId) {
+    check(userId, { message: loc => loc._c('session', 'There is no id for user') });
+
+    for (const authToken in conf.sessionCache) {
+      const session = conf.sessionCache[authToken].session;
+      if ((session.userId ?? session.user?.id) === userId) {
+        delete conf.sessionCache[authToken];
+      }
+    }
+
+    return this.updateFor({ close: Date.now() }, { userId, close: null });
+  }
+
+  /**
    * Deletes a session for a given UUID.
    * @param {string} uuid - UUID for the session o delete.
    * @returns {Promise[integer]}
