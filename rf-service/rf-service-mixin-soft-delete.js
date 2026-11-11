@@ -1,7 +1,19 @@
 export const ServiceMixinSoftDelete = Service => class ServiceSoftDelete extends Service {
+  async getListOptions(options) {
+    options = await super.getListOptions(options);
+    options.where ??= {};
+    if (options.where.deletedAt === undefined) {
+      options.where.deletedAt = null;
+    }
+    return options;
+  }
+
   async getOptions(options) {
-    options = await super.getOptions(options);
-    options.where = { deletedAt: null, ...options.where };
+    options = super.getOptions ? await super.getOptions(options) : options;
+    options.where ??= {};
+    if (options.where.deletedAt === undefined) {
+      options.where.deletedAt = null;
+    }
     return options;
   }
 
