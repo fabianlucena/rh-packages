@@ -3,6 +3,7 @@ import { CommentService } from './services/comment.js';
 import { conf as localConf } from './conf.js';
 import { runSequentially } from 'rf-util';
 import { defaultLoc } from 'rf-locale';
+import { Op } from 'rf-service';
 
 export const conf = localConf;
 
@@ -244,7 +245,7 @@ async function interfaceGridGet({ grid, entity, context }) {
 }
 
 async function getted({ entity, result, options }) {
-  if (!entity) {
+  if (!entity || options?.skipComments) {
     return result;
   }
 
@@ -254,39 +255,65 @@ async function getted({ entity, result, options }) {
     return result;
   }
 
-  if (result.then) {
+  if (result?.then) {
     result = await result;
   }
 
-  const modelEntityNameId = await getEntityTypeId(entity, { loc });
+  if (!result) {
+    return result;
+  }
 
-  const rows = result.rows || result;
-  for (const i in rows) {
-    const row = rows[i];
-    const entityId = row.id;
-    if (entityId === undefined) {
+  const rawRows = result.rows || result;
+  const rows = Array.isArray(rawRows) ? rawRows : (rawRows?.id !== undefined ? [rawRows] : []);
+  if (!rows.length) {
+    return result;
+  }
+
+  const entityIds = [...new Set(rows.map(r => r?.id).filter(id => id !== undefined && id !== null))];
+  if (!entityIds.length) {
+    return result;
+  }
+
+  const modelEntityNameId = await getEntityTypeId(entity, { loc });
+  const commentTypeIds = commentTypes.map(ct => ct.id);
+
+  // Batch Query única (Sequelize via rf-service): reemplaza el N+1 por una sola consulta
+  const allComments = await conf.commentService.getFor(
+    {
+      modelEntityNameId,
+      entityId: { [Op.in]: entityIds },
+      commentTypeId: { [Op.in]: commentTypeIds },
+    },
+    {
+      attributes: ['id', 'uuid', 'comment', 'createdAt', 'entityId', 'commentTypeId'],
+      include: {
+        user: { attributes: [ 'displayName' ] },
+      },
+      loc,
+    },
+  );
+
+  const commentsByKey = new Map();
+  for (const c of allComments) {
+    const key = `${c.entityId}:${c.commentTypeId}`;
+    let list = commentsByKey.get(key);
+    if (!list) {
+      list = [];
+      commentsByKey.set(key, list);
+    }
+    const { entityId: _eid, commentTypeId: _ctid, ...cleanComment } = c;
+    list.push(cleanComment);
+  }
+
+  for (const row of rows) {
+    const entityId = row?.id;
+    if (entityId === undefined || entityId === null) {
       continue;
     }
 
     for (const commentType of commentTypes) {
-      const commentTypeId = commentType.id;
       const fieldName = commentType.fieldName ?? commentType.name;
-      const where = {
-        modelEntityNameId,
-        entityId,
-        commentTypeId,
-      };
-
-      row[fieldName] = await conf.commentService.getFor(
-        where,
-        {
-          view: true,
-          include: {
-            user: { attributes: [ 'displayName' ] },
-          },
-          loc,
-        },
-      );
+      row[fieldName] = commentsByKey.get(`${entityId}:${commentType.id}`) ?? [];
     }
   }
 
