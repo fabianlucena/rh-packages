@@ -82,11 +82,13 @@ function execHandler(handler) {
   return async (req, res, next) => {
     try {
       const result = await handler(req, res, next);
-      if (result) {
+      if (result && result !== res && !res.headersSent) {
         res.send(result);
       }
 
-      res.end();
+      if (!res.writableEnded) {
+        res.end();
+      }
     } catch(err) {
       next(err);
     }

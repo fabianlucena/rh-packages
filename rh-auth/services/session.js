@@ -1,5 +1,5 @@
 import { conf } from '../conf.js';
-import { Service } from 'rf-service';
+import { Service, Op } from 'rf-service';
 import { getSingle } from 'sql-util';
 import { BaseError, check, } from 'rf-util';
 import crypto from 'crypto';
@@ -16,6 +16,8 @@ conf.sessionCache ??= {};
 conf.sessionCacheValidityTime ??= 60000;
 conf.sessionCacheMaxLength ??= 10000;
 conf.sessionCacheMaintenanceInterval ??= 1000;
+conf.sessionMaxDurationMs ??= 9 * 60 * 60 * 1000;
+conf.sessionDbCleanupInterval ??= 15 * 60 * 1000;
 conf.sessionCacheMaintenanceMethod ??= () => {
   const expiration = new Date(Date.now() - conf.sessionCacheValidityTime);
   const list = [];
@@ -35,7 +37,15 @@ conf.sessionCacheMaintenanceMethod ??= () => {
   list.slice(conf.sessionCacheMaxLength).forEach(item => delete conf.sessionCache[item.authToken]);
 };
 
-conf.init.push(() => conf.sessionCacheMaintenance = setInterval(conf.sessionCacheMaintenanceMethod, conf.sessionCacheMaintenanceInterval));
+conf.init.push(() => {
+  conf.sessionCacheMaintenance = setInterval(conf.sessionCacheMaintenanceMethod, conf.sessionCacheMaintenanceInterval);
+  conf.sessionDbCleanup = setInterval(() => {
+    SessionService.singleton().closeExpiredSessions().catch(() => {});
+  }, conf.sessionDbCleanupInterval);
+  setTimeout(() => {
+    SessionService.singleton().closeExpiredSessions().catch(() => {});
+  }, 1000);
+});
 
 export class SessionService extends Service.IdUuid {
   references = {
@@ -110,7 +120,18 @@ export class SessionService extends Service.IdUuid {
   async getJSONForAuthTokenCached(authToken) {
     if (conf.sessionCache && conf.sessionCache[authToken]) {
       const sessionData = conf.sessionCache[authToken];
-      const cachedUser = sessionData.session?.user;
+      const session = sessionData.session;
+
+      // Verificar si la sesión superó la duración máxima de 9 horas
+      if (session?.open && (Date.now() - new Date(session.open).getTime() >= conf.sessionMaxDurationMs)) {
+        delete conf.sessionCache[authToken];
+        if (session.id && !session.close) {
+          await this.updateForId({ close: new Date() }, session.id);
+        }
+        throw new SessionClosedError();
+      }
+
+      const cachedUser = session?.user;
       if (cachedUser && cachedUser.isEnabled === false) {
         delete conf.sessionCache[authToken];
         throw new SessionClosedError();
@@ -136,6 +157,15 @@ export class SessionService extends Service.IdUuid {
       throw new SessionClosedError();
     }
 
+    // Verificar si la sesión en base de datos superó las 9 horas
+    if (session.open && (Date.now() - new Date(session.open).getTime() >= conf.sessionMaxDurationMs)) {
+      if (conf.sessionCache && conf.sessionCache[authToken]) {
+        delete conf.sessionCache[authToken];
+      }
+      await this.updateForId({ close: new Date() }, session.id);
+      throw new SessionClosedError();
+    }
+
     if (session.user && session.user.isEnabled === false) {
       if (conf.sessionCache && conf.sessionCache[authToken]) {
         delete conf.sessionCache[authToken];
@@ -149,6 +179,25 @@ export class SessionService extends Service.IdUuid {
     };
 
     return session;
+  }
+
+  /**
+   * Cierra en base de datos todas las sesiones abiertas que hayan superado las 9 horas.
+   * @returns {Promise<number>}
+   */
+  async closeExpiredSessions() {
+    const expiredBefore = new Date(Date.now() - conf.sessionMaxDurationMs);
+    try {
+      return await this.updateFor(
+        { close: new Date() },
+        {
+          close: null,
+          open: { [Op.lte]: expiredBefore },
+        }
+      );
+    } catch (_) {
+      // Ignorar si se invoca antes de inicializar BD
+    }
   }
 
   deleteFromCacheForUserId(userId) {

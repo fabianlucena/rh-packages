@@ -95,6 +95,12 @@ export class LoginService {
       throw new InvalidTokenError(loc => loc._c('login', 'The auto login token is invalid because the session is closed'));
     }
 
+    const sessionMaxDurationMs = conf.sessionMaxDurationMs ?? (9 * 60 * 60 * 1000);
+    if (oldSession.open && (Date.now() - new Date(oldSession.open).getTime() >= sessionMaxDurationMs)) {
+      await sessionService.closeForId(oldSession.id);
+      throw new InvalidTokenError(loc => loc._c('login', 'The auto login token is invalid because the session has expired'));
+    }
+
     const device = await DeviceService.singleton().getForToken(deviceToken);
     if (!device) {
       throw new HttpError(loc => loc._c('login', 'Invalid device'), 400);
